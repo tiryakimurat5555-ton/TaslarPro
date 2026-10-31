@@ -1,0 +1,40 @@
+name: Sesleri indir
+
+on:
+  push:
+    paths:
+      - ".sesler/liste.txt"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  indir:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Ses dosyalarini indir ve hazirla
+        run: |
+          set -e
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg >/dev/null
+          mkdir -p assets/sounds
+          while read -r ad url; do
+            [ -z "$ad" ] && continue
+            curl -fsSL -o "/tmp/$ad.mp3" "$url"
+            ffmpeg -loglevel error -y -i "/tmp/$ad.mp3" \
+              -af "silenceremove=start_periods=1:start_threshold=-50dB,areverse,silenceremove=start_periods=1:start_threshold=-55dB,areverse,loudnorm=I=-16:TP=-1.5" \
+              -ac 1 -ar 44100 -b:a 96k "assets/sounds/$ad.mp3"
+            echo "$ad hazir"
+          done < .sesler/liste.txt
+          ls -la assets/sounds
+
+      - name: Depoya kaydet
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898+github-actions[bot]@users.noreply.github.com"
+          git rm -rq .sesler
+          git add assets/sounds
+          git commit -m "ElevenLabs ses efektleri eklendi"
+          git push
