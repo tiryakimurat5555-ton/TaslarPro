@@ -1,0 +1,37 @@
+{
+  "expo": {
+    "name": "TaslarPro",
+    "slug": "taslarpro",
+    "owner": "murat5561",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1E5BA8"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.murat5561.taslarpro"
+    },
+    "android": {
+      "package": "com.murat5561.taslarpro",
+      "adaptiveIcon": {
+        "backgroundColor": "#1E5BA8",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "e9796050-d2e8-4278-aa86-6a58bcc22c0a"
+      }
+    }
+  }
+}
