@@ -1,6 +1,6 @@
-# TaslarPro
+# TaslarPro — Renkli Taşlar
 
-Expo (SDK 58) ile geliştirilen mobil oyun.
+VoiceOver ile oynanabilen, Türkçe eşleştirme oyunu. Expo (SDK 58) ve React Native ile yazıldı.
 
 - Expo projesi: [@murat5561/taslarpro](https://expo.dev/accounts/murat5561/projects/taslarpro)
-- Derlemeler GitHub üzerinden EAS ile yapılır.
+- main dalına her gönderimde oyun Expo Go için güncelleme olarak yayınlanır.
