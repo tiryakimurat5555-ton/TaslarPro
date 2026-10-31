@@ -14,15 +14,26 @@
   ve erişilebilirlikten gizlidir; böylece animasyonlar VoiceOver odağını kaydırmaz. Sonuçlar announceForAccessibility ile.
 - Özel taşlar: 4'lü → çizgili (yatay eşleşme satırı, dikey eşleşme sütunu temizler), L/T → bomba (3x3),
   5'li → renk bombası. Özel+özel takas kombinasyonları ozelKombo'da.
-- Hedefler sırayla: puan, renk toplama, özel taş oluşturma (bolumAyari). Engeller: buz (5+), zincir (10+), taş blok (15+).
-- Bonuslar: ipucu, karıştır, bomba, renk, 2x puan. 8 başarım, günlük 3 görev, istatistikler, koyu/açık tema.
-- Kayıt: AsyncStorage 'taslarpro-kayit-v1' (bölüm, bonuslar, istatistik, başarımlar, günlük, ayarlar). Tahta kaydedilmez.
+- Zorluk eğrisi (31 Ekim, Murat "kolaydan zora" istedi): DENGE tablosu + egri() doğrusal ara değer. Renk sayısı 1-3: 4,
+  4-19: 5, 20+: 6 (20'de hedefler bir kez düşer). bolumTipi: 1 puan, 2 renk, 3 puan, 4 özel; 5'ten sonra puan/renk/özel/buz
+  döngüsü (5 buz). Engeller: buz 5+, kalın buz 13+, zincir 10+, taş blok 15+ (22+ iki vuruşluk).
+  araclar/denge-simulasyonu.js (akıllı oyuncu, %25 rastgele): 1-12 ~%90-100, 20 civarı %60-80, 40 civarı %40-50.
+- Yıldız: kalan hamle oranı ≥0,3 → 3, ≥0,12 → 2, yoksa 1 (yildizHesapla). Kalan hamle × 60 bonus puan (istatistiğe).
+- Bölüm haritası (açılan bölümler, yıldızlar, istenen bölüm tekrar oynanır), enYuksek, yildizlar.
+- Bonuslar: ipucu, karıştır, bomba, renk, 2x puan. 11 başarım, günlük 3 görev (8'lik havuz), istatistikler, koyu/açık tema.
+  "Baştan Başla" Menü > Ayarlar'da; her şeyi siler (ayarlar kalır).
+- Kayıt: AsyncStorage 'taslarpro-kayit-v1' (bölüm, bonuslar, istatistik, başarımlar, günlük, ayarlar, enYuksek, yildizlar,
+  devam = yarım kalan bölümün tahtası/puanı/hamlesi; açılışta kimlikAyarla + tahtaGecerliMi ile geri yüklenir).
+- Görsel: expo-linear-gradient. Hareketli degrade arka plan + kabarcıklar, degrade taşlar, renge göre şekil (TAS_SEKIL:
+  kare/daire/elmas), özel taşlar ortak parilti/donus döngüleriyle canlı, bölüm giriş afişi, kombo yazısı, konfeti ve
+  sırayla gelen yıldızlar, sayan puan (useSayac), bomba/renk bombasında sarsıntı, buz/blok/zincir kırık parçaları,
+  son 5 hamlede nabız + uyari sesi, 14 sn boşta kalınca sessiz ipucu parlaması.
 
 ## Yapı
 - App.js tek dosya. Oyun mantığı `// ==== MANTIK BASLANGIC ====` ile `// ==== MANTIK BITIS ====` arasında, saf JS.
   Test: `node araclar/mantik-testi.js App.js` (rastgele oyun simülasyonu + özel taş/engel testleri).
 - Sözdizimi denetimi: `bun build index.js --outdir <geçici> $(node -e "const p=require('./package.json');console.log(Object.keys(p.dependencies).map(d=>'-e '+d).join(' '))") -e 'react-native/*' -e '*.mp3' -e '*.png'`
-- Sesler assets/sounds: 14 efekt ElevenLabs eleven_text_to_sound_v2 (indirme .github/workflows/sesleri-indir.yml ile;
+- Sesler assets/sounds: 21 efekt (ikinci parti: yildiz, bolumbasla (1,8 sn'ye kesildi), uyari, sayma, konfeti, tasblok, karistirma) ElevenLabs eleven_text_to_sound_v2 (indirme .github/workflows/sesleri-indir.yml ile;
   bu ortam ElevenLabs depolamasına erişemez, .sesler/liste.txt push edilince Actions indirir). buton.mp3 ve muzik.mp3
   araclar/muzik-ve-buton-sesi.py ile üretildi (ElevenLabs bağlantısı müzik üretmiyor).
 - Expo SDK 58. Sürümler expo deposunun sdk-58 dalındaki packages/expo/bundledNativeModules.json'dan.

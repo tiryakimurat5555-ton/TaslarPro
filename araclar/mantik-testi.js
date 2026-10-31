@@ -4,7 +4,7 @@ const src = fs.readFileSync(process.argv[2], 'utf8');
 const bas = src.indexOf('// ==== MANTIK BASLANGIC ====');
 const son = src.indexOf('// ==== MANTIK BITIS ====');
 const kod = src.slice(bas, son);
-const M = new Function(kod + '\nreturn {N, bolumAyari, tahtaOlustur, eslesmeleriBul, plandanEslesme, temizlikHesapla, sonucUygula, yercekimi, ipucuBul, karistir, ozelKombo, hamleGecerliMi, takasla, tahtaKopyala, puanHesapla, yeniTas};')();
+const M = new Function(kod + '\nreturn {N, bolumAyari, hedefOlustur, hedefIlerlet, hedefTamam, yildizHesapla, tahtaGecerliMi, tahtaOlustur, eslesmeleriBul, plandanEslesme, temizlikHesapla, sonucUygula, yercekimi, ipucuBul, karistir, ozelKombo, hamleGecerliMi, takasla, tahtaKopyala, puanHesapla, yeniTas};')();
 
 let hata = 0;
 const kontrol = (kosul, mesaj) => {
@@ -95,53 +95,25 @@ for (let L = 1; L <= 30; L++) {
 }
 console.log('Toplam hamle:', toplamHamle, 'kombo:', toplamKombo, 'ozel:', JSON.stringify(ozel));
 
-// Puan bolumleri: rastgele oynayan biri hedefe ne siklikla ulasiyor
-for (const L of [1, 4, 7, 10, 16, 22, 28]) {
-  const ayar = M.bolumAyari(L);
-  let ok = 0;
-  let toplam = 0;
-  for (let oyun = 0; oyun < 40; oyun++) {
-    let bd = M.tahtaOlustur(ayar);
-    let score = 0;
-    for (let m = 0; m < ayar.moves; m++) {
-      const h = [];
-      for (let r = 0; r < M.N; r++)
-        for (let c = 0; c < M.N; c++) {
-          if (c + 1 < M.N && M.hamleGecerliMi(bd, { r, c }, { r, c: c + 1 })) h.push([{ r, c }, { r, c: c + 1 }]);
-          if (r + 1 < M.N && M.hamleGecerliMi(bd, { r, c }, { r: r + 1, c })) h.push([{ r, c }, { r: r + 1, c }]);
-        }
-      if (!h.length) {
-        bd = M.karistir(bd, ayar.ncolors);
-        continue;
-      }
-      const [a, b] = h[Math.floor(Math.random() * h.length)];
-      bd = M.tahtaKopyala(bd);
-      M.takasla(bd, a, b);
-      const kombo = M.ozelKombo(bd, a, b);
-      if (kombo) bd = kombo.board;
-      let ilk = true;
-      let z = 0;
-      while (true) {
-        z++;
-        let plan;
-        if (ilk && kombo) plan = kombo.plan;
-        else {
-          const runs = M.eslesmeleriBul(bd);
-          if (!runs.length) break;
-          plan = M.plandanEslesme(bd, runs, ilk ? [a, b] : []);
-        }
-        ilk = false;
-        const res = M.temizlikHesapla(bd, plan);
-        if (!res.pops.length && !res.chainBreaks.length && !res.stoneHits.length) break;
-        score += M.puanHesapla(res, z, false);
-        bd = M.yercekimi(M.sonucUygula(bd, res).board, ayar.ncolors).board;
-      }
-      if (!M.ipucuBul(bd)) bd = M.karistir(bd, ayar.ncolors);
-    }
-    toplam += score;
-    if (score >= 300 + (L - 1) * 80) ok++;
+// Denge icin: node araclar/denge-simulasyonu.js App.js
+
+// Buz hedefi, kayittan yukleme denetimi
+{
+  const ayar = M.bolumAyari(5);
+  kontrol(ayar.type === 'ice', '5. bolum buz hedefli olmali');
+  const bd = M.tahtaOlustur(ayar);
+  const obj = M.hedefOlustur(ayar, bd);
+  kontrol(obj.target >= ayar.ice, 'buz hedefi buz sayisindan az');
+  kontrol(M.tahtaGecerliMi(JSON.parse(JSON.stringify(bd))), 'kaydedilen tahta gecersiz sayildi');
+  kontrol(!M.tahtaGecerliMi([[1]]), 'bozuk tahta gecerli sayildi');
+  M.hedefIlerlet(obj, { pops: [], create: [], iceHits: Array(obj.target).fill([0, 0]) });
+  kontrol(M.hedefTamam(obj, 0), 'buz hedefi tamamlanmadi');
+  kontrol(M.yildizHesapla(10, 20) === 3 && M.yildizHesapla(3, 20) === 2 && M.yildizHesapla(0, 20) === 1, 'yildiz hesabi yanlis');
+  for (let L = 1; L <= 80; L++) {
+    const a = M.bolumAyari(L);
+    kontrol(a.moves >= 15 && a.moves <= 40, `L${L} hamle sayisi tuhaf: ${a.moves}`);
+    kontrol(a.type === 'ice' || a.target > 0, `L${L} hedef sifir`);
   }
-  console.log(`Bolum ${L}: rastgele oyuncu ort. puan ${Math.round(toplam / 40)}, hedef ${300 + (L - 1) * 80}, basari %${Math.round((ok / 40) * 100)}`);
 }
 
 // Ozel kombinasyon testleri
