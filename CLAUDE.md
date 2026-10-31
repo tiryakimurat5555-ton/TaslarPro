@@ -21,7 +21,11 @@
 - Yıldız: kalan hamle oranı ≥0,3 → 3, ≥0,12 → 2, yoksa 1 (yildizHesapla). Kalan hamle × 60 bonus puan (istatistiğe).
 - Bölüm haritası (açılan bölümler, yıldızlar, istenen bölüm tekrar oynanır), enYuksek, yildizlar.
 - Bonuslar: ipucu, karıştır, bomba, renk, 2x puan. 11 başarım, günlük 3 görev (8'lik havuz), istatistikler, koyu/açık tema.
-  "Baştan Başla" Menü > Ayarlar'da; her şeyi siler (ayarlar kalır).
+  "Baştan Başla" Menü > Ayarlar > Oyun grubunda; her şeyi siler (ayarlar kalır).
+- Menü (31 Ekim): 4 sekme (MENU_SEKMELERI) tek satır; VoiceOver etiketi "Ayarlar, seçili, sekme 1 / 4" (seçili bilgisi
+  etikette, accessibilityState yok ki iki kez okunmasın). İçerik MenuGrubu kutularında, başlıklar header rolünde:
+  Ayarlar (Ses, Dokunuş, Görünüm, Oyun), Görevler (x / 3 tamamlandı), Başarımlar (Kazanılanlar / Kazanılacaklar),
+  İstatistik (İlerleme, Oyun, Özel taşlar, Bonuslar). Anahtarlar AnahtarSatiri: satırın tamamı switch rolünde.
 - Kayıt: AsyncStorage 'taslarpro-kayit-v1' (bölüm, bonuslar, istatistik, başarımlar, günlük, ayarlar, enYuksek, yildizlar,
   devam = yarım kalan bölümün tahtası/puanı/hamlesi; açılışta kimlikAyarla + tahtaGecerliMi ile geri yüklenir).
 - Görsel: expo-linear-gradient. Hareketli degrade arka plan + kabarcıklar, degrade taşlar, renge göre şekil (TAS_SEKIL:

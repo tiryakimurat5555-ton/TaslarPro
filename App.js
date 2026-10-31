@@ -1309,6 +1309,42 @@ function Dugme({ onPress, etiket, yazi, renkler, yaziRengi, stil, tema, rol = 'b
   );
 }
 
+// ---------- Menu yardimcilari ----------
+const MENU_SEKMELERI = [
+  ['ayarlar', 'Ayarlar'],
+  ['gorevler', 'Görevler'],
+  ['basarimlar', 'Başarımlar'],
+  ['istatistik', 'İstatistik'],
+];
+
+function MenuGrubu({ baslik, stil, children }) {
+  return (
+    <View style={stil.grup}>
+      <Text style={stil.grupBaslik} accessibilityRole="header">
+        {baslik}
+      </Text>
+      {children}
+    </View>
+  );
+}
+
+function AnahtarSatiri({ ad, deger, degistir, stil }) {
+  return (
+    <Pressable
+      onPress={() => degistir(!deger)}
+      style={stil.liste}
+      accessibilityRole="switch"
+      accessibilityLabel={ad}
+      accessibilityState={{ checked: deger }}
+    >
+      <Text style={[stil.listeBaslik, { flex: 1 }]}>{ad}</Text>
+      <View {...gizli} pointerEvents="none">
+        <Switch value={deger} />
+      </View>
+    </Pressable>
+  );
+}
+
 // ---------- Uygulama ----------
 export default function App() {
   return (
@@ -2929,131 +2965,168 @@ function Oyun() {
                 <Text style={stil.pBaslik} accessibilityRole="header">
                   Menü
                 </Text>
-                <View style={[stil.satir, { flexWrap: 'wrap' }]} accessibilityRole="tablist">
-                  {[
-                    ['ayarlar', 'Ayarlar'],
-                    ['gorevler', 'Görevler'],
-                    ['basarimlar', 'Başarımlar'],
-                    ['istatistik', 'İstatistik'],
-                  ].map(([id, ad]) => (
-                    <Pressable
-                      key={id}
-                      onPress={() => {
-                        cal('buton');
-                        setAyarSekme(id);
-                      }}
-                      style={[stil.sekme, ayarSekme === id && { backgroundColor: tema.accent }]}
-                      accessibilityRole="tab"
-                      accessibilityState={{ selected: ayarSekme === id }}
-                    >
-                      <Text style={[stil.sekmeYazi, ayarSekme === id && { color: '#1B1030' }]}>{ad}</Text>
-                    </Pressable>
-                  ))}
+                <View style={stil.sekmeCubugu} accessibilityRole="tablist">
+                  {MENU_SEKMELERI.map(([id, ad], i) => {
+                    const seciliSekme = ayarSekme === id;
+                    return (
+                      <Pressable
+                        key={id}
+                        onPress={() => {
+                          if (seciliSekme) return;
+                          cal('buton');
+                          setAyarSekme(id);
+                        }}
+                        style={[stil.sekme, seciliSekme && { backgroundColor: tema.accent }]}
+                        accessibilityRole="tab"
+                        accessibilityLabel={`${ad}, ${seciliSekme ? 'seçili, ' : ''}sekme ${i + 1} / ${MENU_SEKMELERI.length}`}
+                      >
+                        <Text style={[stil.sekmeYazi, seciliSekme && { color: '#1B1030' }]} numberOfLines={1} adjustsFontSizeToFit>
+                          {ad}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
                 </View>
-                <ScrollView style={{ maxHeight: 380 }}>
+                <ScrollView style={{ maxHeight: 400 }}>
                   {ayarSekme === 'ayarlar' && (
                     <View>
-                      {[
-                        ['ses', 'Ses efektleri'],
-                        ['muzik', 'Müzik'],
-                        ['titresim', 'Titreşim'],
-                      ].map(([k, ad]) => (
-                        <View key={k} style={stil.liste}>
-                          <Text style={[stil.listeBaslik, { flex: 1 }]}>{ad}</Text>
-                          <Switch value={!!g.settings[k]} onValueChange={(v) => ayarDegistir(k, v)} accessibilityLabel={ad} />
-                        </View>
-                      ))}
-                      <Text style={[stil.listeBaslik, { marginTop: 8, marginBottom: 6 }]}>Tema</Text>
-                      <View style={stil.satir}>
+                      <MenuGrubu baslik="Ses" stil={stil}>
                         {[
-                          ['koyu', 'Koyu'],
-                          ['acik', 'Açık'],
+                          ['ses', 'Ses efektleri'],
+                          ['muzik', 'Müzik'],
                         ].map(([k, ad]) => (
-                          <Pressable
-                            key={k}
-                            onPress={() => {
-                              cal('buton');
-                              ayarDegistir('tema', k);
-                            }}
-                            style={[stil.sekme, { flex: 1 }, g.settings.tema === k && { backgroundColor: tema.accent }]}
-                            accessibilityRole="radio"
-                            accessibilityLabel={`${ad} tema`}
-                            accessibilityState={{ checked: g.settings.tema === k }}
-                          >
-                            <Text style={[stil.sekmeYazi, g.settings.tema === k && { color: '#1B1030' }]}>{ad}</Text>
-                          </Pressable>
+                          <AnahtarSatiri key={k} ad={ad} deger={!!g.settings[k]} degistir={(v) => ayarDegistir(k, v)} stil={stil} />
                         ))}
-                      </View>
-                      <View style={[stil.satir, { marginTop: 10 }]}>
-                        <Dugme tema={tema} onPress={() => { cal('buton'); setModal({ tip: 'ogretici' }); }} etiket="Nasıl oynanır" yazi="Nasıl Oynanır" />
-                        <Dugme tema={tema} onPress={() => { cal('buton'); setModal({ tip: 'sifirla' }); }} etiket="Oyunu baştan başlat" yazi="Baştan Başla" />
-                      </View>
+                      </MenuGrubu>
+                      <MenuGrubu baslik="Dokunuş" stil={stil}>
+                        <AnahtarSatiri ad="Titreşim" deger={!!g.settings.titresim} degistir={(v) => ayarDegistir('titresim', v)} stil={stil} />
+                      </MenuGrubu>
+                      <MenuGrubu baslik="Görünüm" stil={stil}>
+                        <View style={stil.satir}>
+                          {[
+                            ['koyu', 'Koyu tema'],
+                            ['acik', 'Açık tema'],
+                          ].map(([k, ad], i) => {
+                            const secik = g.settings.tema === k;
+                            return (
+                              <Pressable
+                                key={k}
+                                onPress={() => {
+                                  cal('buton');
+                                  ayarDegistir('tema', k);
+                                }}
+                                style={[stil.sekme, { flex: 1 }, secik && { backgroundColor: tema.accent }]}
+                                accessibilityRole="radio"
+                                accessibilityLabel={`${ad}, seçenek ${i + 1} / 2`}
+                                accessibilityState={{ checked: secik }}
+                              >
+                                <Text style={[stil.sekmeYazi, secik && { color: '#1B1030' }]}>{ad}</Text>
+                              </Pressable>
+                            );
+                          })}
+                        </View>
+                      </MenuGrubu>
+                      <MenuGrubu baslik="Oyun" stil={stil}>
+                        <View style={stil.satir}>
+                          <Dugme tema={tema} onPress={() => { cal('buton'); setModal({ tip: 'ogretici' }); }} etiket="Nasıl oynanır" yazi="Nasıl Oynanır" />
+                          <Dugme tema={tema} onPress={() => { cal('buton'); setModal({ tip: 'sifirla' }); }} etiket="Baştan başla, bütün ilerleme silinir" yazi="Baştan Başla" />
+                        </View>
+                      </MenuGrubu>
                     </View>
                   )}
-                  {ayarSekme === 'gorevler' && (
-                    <View>
-                      <Text style={stil.listeAlt}>Her gün 3 yeni görev. Tamamlanan her görev bir bonus kazandırır.</Text>
-                      {g.gunluk.picks.map((id) => {
-                        const gorev = GUNLUK_HAVUZ.find((x) => x.id === id);
-                        if (!gorev) return null;
-                        const ilerle = Math.min(gorev.hedef, g.gunluk.progress[gorev.stat] || 0);
-                        const bitti = g.gunluk.claimed.includes(id);
-                        return (
-                          <View key={id} style={stil.liste} accessible accessibilityLabel={`${gorev.ad}, ${bitti ? 'tamamlandı' : `${ilerle} / ${gorev.hedef}`}`}>
-                            <View style={{ flex: 1 }}>
-                              <Text style={stil.listeBaslik}>{gorev.ad}</Text>
-                              <View style={{ height: 6, borderRadius: 3, backgroundColor: tema.bar, marginTop: 6, overflow: 'hidden' }}>
-                                <View style={{ width: `${(ilerle / gorev.hedef) * 100}%`, height: '100%', backgroundColor: bitti ? '#3DDC84' : tema.accent }} />
+                  {ayarSekme === 'gorevler' && (() => {
+                    const biten = g.gunluk.claimed.length;
+                    return (
+                      <View>
+                        <MenuGrubu baslik={`Bugünün görevleri, ${biten} / ${g.gunluk.picks.length} tamamlandı`} stil={stil}>
+                          <Text style={[stil.listeAlt, { marginBottom: 4 }]}>Her gün 3 yeni görev gelir. Tamamlanan her görev bir bonus kazandırır.</Text>
+                          {g.gunluk.picks.map((id, i) => {
+                            const gorev = GUNLUK_HAVUZ.find((x) => x.id === id);
+                            if (!gorev) return null;
+                            const ilerle = Math.min(gorev.hedef, g.gunluk.progress[gorev.stat] || 0);
+                            const bitti = g.gunluk.claimed.includes(id);
+                            return (
+                              <View
+                                key={id}
+                                style={stil.liste}
+                                accessible
+                                accessibilityLabel={`${gorev.ad}, ${bitti ? 'tamamlandı' : `${ilerle} / ${gorev.hedef}`}, görev ${i + 1} / ${g.gunluk.picks.length}`}
+                              >
+                                <View style={{ flex: 1 }}>
+                                  <Text style={stil.listeBaslik}>{gorev.ad}</Text>
+                                  <View style={{ height: 6, borderRadius: 3, backgroundColor: tema.bar, marginTop: 6, overflow: 'hidden' }}>
+                                    <View style={{ width: `${(ilerle / gorev.hedef) * 100}%`, height: '100%', backgroundColor: bitti ? '#3DDC84' : tema.accent }} />
+                                  </View>
+                                </View>
+                                <Text style={[stil.listeBaslik, { color: bitti ? '#3DDC84' : tema.sub }]}>{bitti ? 'Tamam' : `${ilerle} / ${gorev.hedef}`}</Text>
                               </View>
-                            </View>
-                            <Text style={[stil.listeBaslik, { color: bitti ? '#3DDC84' : tema.sub }]}>{bitti ? 'Tamam' : `${ilerle} / ${gorev.hedef}`}</Text>
-                          </View>
-                        );
-                      })}
-                    </View>
-                  )}
-                  {ayarSekme === 'basarimlar' && (
-                    <View>
-                      {BASARIMLAR.map((b) => {
-                        const acik = g.basarimlar.includes(b.id);
-                        return (
-                          <View key={b.id} style={[stil.liste, { opacity: acik ? 1 : 0.55 }]} accessible accessibilityLabel={`${b.ad}, ${b.aciklama}, ${acik ? 'kazanıldı' : 'kazanılmadı'}`}>
-                            <View style={{ flex: 1 }}>
-                              <Text style={stil.listeBaslik}>{b.ad}</Text>
-                              <Text style={stil.listeAlt}>{b.aciklama}</Text>
-                            </View>
-                            <Text style={[stil.listeBaslik, { color: acik ? tema.accent : tema.sub, fontSize: 22 }]}>{acik ? '★' : '☆'}</Text>
-                          </View>
-                        );
-                      })}
-                    </View>
-                  )}
+                            );
+                          })}
+                        </MenuGrubu>
+                      </View>
+                    );
+                  })()}
+                  {ayarSekme === 'basarimlar' && (() => {
+                    const kazanilan = BASARIMLAR.filter((b) => g.basarimlar.includes(b.id));
+                    const kalan = BASARIMLAR.filter((b) => !g.basarimlar.includes(b.id));
+                    const satir = (b, acik) => (
+                      <View key={b.id} style={[stil.liste, { opacity: acik ? 1 : 0.6 }]} accessible accessibilityLabel={`${b.ad}, ${b.aciklama}`}>
+                        <View style={{ flex: 1 }}>
+                          <Text style={stil.listeBaslik}>{b.ad}</Text>
+                          <Text style={stil.listeAlt}>{b.aciklama}</Text>
+                        </View>
+                        <Text style={[stil.listeBaslik, { color: acik ? tema.accent : tema.sub, fontSize: 22 }]}>{acik ? '★' : '☆'}</Text>
+                      </View>
+                    );
+                    return (
+                      <View>
+                        <MenuGrubu baslik={`Kazanılanlar, ${kazanilan.length} / ${BASARIMLAR.length}`} stil={stil}>
+                          {kazanilan.length ? kazanilan.map((b) => satir(b, true)) : <Text style={stil.listeAlt}>Henüz başarım kazanmadın.</Text>}
+                        </MenuGrubu>
+                        {kalan.length > 0 && (
+                          <MenuGrubu baslik={`Kazanılacaklar, ${kalan.length}`} stil={stil}>
+                            {kalan.map((b) => satir(b, false))}
+                          </MenuGrubu>
+                        )}
+                      </View>
+                    );
+                  })()}
                   {ayarSekme === 'istatistik' && (
                     <View>
                       {[
-                        ['Toplam puan', g.stats.totalScore],
-                        ['Toplam yıldız', g.stats.stars || 0],
-                        ['Patlatılan taş', g.stats.gems],
-                        ['Kırılan buz', g.stats.iceBroken || 0],
-                        ['En uzun kombo', g.stats.maxCombo],
-                        ['Tamamlanan bölüm', g.stats.levelsDone],
-                        ['En yüksek bölüm', g.enYuksek],
-                        ['Yapılan hamle', g.stats.movesMade],
-                        ['Çizgili taş', g.stats.stripedMade],
-                        ['Bomba taşı', g.stats.bombsMade],
-                        ['Renk bombası', g.stats.colorBombsMade],
-                        ['Kullanılan bonus', g.stats.bonusesUsed],
-                      ].map(([ad, d]) => (
-                        <View key={ad} style={stil.liste} accessible accessibilityLabel={`${ad}: ${d}`}>
-                          <Text style={[stil.listeBaslik, { flex: 1 }]}>{ad}</Text>
-                          <Text style={[stil.listeBaslik, { color: tema.accent }]}>{d}</Text>
-                        </View>
+                        ['İlerleme', [
+                          ['Tamamlanan bölüm', g.stats.levelsDone],
+                          ['En yüksek bölüm', g.enYuksek],
+                          ['Toplam yıldız', g.stats.stars || 0],
+                          ['Toplam puan', g.stats.totalScore],
+                        ]],
+                        ['Oyun', [
+                          ['Yapılan hamle', g.stats.movesMade],
+                          ['Patlatılan taş', g.stats.gems],
+                          ['Kırılan buz', g.stats.iceBroken || 0],
+                          ['En uzun kombo', g.stats.maxCombo],
+                        ]],
+                        ['Özel taşlar', [
+                          ['Çizgili taş', g.stats.stripedMade],
+                          ['Bomba taşı', g.stats.bombsMade],
+                          ['Renk bombası', g.stats.colorBombsMade],
+                        ]],
+                        ['Bonuslar', [['Kullanılan bonus', g.stats.bonusesUsed]]],
+                      ].map(([baslik, satirlar]) => (
+                        <MenuGrubu key={baslik} baslik={baslik} stil={stil}>
+                          {satirlar.map(([ad, d]) => (
+                            <View key={ad} style={stil.liste} accessible accessibilityLabel={`${ad}: ${d}`}>
+                              <Text style={[stil.listeBaslik, { flex: 1, fontSize: 16 }]}>{ad}</Text>
+                              <Text style={[stil.listeBaslik, { color: tema.accent }]}>{d}</Text>
+                            </View>
+                          ))}
+                        </MenuGrubu>
                       ))}
                     </View>
                   )}
                 </ScrollView>
                 <View style={{ flexDirection: 'row', marginTop: 10 }}>
-                  <Dugme tema={tema} onPress={pencereKapat} etiket="Kapat" yazi="Kapat" />
+                  <Dugme tema={tema} onPress={pencereKapat} etiket="Menüyü kapat" yazi="Kapat" />
                 </View>
               </View>
             )}
@@ -3085,7 +3158,10 @@ function olusturStil(t) {
     liste: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12, borderBottomWidth: 1, borderColor: t.cizgi, gap: 10 },
     listeBaslik: { fontSize: 17, fontWeight: '800', color: t.text },
     listeAlt: { fontSize: 13, color: t.sub, marginTop: 2 },
-    sekme: { paddingVertical: 10, paddingHorizontal: 12, borderRadius: 12, backgroundColor: t.bar, alignItems: 'center' },
+    sekme: { flex: 1, paddingVertical: 11, paddingHorizontal: 4, borderRadius: 12, backgroundColor: t.bar, alignItems: 'center', justifyContent: 'center' },
+    sekmeCubugu: { flexDirection: 'row', gap: 6, marginBottom: 10, padding: 4, borderRadius: 16, backgroundColor: t.card },
+    grup: { marginBottom: 14, padding: 12, borderRadius: 16, backgroundColor: t.card, borderWidth: 1, borderColor: t.cizgi },
+    grupBaslik: { fontSize: 13, fontWeight: '900', color: t.accent, textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 4 },
     sekmeYazi: { color: t.text, fontWeight: '800' },
   });
 }
