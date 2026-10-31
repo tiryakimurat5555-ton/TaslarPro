@@ -12,6 +12,7 @@
 - 6x6 tahta, dokun-seç-dokun-takas; yalnız eşleşme oluşturan takaslar geçerli. VoiceOver ile oynanır
   (oyun kendi sesini kullanmaz): tahtanın üstünde sabit, şeffaf 36 Pressable katmanı vardır, görsel taşlar altta
   ve erişilebilirlikten gizlidir; böylece animasyonlar VoiceOver odağını kaydırmaz. Sonuçlar announceForAccessibility ile.
+  Hücre etiketinde engel başta (Murat istedi): "Buzlu Kırmızı, 6. satır, 5. sütun", "Zincirli kalın buzlu Mavi yatay çizgili, ...".
 - Özel taşlar: 4'lü → çizgili (yatay eşleşme satırı, dikey eşleşme sütunu temizler), L/T → bomba (3x3),
   5'li → renk bombası. Özel+özel takas kombinasyonları ozelKombo'da.
 - Zorluk eğrisi (31 Ekim, Murat "kolaydan zora" istedi): DENGE tablosu + egri() doğrusal ara değer. Renk sayısı 1-3: 4,

@@ -735,16 +735,18 @@ function hedefCumlesi(obj) {
 
 function hucreEtiketi(cell, r, c) {
   const yer = `${r + 1}. satır, ${c + 1}. sütun`;
-  if (cell.stone > 0) return `Taş blok${cell.stone > 1 ? ', sağlam' : ''}, ${yer}`;
+  if (cell.stone > 0) return `${cell.stone > 1 ? 'Sağlam taş blok' : 'Taş blok'}, ${yer}`;
   if (!cell.gem) return `Boş, ${yer}`;
   const g = cell.gem;
-  let ad = g.special === 'colorbomb' ? 'Renk bombası' : RENK_ADLARI[g.color];
+  let ad = g.special === 'colorbomb' ? 'renk bombası' : RENK_ADLARI[g.color];
   if (g.special && g.special !== 'colorbomb') ad += ' ' + OZEL_ADLARI[g.special];
-  let ek = '';
-  if (cell.ice === 2) ek += ', kalın buzlu';
-  else if (cell.ice === 1) ek += ', buzlu';
-  if (cell.chain) ek += ', zincirli';
-  return `${ad}, ${yer}${ek}`;
+  // Engel bilgisi en basta: dokunur dokunmaz duyulsun
+  const onEk = [];
+  if (cell.chain) onEk.push('Zincirli');
+  if (cell.ice === 2) onEk.push(onEk.length ? 'kalın buzlu' : 'Kalın buzlu');
+  else if (cell.ice === 1) onEk.push(onEk.length ? 'buzlu' : 'Buzlu');
+  const metin = onEk.length ? `${onEk.join(' ')} ${ad}` : ad.charAt(0).toUpperCase() + ad.slice(1);
+  return `${metin}, ${yer}`;
 }
 
 function kisaAd(cell) {
