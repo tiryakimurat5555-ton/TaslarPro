@@ -4,7 +4,7 @@ const src = fs.readFileSync(process.argv[2], 'utf8');
 const bas = src.indexOf('// ==== MANTIK BASLANGIC ====');
 const son = src.indexOf('// ==== MANTIK BITIS ====');
 const kod = src.slice(bas, son);
-const M = new Function(kod + '\nreturn {N, bolumAyari, hedefOlustur, hedefIlerlet, hedefTamam, yildizHesapla, tahtaGecerliMi, tahtaOlustur, eslesmeleriBul, plandanEslesme, temizlikHesapla, sonucUygula, yercekimi, ipucuBul, karistir, ozelKombo, hamleGecerliMi, takasla, tahtaKopyala, puanHesapla, yeniTas};')();
+const M = new Function(kod + '\nreturn {N, kirazTopla, kirazEkle, kirazMi, KIRAZ, KIRAZ_RENGI, rastgeleKaynak, tohumluUretec, metinTohumu, etkiHucreleri, bolumAyari, hedefOlustur, hedefIlerlet, hedefTamam, yildizHesapla, tahtaGecerliMi, tahtaOlustur, eslesmeleriBul, plandanEslesme, temizlikHesapla, sonucUygula, yercekimi, ipucuBul, karistir, ozelKombo, hamleGecerliMi, takasla, tahtaKopyala, puanHesapla, yeniTas};')();
 
 let hata = 0;
 const kontrol = (kosul, mesaj) => {
@@ -114,6 +114,62 @@ console.log('Toplam hamle:', toplamHamle, 'kombo:', toplamKombo, 'ozel:', JSON.s
     kontrol(a.moves >= 15 && a.moves <= 40, `L${L} hamle sayisi tuhaf: ${a.moves}`);
     kontrol(a.type === 'ice' || a.target > 0, `L${L} hedef sifir`);
   }
+}
+
+// Kiraz hedefi
+{
+  const ayar = M.bolumAyari(7);
+  kontrol(ayar.type === 'drop', '7. bolum kiraz hedefli olmali: ' + ayar.type);
+  kontrol(ayar.chains === 0 && ayar.stones === 0, 'kiraz bolumunde sabit engel olmamali');
+  for (let i = 0; i < 20; i++) {
+    const bd = M.tahtaOlustur(ayar);
+    let k = 0;
+    for (let c = 0; c < M.N; c++) if (M.kirazMi(bd[0][c].gem)) k++;
+    kontrol(k === 2, 'baslangicta ust satirda 2 kiraz olmali: ' + k);
+    kontrol(M.eslesmeleriBul(bd).length === 0, 'kiraz tahtasinda baslangic eslesmesi');
+  }
+  // kiraz en alt satirda toplanir
+  const bd = M.tahtaOlustur(ayar);
+  bd[M.N - 1][2].gem = M.yeniTas(M.KIRAZ_RENGI, M.KIRAZ);
+  const t = M.kirazTopla(bd);
+  kontrol(t.toplanan.length === 1 && !t.board[M.N - 1][2].gem, 'kiraz toplanmadi');
+  // kiraz bomba ile patlamaz
+  const bd2 = M.tahtaOlustur(ayar);
+  bd2[3][3].gem = M.yeniTas(M.KIRAZ_RENGI, M.KIRAZ);
+  bd2[3][4].gem.special = 'bomb';
+  const res = M.temizlikHesapla(bd2, { cells: [], forced: [[3, 4]], create: [], noTrigger: new Set(), colorPick: null });
+  kontrol(!res.pops.some((p) => p.r === 3 && p.c === 3), 'kiraz bombayla patladi');
+  // kiraz ile ozel tas takasi kendiliginden gecerli sayilmaz
+  const bd3 = M.tahtaOlustur(ayar);
+  bd3[2][2].gem = M.yeniTas(M.KIRAZ_RENGI, M.KIRAZ);
+  bd3[2][3].gem = M.yeniTas(0, 'colorbomb');
+  bd3[2][3].gem.color = -1;
+  M.takasla(bd3, { r: 2, c: 2 }, { r: 2, c: 3 });
+  kontrol(M.ozelKombo(bd3, { r: 2, c: 2 }, { r: 2, c: 3 }) === null, 'kiraz + renk bombasi kombo sayildi');
+  // kirazEkle hedef kadar kiraz koyar, fazlasini koymaz
+  const obj = { type: 'drop', target: 3, current: 2 };
+  const bos = M.tahtaOlustur({ ...ayar, type: 'score' });
+  const e1 = M.kirazEkle(bos, obj);
+  kontrol(e1.eklenen.length === 1, 'kirazEkle eksik/fazla: ' + e1.eklenen.length);
+  const e2 = M.kirazEkle(e1.board, obj);
+  kontrol(e2.eklenen.length === 0, 'hedef doluyken yine kiraz eklendi');
+}
+
+// Gunluk bulmaca: ayni tohum ayni tahtayi verir
+{
+  const tahtaImza = (bd) => bd.map((row) => row.map((c) => (c.stone ? 'B' : c.gem.color) + (c.ice ? 'i' : '') + (c.chain ? 'z' : '')).join(',')).join('|');
+  const tohum = M.metinTohumu('renkli-taslar-2026-11-1');
+  M.rastgeleKaynak(M.tohumluUretec(tohum));
+  const a1 = M.bolumAyari(15);
+  const t1 = tahtaImza(M.tahtaOlustur(a1));
+  M.rastgeleKaynak(M.tohumluUretec(tohum));
+  const a2 = M.bolumAyari(15);
+  const t2 = tahtaImza(M.tahtaOlustur(a2));
+  kontrol(t1 === t2 && a1.color === a2.color, 'ayni tohum farkli tahta verdi');
+  M.rastgeleKaynak(M.tohumluUretec(M.metinTohumu('renkli-taslar-2026-11-2')));
+  const t3 = tahtaImza(M.tahtaOlustur(M.bolumAyari(15)));
+  kontrol(t3 !== t1, 'farkli gunler ayni tahta verdi');
+  M.rastgeleKaynak(null);
 }
 
 // Ozel kombinasyon testleri

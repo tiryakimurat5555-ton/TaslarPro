@@ -30,13 +30,40 @@ const OZEL_ADLARI = {
   colorbomb: 'renk bombası',
 };
 
+// Kiraz: eslesmez, patlamaz; en alt satira inince toplanir (kiraz indirme hedefi)
+const KIRAZ = 'meyve';
+const KIRAZ_RENGI = -3;
+function kirazMi(g) {
+  return !!g && g.special === KIRAZ;
+}
+
 let sonrakiId = 1;
 function yeniTas(color, special = null) {
   return { id: sonrakiId++, color, special };
 }
 
+// Rastgelelik kaynagi degistirilebilir: gunluk bulmacada herkese ayni tahta gelsin diye tohumlu ureteç kullanilir
+let rng = Math.random;
+function rastgeleKaynak(f) {
+  rng = f || Math.random;
+}
+function tohumluUretec(tohum) {
+  let a = tohum >>> 0;
+  return function () {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function metinTohumu(metin) {
+  let h = 2166136261;
+  for (let i = 0; i < metin.length; i++) h = Math.imul(h ^ metin.charCodeAt(i), 16777619);
+  return h >>> 0;
+}
 function rastgele(n) {
-  return Math.floor(Math.random() * n);
+  return Math.floor(rng() * n);
 }
 
 function bosHucre() {
@@ -64,7 +91,9 @@ const DENGE = {
   renkHamle: [[2, 18], [15, 20], [19, 20], [20, 22], [45, 24]],
   ozel: [[4, 2], [8, 3], [16, 4], [19, 4], [20, 3], [32, 4], [45, 5]],
   ozelHamle: [[4, 20], [16, 22], [30, 24], [45, 26]],
-  buzHamle: [[5, 17], [13, 20], [19, 22], [20, 24], [45, 28]],
+  kiraz: [[7, 2], [17, 3], [20, 2], [30, 3], [48, 4], [60, 5]],
+  kirazHamle: [[7, 22], [12, 25], [19, 28], [20, 30], [37, 33], [55, 35]],
+  buzHamle: [[5, 17], [13, 20], [19, 22], [20, 25], [45, 30]],
   buz: [[5, 6], [13, 10], [19, 12], [20, 9], [35, 12], [45, 14]],
   zincir: [[10, 2], [20, 3], [35, 5]],
   blok: [[15, 1], [25, 2], [40, 4]],
@@ -84,7 +113,7 @@ function egri(noktalar, L) {
 
 function bolumTipi(L) {
   if (L <= 4) return ['score', 'color', 'score', 'special'][L - 1];
-  return ['score', 'color', 'special', 'ice'][(L - 2) % 4];
+  return ['ice', 'score', 'drop', 'color', 'special'][(L - 5) % 5];
 }
 
 function bolumAyari(L) {
@@ -101,6 +130,9 @@ function bolumAyari(L) {
   } else if (type === 'special') {
     target = Math.round(egri(DENGE.ozel, L));
     moves = Math.round(egri(DENGE.ozelHamle, L));
+  } else if (type === 'drop') {
+    target = Math.round(egri(DENGE.kiraz, L));
+    moves = Math.round(egri(DENGE.kirazHamle, L));
   } else {
     moves = Math.round(egri(DENGE.buzHamle, L));
   }
@@ -108,6 +140,8 @@ function bolumAyari(L) {
   let ice = buzVar ? Math.min(20, Math.round(egri(DENGE.buz, L))) : 0;
   // Buz hedefi olmayan bolumlerde buz daha az
   if (type !== 'ice') ice = buzVar ? Math.round(ice * 0.5) : 0;
+  // Kiraz bolumlerinde sabit engel yok: kiraz zincir ya da blok ustunde takilip kalmasin
+  const engelYok = type === 'drop';
   return {
     type,
     target,
@@ -116,8 +150,8 @@ function bolumAyari(L) {
     ncolors,
     ice,
     iceStrong: L >= 13,
-    chains: L >= 10 ? Math.min(7, Math.round(egri(DENGE.zincir, L))) : 0,
-    stones: L >= 15 ? Math.min(6, Math.round(egri(DENGE.blok, L))) : 0,
+    chains: L >= 10 && !engelYok ? Math.min(7, Math.round(egri(DENGE.zincir, L))) : 0,
+    stones: L >= 15 && !engelYok ? Math.min(6, Math.round(egri(DENGE.blok, L))) : 0,
     stoneHp: L >= 22 ? 2 : 1,
   };
 }
@@ -138,6 +172,49 @@ function hedefIlerlet(obj, res) {
   if (obj.type === 'color') obj.current = Math.min(obj.target, obj.current + res.pops.filter((p) => p.color === obj.color).length);
   else if (obj.type === 'special') obj.current = Math.min(obj.target, obj.current + res.create.length);
   else if (obj.type === 'ice') obj.current = Math.min(obj.target, obj.current + res.iceHits.length);
+}
+
+// Kiraz hedefi: tahtada ayni anda en cok 2 kiraz olur, toplandikca ustten yenisi gelir
+function kirazSayisi(bd) {
+  let n = 0;
+  for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) if (kirazMi(bd[r][c].gem)) n++;
+  return n;
+}
+
+function kirazEkle(bd, obj) {
+  if (!obj || obj.type !== 'drop') return { board: bd, eklenen: [] };
+  const tahtada = kirazSayisi(bd);
+  const gereken = obj.target - obj.current - tahtada;
+  const yer = Math.min(2 - tahtada, gereken);
+  if (yer <= 0) return { board: bd, eklenen: [] };
+  const yeni = tahtaKopyala(bd);
+  const adaylar = [];
+  for (let c = 0; c < N; c++) {
+    const cl = yeni[0][c];
+    if (cl.gem && !cl.gem.special && !cl.chain && cl.stone === 0 && cl.ice === 0) adaylar.push(c);
+  }
+  const eklenen = [];
+  for (let i = 0; i < yer && adaylar.length; i++) {
+    const c = adaylar.splice(rastgele(adaylar.length), 1)[0];
+    const g = yeniTas(KIRAZ_RENGI, KIRAZ);
+    yeni[0][c].gem = g;
+    eklenen.push({ r: 0, c, id: g.id });
+  }
+  return { board: yeni, eklenen };
+}
+
+function kirazTopla(bd) {
+  const toplanan = [];
+  for (let c = 0; c < N; c++) {
+    const cl = bd[N - 1][c];
+    if (kirazMi(cl.gem)) toplanan.push({ r: N - 1, c, id: cl.gem.id });
+  }
+  if (!toplanan.length) return { board: bd, toplanan };
+  const yeni = tahtaKopyala(bd);
+  toplanan.forEach(({ r, c }) => {
+    yeni[r][c].gem = null;
+  });
+  return { board: yeni, toplanan };
 }
 
 function hedefTamam(obj, score) {
@@ -282,6 +359,7 @@ function ozelKombo(bd, a, b) {
   const plan = (forced, extra = {}) => ({ cells: [], forced, create: [], noTrigger, colorPick: null, ...extra });
   const xs = X.special;
   const ys = Y.special;
+  if (kirazMi(X) || kirazMi(Y)) return null;
   if (xs === 'colorbomb' && ys === 'colorbomb') return { board: bd, plan: plan(tum), effect: 'colorbomb' };
   if (xs === 'colorbomb' || ys === 'colorbomb') {
     const cb = xs === 'colorbomb' ? a : b;
@@ -298,7 +376,7 @@ function ozelKombo(bd, a, b) {
         const g = yeni[r][c].gem;
         if (g && g.color === O.color && !yeni[r][c].chain) {
           if (!g.special) {
-            g.special = O.special === 'bomb' ? 'bomb' : Math.random() < 0.5 ? 'striped-h' : 'striped-v';
+            g.special = O.special === 'bomb' ? 'bomb' : rng() < 0.5 ? 'striped-h' : 'striped-v';
           }
           forced.push([r, c]);
         }
@@ -345,7 +423,7 @@ function temizlikHesapla(bd, plan) {
     const [r, c] = kuyruk.shift();
     const cell = bd[r][c];
     const g = cell.gem;
-    if (!g || !g.special || cell.chain) continue;
+    if (!g || !g.special || cell.chain || kirazMi(g)) continue;
     if (plan.noTrigger.has(r * N + c)) continue;
     effects.push({ type: g.special, r, c });
     etkiHucreleri(bd, g.special, r, c, null).forEach(([rr, cc]) => ekle(rr, cc, 'effect'));
@@ -362,7 +440,7 @@ function temizlikHesapla(bd, plan) {
       stoneHits.set(k, true);
       return;
     }
-    if (!cell.gem) return;
+    if (!cell.gem || kirazMi(cell.gem)) return;
     if (cell.chain) {
       chainBreaks.push([r, c]);
       return;
@@ -450,8 +528,10 @@ function hamleGecerliMi(bd, a, b) {
   if (!hareketEdebilir(bd[a.r][a.c]) || !hareketEdebilir(bd[b.r][b.c])) return false;
   const ga = bd[a.r][a.c].gem;
   const gb = bd[b.r][b.c].gem;
-  if (ga.special === 'colorbomb' || gb.special === 'colorbomb') return true;
-  if (ga.special && gb.special) return true;
+  if (!kirazMi(ga) && !kirazMi(gb)) {
+    if (ga.special === 'colorbomb' || gb.special === 'colorbomb') return true;
+    if (ga.special && gb.special) return true;
+  }
   takasla(bd, a, b);
   const ok = eslesmeleriBul(bd).length > 0;
   takasla(bd, a, b);
@@ -516,10 +596,16 @@ function tahtaOlustur(ayar) {
       const [r, c] = bosYerler[idx++];
       bd[r][c].chain = true;
     }
-    const buzYer = bosYerler.slice(idx).sort(() => Math.random() - 0.5);
+    const buzYer = bosYerler.slice(idx);
+    for (let i = buzYer.length - 1; i > 0; i--) {
+      const j = rastgele(i + 1);
+      [buzYer[i], buzYer[j]] = [buzYer[j], buzYer[i]];
+    }
     for (let i = 0; i < ayar.ice; i++) {
       const [r, c] = buzYer[i];
-      bd[r][c].ice = ayar.iceStrong && Math.random() < 0.4 ? 2 : 1;
+      // Kiraz bolumunde ust satira buz konmaz (kiraz oraya gelir)
+      if (ayar.type === 'drop' && r === 0) continue;
+      bd[r][c].ice = ayar.iceStrong && rng() < 0.4 ? 2 : 1;
     }
     for (let r = 0; r < N; r++)
       for (let c = 0; c < N; c++) {
@@ -533,6 +619,13 @@ function tahtaOlustur(ayar) {
         for (let k = 0; k < ayar.ncolors; k++) if (!yasak.has(k)) secenek.push(k);
         bd[r][c].gem = yeniTas(secenek[rastgele(secenek.length)]);
       }
+    if (ayar.type === 'drop') {
+      const sutunlar = [0, 1, 2, 3, 4, 5];
+      for (let i = 0; i < Math.min(2, ayar.target); i++) {
+        const c = sutunlar.splice(rastgele(sutunlar.length), 1)[0];
+        bd[0][c].gem = yeniTas(KIRAZ_RENGI, KIRAZ);
+      }
+    }
     if (eslesmeleriBul(bd).length === 0 && ipucuBul(bd)) return bd;
   }
   return karistir(tahtaOlustur({ ...ayar, stones: 0, chains: 0 }), ayar.ncolors);
@@ -592,7 +685,19 @@ const SES_DOSYALARI = {
   konfeti: require('./assets/sounds/konfeti.mp3'),
   tasblok: require('./assets/sounds/tasblok.mp3'),
   karistirma: require('./assets/sounds/karistirma.mp3'),
+  altin: require('./assets/sounds/altin.mp3'),
+  kiraz: require('./assets/sounds/kiraz.mp3'),
+  satinal: require('./assets/sounds/satinal.mp3'),
 };
+
+// Canlandirma hizi ve "hareketi azalt" ayari (Ayarlar > Görünüm)
+let HIZ = 1;
+let AZ_HAREKET = false;
+const sn = (ms) => Math.max(1, Math.round(ms * HIZ));
+function hareketAyarla(ayarlar) {
+  HIZ = ayarlar.hizli ? 0.55 : 1;
+  AZ_HAREKET = !!ayarlar.azHareket;
+}
 const MUZIK = require('./assets/sounds/muzik.mp3');
 
 // ---------- Gorunum sabitleri ----------
@@ -660,7 +765,69 @@ const BASARIMLAR = [
   { id: 'bolum25', ad: 'Taş Ustası', aciklama: '25 bölüm tamamla', kontrol: (s) => s.levelsDone >= 25, odul: 'renk' },
   { id: 'yildiz30', ad: 'Yıldız Avcısı', aciklama: '30 yıldız topla', kontrol: (s) => s.stars >= 30, odul: 'ikikat' },
   { id: 'puan10k', ad: 'Puan Avcısı', aciklama: 'Toplam 10.000 puana ulaş', kontrol: (s) => s.totalScore >= 10000, odul: 'ikikat' },
+  { id: 'kiraz10', ad: 'Kiraz Toplayıcı', aciklama: '10 kiraz indir', kontrol: (s) => (s.cherries || 0) >= 10, odul: 'bomba' },
+  { id: 'gunluk3', ad: 'Sadık Oyuncu', aciklama: 'Günlük bulmacayı 3 gün üst üste çöz', kontrol: (s) => (s.bestStreak || 0) >= 3, odul: 'renk' },
+  { id: 'zengin', ad: 'Hazine', aciklama: 'Toplam 500 altın kazan', kontrol: (s) => (s.goldEarned || 0) >= 500, odul: 'ikikat' },
 ];
+
+// Magaza fiyatlari (altin)
+const MAGAZA_FIYAT = { ipucu: 20, karistir: 30, bomba: 50, renk: 70, ikikat: 40 };
+const EK_HAMLE = 5;
+const EK_HAMLE_FIYAT = 40;
+const BASLANGIC_ALTINI = 50;
+
+function bolumAltini(yildiz) {
+  return 10 + yildiz * 5;
+}
+
+// Yeni bir oyun ogesi ilk kez cikinca acilan tanitim pencereleri
+const TANITIMLAR = {
+  buz: { baslik: 'Yeni: Buzlu taşlar', metin: 'Bazı taşların üstünde buz var. Buzlu taşı bir eşleşmeyle patlatınca buz kırılır. Buzlu taşlar yine yer değiştirebilir.' },
+  kiraz: {
+    baslik: 'Yeni: Kirazlar',
+    metin: 'Kirazlar eşleşmez ve patlamaz. Altındaki taşları patlatarak ya da kirazı alttaki taşla yer değiştirerek aşağı indir. En alt satıra ulaşan kiraz toplanır.',
+  },
+  zincir: { baslik: 'Yeni: Zincirli taşlar', metin: 'Zincirli taş yerinden oynamaz ve yer değiştiremez. Onu bir eşleşmenin içine alırsan zincir kırılır, taş serbest kalır.' },
+  kalinbuz: { baslik: 'Yeni: Kalın buz', metin: 'Kalın buz iki katlıdır. Tamamen kırmak için o taşı iki kez patlatman gerekir.' },
+  blok: { baslik: 'Yeni: Taş bloklar', metin: 'Taş blok bir hücreyi kapatır, taşlar onun içinden geçemez. Hemen yanında eşleşme yaparsan ya da özel taşla vurursan kırılır.' },
+  altirenk: { baslik: 'Altı renk', metin: 'Bundan sonra tahtada altı renk var. Eşleşme bulmak zorlaşıyor; özel taşları ve bonusları iyi kullan.' },
+  saglamblok: { baslik: 'Yeni: Sağlam bloklar', metin: 'Sağlam taş bloklar iki vuruşta kırılır.' },
+};
+
+function tanitimlariBul(ayar) {
+  const l = [];
+  if (ayar.ice > 0) l.push('buz');
+  if (ayar.type === 'drop') l.push('kiraz');
+  if (ayar.chains > 0) l.push('zincir');
+  if (ayar.ice > 0 && ayar.iceStrong) l.push('kalinbuz');
+  if (ayar.stones > 0) l.push('blok');
+  if (ayar.ncolors >= 6) l.push('altirenk');
+  if (ayar.stones > 0 && ayar.stoneHp > 1) l.push('saglamblok');
+  return l;
+}
+
+function tarihMetni(d) {
+  return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+}
+
+function dun() {
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  return tarihMetni(d);
+}
+
+// Gunluk bulmaca: o gunun tarihinden tohum, herkese ayni bolum ve ayni tahta
+function gunlukBulmacaHazirla(tarih) {
+  rastgeleKaynak(tohumluUretec(metinTohumu('renkli-taslar-' + tarih)));
+  const L = 8 + rastgele(25);
+  const ayar = bolumAyari(L);
+  const bd = tahtaOlustur(ayar);
+  return { L, ayar, bd };
+}
+
+function sayiYaz(n) {
+  return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
 
 const GUNLUK_HAVUZ = [
   { id: 'tas150', ad: '150 taş patlat', stat: 'gems', hedef: 150 },
@@ -671,14 +838,14 @@ const GUNLUK_HAVUZ = [
   { id: 'bonus2', ad: '2 bonus kullan', stat: 'bonuses', hedef: 2 },
   { id: 'buz20', ad: '20 buz kır', stat: 'ice', hedef: 20 },
   { id: 'yildiz5', ad: '5 yıldız kazan', stat: 'stars', hedef: 5 },
+  { id: 'kiraz3', ad: '3 kiraz indir', stat: 'cherries', hedef: 3 },
 ];
 
 const KAYIT_ANAHTARI = 'taslarpro-kayit-v1';
 const KALAN_HAMLE_PUANI = 60;
 
 function bugun() {
-  const d = new Date();
-  return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+  return tarihMetni(new Date());
 }
 
 function gunlukSec(tarih) {
@@ -708,6 +875,10 @@ function bosIstatistik() {
     bestLevel: 1,
     iceBroken: 0,
     stars: 0,
+    cherries: 0,
+    goldEarned: 0,
+    dailySolved: 0,
+    bestStreak: 0,
   };
 }
 
@@ -716,42 +887,64 @@ function hedefEtiketi(obj) {
   if (obj.type === 'score') return 'Hedef';
   if (obj.type === 'color') return `${RENK_ADLARI[obj.color]} topla`;
   if (obj.type === 'ice') return 'Buzları kır';
+  if (obj.type === 'drop') return 'Kiraz indir';
   return 'Özel taş oluştur';
 }
 
 function hedefDegeri(obj) {
   if (!obj) return '';
-  if (obj.type === 'score') return `${obj.target} puan`;
+  if (obj.type === 'score') return `${sayiYaz(obj.target)} puan`;
   return `${obj.current} / ${obj.target}`;
 }
 
 function hedefCumlesi(obj) {
   if (!obj) return '';
-  if (obj.type === 'score') return `${obj.target} puan topla`;
+  if (obj.type === 'score') return `${sayiYaz(obj.target)} puan topla`;
   if (obj.type === 'color') return `${obj.target} ${RENK_ADLARI[obj.color]} taş patlat`;
   if (obj.type === 'ice') return `Bütün buzları kır (${obj.target} kat)`;
+  if (obj.type === 'drop') return `${obj.target} kirazı en alt satıra indir`;
   return `${obj.target} özel taş oluştur`;
 }
 
-function hucreEtiketi(cell, r, c) {
-  const yer = `${r + 1}. satır, ${c + 1}. sütun`;
-  if (cell.stone > 0) return `${cell.stone > 1 ? 'Sağlam taş blok' : 'Taş blok'}, ${yer}`;
-  if (!cell.gem) return `Boş, ${yer}`;
+// Engel bilgisi en basta: dokunur dokunmaz duyulsun ("Buzlu Kırmızı")
+function hucreKisa(cell) {
+  if (cell.stone > 0) return cell.stone > 1 ? 'sağlam taş blok' : 'taş blok';
+  if (!cell.gem) return 'boş';
   const g = cell.gem;
-  let ad = g.special === 'colorbomb' ? 'renk bombası' : RENK_ADLARI[g.color];
-  if (g.special && g.special !== 'colorbomb') ad += ' ' + OZEL_ADLARI[g.special];
-  // Engel bilgisi en basta: dokunur dokunmaz duyulsun
+  let ad;
+  if (kirazMi(g)) ad = 'kiraz';
+  else if (g.special === 'colorbomb') ad = 'renk bombası';
+  else {
+    ad = RENK_ADLARI[g.color];
+    if (g.special) ad += ' ' + OZEL_ADLARI[g.special];
+  }
   const onEk = [];
-  if (cell.chain) onEk.push('Zincirli');
-  if (cell.ice === 2) onEk.push(onEk.length ? 'kalın buzlu' : 'Kalın buzlu');
-  else if (cell.ice === 1) onEk.push(onEk.length ? 'buzlu' : 'Buzlu');
-  const metin = onEk.length ? `${onEk.join(' ')} ${ad}` : ad.charAt(0).toUpperCase() + ad.slice(1);
-  return `${metin}, ${yer}`;
+  if (cell.chain) onEk.push('zincirli');
+  if (cell.ice === 2) onEk.push('kalın buzlu');
+  else if (cell.ice === 1) onEk.push('buzlu');
+  return onEk.length ? `${onEk.join(' ')} ${ad}` : ad;
+}
+
+function buyukHarf(m) {
+  return m.charAt(0).toLocaleUpperCase('tr-TR') + m.slice(1);
+}
+
+function hucreEtiketi(cell, r, c) {
+  return `${buyukHarf(hucreKisa(cell))}, ${r + 1}. satır, ${c + 1}. sütun`;
+}
+
+function satirMetni(bd, r) {
+  return `${r + 1}. satır: ` + bd[r].map((cl) => hucreKisa(cl)).join(', ');
+}
+
+function sutunMetni(bd, c) {
+  return `${c + 1}. sütun, yukarıdan aşağı: ` + bd.map((row) => hucreKisa(row[c])).join(', ');
 }
 
 function kisaAd(cell) {
   const g = cell.gem;
   if (!g) return 'taş';
+  if (kirazMi(g)) return 'Kiraz';
   if (g.special === 'colorbomb') return 'Renk bombası';
   return RENK_ADLARI[g.color] + (g.special ? ' ' + OZEL_ADLARI[g.special] : '');
 }
@@ -838,13 +1031,12 @@ const KABARCIKLAR = Array.from({ length: 14 }).map((_, i) => ({
   gecikme: (i * 1300) % 9000,
 }));
 
-const Arkaplan = React.memo(function Arkaplan({ tema, genislik, yukseklik }) {
+const Arkaplan = React.memo(function Arkaplan({ tema, genislik, yukseklik, azHareket }) {
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="none" {...gizli}>
       <LinearGradient colors={tema.arka} style={StyleSheet.absoluteFill} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} />
-      {KABARCIKLAR.map((k, i) => (
-        <Kabarcik key={i} genislik={genislik} yukseklik={yukseklik} renk={tema.kabarcik} {...k} />
-      ))}
+      {!azHareket &&
+        KABARCIKLAR.map((k, i) => <Kabarcik key={i} genislik={genislik} yukseklik={yukseklik} renk={tema.kabarcik} {...k} />)}
     </View>
   );
 });
@@ -855,6 +1047,49 @@ const TasGorunum = React.memo(function TasGorunum({ gem, anim, cell, parilti, do
   const ty = useMemo(() => Animated.multiply(anim.y, cell), [anim, cell]);
   const p = Math.max(3, Math.round(cell * 0.07));
   const ic = cell - p * 2;
+  if (kirazMi(gem)) {
+    const k = ic * 0.4;
+    return (
+      <Animated.View
+        pointerEvents="none"
+        style={{
+          position: 'absolute',
+          width: cell,
+          height: cell,
+          padding: p,
+          opacity: anim.o,
+          transform: [{ translateX: tx }, { translateY: ty }, { scale: anim.s }],
+        }}
+      >
+        <View style={{ width: ic, height: ic }}>
+          <View style={{ position: 'absolute', left: ic * 0.08, top: ic * 0.08, width: ic * 0.84, height: ic * 0.84, borderRadius: ic, backgroundColor: 'rgba(255,255,255,0.16)' }} />
+          <View style={{ position: 'absolute', left: ic * 0.3, top: ic * 0.1, width: 3, height: ic * 0.48, backgroundColor: '#3E8E2A', borderRadius: 2, transform: [{ rotate: '-24deg' }] }} />
+          <View style={{ position: 'absolute', left: ic * 0.6, top: ic * 0.12, width: 3, height: ic * 0.44, backgroundColor: '#3E8E2A', borderRadius: 2, transform: [{ rotate: '20deg' }] }} />
+          <Animated.View
+            style={{
+              position: 'absolute',
+              left: ic * 0.48,
+              top: ic * 0.02,
+              width: ic * 0.34,
+              height: ic * 0.17,
+              borderRadius: ic,
+              backgroundColor: '#5CCB3A',
+              transform: [{ rotate: parilti.interpolate({ inputRange: [0, 1], outputRange: ['-30deg', '-18deg'] }) }],
+            }}
+          />
+          {[
+            [ic * 0.06, ic * 0.5],
+            [ic * 0.52, ic * 0.48],
+          ].map(([x, y], i) => (
+            <View key={i} style={{ position: 'absolute', left: x, top: y, width: k, height: k, borderRadius: k, overflow: 'hidden', borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.4)' }}>
+              <LinearGradient colors={['#FF7A8A', '#E0102E', '#8A0018']} style={StyleSheet.absoluteFill} start={{ x: 0.2, y: 0 }} end={{ x: 0.8, y: 1 }} />
+              <View style={{ position: 'absolute', left: k * 0.2, top: k * 0.16, width: k * 0.28, height: k * 0.18, borderRadius: k, backgroundColor: 'rgba(255,255,255,0.65)' }} />
+            </View>
+          ))}
+        </View>
+      </Animated.View>
+    );
+  }
   const rb = gem.special === 'colorbomb';
   const renkler = rb ? ['#4B3C7A', '#2A2340', '#120E20'] : [TAS_ACIK[gem.color], TAS_RENKLERI[gem.color], TAS_KOYU[gem.color]];
   const sekil = rb || gem.special === 'bomb' ? 'daire' : TAS_SEKIL[gem.color];
@@ -998,7 +1233,7 @@ const TasGorunum = React.memo(function TasGorunum({ gem, anim, cell, parilti, do
 function Patlama({ x, y, color, cell, buyuk, bitti }) {
   const t = useRef(new Animated.Value(0)).current;
   useEffect(() => {
-    Animated.timing(t, { toValue: 1, duration: buyuk ? 700 : 520, easing: Easing.out(Easing.quad), useNativeDriver: true }).start(bitti);
+    Animated.timing(t, { toValue: 1, duration: sn(buyuk ? 700 : 520), easing: Easing.out(Easing.quad), useNativeDriver: true }).start(bitti);
   }, []);
   const sayi = buyuk ? 12 : 8;
   const mesafe = cell * (buyuk ? 1.5 : 0.85);
@@ -1051,7 +1286,7 @@ function Patlama({ x, y, color, cell, buyuk, bitti }) {
 function UcanYazi({ x, y, text, cell, color, bitti }) {
   const t = useRef(new Animated.Value(0)).current;
   useEffect(() => {
-    Animated.timing(t, { toValue: 1, duration: 950, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start(bitti);
+    Animated.timing(t, { toValue: 1, duration: sn(950), easing: Easing.out(Easing.cubic), useNativeDriver: true }).start(bitti);
   }, []);
   return (
     <Animated.Text
@@ -1082,7 +1317,7 @@ function UcanYazi({ x, y, text, cell, color, bitti }) {
 function CizgiIsigi({ tip, r, c, cell, bitti }) {
   const t = useRef(new Animated.Value(0)).current;
   useEffect(() => {
-    Animated.timing(t, { toValue: 1, duration: 420, useNativeDriver: true }).start(bitti);
+    Animated.timing(t, { toValue: 1, duration: sn(420), useNativeDriver: true }).start(bitti);
   }, []);
   const yatay = tip === 'striped-h';
   const olcek = t.interpolate({ inputRange: [0, 0.4, 1], outputRange: [0.05, 1, 1] });
@@ -1112,7 +1347,7 @@ function CizgiIsigi({ tip, r, c, cell, bitti }) {
 function Dalga({ r, c, cell, boyut, renk, bitti }) {
   const t = useRef(new Animated.Value(0)).current;
   useEffect(() => {
-    Animated.timing(t, { toValue: 1, duration: 600, easing: Easing.out(Easing.quad), useNativeDriver: true }).start(bitti);
+    Animated.timing(t, { toValue: 1, duration: sn(600), easing: Easing.out(Easing.quad), useNativeDriver: true }).start(bitti);
   }, []);
   const d = cell * boyut;
   return (
@@ -1153,7 +1388,7 @@ function Dalga({ r, c, cell, boyut, renk, bitti }) {
 function KirikParca({ r, c, cell, renk, bitti }) {
   const t = useRef(new Animated.Value(0)).current;
   useEffect(() => {
-    Animated.timing(t, { toValue: 1, duration: 650, easing: Easing.in(Easing.quad), useNativeDriver: true }).start(bitti);
+    Animated.timing(t, { toValue: 1, duration: sn(650), easing: Easing.in(Easing.quad), useNativeDriver: true }).start(bitti);
   }, []);
   return (
     <View pointerEvents="none" style={{ position: 'absolute', left: c * cell + cell / 2, top: r * cell + cell / 2 }}>
@@ -1284,6 +1519,25 @@ function YildizSatiri({ sayi, boy, cal, gecikme = 400 }) {
   );
 }
 
+// ---------- Altin kazanci (sayarak artar) ----------
+function AltinKazanc({ miktar, cal, stil, gecikme = 1400 }) {
+  const [hedef, setHedef] = useState(0);
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setHedef(miktar);
+      if (miktar > 0 && cal) cal('altin', 0.9);
+    }, sn(gecikme));
+    return () => clearTimeout(t);
+  }, [miktar]);
+  const d = useSayac(hedef, 700);
+  if (!miktar) return null;
+  return (
+    <Text style={[stil.pYazi, { textAlign: 'center', color: '#FFD84D', fontWeight: '900', fontSize: 20 }]} accessibilityLabel={`${miktar} altın kazandın`}>
+      ● +{d} altın
+    </Text>
+  );
+}
+
 // ---------- Kucuk dugme ----------
 function Dugme({ onPress, etiket, yazi, renkler, yaziRengi, stil, tema, rol = 'button', durum }) {
   const s = useRef(new Animated.Value(1)).current;
@@ -1378,10 +1632,17 @@ function Oyun() {
       stats: bosIstatistik(),
       basarimlar: [],
       gunluk: gunlukSec(bugun()),
-      settings: { ses: true, muzik: true, titresim: true, tema: 'koyu' },
+      settings: { ses: true, muzik: true, titresim: true, tema: 'koyu', hizli: false, azHareket: false, kisaDuyuru: false },
       ogretici: false,
       enYuksek: 1,
       yildizlar: {},
+      enIyi: {},
+      altin: BASLANGIC_ALTINI,
+      tanitimlar: [],
+      gb: { cozulen: '', seri: 0 },
+      oyunModu: 'bolum',
+      gunlukL: 0,
+      ekHamleAlindi: false,
       devam: null,
       oynaniyor: false,
       uyarildi: false,
@@ -1511,8 +1772,25 @@ function Oyun() {
       ogretici: s.ogretici,
       enYuksek: s.enYuksek,
       yildizlar: s.yildizlar,
+      enIyi: s.enIyi,
+      altin: s.altin,
+      tanitimlar: s.tanitimlar,
+      gb: s.gb,
       devam: s.oynaniyor && s.board
-        ? { level: s.level, board: s.board, score: s.score, moves: s.moves, obj: s.obj, ayar: s.ayar, ikiKat: s.ikiKat, uyarildi: s.uyarildi }
+        ? {
+            level: s.level,
+            board: s.board,
+            score: s.score,
+            moves: s.moves,
+            obj: s.obj,
+            ayar: s.ayar,
+            ikiKat: s.ikiKat,
+            uyarildi: s.uyarildi,
+            mod: s.oyunModu,
+            gunlukL: s.gunlukL,
+            tarih: bugun(),
+            ekHamleAlindi: s.ekHamleAlindi,
+          }
         : null,
     };
     AsyncStorage.setItem(KAYIT_ANAHTARI, JSON.stringify(veri)).catch(() => {});
@@ -1541,17 +1819,17 @@ function Oyun() {
           a.tr = r;
           a.tc = c;
           if (dusme) {
-            const d = 150 + mesafe * 55;
+            const d = sn(150 + mesafe * 55);
             list.push(Animated.timing(a.x, { toValue: c, duration: d, easing: Easing.out(Easing.quad), useNativeDriver: true }));
             list.push(
               Animated.sequence([
-                Animated.delay(c * 18),
-                Animated.timing(a.y, { toValue: r, duration: d, easing: Easing.bounce, useNativeDriver: true }),
+                Animated.delay(sn(c * 18)),
+                Animated.timing(a.y, { toValue: r, duration: d, easing: AZ_HAREKET ? Easing.out(Easing.quad) : Easing.bounce, useNativeDriver: true }),
               ])
             );
           } else {
-            list.push(Animated.timing(a.x, { toValue: c, duration: sure, easing: Easing.inOut(Easing.quad), useNativeDriver: true }));
-            list.push(Animated.timing(a.y, { toValue: r, duration: sure, easing: Easing.inOut(Easing.quad), useNativeDriver: true }));
+            list.push(Animated.timing(a.x, { toValue: c, duration: sn(sure), easing: Easing.inOut(Easing.quad), useNativeDriver: true }));
+            list.push(Animated.timing(a.y, { toValue: r, duration: sn(sure), easing: Easing.inOut(Easing.quad), useNativeDriver: true }));
           }
         }
       if (!list.length) return Promise.resolve();
@@ -1582,6 +1860,7 @@ function Oyun() {
 
   const sars = useCallback(
     (guc) => {
+      if (AZ_HAREKET) return;
       const a = [];
       for (let i = 0; i < 6; i++) {
         const k = guc * (1 - i / 6);
@@ -1602,12 +1881,13 @@ function Oyun() {
 
   const afisGoster = useCallback(
     (L, obj, moves) => {
-      setAfis({ L, metin: hedefCumlesi(obj), moves });
+      const baslik = G.current.oyunModu === 'gunluk' ? 'Günlük Bulmaca' : `Bölüm ${L}`;
+      setAfis({ baslik, metin: hedefCumlesi(obj), moves });
       afisAnim.setValue(0);
       cal('bolumbasla', 0.8);
       Animated.sequence([
         Animated.spring(afisAnim, { toValue: 1, friction: 7, tension: 70, useNativeDriver: true }),
-        Animated.delay(1300),
+        Animated.delay(sn(1300)),
         Animated.timing(afisAnim, { toValue: 2, duration: 320, easing: Easing.in(Easing.quad), useNativeDriver: true }),
       ]).start(() => setAfis(null));
     },
@@ -1636,19 +1916,36 @@ function Oyun() {
     [animAl, tahtaAyarla, konumlariCanlandir]
   );
 
-  const bolumBaslat = useCallback(
-    (L, duyur = true) => {
+  // Yeni oge ilk kez cikiyorsa tanitim penceresi, yoksa bolum afisi
+  const girisGoster = useCallback(
+    (duyur) => {
       const s = G.current;
-      const ayar = bolumAyari(L);
-      const bd = tahtaOlustur(ayar);
-      s.level = L;
+      const metin = `${s.oyunModu === 'gunluk' ? 'Günlük bulmaca' : `Bölüm ${s.level}`}. Hedef: ${hedefCumlesi(s.obj)}. ${s.moves} hamle.`;
+      const yeni = s.oyunModu === 'bolum' ? tanitimlariBul(s.ayar).filter((t) => !s.tanitimlar.includes(t)) : [];
+      if (yeni.length) {
+        s.tanitimlar.push(...yeni);
+        setModal({ tip: 'tanitim', liste: yeni, metin });
+        kaydet();
+        return;
+      }
+      if (duyur) {
+        afisGoster(s.oyunModu === 'gunluk' ? 0 : s.level, s.obj, s.moves);
+        soyle(metin);
+      }
+    },
+    [afisGoster, kaydet]
+  );
+
+  const tahtaHazirla = useCallback(
+    (ayar, bd, duyur) => {
+      const s = G.current;
       s.ayar = ayar;
       s.score = 0;
       s.moves = ayar.moves;
       s.ikiKat = 0;
       s.uyarildi = false;
       s.oynaniyor = true;
-      s.sonrakiKayit = null;
+      s.ekHamleAlindi = false;
       s.obj = hedefOlustur(ayar, bd);
       setSecili(null);
       setMod(null);
@@ -1656,16 +1953,39 @@ function Oyun() {
       setEfektler([]);
       ilerleme.setValue(0);
       tahtayiDusur(bd);
-      const metin = `Bölüm ${L}. Hedef: ${hedefCumlesi(s.obj)}. ${s.moves} hamle.`;
+      const metin = `${s.oyunModu === 'gunluk' ? 'Günlük bulmaca' : `Bölüm ${s.level}`}. Hedef: ${hedefCumlesi(s.obj)}. ${s.moves} hamle.`;
       setMesaj(metin);
-      if (duyur) {
-        afisGoster(L, s.obj, s.moves);
-        soyle(metin);
-      }
+      girisGoster(duyur);
       setEylem((e) => e + 1);
       kaydet();
     },
-    [tahtayiDusur, ilerleme, kaydet, afisGoster]
+    [tahtayiDusur, ilerleme, kaydet, girisGoster]
+  );
+
+  const bolumBaslat = useCallback(
+    (L, duyur = true) => {
+      const s = G.current;
+      rastgeleKaynak(null);
+      s.oyunModu = 'bolum';
+      s.level = L;
+      s.sonrakiKayit = null;
+      const ayar = bolumAyari(L);
+      tahtaHazirla(ayar, tahtaOlustur(ayar), duyur);
+    },
+    [tahtaHazirla]
+  );
+
+  const gunlukBaslat = useCallback(
+    (duyur = true) => {
+      const s = G.current;
+      s.oyunModu = 'gunluk';
+      s.sonrakiKayit = null;
+      // Tohumlu ureteç oyun boyunca kalir: ayni hamleler herkese ayni sonucu verir
+      const { L, ayar, bd } = gunlukBulmacaHazirla(bugun());
+      s.gunlukL = L;
+      tahtaHazirla(ayar, bd, duyur);
+    },
+    [tahtaHazirla]
   );
 
   // ----- Yukleme -----
@@ -1685,13 +2005,35 @@ function Oyun() {
           s.ogretici = !!v.ogretici;
           s.gunluk = v.gunluk && v.gunluk.date === bugun() ? v.gunluk : gunlukSec(bugun());
           s.yildizlar = v.yildizlar || {};
+          s.enIyi = v.enIyi || {};
+          s.altin = typeof v.altin === 'number' ? v.altin : BASLANGIC_ALTINI;
+          s.tanitimlar = v.tanitimlar || [];
+          s.gb = { ...s.gb, ...(v.gb || {}) };
           s.enYuksek = Math.max(v.enYuksek || 1, s.level, s.stats.bestLevel || 1);
-          if (v.devam && v.devam.level === s.level && tahtaGecerliMi(v.devam.board) && v.devam.ayar && v.devam.obj) devam = v.devam;
+          // Eski kayitlarda gorulmus ogeler bir daha tanitilmasin
+          if (!v.tanitimlar) {
+            for (let L = 1; L < s.enYuksek; L++) tanitimlariBul(bolumAyari(L)).forEach((t) => !s.tanitimlar.includes(t) && s.tanitimlar.push(t));
+          }
+          const d = v.devam;
+          if (d && d.level === s.level && tahtaGecerliMi(d.board) && d.ayar && d.obj && (d.mod !== 'gunluk' || d.tarih === bugun())) devam = d;
+          if (v.settings && v.settings.azHareket === undefined) {
+            try {
+              s.settings.azHareket = await AccessibilityInfo.isReduceMotionEnabled();
+            } catch (e) {}
+          }
+        } else {
+          try {
+            s.settings.azHareket = await AccessibilityInfo.isReduceMotionEnabled();
+          } catch (e) {}
         }
       } catch (e) {}
+      hareketAyarla(s.settings);
       s.yuklendi = true;
       if (devam) {
         kimlikAyarla(devam.board);
+        s.oyunModu = devam.mod === 'gunluk' ? 'gunluk' : 'bolum';
+        s.gunlukL = devam.gunlukL || 0;
+        s.ekHamleAlindi = !!devam.ekHamleAlindi;
         s.ayar = devam.ayar;
         s.score = devam.score;
         s.moves = devam.moves;
@@ -1701,14 +2043,15 @@ function Oyun() {
         s.oynaniyor = true;
         tahtayiDusur(devam.board);
         ilerlemeGuncelle();
-        const metin = `Bölüm ${s.level}, kaldığın yerden devam. Hedef: ${hedefCumlesi(s.obj)}. Kalan hamle ${s.moves}.`;
+        const metin = `${s.oyunModu === 'gunluk' ? 'Günlük bulmaca' : `Bölüm ${s.level}`}, kaldığın yerden devam. Hedef: ${hedefCumlesi(s.obj)}. Kalan hamle ${s.moves}.`;
         setMesaj(metin);
       } else {
-        bolumBaslat(s.level, false);
+        bolumBaslat(s.level, s.ogretici);
       }
       muzikAyarla();
+      yenile();
       if (!s.ogretici) setModal({ tip: 'ogretici' });
-      else afisGoster(s.level, s.obj, s.moves);
+      else if (devam) afisGoster(s.level, s.obj, s.moves);
     })();
   }, []);
 
@@ -1793,7 +2136,7 @@ function Oyun() {
       if (!gorev || s.gunluk.claimed.includes(id)) return;
       if ((s.gunluk.progress[gorev.stat] || 0) >= gorev.hedef) {
         s.gunluk.claimed.push(id);
-        const odul = BONUSLAR[rastgele(BONUSLAR.length)];
+        const odul = BONUSLAR[Math.floor(Math.random() * BONUSLAR.length)];
         s.bonuslar[odul.id] = (s.bonuslar[odul.id] || 0) + 1;
         bildirimler.push(`Günlük görev tamamlandı: ${gorev.ad}. Ödül: ${odul.ad} bonusu.`);
       }
@@ -1822,7 +2165,7 @@ function Oyun() {
       komboAnim.setValue(0);
       Animated.sequence([
         Animated.spring(komboAnim, { toValue: 1, friction: 4, tension: 120, useNativeDriver: true }),
-        Animated.delay(450),
+        Animated.delay(sn(450)),
         Animated.timing(komboAnim, { toValue: 2, duration: 250, useNativeDriver: true }),
       ]).start(() => setKombo(null));
     },
@@ -1833,27 +2176,62 @@ function Oyun() {
     (oncekiBildirimler) => {
       const s = G.current;
       s.oynaniyor = false;
-      s.sonrakiKayit = s.level + 1;
       const kalan = s.moves;
-      const yildiz = yildizHesapla(kalan, s.ayar.moves);
       const bonusPuan = kalan * KALAN_HAMLE_PUANI;
+      const toplamPuan = s.score + bonusPuan;
+      s.stats.totalScore += bonusPuan;
+      const bildirimler = [...(oncekiBildirimler || [])];
+      cal('kazandi');
+      if (!AZ_HAREKET) setTimeout(() => cal('konfeti', 0.8), sn(250));
+      titret('basari');
+
+      if (s.oyunModu === 'gunluk') {
+        rastgeleKaynak(null);
+        const bugunMu = s.gb.cozulen === bugun();
+        let altin = 0;
+        let odulAd = null;
+        if (!bugunMu) {
+          s.gb.seri = s.gb.cozulen === dun() ? (s.gb.seri || 0) + 1 : 1;
+          s.gb.cozulen = bugun();
+          s.stats.dailySolved = (s.stats.dailySolved || 0) + 1;
+          s.stats.bestStreak = Math.max(s.stats.bestStreak || 0, s.gb.seri);
+          altin = 40 + Math.min(10, s.gb.seri) * 5;
+          const odul = BONUSLAR[Math.floor(Math.random() * BONUSLAR.length)];
+          s.bonuslar[odul.id] = (s.bonuslar[odul.id] || 0) + 1;
+          odulAd = odul.ad;
+        }
+        const rekor = toplamPuan > (s.gb.enIyi || 0) || s.gb.enIyiTarih !== bugun();
+        if (rekor) {
+          s.gb.enIyi = toplamPuan;
+          s.gb.enIyiTarih = bugun();
+        }
+        s.altin += altin;
+        s.stats.goldEarned = (s.stats.goldEarned || 0) + altin;
+        basarimKontrol(bildirimler);
+        setModal({ tip: 'gunlukBitti', puan: s.score, bonusPuan, kalan, altin, odul: odulAd, seri: s.gb.seri, tekrar: bugunMu, bildirimler });
+        kaydet();
+        return;
+      }
+
+      s.sonrakiKayit = s.level + 1;
+      const yildiz = yildizHesapla(kalan, s.ayar.moves);
       const eskiYildiz = s.yildizlar[s.level] || 0;
       if (yildiz > eskiYildiz) s.yildizlar[s.level] = yildiz;
+      const rekor = toplamPuan > (s.enIyi[s.level] || 0) && !!s.enIyi[s.level];
+      if (toplamPuan > (s.enIyi[s.level] || 0)) s.enIyi[s.level] = toplamPuan;
       s.stats.stars = Object.values(s.yildizlar).reduce((a, b) => a + b, 0);
-      s.stats.totalScore += bonusPuan;
       s.stats.levelsDone++;
       s.enYuksek = Math.max(s.enYuksek, s.level + 1);
       s.stats.bestLevel = Math.max(s.stats.bestLevel, s.enYuksek);
-      const bildirimler = [...(oncekiBildirimler || [])];
+      const altin = bolumAltini(yildiz);
+      s.altin += altin;
+      s.stats.goldEarned = (s.stats.goldEarned || 0) + altin;
       gunlukIlerlet('levels', 1, bildirimler);
       gunlukIlerlet('stars', Math.max(0, yildiz - eskiYildiz), bildirimler);
       basarimKontrol(bildirimler);
-      const odul = BONUSLAR[rastgele(BONUSLAR.length)];
+      const odul = BONUSLAR[Math.floor(Math.random() * BONUSLAR.length)];
       s.bonuslar[odul.id] = (s.bonuslar[odul.id] || 0) + 1;
       const sonraki = bolumAyari(s.level + 1);
-      cal('kazandi');
-      setTimeout(() => cal('konfeti', 0.8), 250);
-      titret('basari');
       setModal({
         tip: 'kazandi',
         level: s.level,
@@ -1861,6 +2239,8 @@ function Oyun() {
         puan: s.score,
         bonusPuan,
         kalan,
+        altin,
+        rekor,
         odul: odul.ad,
         sonraki: s.level + 1,
         sonrakiTip: sonraki.type,
@@ -1870,6 +2250,72 @@ function Oyun() {
       kaydet();
     },
     [cal, titret, gunlukIlerlet, basarimKontrol, kaydet]
+  );
+
+  // En alt satira inen kirazlari topla, yerine yenilerini koy
+  const kirazlariIsle = useCallback(
+    async (bdGiris) => {
+      const s = G.current;
+      let bd = bdGiris;
+      let sayi = 0;
+      if (!s.obj || s.obj.type !== 'drop') return { board: bd, sayi };
+      for (;;) {
+        const t = kirazTopla(bd);
+        if (!t.toplanan.length) break;
+        cal('kiraz');
+        titret('orta');
+        efektEkle(
+          t.toplanan.flatMap((k) => [
+            { id: efektId.current++, tur: 'dalga', r: k.r, c: k.c, boyut: 2, renk: '#FF5A6E' },
+            { id: efektId.current++, tur: 'yazi', r: k.r - 1, c: k.c, text: 'Kiraz!' },
+          ])
+        );
+        await calistir(
+          Animated.parallel(
+            t.toplanan.map((k) => {
+              const a = anims.current[k.id];
+              if (!a) return Animated.delay(0);
+              return Animated.parallel([
+                Animated.timing(a.y, { toValue: N + 0.6, duration: sn(380), easing: Easing.in(Easing.quad), useNativeDriver: true }),
+                Animated.timing(a.s, { toValue: 1.3, duration: sn(380), useNativeDriver: true }),
+                Animated.timing(a.o, { toValue: 0, duration: sn(380), useNativeDriver: true }),
+              ]);
+            })
+          )
+        );
+        t.toplanan.forEach((k) => delete anims.current[k.id]);
+        sayi += t.toplanan.length;
+        s.obj.current = Math.min(s.obj.target, s.obj.current + t.toplanan.length);
+        s.stats.cherries = (s.stats.cherries || 0) + t.toplanan.length;
+        ilerlemeGuncelle();
+        const { board: dusmus, spawned } = yercekimi(t.board, s.ayar.ncolors);
+        spawned.forEach((sp) => {
+          const a = animAl(sp.id, sp.startRow, sp.c);
+          a.tr = sp.startRow;
+          a.tc = sp.c;
+        });
+        tahtaAyarla(dusmus);
+        await bekle(16);
+        await konumlariCanlandir(dusmus, 0, true);
+        bd = dusmus;
+      }
+      const eski = bd;
+      const ek = kirazEkle(bd, s.obj);
+      if (ek.eklenen.length) {
+        ek.eklenen.forEach((k) => {
+          const onceki = eski[k.r][k.c].gem;
+          if (onceki) delete anims.current[onceki.id];
+          animAl(k.id, k.r, k.c).s.setValue(0);
+        });
+        bd = ek.board;
+        tahtaAyarla(bd);
+        await calistir(
+          Animated.parallel(ek.eklenen.map((k) => Animated.spring(anims.current[k.id].s, { toValue: 1, friction: 4, tension: 120, useNativeDriver: true })))
+        );
+      }
+      return { board: bd, sayi };
+    },
+    [cal, titret, efektEkle, ilerlemeGuncelle, animAl, tahtaAyarla, konumlariCanlandir]
   );
 
   // ----- Ana zincirleme dongu -----
@@ -1882,6 +2328,7 @@ function Oyun() {
       let toplamTas = 0;
       let toplamOzel = 0;
       let toplamBuz = 0;
+      let toplamKiraz = 0;
       let ilkHamle = true;
       while (true) {
         zincir++;
@@ -1954,10 +2401,10 @@ function Oyun() {
           if (!a) return null;
           return Animated.parallel([
             Animated.sequence([
-              Animated.timing(a.s, { toValue: 1.3, duration: 90, useNativeDriver: true }),
-              Animated.timing(a.s, { toValue: 0, duration: 180, easing: Easing.in(Easing.back(2)), useNativeDriver: true }),
+              Animated.timing(a.s, { toValue: 1.3, duration: sn(90), useNativeDriver: true }),
+              Animated.timing(a.s, { toValue: 0, duration: sn(180), easing: Easing.in(Easing.back(2)), useNativeDriver: true }),
             ]),
-            Animated.timing(a.o, { toValue: 0, duration: 270, useNativeDriver: true }),
+            Animated.timing(a.o, { toValue: 0, duration: sn(270), useNativeDriver: true }),
           ]);
         });
         await calistir(Animated.parallel(popAnim.filter(Boolean)));
@@ -2015,6 +2462,9 @@ function Oyun() {
         await bekle(16);
         await konumlariCanlandir(dusmus, 0, true);
         bd = dusmus;
+        const kirazSonuc = await kirazlariIsle(bd);
+        bd = kirazSonuc.board;
+        toplamKiraz += kirazSonuc.sayi;
       }
       zincir--;
 
@@ -2025,6 +2475,7 @@ function Oyun() {
       gunlukIlerlet('score', toplamPuan, bildirimler);
       gunlukIlerlet('specials', toplamOzel, bildirimler);
       gunlukIlerlet('ice', toplamBuz, bildirimler);
+      gunlukIlerlet('cherries', toplamKiraz, bildirimler);
       if (zincir >= 2) gunlukIlerlet('combos', 1, bildirimler);
       basarimKontrol(bildirimler);
 
@@ -2039,15 +2490,26 @@ function Oyun() {
       }
 
       // Duyuru
-      let metin = toplamTas ? `${toplamTas} taş patladı, ${toplamPuan} puan.` : '';
-      if (zincir >= 2) metin += ` ${zincir} kombo!`;
-      if (toplamOzel === 1) metin += ' Özel taş oluştu.';
-      else if (toplamOzel > 1) metin += ` ${toplamOzel} özel taş oluştu.`;
-      if (toplamBuz) metin += ` ${toplamBuz} buz kırıldı.`;
-      if (s.obj.type !== 'score') metin += ` Hedef ${s.obj.current} / ${s.obj.target}.`;
-      else metin += ` Puan ${s.score} / ${s.obj.target}.`;
-      if (hamleMi) metin += ` Kalan hamle ${s.moves}.`;
-      if (s.ikiKat > 0 && hamleMi) metin += ` İki kat puan: ${s.ikiKat} hamle kaldı.`;
+      let metin;
+      const hedefYazi = s.obj.type !== 'score' ? `Hedef ${s.obj.current} / ${s.obj.target}.` : `Puan ${s.score} / ${s.obj.target}.`;
+      if (s.settings.kisaDuyuru) {
+        metin = `${toplamPuan} puan.`;
+        if (zincir >= 2) metin += ` ${zincir} kombo.`;
+        if (toplamOzel) metin += ' Özel taş.';
+        if (toplamKiraz) metin += ` ${toplamKiraz} kiraz.`;
+        metin += ` ${hedefYazi}`;
+        if (hamleMi) metin += ` ${s.moves} hamle.`;
+      } else {
+        metin = toplamTas ? `${toplamTas} taş patladı, ${toplamPuan} puan.` : '';
+        if (zincir >= 2) metin += ` ${zincir} kombo!`;
+        if (toplamOzel === 1) metin += ' Özel taş oluştu.';
+        else if (toplamOzel > 1) metin += ` ${toplamOzel} özel taş oluştu.`;
+        if (toplamBuz) metin += ` ${toplamBuz} buz kırıldı.`;
+        if (toplamKiraz) metin += ` ${toplamKiraz} kiraz indirildi.`;
+        metin += ` ${hedefYazi}`;
+        if (hamleMi) metin += ` Kalan hamle ${s.moves}.`;
+        if (s.ikiKat > 0 && hamleMi) metin += ` İki kat puan: ${s.ikiKat} hamle kaldı.`;
+      }
       metin = metin.trim();
       setMesaj(metin);
 
@@ -2076,7 +2538,7 @@ function Oyun() {
       }
       kaydet();
     },
-    [cal, titret, sars, efektEkle, komboGoster, animAl, tahtaAyarla, konumlariCanlandir, ilerlemeGuncelle, gunlukIlerlet, basarimKontrol, kaydet, bolumBitti]
+    [cal, titret, sars, efektEkle, komboGoster, animAl, tahtaAyarla, konumlariCanlandir, ilerlemeGuncelle, gunlukIlerlet, basarimKontrol, kaydet, bolumBitti, kirazlariIsle]
   );
 
   // ----- Hamle -----
@@ -2317,6 +2779,7 @@ function Oyun() {
     (anahtar, deger) => {
       G.current.settings = { ...G.current.settings, [anahtar]: deger };
       if (anahtar === 'muzik') muzikAyarla();
+      hareketAyarla(G.current.settings);
       kaydet();
       yenile();
     },
@@ -2327,6 +2790,90 @@ function Oyun() {
     cal('buton');
     setModal(null);
   }, [cal]);
+
+  // Ayni bolumu (ya da gunluk bulmacayi) bastan baslat
+  const tekrarla = useCallback(() => {
+    if (mesgul.current) return;
+    if (G.current.oyunModu === 'gunluk') gunlukBaslat();
+    else bolumBaslat(G.current.level);
+  }, [gunlukBaslat, bolumBaslat]);
+
+  // ----- Magaza -----
+  const satinAl = useCallback(
+    (id) => {
+      const s = G.current;
+      const fiyat = MAGAZA_FIYAT[id];
+      const b = BONUSLAR.find((x) => x.id === id);
+      if (s.altin < fiyat) {
+        cal('gecersiz');
+        soyle(`Yeterli altın yok. ${b.ad} ${fiyat} altın, sende ${s.altin} var.`);
+        return;
+      }
+      s.altin -= fiyat;
+      s.bonuslar[id] = (s.bonuslar[id] || 0) + 1;
+      cal('satinal');
+      titret('basari');
+      soyle(`${b.ad} alındı. Elinde ${s.bonuslar[id]} tane. Kalan altın ${s.altin}.`);
+      kaydet();
+      yenile();
+    },
+    [cal, titret, kaydet, yenile]
+  );
+
+  const ekHamleAl = useCallback(() => {
+    const s = G.current;
+    if (s.ekHamleAlindi) return;
+    if (s.altin < EK_HAMLE_FIYAT) {
+      cal('gecersiz');
+      soyle(`Yeterli altın yok. ${EK_HAMLE_FIYAT} altın gerekiyor, sende ${s.altin} var.`);
+      return;
+    }
+    s.altin -= EK_HAMLE_FIYAT;
+    s.moves += EK_HAMLE;
+    s.ekHamleAlindi = true;
+    s.oynaniyor = true;
+    cal('satinal');
+    titret('basari');
+    setModal(null);
+    const metin = `${EK_HAMLE} hamle eklendi. Hedef: ${hedefDegeri(s.obj)}. Kalan altın ${s.altin}.`;
+    setMesaj(metin);
+    setTimeout(() => soyle(metin), 400);
+    setEylem((e) => e + 1);
+    kaydet();
+    yenile();
+  }, [cal, titret, kaydet, yenile]);
+
+  // ----- VoiceOver ozel eylemleri: yonle takas, satir/sutun okuma -----
+  const YONLER = { sag: [0, 1, 'Sağdakiyle yer değiştir'], sol: [0, -1, 'Soldakiyle yer değiştir'], yukari: [-1, 0, 'Üsttekiyle yer değiştir'], asagi: [1, 0, 'Alttakiyle yer değiştir'] };
+  const hucreEylemi = useCallback(
+    (r, c, ad) => {
+      const s = G.current;
+      if (!s.board) return;
+      if (ad === 'satir') {
+        soyle(satirMetni(s.board, r));
+        return;
+      }
+      if (ad === 'sutun') {
+        soyle(sutunMetni(s.board, c));
+        return;
+      }
+      const y = YONLER[ad];
+      if (!y || mesgul.current || !s.oynaniyor) return;
+      if (mod) {
+        soyle('Önce bonusu kullan ya da iptal et.');
+        return;
+      }
+      const cl = s.board[r][c];
+      if (!hareketEdebilir(cl)) {
+        cal('gecersiz', 0.6);
+        soyle(cl.stone > 0 ? 'Taş blok yer değiştiremez.' : 'Zincirli taş yer değiştiremez.');
+        return;
+      }
+      setSecili(null);
+      hamleYap({ r, c }, { r: r + y[0], c: c + y[1] });
+    },
+    [mod, cal, hamleYap]
+  );
 
   // ----- Cizim -----
   const s = g;
@@ -2440,6 +2987,16 @@ function Oyun() {
       for (let c = 0; c < N; c++) {
         const cl = bd[r][c];
         const seciliMi = secili && secili.r === r && secili.c === c;
+        // VoiceOver: yukari/asagi kaydirarak eylem secilir, cift dokunla yapilir
+        const eylemler = [];
+        if (hareketEdebilir(cl)) {
+          Object.entries(YONLER).forEach(([ad, [dr, dc, etiket]]) => {
+            const rr = r + dr;
+            const cc = c + dc;
+            if (rr >= 0 && cc >= 0 && rr < N && cc < N) eylemler.push({ name: ad, label: etiket });
+          });
+        }
+        eylemler.push({ name: 'satir', label: 'Satırı oku' }, { name: 'sutun', label: 'Sütunu oku' });
         satir.push(
           <Pressable
             key={`p${r}-${c}`}
@@ -2448,6 +3005,8 @@ function Oyun() {
             accessibilityRole="button"
             accessibilityLabel={hucreEtiketi(cl, r, c)}
             accessibilityState={{ selected: !!seciliMi }}
+            accessibilityActions={eylemler}
+            onAccessibilityAction={(e) => hucreEylemi(r, c, e.nativeEvent.actionName)}
             style={{ width: cell, height: cell }}
           />
         );
@@ -2536,10 +3095,12 @@ function Oyun() {
         top: tahtaGenislik / 2 - 70,
         alignItems: 'center',
         opacity: afisAnim.interpolate({ inputRange: [0, 0.4, 1, 2], outputRange: [0, 1, 1, 0] }),
-        transform: [
-          { translateX: afisAnim.interpolate({ inputRange: [0, 1, 2], outputRange: [-width, 0, width] }) },
-          { rotate: afisAnim.interpolate({ inputRange: [0, 1, 2], outputRange: ['-6deg', '0deg', '6deg'] }) },
-        ],
+        transform: AZ_HAREKET
+          ? []
+          : [
+              { translateX: afisAnim.interpolate({ inputRange: [0, 1, 2], outputRange: [-width, 0, width] }) },
+              { rotate: afisAnim.interpolate({ inputRange: [0, 1, 2], outputRange: ['-6deg', '0deg', '6deg'] }) },
+            ],
       }}
     >
       <LinearGradient
@@ -2548,7 +3109,7 @@ function Oyun() {
         end={{ x: 1, y: 1 }}
         style={{ paddingVertical: 16, paddingHorizontal: 26, borderRadius: 24, alignItems: 'center', borderWidth: 3, borderColor: 'rgba(255,255,255,0.8)' }}
       >
-        <Text style={{ color: '#FFFFFF', fontSize: 34, fontWeight: '900', textShadowColor: 'rgba(0,0,0,0.3)', textShadowRadius: 6 }}>Bölüm {afis.L}</Text>
+        <Text style={{ color: '#FFFFFF', fontSize: 34, fontWeight: '900', textShadowColor: 'rgba(0,0,0,0.3)', textShadowRadius: 6 }}>{afis.baslik}</Text>
         <Text style={{ color: '#FFFFFF', fontSize: 17, fontWeight: '700', marginTop: 4, textAlign: 'center' }}>{afis.metin}</Text>
         <Text style={{ color: 'rgba(255,255,255,0.9)', fontSize: 15, marginTop: 2 }}>{afis.moves} hamle</Text>
       </LinearGradient>
@@ -2569,7 +3130,7 @@ function Oyun() {
 
   return (
     <View style={{ flex: 1 }}>
-      <Arkaplan tema={tema} genislik={width} yukseklik={height} />
+      <Arkaplan tema={tema} genislik={width} yukseklik={height} azHareket={!!g.settings.azHareket} />
       <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom', 'left', 'right']}>
         <StatusBar style={g.settings.tema === 'acik' ? 'dark' : 'light'} />
         <ScrollView contentContainerStyle={{ alignItems: 'center', paddingBottom: 24 }}>
@@ -2591,8 +3152,8 @@ function Oyun() {
               <Text style={stil.baslik} accessibilityRole="header">
                 Renkli Taşlar
               </Text>
-              <Text style={stil.altBaslik} {...gizli}>
-                ★ {s.stats.stars || 0}
+              <Text style={stil.altBaslik} accessibilityLabel={`${yildizMetni(s.stats.stars || 0)}, ${s.altin} altın`}>
+                ★ {s.stats.stars || 0}   ● {sayiYaz(s.altin)}
               </Text>
             </View>
             <Pressable
@@ -2612,12 +3173,19 @@ function Oyun() {
           <View style={[stil.satir, { width: tahtaGenislik }]}>
             <View style={stil.kutu} accessible accessibilityLabel={`Puan ${s.score}`}>
               <Text style={stil.kutuEtiket}>Puan</Text>
-              <Text style={stil.kutuDeger}>{gosterilenPuan}</Text>
+              <Text style={stil.kutuDeger}>{sayiYaz(gosterilenPuan)}</Text>
             </View>
-            <View style={stil.kutu} accessible accessibilityLabel={`Bölüm ${s.level}`}>
-              <Text style={stil.kutuEtiket}>Bölüm</Text>
-              <Text style={stil.kutuDeger}>{s.level}</Text>
-            </View>
+            {s.oyunModu === 'gunluk' ? (
+              <View style={[stil.kutu, { borderColor: tema.accent }]} accessible accessibilityLabel="Günlük bulmaca oynuyorsun">
+                <Text style={stil.kutuEtiket}>Mod</Text>
+                <Text style={[stil.kutuDeger, { color: tema.accent, fontSize: 18 }]}>☀ Günlük</Text>
+              </View>
+            ) : (
+              <View style={stil.kutu} accessible accessibilityLabel={`Bölüm ${s.level}`}>
+                <Text style={stil.kutuEtiket}>Bölüm</Text>
+                <Text style={stil.kutuDeger}>{s.level}</Text>
+              </View>
+            )}
           </View>
           <View style={[stil.satir, { width: tahtaGenislik }]}>
             <View style={[stil.kutu, { flex: 1.4 }]} accessible accessibilityLabel={`${objEtiket}: ${hedefDegeri(s.obj)}`}>
@@ -2629,6 +3197,7 @@ function Oyun() {
                   </View>
                 )}
                 {s.obj && s.obj.type === 'ice' && <View style={{ width: 16, height: 16, borderRadius: 5, marginRight: 6, backgroundColor: 'rgba(200,240,255,0.9)', borderWidth: 2, borderColor: '#FFFFFF' }} />}
+                {s.obj && s.obj.type === 'drop' && <View style={{ width: 16, height: 16, borderRadius: 8, marginRight: 6, backgroundColor: '#E0102E', borderWidth: 2, borderColor: '#FF9AA6' }} />}
                 <Text style={stil.kutuDeger}>{hedefDegeri(s.obj)}</Text>
               </View>
             </View>
@@ -2674,6 +3243,18 @@ function Oyun() {
               {komboCizim}
               {afisCizim}
             </LinearGradient>
+            {s.obj && s.obj.type === 'drop' && (
+              <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 2 }} {...gizli}>
+                {Array.from({ length: N }).map((_, i) => (
+                  <Animated.Text
+                    key={i}
+                    style={{ width: cell, textAlign: 'center', color: '#FF7A8A', fontSize: 14, fontWeight: '900', opacity: parilti.interpolate({ inputRange: [0, 1], outputRange: [0.35, 1] }) }}
+                  >
+                    ▼
+                  </Animated.Text>
+                ))}
+              </View>
+            )}
           </Animated.View>
 
           <Text style={[stil.mesaj, { width: tahtaGenislik }]} accessibilityLiveRegion="polite">
@@ -2713,9 +3294,9 @@ function Oyun() {
               onPress={() => {
                 if (mesgul.current) return;
                 cal('buton');
-                bolumBaslat(s.level);
+                tekrarla();
               }}
-              etiket="Bölümü tekrarla"
+              etiket={s.oyunModu === 'gunluk' ? 'Günlük bulmacayı baştan başlat' : 'Bölümü tekrarla'}
               yazi="↩ Tekrarla"
             />
             <Dugme
@@ -2730,13 +3311,35 @@ function Oyun() {
               yaziRengi="#1B1030"
             />
           </View>
+          <View style={[stil.satir, { width: tahtaGenislik }]}>
+            <Dugme
+              tema={tema}
+              onPress={() => {
+                cal('buton');
+                setModal({ tip: 'gunlukGiris' });
+              }}
+              etiket={`Günlük bulmaca${s.gb.cozulen === bugun() ? ', bugün çözüldü' : ''}${s.gb.seri && (s.gb.cozulen === bugun() || s.gb.cozulen === dun()) ? `, seri ${s.gb.seri} gün` : ''}`}
+              yazi={`☀ Günlük Bulmaca${s.gb.cozulen === bugun() ? ' ✓' : ''}`}
+              renkler={s.gb.cozulen === bugun() ? undefined : ['#9CF5C4', '#3DDC84']}
+              yaziRengi={s.gb.cozulen === bugun() ? undefined : '#0E2A1B'}
+            />
+            <Dugme
+              tema={tema}
+              onPress={() => {
+                cal('buton');
+                setModal({ tip: 'magaza' });
+              }}
+              etiket={`Mağaza, ${s.altin} altın`}
+              yazi={`● Mağaza  ${sayiYaz(s.altin)}`}
+            />
+          </View>
         </ScrollView>
       </SafeAreaView>
 
       {/* ----- Pencereler ----- */}
       <Modal visible={!!modal} transparent animationType="fade" onRequestClose={() => setModal(null)}>
         <View style={stil.perde}>
-          {modal && modal.tip === 'kazandi' && <Konfeti genislik={width} yukseklik={height} />}
+          {modal && (modal.tip === 'kazandi' || modal.tip === 'gunlukBitti') && !AZ_HAREKET && <Konfeti genislik={width} yukseklik={height} />}
           <Animated.View style={[stil.pencere, pencereStil]} accessibilityViewIsModal>
             {modal && modal.tip === 'ogretici' && (
               <ScrollView>
@@ -2749,6 +3352,10 @@ function Oyun() {
                 <Text style={stil.pYazi}>Sadece eşleşme oluşturan hamleler yapılabilir. Her bölümün bir hedefi ve sınırlı hamlesi var. Bölümler gittikçe zorlaşır.</Text>
                 <Text style={stil.pYazi}>4 taş eşleştirirsen çizgili taş, L ya da T şeklinde eşleştirirsen bomba, 5 taş eşleştirirsen renk bombası oluşur. Az hamleyle bitirirsen daha çok yıldız kazanırsın.</Text>
                 <Text style={stil.pYazi}>VoiceOver ile parmağını tahtada gezdirerek taşları dinleyebilir, çift dokunarak seçebilirsin.</Text>
+                <Text style={stil.pYazi}>
+                  Kısa yol: Bir taşın üstündeyken bir parmakla yukarı ya da aşağı kaydır. "Sağdakiyle yer değiştir" gibi eylemler ve "Satırı oku", "Sütunu oku" gelir. Çift dokununca yapılır.
+                </Text>
+                <Text style={stil.pYazi}>Bölüm bitirdikçe altın kazanırsın. Altınla mağazadan bonus alabilir, hamlen bitince 5 hamle daha satın alabilirsin.</Text>
                 <View style={{ flexDirection: 'row', marginTop: 8 }}>
                   <Dugme
                     tema={tema}
@@ -2757,8 +3364,7 @@ function Oyun() {
                       g.ogretici = true;
                       kaydet();
                       setModal(null);
-                      afisGoster(s.level, s.obj, s.moves);
-                      soyle(`Bölüm ${s.level}. Hedef: ${hedefCumlesi(s.obj)}. ${s.moves} hamle.`);
+                      setTimeout(() => girisGoster(true), 50);
                     }}
                     etiket="Başla"
                     yazi="Başla"
@@ -2775,19 +3381,19 @@ function Oyun() {
                   Bölüm {modal.level} Tamamlandı!
                 </Text>
                 <YildizSatiri sayi={modal.yildiz} boy={54} cal={cal} />
-                <View style={{ marginTop: 12 }} accessible accessibilityLabel={`Puan ${modal.puan}. Kalan ${modal.kalan} hamle bonusu ${modal.bonusPuan} puan.`}>
-                  <Text style={[stil.pYazi, { textAlign: 'center', fontSize: 18 }]}>Puan: {modal.puan}</Text>
+                {modal.rekor && (
+                  <Text style={[stil.pYazi, { textAlign: 'center', color: '#3DDC84', fontWeight: '900', marginTop: 6 }]}>Yeni rekor!</Text>
+                )}
+                <View style={{ marginTop: 10 }} accessible accessibilityLabel={`Puan ${modal.puan}.${modal.kalan > 0 ? ` Kalan ${modal.kalan} hamle bonusu ${modal.bonusPuan} puan.` : ''}`}>
+                  <Text style={[stil.pYazi, { textAlign: 'center', fontSize: 18 }]}>Puan: {sayiYaz(modal.puan)}</Text>
                   {modal.kalan > 0 && (
                     <Text style={[stil.pYazi, { textAlign: 'center', color: tema.accent, fontWeight: '800' }]}>
-                      Kalan {modal.kalan} hamle bonusu: +{modal.bonusPuan}
+                      Kalan {modal.kalan} hamle bonusu: +{sayiYaz(modal.bonusPuan)}
                     </Text>
                   )}
                 </View>
+                <AltinKazanc miktar={modal.altin} cal={cal} stil={stil} />
                 <Text style={[stil.pYazi, { textAlign: 'center' }]}>Kazanılan bonus: {modal.odul}</Text>
-                {modal.sonrakiAyar.ice > 0 && modal.sonraki === 5 && <Text style={stil.pYazi}>Sırada yeni engel var: Buzlu taşlar. Buzu kırmak için o taşı patlat.</Text>}
-                {modal.sonrakiAyar.chains > 0 && modal.sonraki === 10 && <Text style={stil.pYazi}>Sırada yeni engel var: Zincirli taşlar. Hareket etmezler, eşleştirerek zinciri kırabilirsin.</Text>}
-                {modal.sonrakiAyar.stones > 0 && modal.sonraki === 15 && <Text style={stil.pYazi}>Sırada yeni engel var: Taş bloklar. Yanlarında eşleşme yaparak kırabilirsin.</Text>}
-                {modal.sonraki === 20 && <Text style={stil.pYazi}>Bundan sonra tahtada 6 renk var. Eşleşme bulmak zorlaşıyor.</Text>}
                 {modal.bildirimler.map((b, i) => (
                   <Text key={i} style={[stil.pYazi, { color: tema.accent }]}>
                     {b}
@@ -2820,6 +3426,48 @@ function Oyun() {
               </ScrollView>
             )}
 
+            {modal && modal.tip === 'gunlukBitti' && (
+              <ScrollView>
+                <Text style={stil.pBaslik} accessibilityRole="header">
+                  Günlük Bulmaca Çözüldü!
+                </Text>
+                <Text style={[stil.pYazi, { textAlign: 'center', fontSize: 42 }]} {...gizli}>
+                  ☀
+                </Text>
+                <Text style={[stil.pYazi, { textAlign: 'center', fontSize: 18 }]}>
+                  Puan: {sayiYaz(modal.puan + modal.bonusPuan)}
+                </Text>
+                {modal.tekrar ? (
+                  <Text style={[stil.pYazi, { textAlign: 'center', color: tema.sub }]}>Bugünün ödülünü zaten almıştın. Yarın yeni bulmaca gelecek.</Text>
+                ) : (
+                  <>
+                    <Text style={[stil.pYazi, { textAlign: 'center', color: tema.accent, fontWeight: '900' }]}>Seri: {modal.seri} gün</Text>
+                    <AltinKazanc miktar={modal.altin} cal={cal} stil={stil} gecikme={600} />
+                    {modal.odul && <Text style={[stil.pYazi, { textAlign: 'center' }]}>Kazanılan bonus: {modal.odul}</Text>}
+                  </>
+                )}
+                {modal.bildirimler.map((b, i) => (
+                  <Text key={i} style={[stil.pYazi, { color: tema.accent }]}>
+                    {b}
+                  </Text>
+                ))}
+                <View style={[stil.satir, { marginTop: 8 }]}>
+                  <Dugme
+                    tema={tema}
+                    onPress={() => {
+                      cal('buton');
+                      setModal(null);
+                      bolumBaslat(g.level);
+                    }}
+                    etiket={`Bölümlere dön, Bölüm ${g.level}`}
+                    yazi={`Bölüm ${g.level} ›`}
+                    renkler={['#FFE27A', '#FFB347']}
+                    yaziRengi="#1B1030"
+                  />
+                </View>
+              </ScrollView>
+            )}
+
             {modal && modal.tip === 'kaybetti' && (
               <View>
                 <Text style={stil.pBaslik} accessibilityRole="header">
@@ -2827,8 +3475,20 @@ function Oyun() {
                 </Text>
                 <Text style={[stil.pYazi, { textAlign: 'center' }]}>Hedef: {hedefCumlesi(s.obj)}</Text>
                 <Text style={[stil.pYazi, { textAlign: 'center' }]}>
-                  {s.obj && s.obj.type === 'score' ? `Toplanan puan: ${s.score}` : s.obj ? `Ulaşılan: ${s.obj.current} / ${s.obj.target}` : ''}
+                  {s.obj && s.obj.type === 'score' ? `Toplanan puan: ${sayiYaz(s.score)}` : s.obj ? `Ulaşılan: ${s.obj.current} / ${s.obj.target}` : ''}
                 </Text>
+                {!s.ekHamleAlindi && (
+                  <View style={{ flexDirection: 'row', marginBottom: 8 }}>
+                    <Dugme
+                      tema={tema}
+                      onPress={ekHamleAl}
+                      etiket={`${EK_HAMLE} hamle daha al, ${EK_HAMLE_FIYAT} altın. Sende ${s.altin} altın var.`}
+                      yazi={`+${EK_HAMLE} hamle  ● ${EK_HAMLE_FIYAT}`}
+                      renkler={s.altin >= EK_HAMLE_FIYAT ? ['#9CF5C4', '#3DDC84'] : undefined}
+                      yaziRengi={s.altin >= EK_HAMLE_FIYAT ? '#0E2A1B' : undefined}
+                    />
+                  </View>
+                )}
                 <Text style={[stil.pYazi, { textAlign: 'center', color: tema.sub }]}>Bonusları kullanmayı unutma. İpucu ve bombalar zor bölümlerde çok işe yarar.</Text>
                 <View style={[stil.satir, { marginTop: 8 }]}>
                   <Dugme
@@ -2845,13 +3505,141 @@ function Oyun() {
                     onPress={() => {
                       cal('buton');
                       setModal(null);
-                      bolumBaslat(s.level);
+                      tekrarla();
                     }}
                     etiket="Tekrar dene"
                     yazi="Tekrar Dene"
                     renkler={['#FFE27A', '#FFB347']}
                     yaziRengi="#1B1030"
                   />
+                </View>
+              </View>
+            )}
+
+            {modal && modal.tip === 'tanitim' && (
+              <ScrollView>
+                {modal.liste.map((t) => (
+                  <View key={t} style={{ marginBottom: 6 }}>
+                    <Text style={stil.pBaslik} accessibilityRole="header">
+                      {TANITIMLAR[t].baslik}
+                    </Text>
+                    <Text style={stil.pYazi}>{TANITIMLAR[t].metin}</Text>
+                  </View>
+                ))}
+                <View style={{ flexDirection: 'row', marginTop: 8 }}>
+                  <Dugme
+                    tema={tema}
+                    onPress={() => {
+                      cal('buton');
+                      setModal(null);
+                      const metin = modal.metin;
+                      setTimeout(() => {
+                        afisGoster(g.level, g.obj, g.moves);
+                        soyle(metin);
+                      }, 80);
+                    }}
+                    etiket="Anladım, başla"
+                    yazi="Anladım"
+                    renkler={['#FFE27A', '#FFB347']}
+                    yaziRengi="#1B1030"
+                  />
+                </View>
+              </ScrollView>
+            )}
+
+            {modal && modal.tip === 'gunlukGiris' && (() => {
+              const cozuldu = s.gb.cozulen === bugun();
+              const seriDevam = s.gb.cozulen === bugun() || s.gb.cozulen === dun();
+              return (
+                <ScrollView>
+                  <Text style={stil.pBaslik} accessibilityRole="header">
+                    Günlük Bulmaca
+                  </Text>
+                  <Text style={stil.pYazi}>Her gün yeni bir bulmaca. Bugün oynayan herkese aynı tahta gelir. İstediğin kadar deneyebilirsin.</Text>
+                  <Text style={stil.pYazi}>
+                    {cozuldu ? 'Bugünkü bulmacayı çözdün. Yine de oynayabilirsin, ödül yarın yenilenir.' : 'İlk çözüşünde altın ve bir bonus kazanırsın. Her gün çözersen seri büyür, ödül artar.'}
+                  </Text>
+                  <MenuGrubu baslik="Durum" stil={stil}>
+                    <View style={stil.liste} accessible accessibilityLabel={`Seri: ${seriDevam ? s.gb.seri || 0 : 0} gün`}>
+                      <Text style={[stil.listeBaslik, { flex: 1, fontSize: 16 }]}>Seri</Text>
+                      <Text style={[stil.listeBaslik, { color: tema.accent }]}>{seriDevam ? s.gb.seri || 0 : 0} gün</Text>
+                    </View>
+                    <View style={stil.liste} accessible accessibilityLabel={`Bugün: ${cozuldu ? 'çözüldü' : 'çözülmedi'}`}>
+                      <Text style={[stil.listeBaslik, { flex: 1, fontSize: 16 }]}>Bugün</Text>
+                      <Text style={[stil.listeBaslik, { color: cozuldu ? '#3DDC84' : tema.sub }]}>{cozuldu ? 'Çözüldü' : 'Çözülmedi'}</Text>
+                    </View>
+                    {s.gb.enIyiTarih === bugun() && (
+                      <View style={stil.liste} accessible accessibilityLabel={`Bugünkü en iyi puan: ${s.gb.enIyi}`}>
+                        <Text style={[stil.listeBaslik, { flex: 1, fontSize: 16 }]}>Bugünkü en iyi</Text>
+                        <Text style={[stil.listeBaslik, { color: tema.accent }]}>{sayiYaz(s.gb.enIyi)}</Text>
+                      </View>
+                    )}
+                  </MenuGrubu>
+                  {s.oyunModu === 'bolum' && g.oynaniyor && (
+                    <Text style={[stil.listeAlt, { marginBottom: 6 }]}>Şu anki bölümün baştan başlar.</Text>
+                  )}
+                  <View style={stil.satir}>
+                    <Dugme tema={tema} onPress={pencereKapat} etiket="Vazgeç" yazi="Vazgeç" />
+                    <Dugme
+                      tema={tema}
+                      onPress={() => {
+                        if (mesgul.current) return;
+                        cal('buton');
+                        setModal(null);
+                        gunlukBaslat();
+                      }}
+                      etiket="Günlük bulmacayı oyna"
+                      yazi="☀ Oyna"
+                      renkler={['#9CF5C4', '#3DDC84']}
+                      yaziRengi="#0E2A1B"
+                    />
+                  </View>
+                </ScrollView>
+              );
+            })()}
+
+            {modal && modal.tip === 'magaza' && (
+              <View style={{ maxHeight: '100%' }}>
+                <Text style={stil.pBaslik} accessibilityRole="header">
+                  Mağaza
+                </Text>
+                <Text style={[stil.pYazi, { textAlign: 'center', color: tema.accent, fontWeight: '900', fontSize: 20 }]} accessibilityLabel={`Altının: ${g.altin}`}>
+                  ● {sayiYaz(g.altin)} altın
+                </Text>
+                <ScrollView style={{ maxHeight: 400 }}>
+                  <MenuGrubu baslik="Bonuslar" stil={stil}>
+                    {BONUSLAR.map((b, i) => {
+                      const fiyat = MAGAZA_FIYAT[b.id];
+                      const yeter = g.altin >= fiyat;
+                      return (
+                        <Pressable
+                          key={b.id}
+                          onPress={() => satinAl(b.id)}
+                          style={[stil.liste, { opacity: yeter ? 1 : 0.55 }]}
+                          accessibilityRole="button"
+                          accessibilityLabel={`${b.ad}, ${fiyat} altın, elinde ${g.bonuslar[b.id] || 0}. ${b.aciklama}${yeter ? '' : ' Altının yetmiyor.'}`}
+                        >
+                          <View style={{ flex: 1 }}>
+                            <Text style={stil.listeBaslik}>{b.ad}</Text>
+                            <Text style={stil.listeAlt}>
+                              {b.aciklama} Elinde: {g.bonuslar[b.id] || 0}
+                            </Text>
+                          </View>
+                          <View style={{ borderRadius: 14, overflow: 'hidden' }}>
+                            <LinearGradient colors={yeter ? ['#FFE27A', '#FFB347'] : [tema.bar, tema.bar]} style={{ paddingHorizontal: 12, paddingVertical: 8 }}>
+                              <Text style={{ color: yeter ? '#1B1030' : tema.sub, fontWeight: '900' }}>● {fiyat}</Text>
+                            </LinearGradient>
+                          </View>
+                        </Pressable>
+                      );
+                    })}
+                  </MenuGrubu>
+                  <MenuGrubu baslik="Altın nasıl kazanılır" stil={stil}>
+                    <Text style={stil.listeAlt}>Her bölüm 10 altın, ayrıca her yıldız için 5 altın. Günlük bulmaca 40 altın ve seri büyüdükçe daha fazlası.</Text>
+                  </MenuGrubu>
+                </ScrollView>
+                <View style={{ flexDirection: 'row', marginTop: 10 }}>
+                  <Dugme tema={tema} onPress={pencereKapat} etiket="Mağazayı kapat" yazi="Kapat" />
                 </View>
               </View>
             )}
@@ -2865,9 +3653,10 @@ function Oyun() {
                 <ScrollView style={{ maxHeight: 420 }} contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' }}>
                   {haritaBolumleri.map((L) => {
                     const y = s.yildizlar[L] || 0;
-                    const simdiki = L === s.level;
+                    const simdiki = L === s.level && s.oyunModu === 'bolum';
                     const tip = bolumTipi(L);
-                    const tipAd = tip === 'score' ? 'puan' : tip === 'color' ? 'renk' : tip === 'special' ? 'özel taş' : 'buz';
+                    const tipAd = { score: 'puan', color: 'renk', special: 'özel taş', ice: 'buz', drop: 'kiraz' }[tip];
+                    const enIyi = s.enIyi[L];
                     return (
                       <Pressable
                         key={L}
@@ -2878,7 +3667,7 @@ function Oyun() {
                           bolumBaslat(L);
                         }}
                         accessibilityRole="button"
-                        accessibilityLabel={`Bölüm ${L}, ${tipAd} hedefi, ${y ? yildizMetni(y) : 'henüz geçilmedi'}${simdiki ? ', şu an oynanan' : ''}`}
+                        accessibilityLabel={`Bölüm ${L}, ${tipAd} hedefi, ${y ? yildizMetni(y) : 'henüz geçilmedi'}${enIyi ? `, en iyi ${enIyi} puan` : ''}${simdiki ? ', şu an oynanan' : ''}`}
                         style={{ width: 64, alignItems: 'center', margin: 4 }}
                       >
                         <LinearGradient
@@ -2887,7 +3676,10 @@ function Oyun() {
                         >
                           <Text style={{ color: simdiki ? '#1B1030' : '#FFFFFF', fontWeight: '900', fontSize: 18 }}>{L}</Text>
                         </LinearGradient>
-                        <Text style={{ color: '#FFD84D', fontSize: 12, marginTop: 2 }}>{'★'.repeat(y)}<Text style={{ color: tema.sub }}>{'☆'.repeat(3 - y)}</Text></Text>
+                        <Text style={{ color: '#FFD84D', fontSize: 12, marginTop: 2 }}>
+                          {'★'.repeat(y)}
+                          <Text style={{ color: tema.sub }}>{'☆'.repeat(3 - y)}</Text>
+                        </Text>
                       </Pressable>
                     );
                   })}
@@ -2903,7 +3695,7 @@ function Oyun() {
                 <Text style={stil.pBaslik} accessibilityRole="header">
                   Baştan Başla
                 </Text>
-                <Text style={stil.pYazi}>Bütün bölümler, yıldızlar, bonuslar, başarımlar ve istatistikler silinecek. Oyun Bölüm 1'den başlayacak. Ayarların korunur.</Text>
+                <Text style={stil.pYazi}>Bütün bölümler, yıldızlar, altın, bonuslar, başarımlar ve istatistikler silinecek. Oyun Bölüm 1'den başlayacak. Ayarların korunur.</Text>
                 <View style={[stil.satir, { marginTop: 8 }]}>
                   <Dugme tema={tema} onPress={pencereKapat} etiket="Vazgeç" yazi="Vazgeç" />
                   <Dugme
@@ -2915,6 +3707,10 @@ function Oyun() {
                       g.stats = bosIstatistik();
                       g.basarimlar = [];
                       g.yildizlar = {};
+                      g.enIyi = {};
+                      g.altin = BASLANGIC_ALTINI;
+                      g.tanitimlar = [];
+                      g.gb = { cozulen: '', seri: 0 };
                       g.enYuksek = 1;
                       g.gunluk = gunlukSec(bugun());
                       bolumBaslat(1);
@@ -2956,8 +3752,17 @@ function Oyun() {
                     </Pressable>
                   );
                 })}
-                <View style={{ flexDirection: 'row', marginTop: 10 }}>
+                <View style={[stil.satir, { marginTop: 10 }]}>
                   <Dugme tema={tema} onPress={pencereKapat} etiket="Kapat" yazi="Kapat" />
+                  <Dugme
+                    tema={tema}
+                    onPress={() => {
+                      cal('buton');
+                      setModal({ tip: 'magaza' });
+                    }}
+                    etiket={`Mağaza, ${g.altin} altın`}
+                    yazi={`● Mağaza ${sayiYaz(g.altin)}`}
+                  />
                 </View>
               </ScrollView>
             )}
@@ -3000,10 +3805,15 @@ function Oyun() {
                           <AnahtarSatiri key={k} ad={ad} deger={!!g.settings[k]} degistir={(v) => ayarDegistir(k, v)} stil={stil} />
                         ))}
                       </MenuGrubu>
-                      <MenuGrubu baslik="Dokunuş" stil={stil}>
+                      <MenuGrubu baslik="Dokunuş ve anlatım" stil={stil}>
                         <AnahtarSatiri ad="Titreşim" deger={!!g.settings.titresim} degistir={(v) => ayarDegistir('titresim', v)} stil={stil} />
+                        <AnahtarSatiri ad="Kısa duyurular" deger={!!g.settings.kisaDuyuru} degistir={(v) => ayarDegistir('kisaDuyuru', v)} stil={stil} />
+                        <Text style={[stil.listeAlt, { marginTop: 4 }]}>Kısa duyurular açıkken her hamleden sonra yalnızca puan, hedef ve kalan hamle okunur.</Text>
                       </MenuGrubu>
                       <MenuGrubu baslik="Görünüm" stil={stil}>
+                        <AnahtarSatiri ad="Hızlı animasyonlar" deger={!!g.settings.hizli} degistir={(v) => ayarDegistir('hizli', v)} stil={stil} />
+                        <AnahtarSatiri ad="Hareketi azalt" deger={!!g.settings.azHareket} degistir={(v) => ayarDegistir('azHareket', v)} stil={stil} />
+                        <Text style={[stil.listeAlt, { marginTop: 4, marginBottom: 8 }]}>Hareketi azalt açıkken sarsıntı, konfeti ve arka plan kabarcıkları kapanır.</Text>
                         <View style={stil.satir}>
                           {[
                             ['koyu', 'Koyu tema'],
@@ -3100,12 +3910,18 @@ function Oyun() {
                           ['Tamamlanan bölüm', g.stats.levelsDone],
                           ['En yüksek bölüm', g.enYuksek],
                           ['Toplam yıldız', g.stats.stars || 0],
-                          ['Toplam puan', g.stats.totalScore],
+                          ['Toplam puan', sayiYaz(g.stats.totalScore)],
+                          ['Kazanılan altın', g.stats.goldEarned || 0],
+                        ]],
+                        ['Günlük bulmaca', [
+                          ['Çözülen bulmaca', g.stats.dailySolved || 0],
+                          ['En uzun seri', `${g.stats.bestStreak || 0} gün`],
                         ]],
                         ['Oyun', [
                           ['Yapılan hamle', g.stats.movesMade],
                           ['Patlatılan taş', g.stats.gems],
                           ['Kırılan buz', g.stats.iceBroken || 0],
+                          ['İndirilen kiraz', g.stats.cherries || 0],
                           ['En uzun kombo', g.stats.maxCombo],
                         ]],
                         ['Özel taşlar', [
