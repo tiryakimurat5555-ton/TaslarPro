@@ -1,5 +1,5 @@
 // Expo modullerinin deneme taklitleri
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 
 export function LinearGradient(p) {
   const renk = (p.colors || []).join(', ');
@@ -51,3 +51,29 @@ const AsyncStorage = {
   setItem: async (k, v) => localStorage.setItem(k, v),
 };
 export default AsyncStorage;
+
+// expo-gl: tarayıcıdaki gerçek WebGL tuvali
+export function GLView(p) {
+  const ref = useRef(null);
+  useEffect(() => {
+    const c = ref.current;
+    c.width = c.clientWidth;
+    c.height = c.clientHeight;
+    const gl = c.getContext('webgl2');
+    if (!gl) return;
+    gl.endFrameEXP = () => {};
+    p.onContextCreate && p.onContextCreate(gl);
+  }, []);
+  return <canvas ref={ref} style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '100%' }} />;
+}
+
+// expo-speech: söylenenler pencereye yazılır
+window.__konusmalar = [];
+export function speak(metin, o) {
+  window.__konusmalar.push(metin);
+  setTimeout(() => o && o.onDone && o.onDone(), Math.min(1500, 200 + metin.length * 10));
+}
+export function stop() {}
+export async function getAvailableVoicesAsync() {
+  return [{ identifier: 'tr-deneme', language: 'tr-TR', quality: 'Default' }];
+}

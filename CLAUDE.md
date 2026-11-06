@@ -1,4 +1,8 @@
-# TaslarPro — çalışma notları
+# TaslarPro deposu — çalışma notları
+
+Depo artık **İki Sancak** (çalışma adı) için kullanılıyor: Knight Online ruhunda, fantastik, 3B, kendi sesiyle konuşan
+erişilebilir RPG (6 Kasım 2026'da başladı). Eski Renkli Taşlar oyunu `arsiv/renkli-taslar/` altında (App.js ve testleri);
+geri dönmek gerekirse oradan alınır. Expo projesi ve slug aynı (taslarpro), görünen ad "İki Sancak".
 
 ## Murat ile çalışma
 - Murat'ın yalnızca iPhone'u var; kodu elle düzenleyemez. Bütün dosyaları ben yazar, depoya gönderirim.
@@ -6,70 +10,38 @@
 - Her şey Türkçe: arayüz, VoiceOver etiketleri, kod içi adlar ve yorumlar.
 - Oyun dengesi (puan hedefleri, hamle sayıları) Murat'a önerilir, onaylarsa uygulanır.
 - Test edilmemiş bir özelliği çalışıyor diye sunma. Görüntü ve ses ancak Murat Expo Go'da denediğinde doğrulanır.
+- Murat'a belge verirken Claude Docs kullanma (VoiceOver ile erişilebilirliği kötü dedi); sade, başlıklı, tablo başlıklı HTML sayfası yap.
 
-## Oyun
-- Renkli Taşlar: Murat'ın HTML oyunu (renkli-taslar-pro.html) sıfırdan React Native'e yazıldı (31 Ekim 2026).
-- 6x6 tahta, dokun-seç-dokun-takas; yalnız eşleşme oluşturan takaslar geçerli. VoiceOver ile oynanır
-  (oyun kendi sesini kullanmaz): tahtanın üstünde sabit, şeffaf 36 Pressable katmanı vardır, görsel taşlar altta
-  ve erişilebilirlikten gizlidir; böylece animasyonlar VoiceOver odağını kaydırmaz. Sonuçlar announceForAccessibility ile.
-  Hücre etiketinde engel başta (Murat istedi): "Buzlu Kırmızı, 6. satır, 5. sütun", "Zincirli kalın buzlu Mavi yatay çizgili, ...".
-- Özel taşlar: 4'lü → çizgili (yatay eşleşme satırı, dikey eşleşme sütunu temizler), L/T → bomba (3x3),
-  5'li → renk bombası. Özel+özel takas kombinasyonları ozelKombo'da.
-- Zorluk eğrisi (31 Ekim, Murat "kolaydan zora" istedi): DENGE tablosu + egri() doğrusal ara değer. Renk sayısı 1-3: 4,
-  4-19: 5, 20+: 6 (20'de hedefler bir kez düşer). bolumTipi: 1 puan, 2 renk, 3 puan, 4 özel; 5'ten sonra
-  buz/puan/kiraz/renk/özel döngüsü (5 buz, 7 kiraz). Engeller: buz 5+, kalın buz 13+, zincir 10+, taş blok 15+ (22+ iki vuruşluk).
-  araclar/denge-simulasyonu.js (akıllı oyuncu, %25 rastgele): 1-12 ~%75-100, 20 civarı %40-80, 40 civarı %25-60
-  (simülasyon oyuncusu kirazda zayıf; gerçek oyuncu daha iyi).
-- Kiraz hedefi (1 Kasım): gem {color: -3, special: 'meyve'} (KIRAZ, kirazMi). Eşleşmez, patlamaz (temizlikHesapla atlar),
-  özel kombo yapmaz. En alt satıra inince kirazTopla; tahtada en çok 2 kiraz, kirazEkle üst satıra koyar. Kiraz bölümlerinde
-  zincir ve taş blok yok, üst satırda buz yok. Uygulamada kirazlariIsle (zincirle içinde, her yerçekiminden sonra).
-  Tahtanın altında yanıp sönen ▼ okları.
-- Günlük bulmaca (1 Kasım): gunlukBulmacaHazirla(tarih) → rastgeleKaynak(tohumluUretec(metinTohumu(...))); bölüm 8-32
-  arasından, herkese aynı tahta. Oyun boyunca tohumlu rng kalır (bolumBaslat Math.random'a döner; ödül seçimleri hep
-  Math.random). s.oyunModu 'bolum' | 'gunluk'. İlk çözüş: 40 + 5×seri (en çok 90) altın + bonus; s.gb {cozulen, seri, enIyi, enIyiTarih}.
-- Altın ve mağaza (1 Kasım): başlangıç 50; bölüm 10 + 5×yıldız. MAGAZA_FIYAT ipucu 20, karıştır 30, bomba 50, renk 70, 2x 40.
-  Hamle bitince bir kez "+5 hamle" 40 altın (s.ekHamleAlindi). Sayılar Murat'a önerildi, onayı beklenmeden uygulandı
-  ("her açıdan geliştir" dedi); değiştirmek isterse DENGE/MAGAZA_FIYAT/EK_HAMLE_FIYAT.
-- Tanıtım pencereleri: TANITIMLAR + tanitimlariBul(ayar); s.tanitimlar'da olmayan öğe bölüm başında bir kez anlatılır.
-  Eski kayıtlarda geçilmiş bölümlerin öğeleri sessizce görülmüş sayılır.
-- VoiceOver hızlı eylemleri: her hücrede accessibilityActions (sag/sol/yukari/asagi = yer değiştir, satir/sutun = oku),
-  hucreEylemi. satirMetni/sutunMetni hucreKisa ile ("buzlu kiraz").
-- Ayarlar: hizli (HIZ 0.55, sn() ile süreler), azHareket (AZ_HAREKET: sarsıntı, konfeti, kabarcık, afiş kayması yok;
-  ilk açılışta sistem "Hareketi Azalt" ayarından), kisaDuyuru (hamle duyurusu yalnız puan/hedef/hamle).
-- Bölüm başına en iyi puan s.enIyi (haritada ve "Yeni rekor!").
-- Yıldız: kalan hamle oranı ≥0,3 → 3, ≥0,12 → 2, yoksa 1 (yildizHesapla). Kalan hamle × 60 bonus puan (istatistiğe).
-- Ana ekran düğmeleri: Bölümler, Tekrarla (mod bilir: tekrarla()), Bonuslar; Günlük Bulmaca, Mağaza.
-- Bölüm haritası (açılan bölümler, yıldızlar, istenen bölüm tekrar oynanır), enYuksek, yildizlar.
-- Bonuslar: ipucu, karıştır, bomba, renk, 2x puan. 14 başarım, günlük 3 görev (9'luk havuz), istatistikler, koyu/açık tema.
-  "Baştan Başla" Menü > Ayarlar > Oyun grubunda; her şeyi siler (ayarlar kalır).
-- Menü (31 Ekim): 4 sekme (MENU_SEKMELERI) tek satır; VoiceOver etiketi "Ayarlar, seçili, sekme 1 / 4" (seçili bilgisi
-  etikette, accessibilityState yok ki iki kez okunmasın). İçerik MenuGrubu kutularında, başlıklar header rolünde:
-  Ayarlar (Ses, Dokunuş, Görünüm, Oyun), Görevler (x / 3 tamamlandı), Başarımlar (Kazanılanlar / Kazanılacaklar),
-  İstatistik (İlerleme, Oyun, Özel taşlar, Bonuslar). Anahtarlar AnahtarSatiri: satırın tamamı switch rolünde.
-- Kayıt: AsyncStorage 'taslarpro-kayit-v1' (bölüm, bonuslar, istatistik, başarımlar, günlük, ayarlar, enYuksek, yildizlar,
-  enIyi, altin, tanitimlar, gb, devam = yarım kalan bölümün tahtası/puanı/hamlesi + mod/gunlukL/tarih/ekHamleAlindi;
-  açılışta kimlikAyarla + tahtaGecerliMi ile geri yüklenir; günlük devam yalnızca aynı gün).
-- Görsel: expo-linear-gradient. Hareketli degrade arka plan + kabarcıklar, degrade taşlar, renge göre şekil (TAS_SEKIL:
-  kare/daire/elmas), özel taşlar ortak parilti/donus döngüleriyle canlı, bölüm giriş afişi, kombo yazısı, konfeti ve
-  sırayla gelen yıldızlar, sayan puan (useSayac), bomba/renk bombasında sarsıntı, buz/blok/zincir kırık parçaları,
-  son 5 hamlede nabız + uyari sesi, 14 sn boşta kalınca sessiz ipucu parlaması.
-
-## Yapı
-- App.js tek dosya. Oyun mantığı `// ==== MANTIK BASLANGIC ====` ile `// ==== MANTIK BITIS ====` arasında, saf JS.
-  Test: `node araclar/mantik-testi.js App.js` (rastgele oyun simülasyonu + özel taş/engel/kiraz/tohum testleri).
-- Tarayıcı denemesi (arayüz çöküyor mu, pencereler, akışlar): `bash araclar/web-deneme/yap.sh <klasör>` sonra
-  `node araclar/web-deneme/dene.cjs <klasör> <ekran-klasörü>`. rn-taklit.js / expo-taklit.js basit web taklitleridir
-  (React /opt/npm-tools'tan, esbuild ile). Görüntü yaklaşıktır (sembol yazı tipi yok); asıl amaç hata yakalamak.
-  Kayıt ön yüklemesiyle kiraz toplama, kaybetme (+5 hamle), kazanma, günlük bulmaca kazanma denenir.
-- Statik denetim: eslint no-undef / no-use-before-define (yapılandırma geçici klasörde; JSX adlarını denetlemez).
+## İki Sancak
+- Tasarım kararları (6 Kasım, Murat): fantastik dünya, 4 sınıf (Savaşçı, Okçu, Büyücü, Rahip), deneme için seviye sınırı 30,
+  oyunun kendi ses motoru. Tasarım belgesi: claude.ai artifact "Karakter Sistemi" (karakter, nitelik, gelişim, yetenek, basma).
+- Dosyalar: `oyun/veri.js` (sınıf, ırk, ulus, yetenek, canavar, görev tabloları), `oyun/mantik.js` (saf mantık: karakter,
+  hasar, deneyim 100×sv^2.2, dünya, canavar yapay zekâsı, görevler, yön tarifleri), `oyun/ses.js` (expo-speech konuşma motoru:
+  öncelik 0-5, 3+ keser, kuyruk 4, 4 sn bayatlama; kipler kendi / voiceover / gorerek), `oyun/sahne.js` (expo-gl + three 0.166.1,
+  düşük poligonlu ilkel şekiller, üçüncü şahıs kamera, setViewOffset ile görüntü merkezi yukarıda), `App.js` (arayüz).
+- Koordinat: x doğu, y kuzey; yön 0 = kuzey, saat yönünde artar. three'de (x, 0, -y), rotation.y = -yon.
+  Yönler saat gibi söylenir (saatYonu/saatSozu): 12 önde, 3 sağda.
+- Kipler: ilk açılışta seçilir (VoiceOver açıksa VoiceOver/kendi seçimi). Kendi seste Dugme: tek dokunuş adı okur, 500 ms içinde
+  ikinci dokunuş çalıştırır. VoiceOver kipinde joystick yerine İleri yürü / Sola dön / Sağa dön / Geri git düğmeleri.
+  Panel açıkken alttaki oyun öğeleri erişilebilirlikten gizlenir, panel accessibilityViewIsModal; panel açıkken dünya durur.
+- Dünya: yarıçap 285 m, köy ortada (yarıçap 18, canavarlar köye girmez), 4 yol, 520 ağaç/kaya (tohum 7). Canavar halkaları
+  köyden uzaklaştıkça güçlenir (kurt 1-3 … gölge şövalye 23-28), kuzeyde Bataklık ejderi (30, patron). Görev zinciri
+  9 adım (GOREVLER), Muhtar köyün kuzeyinde (0,5), oyuncu (0,1)'de doğar. Tüccar: iksir alır, eşya satar.
+- Hedefe yürürken engeldenKacan ağaç/kayanın yanından dolaşır (bot bunun için takılıyordu).
+- Kayıt: AsyncStorage 'ikisancak-karakter-v1' (karakter + konum), ayarlar 'ikisancak-ayar-v1'.
+- Testler: `bun araclar/oyun-testi.js [dakika]` (her sınıf için bot oynatır; 60 dk'da bot 30'a ulaşıyor, deneme için bilerek hızlı).
+  Tarayıcı: `bash araclar/web-deneme/yap.sh /tmp/oyun-web && NODE_PATH=/opt/npm-tools/node_modules node araclar/web-deneme/dene.cjs /tmp/oyun-web /tmp/oyun-ekran`
+  (three'yi /tmp/claude-0/three/build/three.module.js'den alır: `git clone --depth 1 --filter=blob:none --sparse -b r166 https://github.com/mrdoob/three.js`
+  ve `git sparse-checkout set --no-cone /build/three.module.js`; THREE_YOLU ile değiştirilebilir). expo-gl taklidi gerçek WebGL tuvali kullanır,
+  yani 3B sahne de denenir. Görerek, sesle (çift dokunuş) ve VoiceOver kipleri denenir.
 - Sözdizimi denetimi: `bun build index.js --outdir <geçici> $(node -e "const p=require('./package.json');console.log(Object.keys(p.dependencies).map(d=>'-e '+d).join(' '))") -e 'react-native/*' -e '*.mp3' -e '*.png'`
-- Sesler assets/sounds: 24 efekt (ikinci parti: yildiz, bolumbasla (1,8 sn'ye kesildi), uyari, sayma, konfeti, tasblok, karistirma;
-  üçüncü parti: altin, kiraz, satinal) ElevenLabs eleven_text_to_sound_v2 (indirme .github/workflows/sesleri-indir.yml ile;
-  bu ortam ElevenLabs depolamasına erişemez, .sesler/liste.txt push edilince Actions indirir). buton.mp3 ve muzik.mp3
-  araclar/muzik-ve-buton-sesi.py ile üretildi (ElevenLabs bağlantısı müzik üretmiyor).
-- Expo SDK 58. Sürümler expo deposunun sdk-58 dalındaki packages/expo/bundledNativeModules.json'dan.
+- Sıradakiler (Murat onaylamadı, öneri): ses efektleri (ElevenLabs), yönlü canavar sesleri, eşya basma, ikinci ulus köyü, çok oyunculu sunucu.
+
+## Ortak
+- Expo SDK 58. Sürümler expo deposunun sdk-58 dalındaki packages/expo/bundledNativeModules.json'dan (expo-gl ~58.0.4, expo-speech ~58.0.3).
 - Yayın: main'e push → .github/workflows/expo-guncelleme.yml → eas update (branch main). EXPO_TOKEN gizli anahtarı gerekir.
-  Kayıt: `git fetch -q origin yayin-kaydi && git show FETCH_HEAD:yayin-kaydi.txt`
+  Kayıt: `git fetch -q origin yayin-kaydi && git show FETCH_HEAD:yayin-kaydi.txt`. docs/** yayını tetiklemez.
+- assets/sounds: Renkli Taşlar'ın ses efektleri (şimdilik kullanılmıyor).
 
 ## Sokağın Şarkısı (6 Kasım 2026)
 - docs/index.html: yürüyüşü anlık müziğe çeviren tek dosyalık web prototipi (Web Audio, mikrofon analizi, adım sensörü,

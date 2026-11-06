@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "TaslarPro",
+    "name": "İki Sancak",
     "slug": "taslarpro",
     "owner": "murat5561",
     "version": "1.0.0",
@@ -10,7 +10,7 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#1E5BA8"
+      "backgroundColor": "#14161b"
     },
     "ios": {
       "supportsTablet": true,

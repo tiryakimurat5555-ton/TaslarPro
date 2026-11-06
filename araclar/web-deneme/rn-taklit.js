@@ -219,9 +219,30 @@ function dokunma(p) {
   return p.pointerEvents === 'none' ? { pointerEvents: 'none' } : {};
 }
 
+function panOlaylari(p) {
+  const cfg = p.__pan;
+  if (!cfg) return {};
+  return {
+    onMouseDown: (e) => {
+      const r = e.currentTarget.getBoundingClientRect();
+      const x0 = e.clientX;
+      const y0 = e.clientY;
+      cfg.onPanResponderGrant && cfg.onPanResponderGrant({ nativeEvent: { locationX: x0 - r.left, locationY: y0 - r.top } });
+      const tasi = (m) => cfg.onPanResponderMove && cfg.onPanResponderMove({ nativeEvent: {} }, { dx: m.clientX - x0, dy: m.clientY - y0 });
+      const birak = () => {
+        window.removeEventListener('mousemove', tasi);
+        window.removeEventListener('mouseup', birak);
+        cfg.onPanResponderRelease && cfg.onPanResponderRelease({ nativeEvent: {} }, {});
+      };
+      window.addEventListener('mousemove', tasi);
+      window.addEventListener('mouseup', birak);
+    },
+  };
+}
+
 const View = React.forwardRef(function View(p, ref) {
   return (
-    <div ref={ref} style={{ ...css(p.style, true), ...dokunma(p) }} {...erisim(p)}>
+    <div ref={ref} style={{ ...css(p.style, true), ...dokunma(p) }} {...erisim(p)} {...panOlaylari(p)}>
       {p.children}
     </div>
   );
@@ -288,16 +309,25 @@ Animated.Text = AnimatedText;
 const StyleSheet = {
   create: (x) => x,
   absoluteFill: { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 },
+  absoluteFillObject: { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 },
 };
+
+const PanResponder = { create: (cfg) => ({ panHandlers: { __pan: cfg } }) };
+const AppState = { addEventListener: () => ({ remove() {} }) };
+const Platform = { OS: 'ios' };
+function TextInput(p) {
+  return <input aria-label={p.accessibilityLabel} placeholder={p.placeholder} value={p.value} onChange={(e) => p.onChangeText && p.onChangeText(e.target.value)} style={css(p.style)} />;
+}
 
 window.__duyurular = [];
 const AccessibilityInfo = {
   announceForAccessibility: (m) => window.__duyurular.push(m),
   isReduceMotionEnabled: async () => false,
+  isScreenReaderEnabled: async () => !!window.__voiceover,
 };
 
 function useWindowDimensions() {
   return { width: 390, height: 844 };
 }
 
-export { View, Text, Pressable, StyleSheet, Animated, Easing, Modal, ScrollView, Switch, AccessibilityInfo, useWindowDimensions };
+export { View, Text, Pressable, StyleSheet, Animated, Easing, Modal, ScrollView, Switch, AccessibilityInfo, useWindowDimensions, PanResponder, AppState, Platform, TextInput };

@@ -1,6 +1,9 @@
-# TaslarPro — Renkli Taşlar
+# İki Sancak (çalışma adı)
 
-VoiceOver ile oynanabilen, Türkçe eşleştirme oyunu. Expo (SDK 58) ve React Native ile yazıldı.
+Fantastik, 3B, kendi sesiyle konuşan ve görmeden de oynanabilen bir rol yapma oyunu. Expo (React Native) ile yapılıyor.
 
-- Expo projesi: [@murat5561/taslarpro](https://expo.dev/accounts/murat5561/projects/taslarpro)
-- main dalına her gönderimde oyun Expo Go için güncelleme olarak yayınlanır.
+- `oyun/` oyunun verisi, mantığı, ses motoru ve 3B sahnesi
+- `App.js` arayüz
+- `araclar/` testler
+- `arsiv/renkli-taslar/` bu depodaki önceki oyun (Renkli Taşlar)
+- `docs/` Sokağın Şarkısı web denemesi (GitHub Pages)
