@@ -1,0 +1,400 @@
+<title>Sokağın Şarkısı</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Layout: tek sütun, gece sokağı. Sodyum lamba sarısı vurgu, asfalt mavisi zemin. Tek (koyu) tema bilinçli seçim. */
+:root{
+  --asfalt:#10161c;
+  --kaldirim:#1a232c;
+  --cizgi:#2b3946;
+  --yazi:#e9eef2;
+  --soluk:#9aabb9;
+  --lamba:#f4b544;
+  --kus:#7fd6c2;
+  --bas:#8e9cff;
+  --display:"Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --govde:"Atkinson Hyperlegible", -apple-system, system-ui, sans-serif;
+  color-scheme:dark;
+}
+html,body{background:var(--asfalt);color:var(--yazi)}
+body{font-family:var(--govde);font-size:17px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:20px 40px}
+.sayfa{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+h1{font-family:var(--display);font-weight:800;font-size:2.4rem;line-height:1;margin:0;letter-spacing:-.02em;text-wrap:balance}
+h1 span{color:var(--lamba)}
+h2{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0 0 10px}
+.alt{color:var(--soluk);margin:8px 0 0;max-width:60ch}
+button,select,input{font:inherit}
+button{cursor:pointer;border-radius:12px;border:1px solid var(--cizgi);background:var(--kaldirim);color:var(--yazi);padding:12px 16px;min-height:48px}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--lamba);outline-offset:2px}
+.basla{background:var(--lamba);color:#1b1205;border:none;font-weight:700;font-size:1.15rem;flex:1 1 200px}
+.butonlar{display:flex;flex-wrap:wrap;gap:10px}
+#durum{min-height:1.5em;color:var(--lamba);font-weight:700;margin:0}
+.sahne{position:relative;border-radius:14px;overflow:hidden;background:#0b1015;border:1px solid var(--cizgi)}
+canvas{display:block;width:100%;height:200px}
+.serit{position:absolute;left:10px;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--soluk);pointer-events:none}
+.olcumler{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 18px}
+.olcum{display:flex;flex-direction:column;gap:4px;min-width:0}
+.olcum label{font-size:.85rem;color:var(--soluk)}
+.olcum b{font-family:var(--display);font-size:1.6rem;font-variant-numeric:tabular-nums;line-height:1}
+meter{width:100%;height:10px}
+.panel{border-top:1px solid var(--cizgi);padding-top:18px}
+.satir{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+fieldset{border:none;margin:0;padding:0}
+legend{font-size:.85rem;color:var(--soluk);margin-bottom:8px}
+.secim{display:flex;flex-wrap:wrap;gap:8px}
+.secim label{display:flex;align-items:center;gap:8px;background:var(--kaldirim);border:1px solid var(--cizgi);border-radius:999px;padding:8px 14px;min-height:44px}
+.secim input{accent-color:var(--lamba);width:20px;height:20px}
+.kontrol{display:flex;flex-direction:column;gap:6px;flex:1 1 200px;min-width:0}
+.kontrol span{font-size:.85rem;color:var(--soluk)}
+select{background:var(--kaldirim);color:var(--yazi);border:1px solid var(--cizgi);border-radius:10px;padding:10px;min-height:44px}
+input[type=range]{accent-color:var(--lamba);width:100%}
+.onay{display:flex;align-items:center;gap:10px;min-height:44px}
+.onay input{width:22px;height:22px;accent-color:var(--lamba)}
+.kayit-aktif{background:#5a1e1e;border-color:#a8483f}
+#kayitlar{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:12px}
+#kayitlar li{background:var(--kaldirim);border:1px solid var(--cizgi);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px}
+#kayitlar audio{width:100%}
+.not{color:var(--soluk);font-size:.9rem;margin:0}
+.gizli{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<main class="sayfa">
+  <header>
+    <h1>Sokağın <span>Şarkısı</span></h1>
+    <p class="alt">Yürü, telefon etrafı dinlesin. Adımların ritmi, kuşlar melodiyi, trafik basları çalar. Her yürüyüşün kendi şarkısı olur.</p>
+  </header>
+
+  <div class="butonlar">
+    <button id="baslaMik" class="basla">Yürüyüşü başlat</button>
+    <button id="baslaDemo">Mikrofonsuz dene</button>
+    <button id="durdur" hidden>Durdur</button>
+  </div>
+  <p id="durum" role="status" aria-live="polite">Hazır. Kulaklık takman önerilir.</p>
+  <div id="anlatim" class="gizli" aria-live="polite"></div>
+
+  <div class="sahne" role="img" aria-label="Çalan notaların görseli. Üstte melodi, ortada ritim, altta bas.">
+    <canvas id="tuval" aria-hidden="true"></canvas>
+    <span class="serit" style="top:8px">Melodi</span>
+    <span class="serit" style="top:45%">Ritim</span>
+    <span class="serit" style="bottom:8px">Bas</span>
+  </div>
+
+  <section class="olcumler" aria-label="Anlık ölçümler">
+    <div class="olcum"><label id="lTempo">Tempo (vuruş/dk)</label><b id="tempo" aria-labelledby="lTempo">84</b></div>
+    <div class="olcum"><label id="lAdim">Adım/dk</label><b id="adim" aria-labelledby="lAdim">0</b></div>
+    <div class="olcum"><label for="mBas">Bas sesler (trafik, rüzgâr)</label><meter id="mBas" min="0" max="1" value="0"></meter></div>
+    <div class="olcum"><label for="mTiz">Tiz sesler (kuş, zil)</label><meter id="mTiz" min="0" max="1" value="0"></meter></div>
+    <div class="olcum"><label for="mOrtam">Ortam yoğunluğu</label><meter id="mOrtam" min="0" max="1" value="0"></meter></div>
+    <div class="olcum"><label id="lDuygu">Duygu</label><b id="duyguYazi" aria-labelledby="lDuygu" style="font-size:1.2rem">Neşeli</b></div>
+  </section>
+
+  <section class="panel" aria-labelledby="hAyar">
+    <h2 id="hAyar">Ayarlar</h2>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="satir">
+        <button id="adimAt">Adım at (dokun)</button>
+        <label class="onay"><input type="checkbox" id="otoYuru">Otomatik yürü</label>
+      </div>
+      <fieldset id="sahneSec" hidden>
+        <legend>Deneme ortamı</legend>
+        <div class="secim">
+          <label><input type="radio" name="sahne" value="park" checked>Park</label>
+          <label><input type="radio" name="sahne" value="cadde">Cadde</label>
+          <label><input type="radio" name="sahne" value="sahil">Sahil</label>
+          <label><input type="radio" name="sahne" value="sessiz">Sessiz sokak</label>
+        </div>
+      </fieldset>
+      <div class="satir">
+        <label class="kontrol"><span>Duygu</span>
+          <select id="duygu">
+            <option value="oto">Saate göre</option>
+            <option value="nese">Neşeli (sabah)</option>
+            <option value="huzun">Gizemli (gece)</option>
+          </select>
+        </label>
+        <label class="kontrol"><span>Mikrofon hassasiyeti</span>
+          <input type="range" id="hassas" min="0.5" max="2.5" step="0.1" value="1.2">
+        </label>
+      </div>
+      <label class="onay"><input type="checkbox" id="sesliBildirim" checked>Değişiklikleri sesli anlat (VoiceOver)</label>
+    </div>
+  </section>
+
+  <section class="panel" aria-labelledby="hKayit">
+    <h2 id="hKayit">Yürüyüş şarkıların</h2>
+    <button id="kayit" disabled>Şarkıyı kaydetmeye başla</button>
+    <ul id="kayitlar"></ul>
+    <p class="not" id="kayitBos">Henüz kayıt yok. Yürüyüşü başlatıp kayda bas.</p>
+  </section>
+
+  <p class="not">Mikrofon konuşmaları kaydetmez; sadece sesin ne kadar yüksek, tiz ya da bas olduğunu ölçer. Kaydedilen şey yalnızca çalınan müziktir.</p>
+</main>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const S={ctx:null,running:false,mode:null,analyser:null,freq:null,time:null,stream:null,
+  low:0,high:0,level:0,chirpUntil:0,highPrev:0,
+  steps:[],cadence:0,walking:false,bpm:84,step16:0,nextTime:0,bar:0,melIdx:4,
+  tick:null,wake:null,parts:[],lastAnn:0,annState:{},
+  rec:null,recChunks:[],recStart:0,recScene:'',sim:{low:0,high:0,level:0,spike:0}};
+let bus,rev,revSend,master,recDest,noiseBuf;
+
+const SCALE={nese:[0,2,4,7,9],huzun:[0,3,5,7,10]};
+const ROOT={nese:60,huzun:57};
+const PROG={nese:[0,3,1,4],huzun:[0,2,3,1]};
+const mtof=m=>440*Math.pow(2,(m-69)/12);
+const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
+
+function mood(){
+  const v=$('duygu').value; if(v!=='oto') return v;
+  const h=new Date().getHours(); return (h>=6&&h<18)?'nese':'huzun';
+}
+function sn(i,m){const sc=SCALE[m];return sc[((i%5)+5)%5]+12*Math.floor(i/5);}
+
+function announce(msg,force){
+  if(!$('sesliBildirim').checked) return;
+  const now=Date.now(); if(!force&&now-S.lastAnn<7000) return;
+  S.lastAnn=now; const el=$('anlatim'); el.textContent=''; setTimeout(()=>{el.textContent=msg},60);
+}
+function setStatus(m){$('durum').textContent=m;}
+
+function buildAudio(){
+  const ctx=S.ctx=new (window.AudioContext||window.webkitAudioContext)();
+  master=ctx.createGain(); master.gain.value=0.8;
+  const comp=ctx.createDynamicsCompressor(); comp.threshold.value=-14; comp.ratio.value=4;
+  master.connect(comp); comp.connect(ctx.destination);
+  if(ctx.createMediaStreamDestination){recDest=ctx.createMediaStreamDestination(); comp.connect(recDest);}
+  bus=ctx.createGain(); bus.connect(master);
+  rev=ctx.createConvolver(); const len=ctx.sampleRate*2.6, ir=ctx.createBuffer(2,len,ctx.sampleRate);
+  for(let c=0;c<2;c++){const d=ir.getChannelData(c);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,2.6);}
+  rev.buffer=ir; revSend=ctx.createGain(); revSend.gain.value=0.3; revSend.connect(rev); rev.connect(master);
+  noiseBuf=ctx.createBuffer(1,ctx.sampleRate,ctx.sampleRate); const nd=noiseBuf.getChannelData(0);
+  for(let i=0;i<nd.length;i++)nd[i]=Math.random()*2-1;
+}
+function env(g,t,v,att,dur){g.gain.setValueAtTime(0.0001,t);g.gain.linearRampToValueAtTime(Math.max(v,0.0002),t+att);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);}
+function out(node,wet){node.connect(bus); if(wet){const s=S.ctx.createGain();s.gain.value=wet;node.connect(s);s.connect(revSend);}}
+
+function kick(t,v){const c=S.ctx,o=c.createOscillator(),g=c.createGain();
+  o.frequency.setValueAtTime(130,t);o.frequency.exponentialRampToValueAtTime(42,t+0.16);
+  g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(0.0001,t+0.38);
+  o.connect(g);out(g,0);o.start(t);o.stop(t+0.4);part(1,t,'#f4b544',7);}
+function hat(t,v){const c=S.ctx,s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();
+  s.buffer=noiseBuf;f.type='highpass';f.frequency.value=7000;
+  g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(0.0001,t+0.05);
+  s.connect(f);f.connect(g);out(g,0.1);s.start(t,Math.random()*0.8);s.stop(t+0.07);part(1,t,'#c9d3dc',3);}
+function bass(t,m,v,dur){const c=S.ctx,o=c.createOscillator(),f=c.createBiquadFilter(),g=c.createGain();
+  o.type='sawtooth';o.frequency.value=mtof(m);f.type='lowpass';f.frequency.value=300+S.low*700;f.Q.value=4;
+  env(g,t,v,0.02,dur);o.connect(f);f.connect(g);out(g,0.08);o.start(t);o.stop(t+dur+0.05);part(2,t,'#8e9cff',9);}
+function pad(t,notes,v,dur){const c=S.ctx;notes.forEach((m,i)=>{[-6,6].forEach(dt=>{
+  const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=mtof(m);o.detune.value=dt;
+  env(g,t,v/notes.length,dur*0.35,dur);o.connect(g);out(g,0.6);o.start(t);o.stop(t+dur+0.1);});});}
+function pluck(t,m,v){const c=S.ctx,o=c.createOscillator(),o2=c.createOscillator(),g=c.createGain();
+  o.type='triangle';o.frequency.value=mtof(m);o2.type='sine';o2.frequency.value=mtof(m+12);
+  env(g,t,v,0.005,0.9);o.connect(g);o2.connect(g);out(g,0.7);o.start(t);o2.start(t);o.stop(t+1);o2.stop(t+1);
+  part(0,t,'#7fd6c2',6+v*20);}
+
+function part(lane,t,color,size){S.parts.push({lane,t,color,size}); if(S.parts.length>200)S.parts.shift();}
+
+function playStep(s,t){
+  const m=mood(), root=ROOT[m], spb=60/S.bpm, lv=S.level;
+  const ci=PROG[m][S.bar%4], chord=[ci,ci+2,ci+4].map(i=>root+sn(i,m));
+  if(S.walking){ if(s%4===0) kick(t,0.45+0.35*lv); }
+  else if(s===0 && lv>0.2) kick(t,0.25);
+  if(s%4===2 && lv>0.15) hat(t,0.04+0.12*lv);
+  else if(s%2===1 && lv>0.6) hat(t,0.03);
+  if(s===0||s===8) bass(t,chord[0]-12,0.12+0.38*S.low,spb*1.7);
+  if(s===14 && S.low>0.55) bass(t,chord[1]-12,0.2*S.low,spb*0.5);
+  if(s===0) pad(t,chord,0.05+0.09*(1-lv),spb*4.2);
+  if(s%2===0){
+    const chirp=S.ctx.currentTime<S.chirpUntil;
+    const chance=chirp?0.95:S.high*0.55;
+    if(Math.random()<chance){
+      const target=Math.round(S.high*9);
+      S.melIdx+=Math.sign(target-S.melIdx)+Math.round((Math.random()-0.5)*2.4);
+      S.melIdx=clamp(S.melIdx,0,10);
+      pluck(t,root+12+sn(S.melIdx,m),0.08+0.14*S.high);
+    }
+  }
+}
+
+const SCENES={
+  park:{low:.15,high:.55,level:.35,spike:.035},
+  cadde:{low:.78,high:.25,level:.75,spike:.004},
+  sahil:{low:.5,high:.18,level:.45,spike:.006,wave:true},
+  sessiz:{low:.06,high:.08,level:.08,spike:.002}
+};
+function analyse(){
+  let lo,hi,lv;
+  if(S.mode==='mic'&&S.analyser){
+    const a=S.analyser,f=S.freq,binHz=S.ctx.sampleRate/a.fftSize,k=parseFloat($('hassas').value);
+    a.getByteFrequencyData(f);
+    const avg=(h1,h2)=>{const i1=Math.max(1,Math.floor(h1/binHz)),i2=Math.min(f.length-1,Math.floor(h2/binHz));let s=0;for(let i=i1;i<=i2;i++)s+=f[i];return s/(i2-i1+1)/255;};
+    a.getFloatTimeDomainData(S.time); let r=0; for(let i=0;i<S.time.length;i++)r+=S.time[i]*S.time[i];
+    lo=clamp((avg(40,300)-0.18)*1.8*k); hi=clamp((avg(2000,8000)-0.06)*3*k); lv=clamp(Math.sqrt(r/S.time.length)*9*k);
+  } else {
+    const sc=SCENES[(document.querySelector('input[name=sahne]:checked')||{}).value||'park'], now=S.ctx.currentTime;
+    const wave=sc.wave?0.35*Math.sin(now*0.9):0;
+    if(Math.random()<sc.spike) S.sim.spike=1;
+    S.sim.spike*=0.9;
+    lo=clamp(sc.low+wave+(Math.random()-.5)*.15); hi=clamp(sc.high+S.sim.spike*.5+(Math.random()-.5)*.1);
+    lv=clamp(sc.level+wave*.5+(Math.random()-.5)*.1);
+  }
+  if(hi>S.high+0.18) S.chirpUntil=S.ctx.currentTime+0.25;
+  S.low+=(lo-S.low)*0.06; S.high+=(hi-S.high)*0.08; S.level+=(lv-S.level)*0.05;
+}
+
+function addStep(){
+  const now=performance.now(); S.steps.push(now); if(S.steps.length>8)S.steps.shift();
+  if(S.steps.length>=3){const ints=[];for(let i=1;i<S.steps.length;i++)ints.push(S.steps[i]-S.steps[i-1]);
+    const avg=ints.reduce((a,b)=>a+b,0)/ints.length; if(avg>250&&avg<1500) S.cadence=60000/avg;}
+}
+let lastPeak=0,autoT=0;
+function onMotion(e){
+  const a=e.accelerationIncludingGravity; if(!a||a.x==null) return;
+  const mag=Math.sqrt(a.x*a.x+a.y*a.y+a.z*a.z), now=performance.now();
+  if(mag>11.8 && now-lastPeak>300){lastPeak=now; addStep();}
+}
+function updateWalk(){
+  const now=performance.now();
+  if($('otoYuru').checked && now-autoT>560){autoT=now;addStep();}
+  const last=S.steps[S.steps.length-1]||0, was=S.walking;
+  S.walking=now-last<2500 && S.cadence>0;
+  if(!S.walking) S.cadence*=0.97;
+  const night=mood()==='huzun';
+  const target=S.walking?clamp(S.cadence*(night?0.85:0.95),70,150):(night?60:66);
+  S.bpm+=(target-S.bpm)*0.03;
+  revSend.gain.value=night?0.5:0.28;
+  if(S.walking&&!was) announce('Yürüyüş başladı, ritim devreye girdi.');
+  if(!S.walking&&was) announce('Durdun, müzik yavaşlıyor.');
+}
+function describe(){
+  const st=S.annState;
+  const kus=S.high>0.45, trafik=S.low>0.6, sessiz=S.level<0.12;
+  if(kus&&!st.kus) announce('Kuş sesleri arttı, yüksek notalar çalıyor. Bir parka girmiş olabilirsin.');
+  else if(trafik&&!st.trafik) announce('Bas sesler arttı, trafik ya da rüzgâr var. Bas derinleşti.');
+  else if(sessiz&&!st.sessiz) announce('Ortam sessizleşti, müzik sadeleşti.');
+  st.kus=kus;st.trafik=trafik;st.sessiz=sessiz;
+}
+
+function loop(){
+  if(!S.running) return;
+  analyse(); updateWalk();
+  const c=S.ctx;
+  if(S.nextTime<c.currentTime) S.nextTime=c.currentTime+0.05;
+  while(S.nextTime<c.currentTime+0.12){
+    playStep(S.step16,S.nextTime);
+    S.nextTime+=60/S.bpm/4; S.step16=(S.step16+1)%16; if(S.step16===0)S.bar++;
+  }
+}
+let uiT=0;
+function ui(){
+  if(!S.running) return;
+  const now=performance.now();
+  if(now-uiT>250){uiT=now;
+    $('tempo').textContent=Math.round(S.bpm); $('adim').textContent=S.walking?Math.round(S.cadence):0;
+    $('mBas').value=S.low; $('mTiz').value=S.high; $('mOrtam').value=S.level;
+    $('duyguYazi').textContent=mood()==='nese'?'Neşeli':'Gizemli';
+    describe();
+  }
+  draw(); requestAnimationFrame(ui);
+}
+
+const cv=$('tuval'), g2=cv.getContext('2d');
+function resize(){const d=window.devicePixelRatio||1;cv.width=cv.clientWidth*d;cv.height=cv.clientHeight*d;g2.setTransform(d,0,0,d,0,0);}
+window.addEventListener('resize',resize); resize();
+function draw(){
+  const w=cv.clientWidth,h=cv.clientHeight; g2.clearRect(0,0,w,h);
+  const lanes=[h*0.22,h*0.52,h*0.82];
+  g2.strokeStyle='#22303c'; g2.setLineDash([8,10]); lanes.forEach(y=>{g2.beginPath();g2.moveTo(0,y);g2.lineTo(w,y);g2.stroke();}); g2.setLineDash([]);
+  const now=S.ctx?S.ctx.currentTime:0, nowX=w*0.72, pps=w/4;
+  g2.fillStyle='rgba(244,181,68,.18)'; g2.fillRect(nowX-1,0,2,h);
+  S.parts=S.parts.filter(p=>now-p.t<3.5);
+  S.parts.forEach(p=>{const x=nowX+(p.t-now)*pps, age=now-p.t;
+    if(age<0)return; const a=clamp(1-age/3.5);
+    g2.globalAlpha=a; g2.fillStyle=p.color; g2.beginPath();
+    g2.arc(x,lanes[p.lane],p.size*(age<0.15?1.4:1),0,Math.PI*2); g2.fill();});
+  g2.globalAlpha=1;
+}
+
+async function start(useMic){
+  let motionP=null;
+  if(useMic && window.DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission==='function'){
+    motionP=DeviceMotionEvent.requestPermission().catch(()=>'denied');
+  }
+  if(!S.ctx) buildAudio();
+  await S.ctx.resume();
+  S.mode='demo';
+  if(useMic){
+    try{
+      S.stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:false,autoGainControl:false}});
+      const src=S.ctx.createMediaStreamSource(S.stream), a=S.ctx.createAnalyser();
+      a.fftSize=2048; a.smoothingTimeConstant=0.6; src.connect(a);
+      S.analyser=a; S.freq=new Uint8Array(a.frequencyBinCount); S.time=new Float32Array(a.fftSize); S.mode='mic';
+    }catch(e){ S.mode='demo'; }
+  }
+  let motionOk=false;
+  if(window.DeviceMotionEvent){
+    const p=motionP?await motionP:'granted';
+    if(p==='granted'){window.addEventListener('devicemotion',onMotion); motionOk=true;}
+  }
+  if(S.mode==='demo'){ $('sahneSec').hidden=false; $('otoYuru').checked=true; }
+  else { $('sahneSec').hidden=true; }
+  try{ if(navigator.wakeLock) S.wake=await navigator.wakeLock.request('screen'); }catch(e){}
+  S.running=true; S.nextTime=S.ctx.currentTime+0.1; S.step16=0;
+  S.tick=setInterval(loop,25); requestAnimationFrame(ui);
+  $('baslaMik').hidden=true; $('baslaDemo').hidden=true; $('durdur').hidden=false;
+  $('kayit').disabled=!(recDest&&window.MediaRecorder);
+  if(S.mode==='mic') setStatus(motionOk?'Dinliyorum. Yürümeye başla.':'Dinliyorum. Adım sensörü kapalı; "Adım at" düğmesine dokunabilirsin.');
+  else setStatus(useMic?'Mikrofon izni alınamadı, deneme ortamıyla çalıyor.':'Deneme ortamıyla çalıyor. Ortamı aşağıdan değiştir.');
+}
+function stop(){
+  S.running=false; clearInterval(S.tick);
+  if(S.rec&&S.rec.state==='recording') S.rec.stop();
+  if(S.stream){S.stream.getTracks().forEach(t=>t.stop());S.stream=null;S.analyser=null;}
+  window.removeEventListener('devicemotion',onMotion);
+  if(S.wake){S.wake.release().catch(()=>{});S.wake=null;}
+  $('baslaMik').hidden=false; $('baslaDemo').hidden=false; $('durdur').hidden=true; $('kayit').disabled=true;
+  setStatus('Durduruldu.');
+}
+
+function sceneName(){
+  if(S.mode==='mic') return 'Gerçek yürüyüş';
+  const v=(document.querySelector('input[name=sahne]:checked')||{}).value;
+  return {park:'Park',cadde:'Cadde',sahil:'Sahil',sessiz:'Sessiz sokak'}[v]||'Deneme';
+}
+function toggleRec(){
+  const b=$('kayit');
+  if(S.rec&&S.rec.state==='recording'){S.rec.stop();return;}
+  try{ S.rec=new MediaRecorder(recDest.stream); }catch(e){ setStatus('Bu tarayıcı kayıt yapamıyor.'); return; }
+  S.recChunks=[]; S.recStart=Date.now(); S.recScene=sceneName();
+  S.rec.ondataavailable=e=>{if(e.data.size)S.recChunks.push(e.data);};
+  S.rec.onstop=()=>{
+    const blob=new Blob(S.recChunks,{type:S.rec.mimeType||'audio/mp4'}), url=URL.createObjectURL(blob);
+    const sec=Math.round((Date.now()-S.recStart)/1000), d=new Date(S.recStart);
+    const name=`${S.recScene} · ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')} · ${Math.floor(sec/60)} dk ${sec%60} sn`;
+    const li=document.createElement('li'), t=document.createElement('strong'), au=document.createElement('audio');
+    t.textContent=name; au.controls=true; au.src=url; au.setAttribute('aria-label',name+' şarkısını dinle');
+    li.append(t,au); $('kayitlar').prepend(li); $('kayitBos').hidden=true;
+    b.textContent='Şarkıyı kaydetmeye başla'; b.classList.remove('kayit-aktif');
+    announce('Şarkı kaydedildi: '+name,true);
+  };
+  S.rec.start(1000); b.textContent='Kaydı bitir'; b.classList.add('kayit-aktif');
+  announce('Kayıt başladı.',true);
+}
+
+$('baslaMik').addEventListener('click',()=>start(true));
+$('baslaDemo').addEventListener('click',()=>start(false));
+$('durdur').addEventListener('click',stop);
+$('adimAt').addEventListener('click',()=>{addStep(); if(!S.running) setStatus('Önce yürüyüşü başlat.');});
+$('kayit').addEventListener('click',toggleRec);
+document.querySelectorAll('input[name=sahne]').forEach(r=>r.addEventListener('change',()=>announce('Ortam: '+sceneName(),true)));
+draw();
+})();
+</script>
