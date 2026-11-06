@@ -328,6 +328,8 @@ async function start(useMic){
   if(useMic && window.DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission==='function'){
     motionP=DeviceMotionEvent.requestPermission().catch(()=>'denied');
   }
+  // iOS: ses oturumunu açıkça ayarla (Safari 16.4+), durunca geri bırakılır
+  try{ if(navigator.audioSession) navigator.audioSession.type=useMic?'play-and-record':'playback'; }catch(e){}
   if(!S.ctx) buildAudio();
   await S.ctx.resume();
   S.mode='demo';
@@ -360,6 +362,10 @@ function stop(){
   if(S.stream){S.stream.getTracks().forEach(t=>t.stop());S.stream=null;S.analyser=null;}
   window.removeEventListener('devicemotion',onMotion);
   if(S.wake){S.wake.release().catch(()=>{});S.wake=null;}
+  // Ses motorunu tamamen kapat: iOS'ta açık kalan ses oturumu VoiceOver'ı susturuyordu
+  const eski=S.ctx; S.ctx=null; S.parts=[];
+  if(eski){ setTimeout(()=>{eski.close().catch(()=>{}); try{ if(navigator.audioSession) navigator.audioSession.type='auto'; }catch(e){}},300); }
+  else { try{ if(navigator.audioSession) navigator.audioSession.type='auto'; }catch(e){} }
   $('baslaMik').hidden=false; $('baslaDemo').hidden=false; $('durdur').hidden=true; $('kayit').disabled=true;
   setStatus('Durduruldu.');
 }
@@ -395,6 +401,7 @@ $('durdur').addEventListener('click',stop);
 $('adimAt').addEventListener('click',()=>{addStep(); if(!S.running) setStatus('Önce yürüyüşü başlat.');});
 $('kayit').addEventListener('click',toggleRec);
 document.querySelectorAll('input[name=sahne]').forEach(r=>r.addEventListener('change',()=>announce('Ortam: '+sceneName(),true)));
+window.addEventListener('pagehide',()=>{ if(S.running) stop(); });
 draw();
 })();
 </script>
