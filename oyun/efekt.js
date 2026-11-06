@@ -3,7 +3,7 @@
 // ses solda ise sol kulaktan, arkadaysa boğuk gelir; uzaklaştıkça kısılır.
 import { createAudioPlayer } from 'expo-audio';
 import { SESLER } from './sesler.js';
-import { konusuyorMu, efektCalindi, konusmaBaslarken } from './ses.js';
+import { konusuyorMu, efektCalindi, konusmaBaslarken, ayarlar as sesAyarlari } from './ses.js';
 
 const durum = { acik: true, genel: 0.9, kis: true };
 const oynaticilar = {};
@@ -54,15 +54,17 @@ export function onYukle(adlar) {
 
 export function cal(ad, ses = 1) {
   if (!durum.acik) return;
-  // Oyun konuşurken efekt çalınmaz: ikisi üst üste binince iPhone konuşmanın sesini dalgalandırıyor
-  if (durum.kis && konusuyorMu()) return;
+  // Oyunun kendi sesi konuşurken efekt çalınmaz: ikisi üst üste binince iPhone konuşmanın sesini dalgalandırıyor.
+  // VoiceOver kipinde bu kural yok: VoiceOver ayrı bir sistem sesidir, efektler onunla birlikte çalar.
+  const voiceover = sesAyarlari().kip === 'voiceover';
+  if (durum.kis && !voiceover && konusuyorMu()) return;
   const p = oynatici(ad);
   if (!p) return;
   try {
     p.volume = Math.max(0, Math.min(1, ses * durum.genel));
     p.seekTo(0);
     p.play();
-    if (durum.kis) efektCalindi(Math.min(sure(ad), 0.6) * 1000);
+    if (durum.kis && !voiceover) efektCalindi(Math.min(sure(ad), 0.6) * 1000);
   } catch (e) {}
 }
 
