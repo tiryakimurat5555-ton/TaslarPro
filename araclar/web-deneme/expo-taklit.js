@@ -77,3 +77,7 @@ export function stop() {}
 export async function getAvailableVoicesAsync() {
   return [{ identifier: 'tr-deneme', language: 'tr-TR', quality: 'Default' }];
 }
+
+// expo-screen-orientation
+export const OrientationLock = { LANDSCAPE: 'yatay' };
+export async function lockAsync() {}

@@ -16,7 +16,7 @@ const kontrol = (k, m) => {
 const bekle = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function ac(tarayici, onYukle) {
-  const ctx = await tarayici.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 });
+  const ctx = await tarayici.newContext({ viewport: { width: 844, height: 390 }, deviceScaleFactor: 2 });
   if (onYukle) await ctx.addInitScript(onYukle);
   const s = await ctx.newPage();
   const hatalar = [];
@@ -122,7 +122,10 @@ const konusmalar = (s) => s.evaluate(() => window.__konusmalar.join(' | '));
   {
     const { s, hatalar } = await ac(t);
     const merkez = async (etiket) => {
-      const k = await s.locator(`[aria-label^="${etiket}"]`).first().boundingBox();
+      const l = s.locator(`[aria-label^="${etiket}"]`).first();
+      await l.scrollIntoViewIfNeeded();
+      await bekle(450);
+      const k = await l.boundingBox();
       return { x: k.x + k.width / 2, y: k.y + k.height / 2 };
     };
     // kez 1: dokunup seç; kez 2: dokunup seç, sonra çift dokunarak çalıştır (VoiceOver gibi)
@@ -138,9 +141,9 @@ const konusmalar = (s) => s.evaluate(() => window.__konusmalar.join(' | '));
       }
     };
     const kaydir = async (dx) => {
-      await s.mouse.move(200, 400);
+      await s.mouse.move(420, 200);
       await s.mouse.down();
-      await s.mouse.move(200 + dx, 400, { steps: 3 });
+      await s.mouse.move(420 + dx, 200, { steps: 3 });
       await s.mouse.up();
       await bekle(250);
     };
@@ -165,16 +168,16 @@ const konusmalar = (s) => s.evaluate(() => window.__konusmalar.join(' | '));
     // Geri düğmesine kaydırarak gel, ekranın üstüne çift dokun
     for (let i = 0; i < 12; i++) await kaydir(80);
     kontrol(/Geri, düğme|Son öğe/.test(await sonSoz()), 'kaydırarak Geri düğmesine gelindi');
-    await s.mouse.click(200, 300);
+    await s.mouse.click(420, 200);
     await bekle(100);
-    await s.mouse.click(200, 300);
+    await s.mouse.click(420, 200);
     await bekle(500);
     kontrol(await var_(s, 'Yeni karakter'), 'Geri düğmesi çift dokunuşla çalıştı');
     await dokun('Yeni karakter');
     // Ekranın boş bir yerine iki kez dokun: seçili öğe (Yeni karakter) çalışır
-    await s.mouse.click(200, 820);
+    await s.mouse.click(420, 370);
     await bekle(100);
-    await s.mouse.click(200, 820);
+    await s.mouse.click(420, 370);
     await bekle(500);
     kontrol(await var_(s, 'Gün Ulusu'), 'herhangi bir yere iki kez dokunmak seçili öğeyi çalıştırdı');
     await dokun('Gün Ulusu', 2);

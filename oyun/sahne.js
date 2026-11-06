@@ -129,7 +129,7 @@ export function sahneKur(gl, d) {
   const kamera = new THREE.PerspectiveCamera(60, genislik / yukseklik, 0.1, 200);
   // Görüntünün merkezini yukarı kaydır: alt kısım düğmelerle kaplı, oyuncu ekranın üst üçte birinde görünsün
   const merkezKaydir = (w, h) => {
-    const o = Math.round(h * 0.14);
+    const o = Math.round(h * 0.06);
     kamera.setViewOffset(w, h + 2 * o, 0, 2 * o, w, h);
   };
   merkezKaydir(genislik, yukseklik);

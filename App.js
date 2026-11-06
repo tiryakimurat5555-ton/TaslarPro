@@ -7,6 +7,7 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { GLView } from 'expo-gl';
 import * as Haptics from 'expo-haptics';
 import { setAudioModeAsync } from 'expo-audio';
+import * as ScreenOrientation from 'expo-screen-orientation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Ses from './oyun/ses.js';
 import * as M from './oyun/mantik.js';
@@ -99,7 +100,7 @@ function KipSecim({ sec }) {
         setVo(acik);
         if (!acik) {
           Ses.ayarla({ kip: 'kendi' });
-          Ses.hemen(`${OYUN_ADI}'a hoş geldin. Ekranın üst yarısına dokunursan görerek oynarsın. Alt yarısına dokunursan oyun kendi sesiyle konuşur ve sesle oynarsın.`);
+          Ses.hemen(`${OYUN_ADI}'a hoş geldin. Ekranın sol yarısına dokunursan görerek oynarsın. Sağ yarısına dokunursan oyun kendi sesiyle konuşur ve sesle oynarsın.`);
         }
       })
       .catch(() => {});
@@ -111,26 +112,28 @@ function KipSecim({ sec }) {
     return (
       <View style={st.kipKap}>
         <Baslik>{OYUN_ADI}</Baslik>
-        <Okunur stil={st.metin}>VoiceOver açık. İstersen VoiceOver ile oynayabilirsin. Oyunun kendi sesini tercih edersen önce VoiceOver'ı kapat, sonra ekranın alt yarısına dokun.</Okunur>
+        <Okunur stil={st.metin}>VoiceOver açık. İstersen VoiceOver ile oynayabilirsin. Oyunun kendi sesini tercih edersen önce VoiceOver'ı kapat, sonra ekranın sağ yarısına dokun.</Okunur>
+<View style={st.kipSatir}>
         <Pressable accessibilityRole="button" accessibilityLabel="VoiceOver ile oyna" onPress={() => sec('voiceover')} style={[st.kipYari, { backgroundColor: '#24324a' }]}>
           <Text style={st.kipYazi}>VoiceOver ile oyna</Text>
         </Pressable>
         <Pressable accessibilityRole="button" accessibilityLabel="Oyunun kendi sesiyle oyna" onPress={() => sec('kendi')} style={[st.kipYari, { backgroundColor: '#3a2a1c' }]}>
           <Text style={st.kipYazi}>Oyunun kendi sesiyle oyna</Text>
         </Pressable>
+        </View>
       </View>
     );
   }
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, flexDirection: 'row' }}>
       <Pressable accessibilityRole="button" accessibilityLabel="Görerek oyna" onPress={() => sec('gorerek')} style={[st.kipYari, { backgroundColor: '#24324a' }]}>
         <Text style={st.kipBuyuk}>{OYUN_ADI}</Text>
         <Text style={st.kipYazi}>Görerek oyna</Text>
-        <Text style={st.kipAlt}>Ekranın üst yarısı</Text>
+        <Text style={st.kipAlt}>Ekranın sol yarısı</Text>
       </Pressable>
       <Pressable accessibilityRole="button" accessibilityLabel="Sesle oyna" onPress={() => sec('kendi')} style={[st.kipYari, { backgroundColor: '#3a2a1c' }]}>
         <Text style={st.kipYazi}>Sesle oyna</Text>
-        <Text style={st.kipAlt}>Oyun kendi sesiyle konuşur. Ekranın alt yarısı.</Text>
+        <Text style={st.kipAlt}>Oyun kendi sesiyle konuşur. Ekranın sağ yarısı.</Text>
       </Pressable>
     </View>
   );
@@ -157,7 +160,7 @@ function AnaMenu({ kayitVar, kayitOzet, devam, yeni, ayarlar, nasil }) {
 
 const NASIL = [
   'Amaç: köydeki Muhtar’dan görev al, canavar avla, seviye atla, en sonunda kuzeydeki bataklıkta yaşayan ejderi yen.',
-  'Hareket: ekranın sol alt yarısına parmağını koyup kaydır. Yukarı ileri yürür, aşağı geri gider, sağa ve sola kaydırmak o yöne döndürür. Bir şeye çarparsan oyun söyler.',
+  'Telefonu yatay tut. Hareket: ekranın sol altındaki hareket alanına parmağını koyup kaydır. Yukarı ileri yürür, aşağı geri gider, sağa ve sola kaydırmak o yöne döndürür. Bir şeye çarparsan oyun söyler.',
   'Savaş: Hedef düğmesi en yakın düşmanı seçer ve yerini söyler. Saldır düğmesi seni hedefe yürütür ve otomatik saldırtır. Yetenek düğmeleri mana harcar ve bir süre beklemeye girer.',
   'Yönler saat gibi söylenir: saat 12 tam önün, 3 sağın, 6 arkan, 9 solun.',
   'Kulaklıkla oynamak en iyisi: sana saldıran canavarlar bulundukları yönden ses verir, arkadakiler boğuk duyulur. Hedef seçiliyken menzil dışındaysa hedefin yönünden bip sesi gelir, yaklaştıkça sıklaşır. Canın azalınca kalp atışı duyarsın.',
@@ -387,7 +390,13 @@ function Oyun({ karakter, ayar, cikis, ayarDegistir }) {
 
   useEffect(() => {
     Efekt.onYukle(['kilic', 'ok', 'ates', 'topuz', 'iska', 'oldur', 'altin', 'adim1', 'adim2', 'sonar_2', 'aldin_2', 'odak', 'etkinles']);
-    Ses.altyaziDinle(setAltyazi);
+    let silici;
+    setAltyazi('');
+    Ses.altyaziDinle((m) => {
+      setAltyazi(m);
+      clearTimeout(silici);
+      silici = setTimeout(() => setAltyazi(''), 6000);
+    });
     Ses.soyle(`Maceraya hoş geldin, ${d.k.ad}. ${M.konumOzeti(d)} ${M.gorevDurumu(d.k).metin}`, 3);
     const alt = AppState.addEventListener('change', (s) => {
       if (s !== 'active') kaydet();
@@ -677,49 +686,49 @@ function Oyun({ karakter, ayar, cikis, ayarDegistir }) {
       <GLView style={StyleSheet.absoluteFill} onContextCreate={glHazir} accessible={false} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden />
       <SafeAreaView
         style={{ flex: 1 }}
-        edges={['top', 'bottom']}
+        edges={['top', 'bottom', 'left', 'right']}
         accessibilityElementsHidden={!!panel}
         importantForAccessibility={panel ? 'no-hide-descendants' : 'auto'}
       >
-        {/* Durum çubuğu */}
-        <Dugme etiket={`Durum. ${M.durumOzeti(d)}`} onEtkin={() => Ses.hemen(M.durumOzeti(d))} stil={st.hud}>
-          <View style={st.satir}>
-            <Text style={st.hudAd}>
-              {k.ad} · Sv {k.seviye}
-            </Text>
-            <Text style={st.hudKucuk}>
-              {k.altin} altın · {k.iksir} iksir{k.serbestPuan ? ` · ${k.serbestPuan} puan` : ''}
-            </Text>
+        {/* Üst: solda durum, sağda duruma göre çıkan düğmeler */}
+        <View style={st.ustSatir}>
+          {/* Durum çubuğu */}
+          <Dugme etiket={`Durum. ${M.durumOzeti(d)}`} onEtkin={() => Ses.hemen(M.durumOzeti(d))} stil={st.hud}>
+            <View style={st.satir}>
+              <Text style={st.hudAd}>
+                {k.ad} · Sv {k.seviye}
+              </Text>
+              <Text style={st.hudKucuk}>
+                {k.altin} altın · {k.iksir} iksir{k.serbestPuan ? ` · ${k.serbestPuan} puan` : ''}
+              </Text>
+            </View>
+            <Cubuk oran={k.can / h.enCan} renk={R.can} />
+            <Cubuk oran={k.mana / h.enMana} renk={R.mana} />
+            <Cubuk oran={xpOran} renk={R.xp} />
+            {hedef && (
+              <Text style={st.hudHedef} numberOfLines={1}>
+                Hedef: {hedef.ad} Sv {hedef.seviye} · %{Math.round((hedef.can / hedef.enCan) * 100)} · {Math.round(M.mesafe(d.oyuncu, hedef))} m
+              </Text>
+            )}
+          </Dugme>
+          <View style={{ flex: 1 }} />
+          <View style={st.baglamSatir}>
+            {d.olu && <Dugme etiket="Yeniden doğ" onEtkin={() => M.yenidenDog(d)} stil={st.baglamDugme} />}
+            {!d.olu && npc && <Dugme etiket={`${npc.ad} ile konuş`} onEtkin={npcKonus} stil={st.baglamDugme} />}
+            {!d.olu && !npc && k.gorev.durum === 'aktif' && !hedef && (
+              <Dugme etiket="Görev hedefini bul" ipucu="Görevin istediği en yakın canavara yürür" onEtkin={() => M.gorevHedefiBul(d)} stil={st.baglamDugme} />
+            )}
+            {!d.olu && !npc && k.gorev.durum === 'tamam' && Math.hypot(d.oyuncu.x, d.oyuncu.y) > 20 && !d.isinlanma && (
+              <Dugme etiket="Ödül için köye dön" ipucu="5 saniye kıpırdamazsan köye ışınlanırsın" onEtkin={() => M.koyeDon(d)} stil={st.baglamDugme} />
+            )}
+            {!d.olu && (d.otoSaldiri || d.yaklas) && <Dugme etiket="Dur" ipucu="Saldırıyı ve yürüyüşü durdurur" onEtkin={() => { M.dur(d); Ses.soyle('Durdun.', 2); }} stil={st.baglamDugme} />}
           </View>
-          <Cubuk oran={k.can / h.enCan} renk={R.can} />
-          <Cubuk oran={k.mana / h.enMana} renk={R.mana} />
-          <Cubuk oran={xpOran} renk={R.xp} />
-          {hedef && (
-            <Text style={st.hudHedef} numberOfLines={1}>
-              Hedef: {hedef.ad} Sv {hedef.seviye} · %{Math.round((hedef.can / hedef.enCan) * 100)} · {Math.round(M.mesafe(d.oyuncu, hedef))} m
-            </Text>
-          )}
-        </Dugme>
-        {!!altyazi && (
-          <Text style={st.altyazi} numberOfLines={3} accessibilityElementsHidden importantForAccessibility="no">
-            {altyazi}
-          </Text>
-        )}
-        <View style={st.baglamSatir}>
-          {d.olu && <Dugme etiket="Yeniden doğ" onEtkin={() => M.yenidenDog(d)} stil={st.baglamDugme} />}
-          {!d.olu && npc && <Dugme etiket={`${npc.ad} ile konuş`} onEtkin={npcKonus} stil={st.baglamDugme} />}
-          {!d.olu && !npc && k.gorev.durum === 'aktif' && !hedef && (
-            <Dugme etiket="Görev hedefini bul" ipucu="Görevin istediği en yakın canavara yürür" onEtkin={() => M.gorevHedefiBul(d)} stil={st.baglamDugme} />
-          )}
-          {!d.olu && !npc && k.gorev.durum === 'tamam' && Math.hypot(d.oyuncu.x, d.oyuncu.y) > 20 && !d.isinlanma && (
-            <Dugme etiket="Ödül için köye dön" ipucu="5 saniye kıpırdamazsan köye ışınlanırsın" onEtkin={() => M.koyeDon(d)} stil={st.baglamDugme} />
-          )}
-          {!d.olu && (d.otoSaldiri || d.yaklas) && <Dugme etiket="Dur" ipucu="Saldırıyı ve yürüyüşü durdurur" onEtkin={() => { M.dur(d); Ses.soyle('Durdun.', 2); }} stil={st.baglamDugme} />}
+
         </View>
 
         <View style={{ flex: 1 }} />
 
-        {/* Alt kısım: sol hareket, sağ eylemler */}
+        {/* Alt: solda hareket, ortada altyazı, sağda eylemler */}
         <View style={st.alt}>
           {kip === 'voiceover' ? (
             <View style={st.solVo}>
@@ -743,6 +752,13 @@ function Oyun({ karakter, ayar, cikis, ayarDegistir }) {
               )}
             </DogrudanAlan>
           )}
+          <View style={st.orta}>
+            {!!altyazi && (
+              <Text style={st.altyazi} numberOfLines={3} accessibilityElementsHidden importantForAccessibility="no">
+                {altyazi}
+              </Text>
+            )}
+          </View>
           <View style={st.sag}>
             <View style={st.izgara}>
               {[yetenekler[0], yetenekler[1]].map((y) => (
@@ -965,6 +981,10 @@ export default function App() {
   useEffect(() => {
     // Sessiz moddayken de konuşsun
     setAudioModeAsync({ playsInSilentMode: true, interruptionMode: 'mixWithOthers' }).catch(() => {});
+    // Oyun yatay ekranda oynanır
+    try {
+      ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE).catch(() => {});
+    } catch (e) {}
     (async () => {
       let a = VARSAYILAN_AYAR;
       try {
@@ -1063,7 +1083,7 @@ export default function App() {
 }
 
 const st = StyleSheet.create({
-  sayfa: { padding: 18, gap: 10, paddingBottom: 40 },
+  sayfa: { padding: 18, gap: 10, paddingBottom: 40, width: '100%', maxWidth: 720, alignSelf: 'center' },
   oyunAdi: { color: R.altin, fontSize: 40, fontWeight: '800', marginTop: 24, letterSpacing: 1 },
   baslik: { color: R.yazi, fontSize: 28, fontWeight: '800', marginBottom: 6 },
   altBaslik: { color: R.altin, fontSize: 18, fontWeight: '700', marginTop: 10 },
@@ -1083,29 +1103,32 @@ const st = StyleSheet.create({
   adDugme: { paddingVertical: 12, paddingHorizontal: 16 },
   girdi: { backgroundColor: R.panel, color: R.yazi, fontSize: 18, borderRadius: 10, padding: 14, borderWidth: 1, borderColor: R.cizgi },
   kipKap: { flex: 1, padding: 18, gap: 12, justifyContent: 'center' },
+  kipSatir: { flex: 1, flexDirection: 'row', gap: 12 },
   kipYari: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 },
   kipBuyuk: { color: R.altin, fontSize: 40, fontWeight: '800', marginBottom: 16 },
   kipYazi: { color: R.yazi, fontSize: 28, fontWeight: '800', textAlign: 'center' },
   kipAlt: { color: R.soluk, fontSize: 16, marginTop: 8, textAlign: 'center' },
-  hud: { marginHorizontal: 10, marginTop: 6, padding: 10, backgroundColor: 'rgba(20,22,27,0.82)', borderRadius: 12, gap: 5 },
+  ustSatir: { flexDirection: 'row', alignItems: 'flex-start', paddingHorizontal: 8, paddingTop: 6, gap: 8 },
+  hud: { width: 290, padding: 10, backgroundColor: 'rgba(20,22,27,0.82)', borderRadius: 12, gap: 5 },
   hudAd: { color: R.yazi, fontSize: 16, fontWeight: '800' },
   hudKucuk: { color: R.soluk, fontSize: 13 },
   hudHedef: { color: '#ffb3a8', fontSize: 14, fontWeight: '700' },
   cubuk: { height: 8, backgroundColor: 'rgba(255,255,255,0.12)', borderRadius: 4, overflow: 'hidden' },
   cubukDolu: { height: 8, borderRadius: 4 },
-  altyazi: { marginHorizontal: 10, marginTop: 6, color: '#fff', backgroundColor: 'rgba(0,0,0,0.55)', padding: 8, borderRadius: 8, fontSize: 14 },
-  baglamSatir: { flexDirection: 'row', gap: 8, marginHorizontal: 10, marginTop: 6 },
-  baglamDugme: { flex: 1, backgroundColor: '#3a3220', borderColor: '#6b5a2e', paddingVertical: 12 },
-  alt: { flexDirection: 'row', height: 300, paddingHorizontal: 8, paddingBottom: 6, gap: 8 },
-  sol: { flex: 1, backgroundColor: 'rgba(20,22,27,0.25)', borderRadius: 16, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
-  solVo: { flex: 1, gap: 6, justifyContent: 'flex-end' },
+  altyazi: { color: '#fff', backgroundColor: 'rgba(0,0,0,0.55)', padding: 8, borderRadius: 8, fontSize: 14 },
+  orta: { flex: 1, justifyContent: 'flex-end', paddingBottom: 4 },
+  baglamSatir: { flexDirection: 'column', gap: 6, width: 230 },
+  baglamDugme: { backgroundColor: '#3a3220', borderColor: '#6b5a2e', paddingVertical: 10 },
+  alt: { flexDirection: 'row', height: 214, paddingHorizontal: 8, paddingBottom: 6, gap: 10, alignItems: 'flex-end' },
+  sol: { width: 250, height: 208, backgroundColor: 'rgba(20,22,27,0.25)', borderRadius: 16, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+  solVo: { width: 250, gap: 6, justifyContent: 'flex-end' },
   voDugme: { backgroundColor: 'rgba(31,35,43,0.9)' },
   solYazi: { color: 'rgba(255,255,255,0.7)', fontSize: 14, textAlign: 'center' },
   topuzKap: { position: 'absolute', width: 110, height: 110, borderRadius: 55, borderWidth: 2, borderColor: 'rgba(255,255,255,0.5)', alignItems: 'center', justifyContent: 'center' },
   topuz: { width: 50, height: 50, borderRadius: 25, backgroundColor: 'rgba(255,255,255,0.7)' },
-  sag: { flex: 1.25, justifyContent: 'flex-end' },
+  sag: { width: 262, justifyContent: 'flex-end' },
   izgara: { flexDirection: 'row', flexWrap: 'wrap', gap: 5, justifyContent: 'flex-end' },
-  eylem: { width: '31%', height: 92, paddingHorizontal: 4, paddingVertical: 4, alignItems: 'center', backgroundColor: 'rgba(31,35,43,0.9)' },
+  eylem: { width: 84, height: 66, paddingHorizontal: 4, paddingVertical: 4, alignItems: 'center', backgroundColor: 'rgba(31,35,43,0.9)' },
   saldir: { backgroundColor: 'rgba(120,32,26,0.95)', borderColor: '#c4473b' },
   panelOrt: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(20,22,27,0.97)' },
   esya: { backgroundColor: R.panel, borderRadius: 12, padding: 10, gap: 8 },

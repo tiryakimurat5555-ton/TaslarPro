@@ -18,10 +18,11 @@ NODE_PATH=/opt/npm-tools/node_modules /opt/npm-tools/node_modules/.bin/esbuild "
   --alias:@react-native-async-storage/async-storage="$T/expo-taklit.js" \
   --alias:expo-gl="$T/expo-taklit.js" \
   --alias:expo-speech="$T/expo-taklit.js" \
+  --alias:expo-screen-orientation="$T/expo-taklit.js" \
   --alias:three="${THREE_YOLU:-/tmp/claude-0/three/build/three.module.js}" \
   --loader:.js=jsx --loader:.mp3=file --asset-names=[name] --loader:.png=empty --log-level=warning
 cat > "$CIKIS/index.html" <<'H'
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=390">
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=844">
 <style>html,body,#kok{margin:0;height:100%;font-family:-apple-system,Helvetica,Arial,sans-serif}</style></head>
 <body><div id="kok"></div><script src="paket.js"></script></body></html>
 H
