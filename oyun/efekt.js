@@ -3,12 +3,17 @@
 // ses solda ise sol kulaktan, arkadaysa boğuk gelir; uzaklaştıkça kısılır.
 import { createAudioPlayer } from 'expo-audio';
 import { SESLER } from './sesler.js';
+import { konusuyorMu } from './ses.js';
 
-const durum = { acik: true, genel: 0.9 };
+const durum = { acik: true, genel: 0.9, kis: true };
+// Konuşma sürerken kısılmayan sesler (uyarılar)
+const ONEMLI = new Set(['kalp', 'olum', 'seviye']);
+const ONEMLI_TABAN = new Set(['aldin']);
 const oynaticilar = {};
 
-export function efektAyarla({ acik, genel } = {}) {
+export function efektAyarla({ acik, genel, kis } = {}) {
   if (typeof acik === 'boolean') durum.acik = acik;
+  if (typeof kis === 'boolean') durum.kis = kis;
   if (typeof genel === 'number') durum.genel = genel;
 }
 
@@ -33,6 +38,12 @@ export function onYukle(adlar) {
 
 export function cal(ad, ses = 1) {
   if (!durum.acik) return;
+  // Oyun konuşurken efektler kısılır ki konuşma net duyulsun; ayak sesi hiç çalınmaz
+  if (durum.kis && konusuyorMu()) {
+    if (ad.startsWith('adim')) return;
+    const taban = ad.replace(/_\d+a?$/, '');
+    if (!ONEMLI.has(ad) && !ONEMLI_TABAN.has(taban)) ses *= 0.3;
+  }
   const p = oynatici(ad);
   if (!p) return;
   try {

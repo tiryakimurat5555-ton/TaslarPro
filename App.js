@@ -240,6 +240,16 @@ function Ayarlar({ ayar, degistir, geri }) {
         }}
       />
       <Dugme
+        etiket={`Konuşurken efektleri kıs: ${ayar.efektKis !== false ? 'açık' : 'kapalı'}`}
+        ipucu="Oyun konuşurken vuruş ve ayak sesleri kısılır, konuşma net duyulur"
+        onEtkin={() => {
+          const yeni = ayar.efektKis === false;
+          degistir({ efektKis: yeni });
+          Efekt.efektAyarla({ kis: yeni });
+          Ses.hemen(`Konuşurken efektleri kıs ${yeni ? 'açık' : 'kapalı'}`);
+        }}
+      />
+      <Dugme
         etiket={`Nitelik puanlarını otomatik dağıt: ${ayar.otoPuan !== false ? 'açık' : 'kapalı'}`}
         ipucu="Seviye atlayınca puanlar sınıfına göre dağıtılır"
         onEtkin={() => {
@@ -541,7 +551,7 @@ function Oyun({ karakter, ayar, cikis, ayarDegistir }) {
         if (adimYol > 1.6) {
           adimYol = 0;
           adimSira = !adimSira;
-          Efekt.cal(adimSira ? 'adim1' : 'adim2', 0.35);
+          Efekt.cal(adimSira ? 'adim1' : 'adim2', 0.22);
         }
         for (const o of M.olaylariAl(d)) {
           if (sahneRef.current) sahneRef.current.efekt(o);
@@ -581,7 +591,7 @@ function Oyun({ karakter, ayar, cikis, ayarDegistir }) {
           sonarSayac -= dt;
           if (m > menzil && sonarSayac <= 0) {
             sonarSayac = Math.max(0.45, Math.min(1.6, m / 25));
-            Efekt.yonlu('sonar', d.oyuncu, hs, 0.6);
+            Efekt.yonlu('sonar', d.oyuncu, hs, 0.45);
           }
         }
         // Can azken kalp atışı
@@ -1035,7 +1045,7 @@ export default function App() {
 
   useEffect(() => {
     // Sessiz moddayken de konuşsun
-    setAudioModeAsync({ playsInSilentMode: true, interruptionMode: 'mixWithOthers' }).catch(() => {});
+    setAudioModeAsync({ playsInSilentMode: true, interruptionMode: 'doNotMix', shouldPlayInBackground: false }).catch(() => {});
     // Oyun yatay ekranda oynanır
     try {
       ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE).catch(() => {});
@@ -1059,8 +1069,8 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    Efekt.efektAyarla({ acik: ayar.efekt !== false });
-  }, [ayar.efekt]);
+    Efekt.efektAyarla({ acik: ayar.efekt !== false, kis: ayar.efektKis !== false });
+  }, [ayar.efekt, ayar.efektKis]);
 
   const ayarDegistir = useCallback((deg) => {
     setAyar((a) => {

@@ -68,6 +68,8 @@ function baslat(s) {
     language: 'tr-TR',
     voice: motor.ses,
     rate: motor.hiz,
+    volume: 1.0,
+    pitch: 1.0,
     onDone: sonraki,
     onStopped: () => {},
     onError: sonraki,
