@@ -1,3 +1,5 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Sokağın Şarkısı</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -110,6 +112,15 @@ input[type=range]{accent-color:var(--lamba);width:100%}
           <label><input type="radio" name="sahne" value="sessiz">Sessiz sokak</label>
         </div>
       </fieldset>
+      <label class="kontrol"><span>Enstrüman seti</span>
+        <select id="setSec">
+          <option value="akustik">Akustik: arp, kontrbas, viyolonsel</option>
+          <option value="piyano">Piyano ve viyolonsel</option>
+          <option value="gitar">Gitar ve bongo</option>
+          <option value="ksilofon">Ksilofon (çocuksu)</option>
+          <option value="sentez">Elektronik (sentez)</option>
+        </select>
+      </label>
       <div class="satir">
         <label class="kontrol"><span>Duygu</span>
           <select id="duygu">
@@ -134,6 +145,7 @@ input[type=range]{accent-color:var(--lamba);width:100%}
   </section>
 
   <p class="not">Mikrofon konuşmaları kaydetmez; sadece sesin ne kadar yüksek, tiz ya da bas olduğunu ölçer. Kaydedilen şey yalnızca çalınan müziktir.</p>
+  <p class="not">Enstrüman sesleri: VSCO Community, Iowa Üniversitesi ve Freesound kayıtları (tonejs-instruments derlemesi, MIT lisansı). Davul ve bongo: web-audio-samples.</p>
 </main>
 
 <script>
@@ -200,11 +212,85 @@ function pluck(t,m,v){const c=S.ctx,o=c.createOscillator(),o2=c.createOscillator
   env(g,t,v,0.005,0.9);o.connect(g);o2.connect(g);out(g,0.7);o.start(t);o2.start(t);o.stop(t+1);o2.stop(t+1);
   part(0,t,'#7fd6c2',6+v*20);}
 
+// ==== GERÇEK ENSTRÜMANLAR (ses örnekleri) ====
+const SETLER={
+  akustik:{melodi:'arp',bas:'kontrbas',pad:'viyolonsel',ritim:'davul',mk:0},
+  piyano:{melodi:'piyano',bas:'piyano',pad:'viyolonsel',ritim:'davul',mk:0},
+  gitar:{melodi:'gitar',bas:'kontrbas',pad:'viyolonsel',ritim:'bongo',mk:-12},
+  ksilofon:{melodi:'ksilofon',bas:'kontrbas',pad:'piyano',ritim:'bongo',mk:0},
+  sentez:null
+};
+const NOTALAR={
+  piyano:['C2','Ds2','Fs2','A2','C3','Ds3','Fs3','A3','C4','Ds4','Fs4','A4','C5','Ds5','Fs5','A5','C6'],
+  arp:['F2','A2','C3','E3','G3','B3','D4','F4','A4','C5','E5','G5','B5','D6','F6','A6'],
+  gitar:['A2','C3','Ds3','Fs3','A3','C4','Ds4','Fs4','A4','C5'],
+  kontrbas:['G1','As1','C2','D2','E2','Fs2','Gs2','A2','Cs3','E3'],
+  viyolonsel:['C2','Ds2','A2','C3','Ds3','Fs3','A3','C4','Ds4','Fs4','A4','C5'],
+  ksilofon:['G4','C5','G5','C6','G6','C7']
+};
+const VURMALI={davul:{dip:'kick',vurus:'snare',zil:'hihat'},bongo:{dip:'tom2',vurus:'tom1',zil:'hihat'}};
+const TAMPON={};
+let aktifSet='sentez';
+function notaMidi(n){const m=n.match(/^([A-G])(s?)(\d)$/);return (parseInt(m[3],10)+1)*12+{C:0,D:2,E:4,F:5,G:7,A:9,B:11}[m[1]]+(m[2]?1:0);}
+function cozumle(b){return new Promise((ok,no)=>S.ctx.decodeAudioData(b,ok,no));}
+async function yukle(yol){
+  if(TAMPON[yol]) return; const r=await fetch('sesler/'+yol+'.mp3'); if(!r.ok) throw new Error(yol);
+  TAMPON[yol]=await cozumle(await r.arrayBuffer());
+}
+async function setYukle(ad){
+  const st=SETLER[ad]; if(!st) return;
+  const liste=new Set();
+  [st.melodi,st.bas,st.pad].forEach(e=>NOTALAR[e].forEach(n=>liste.add(e+'/'+n)));
+  Object.values(VURMALI[st.ritim]).forEach(n=>liste.add(st.ritim+'/'+n));
+  await Promise.all([...liste].map(yukle));
+}
+async function setDegistir(ad){
+  if(!S.ctx) return;
+  if(!SETLER[ad]){aktifSet='sentez';return;}
+  setStatus('Enstrüman sesleri yükleniyor…');
+  try{ await setYukle(ad); if(S.ctx){aktifSet=ad; setStatus('Çalıyor: '+$('setSec').selectedOptions[0].textContent+'.');} }
+  catch(e){ aktifSet='sentez'; setStatus('Enstrüman sesleri yüklenemedi, elektronik seslerle çalıyor.'); }
+}
+function ornekCal(enst,midi,t,v,dur,att){
+  let en=null,ef=99; NOTALAR[enst].forEach(n=>{const f=Math.abs(notaMidi(n)-midi); if(f<ef){ef=f;en=n;}});
+  const buf=TAMPON[enst+'/'+en]; if(!buf) return;
+  const c=S.ctx,k=c.createBufferSource(),g=c.createGain(); att=att||0.005;
+  k.buffer=buf; k.playbackRate.value=Math.pow(2,(midi-notaMidi(en))/12);
+  g.gain.setValueAtTime(0.0001,t); g.gain.linearRampToValueAtTime(Math.max(v,0.0002),t+att);
+  g.gain.setValueAtTime(Math.max(v,0.0002),t+Math.max(att,dur-0.5)); g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+  k.connect(g); k.start(t); k.stop(t+dur+0.05); return g;
+}
+function vurCal(tur,t,v,wet){
+  const st=SETLER[aktifSet], buf=TAMPON[st.ritim+'/'+VURMALI[st.ritim][tur]]; if(!buf) return;
+  const c=S.ctx,k=c.createBufferSource(),g=c.createGain(); k.buffer=buf; g.gain.value=v;
+  k.connect(g); out(g,wet||0); k.start(t);
+}
+
 function part(lane,t,color,size){S.parts.push({lane,t,color,size}); if(S.parts.length>200)S.parts.shift();}
 
 function playStep(s,t){
   const m=mood(), root=ROOT[m], spb=60/S.bpm, lv=S.level;
   const ci=PROG[m][S.bar%4], chord=[ci,ci+2,ci+4].map(i=>root+sn(i,m));
+  const st=SETLER[aktifSet];
+  if(st){
+    if(S.walking){ if(s%4===0){vurCal('dip',t,0.55+0.4*lv);part(1,t,'#f4b544',7);} if((s===4||s===12)&&lv>0.3){vurCal('vurus',t,0.25+0.3*lv,0.15);part(1,t,'#f4b544',5);} }
+    else if(s===0&&lv>0.2){vurCal('dip',t,0.35);part(1,t,'#f4b544',7);}
+    if(s%4===2&&lv>0.15){vurCal('zil',t,0.08+0.25*lv,0.1);part(1,t,'#c9d3dc',3);}
+    else if(s%2===1&&lv>0.6){vurCal('zil',t,0.07);part(1,t,'#c9d3dc',3);}
+    if(s===0||s===8){const g=ornekCal(st.bas,chord[0]-12,t,0.25+0.55*S.low,spb*1.8);if(g)out(g,0.1);part(2,t,'#8e9cff',9);}
+    if(s===14&&S.low>0.55){const g=ornekCal(st.bas,chord[1]-12,t,0.35*S.low,spb*0.6);if(g)out(g,0.1);part(2,t,'#8e9cff',6);}
+    if(s===0) chord.forEach(n=>{const g=ornekCal(st.pad,n-12,t,0.06+0.12*(1-lv),spb*4.2,0.35);if(g)out(g,0.6);});
+    if(s%2===0){
+      const chirp=S.ctx.currentTime<S.chirpUntil, chance=chirp?0.95:S.high*0.55;
+      if(Math.random()<chance){
+        const target=Math.round(S.high*9);
+        S.melIdx+=Math.sign(target-S.melIdx)+Math.round((Math.random()-0.5)*2.4); S.melIdx=clamp(S.melIdx,0,10);
+        const v=0.18+0.35*S.high, g=ornekCal(st.melodi,root+12+sn(S.melIdx,m)+st.mk,t,v,2.5);
+        if(g)out(g,0.55); part(0,t,'#7fd6c2',6+v*14);
+      }
+    }
+    return;
+  }
   if(S.walking){ if(s%4===0) kick(t,0.45+0.35*lv); }
   else if(s===0 && lv>0.2) kick(t,0.25);
   if(s%4===2 && lv>0.15) hat(t,0.04+0.12*lv);
@@ -349,6 +435,7 @@ async function start(useMic){
   if(S.mode==='demo'){ $('sahneSec').hidden=false; $('otoYuru').checked=true; }
   else { $('sahneSec').hidden=true; }
   try{ if(navigator.wakeLock) S.wake=await navigator.wakeLock.request('screen'); }catch(e){}
+  aktifSet='sentez'; setDegistir($('setSec').value);
   S.running=true; S.nextTime=S.ctx.currentTime+0.1; S.step16=0;
   S.tick=setInterval(loop,25); requestAnimationFrame(ui);
   $('baslaMik').hidden=true; $('baslaDemo').hidden=true; $('durdur').hidden=false;
@@ -363,7 +450,7 @@ function stop(){
   window.removeEventListener('devicemotion',onMotion);
   if(S.wake){S.wake.release().catch(()=>{});S.wake=null;}
   // Ses motorunu tamamen kapat: iOS'ta açık kalan ses oturumu VoiceOver'ı susturuyordu
-  const eski=S.ctx; S.ctx=null; S.parts=[];
+  const eski=S.ctx; S.ctx=null; S.parts=[]; aktifSet='sentez'; Object.keys(TAMPON).forEach(k=>delete TAMPON[k]);
   if(eski){ setTimeout(()=>{eski.close().catch(()=>{}); try{ if(navigator.audioSession) navigator.audioSession.type='auto'; }catch(e){}},300); }
   else { try{ if(navigator.audioSession) navigator.audioSession.type='auto'; }catch(e){} }
   $('baslaMik').hidden=false; $('baslaDemo').hidden=false; $('durdur').hidden=true; $('kayit').disabled=true;
@@ -400,6 +487,7 @@ $('baslaDemo').addEventListener('click',()=>start(false));
 $('durdur').addEventListener('click',stop);
 $('adimAt').addEventListener('click',()=>{addStep(); if(!S.running) setStatus('Önce yürüyüşü başlat.');});
 $('kayit').addEventListener('click',toggleRec);
+$('setSec').addEventListener('change',()=>{ if(S.running) setDegistir($('setSec').value); });
 document.querySelectorAll('input[name=sahne]').forEach(r=>r.addEventListener('change',()=>announce('Ortam: '+sceneName(),true)));
 window.addEventListener('pagehide',()=>{ if(S.running) stop(); });
 draw();
