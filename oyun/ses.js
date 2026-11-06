@@ -15,7 +15,25 @@ const motor = {
   kuyruk: [],
   ses: undefined, // seçilen Türkçe ses kimliği
   dinleyici: null, // altyazı için
+  efektBitis: 0, // çalan son efektin biteceği an (ms)
+  bekleyen: null, // efekt bitsin diye bekleyen konuşmanın zamanlayıcısı
+  basliyor: null, // konuşma başlarken çağrılır (uzun efektleri durdurmak için)
 };
+
+// Efekt motoru çaldığı sesin süresini bildirir; konuşma o bitince başlar.
+// Böylece konuşma ile efekt hiç üst üste binmez (iPhone üst üste binince konuşmanın sesini dalgalandırıyor).
+export function efektCalindi(ms) {
+  motor.efektBitis = Math.max(motor.efektBitis, Date.now() + ms);
+}
+export function konusmaBaslarken(f) {
+  motor.basliyor = f;
+}
+function bekleyeniIptal() {
+  if (motor.bekleyen) {
+    clearTimeout(motor.bekleyen);
+    motor.bekleyen = null;
+  }
+}
 
 async function turkceSesBul() {
   try {
@@ -64,6 +82,26 @@ function baslat(s) {
     setTimeout(sonraki, Math.min(4000, 400 + s.metin.length * 45));
     return;
   }
+  // Kısa bir efekt çalıyorsa bitmesini bekle (en çok 600 ms); uzun süren efektler durdurulur
+  const bekle = Math.min(600, motor.efektBitis - Date.now());
+  if (bekle > 15) {
+    bekleyeniIptal();
+    motor.bekleyen = setTimeout(() => {
+      motor.bekleyen = null;
+      if (motor.konusuyor && motor.konusuyor.metin === s.metin) konus(s);
+    }, bekle);
+    return;
+  }
+  konus(s);
+}
+
+function konus(s) {
+  if (motor.basliyor) {
+    try {
+      motor.basliyor();
+    } catch (e) {}
+  }
+  motor.efektBitis = 0;
   Speech.speak(s.metin, {
     language: 'tr-TR',
     voice: motor.ses,
@@ -87,6 +125,7 @@ export function soyle(metin, oncelik = 2) {
   if (!motor.konusuyor) return baslat(s);
   if (oncelik >= 3 && oncelik >= motor.konusuyor.oncelik) {
     // Kes ve hemen söyle
+    bekleyeniIptal();
     motor.kuyruk = motor.kuyruk.filter((x) => x.oncelik > oncelik);
     if (motor.kip !== 'voiceover') Speech.stop();
     motor.konusuyor = null;
@@ -102,6 +141,7 @@ export function soyle(metin, oncelik = 2) {
 // Dokunulan düğmenin adını hemen söyle (her şeyi keser)
 export function hemen(metin) {
   if (!metin || !motor.acik) return;
+  bekleyeniIptal();
   motor.kuyruk = [];
   if (motor.kip !== 'voiceover') Speech.stop();
   motor.konusuyor = null;
@@ -109,6 +149,7 @@ export function hemen(metin) {
 }
 
 export function sus() {
+  bekleyeniIptal();
   motor.kuyruk = [];
   motor.konusuyor = null;
   try {

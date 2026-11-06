@@ -3,13 +3,29 @@
 // ses solda ise sol kulaktan, arkadaysa boğuk gelir; uzaklaştıkça kısılır.
 import { createAudioPlayer } from 'expo-audio';
 import { SESLER } from './sesler.js';
-import { konusuyorMu } from './ses.js';
+import { konusuyorMu, efektCalindi, konusmaBaslarken } from './ses.js';
 
 const durum = { acik: true, genel: 0.9, kis: true };
-// Konuşma sürerken kısılmayan sesler (uyarılar)
-const ONEMLI = new Set(['kalp', 'olum', 'seviye']);
-const ONEMLI_TABAN = new Set(['aldin']);
 const oynaticilar = {};
+// Seslerin yaklaşık süreleri (saniye). Konuşma, çalan kısa efekt bitince başlar.
+const SURE = {
+  kilic: 0.43, topuz: 0.25, ok: 0.25, ates: 0.45, buz: 0.5, iyiles: 0.85, iska: 0.22, kritik: 0.45, oldur: 0.55, altin: 0.34,
+  seviye: 1.35, gorev: 0.85, iksir: 0.6, ganimet: 0.5, adim1: 0.07, adim2: 0.07, carpma: 0.15, hata: 0.18, olum: 1.4, dogus: 0.9,
+  odak: 0.02, sinir: 0.12, etkinles: 0.1, kalp: 0.32, isinlan: 1.2, kalkan: 0.6, hedef: 0.18, su: 2.4, bolge: 1.0, kesif: 0.8,
+  aldin: 0.28, sonar: 0.09, kurt: 0.7, domuz: 0.49, goblin: 0.42, insan: 0.35, ork: 0.45, orumcek: 0.25, golem: 1.0, golge: 0.8, ejder: 1.4,
+};
+const sure = (ad) => SURE[ad] || SURE[ad.replace(/_\d+a?$/, '')] || 0.4;
+
+// Konuşma başlarken hâlâ çalan uzun efektleri sustur
+konusmaBaslarken(() => {
+  Object.entries(oynaticilar).forEach(([ad, p]) => {
+    if (sure(ad) > 0.6) {
+      try {
+        p.pause();
+      } catch (e) {}
+    }
+  });
+});
 
 export function efektAyarla({ acik, genel, kis } = {}) {
   if (typeof acik === 'boolean') durum.acik = acik;
@@ -38,18 +54,15 @@ export function onYukle(adlar) {
 
 export function cal(ad, ses = 1) {
   if (!durum.acik) return;
-  // Oyun konuşurken efektler kısılır ki konuşma net duyulsun; ayak sesi hiç çalınmaz
-  if (durum.kis && konusuyorMu()) {
-    if (ad.startsWith('adim')) return;
-    const taban = ad.replace(/_\d+a?$/, '');
-    if (!ONEMLI.has(ad) && !ONEMLI_TABAN.has(taban)) ses *= 0.3;
-  }
+  // Oyun konuşurken efekt çalınmaz: ikisi üst üste binince iPhone konuşmanın sesini dalgalandırıyor
+  if (durum.kis && konusuyorMu()) return;
   const p = oynatici(ad);
   if (!p) return;
   try {
     p.volume = Math.max(0, Math.min(1, ses * durum.genel));
     p.seekTo(0);
     p.play();
+    if (durum.kis) efektCalindi(Math.min(sure(ad), 0.6) * 1000);
   } catch (e) {}
 }
 

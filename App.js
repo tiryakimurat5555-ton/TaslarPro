@@ -240,13 +240,13 @@ function Ayarlar({ ayar, degistir, geri }) {
         }}
       />
       <Dugme
-        etiket={`Konuşurken efektleri kıs: ${ayar.efektKis !== false ? 'açık' : 'kapalı'}`}
-        ipucu="Oyun konuşurken vuruş ve ayak sesleri kısılır, konuşma net duyulur"
+        etiket={`Efektleri konuşmayla karıştırma: ${ayar.efektKis !== false ? 'açık' : 'kapalı'}`}
+        ipucu="Açıkken oyun konuşurken efekt çalmaz, konuşma kısa bir efektin bitmesini bekler. Ses dalgalanmasını önler"
         onEtkin={() => {
           const yeni = ayar.efektKis === false;
           degistir({ efektKis: yeni });
           Efekt.efektAyarla({ kis: yeni });
-          Ses.hemen(`Konuşurken efektleri kıs ${yeni ? 'açık' : 'kapalı'}`);
+          Ses.hemen(`Efektleri konuşmayla karıştırma ${yeni ? 'açık' : 'kapalı'}`);
         }}
       />
       <Dugme
