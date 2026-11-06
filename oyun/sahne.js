@@ -2,7 +2,8 @@
 // Oyun dünyasını düşük poligonlu şekillerle çizer. Mantık koordinatı (x doğu, y kuzey)
 // three'de (x, 0, -y) olur; yön (0 = kuzey) three'de rotation.y = -yon.
 import * as THREE from 'three';
-import { CANAVARLAR, SINIFLAR, IRKLAR, DUNYA } from './veri.js';
+import { CANAVARLAR, SINIFLAR, IRKLAR, DUNYA, BOLGELER, YERLER } from './veri.js';
+import { bolgeBul } from './mantik.js';
 
 const R = (x) => -x; // y → three z
 
@@ -105,6 +106,95 @@ function canavarModeli(tur) {
   return insansi({ govde: c.renk, ten: c.renk, boy: c.boy, silah: 'Kılıç', silahRengi: '#9a9a9a' });
 }
 
+function yerModeli(yr) {
+  const g = new THREE.Group();
+  const ekle = (geo, renk, x, y, z, rx = 0, ry = 0, rz = 0) => {
+    const m = new THREE.Mesh(geo, mat(renk));
+    m.position.set(x, y, z);
+    m.rotation.set(rx, ry, rz);
+    g.add(m);
+    return m;
+  };
+  switch (yr.tur) {
+    case 'kule':
+      [-1, 1].forEach((a) => [-1, 1].forEach((b) => ekle(new THREE.BoxGeometry(0.3, 7, 0.3), '#6b4a2e', a * 1.4, 3.5, b * 1.4)));
+      ekle(new THREE.BoxGeometry(3.6, 0.3, 3.6), '#7a5532', 0, 7, 0);
+      ekle(new THREE.ConeGeometry(2.8, 2, 4), '#8c3b2b', 0, 8.6, 0, 0, Math.PI / 4);
+      break;
+    case 'agil':
+      for (let i = 0; i < 22; i++) {
+        const a = (i / 22) * Math.PI * 2;
+        ekle(new THREE.BoxGeometry(0.18, 1.2, 0.18), '#7a5532', Math.sin(a) * 6, 0.6, Math.cos(a) * 6);
+      }
+      ekle(new THREE.TorusGeometry(6, 0.06, 3, 40), '#7a5532', 0, 0.9, 0, Math.PI / 2);
+      break;
+    case 'yasliMese':
+      ekle(new THREE.CylinderGeometry(1.0, 1.4, 6, 8), '#5a3d26', 0, 3, 0);
+      ekle(new THREE.IcosahedronGeometry(6, 1), '#355f26', 0, 8.5, 0);
+      break;
+    case 'kamp':
+      for (let i = 0; i < 5; i++) {
+        const a = (i / 5) * Math.PI * 2;
+        ekle(new THREE.ConeGeometry(1.6, 2.4, 6), yr.renk || '#6b5a3a', Math.sin(a) * 5, 1.2, Math.cos(a) * 5);
+      }
+      ekle(new THREE.CylinderGeometry(0.9, 0.9, 0.2, 8), '#3a3330', 0, 0.1, 0);
+      ekle(new THREE.OctahedronGeometry(0.5), '#ff8a3d', 0, 0.6, 0);
+      break;
+    case 'orkKamp':
+      for (let i = 0; i < 4; i++) {
+        const a = (i / 4) * Math.PI * 2 + 0.4;
+        ekle(new THREE.ConeGeometry(2, 3, 5), '#2a2622', Math.sin(a) * 6, 1.5, Math.cos(a) * 6);
+      }
+      for (let i = 0; i < 26; i++) {
+        const a = (i / 26) * Math.PI * 2;
+        ekle(new THREE.ConeGeometry(0.2, 2.2, 4), '#5a3a22', Math.sin(a) * 11, 1, Math.cos(a) * 11, Math.cos(a) * 0.4, 0, -Math.sin(a) * 0.4);
+      }
+      break;
+    case 'kervan':
+      ekle(new THREE.BoxGeometry(2.2, 1.2, 4), '#7a5532', 0, 0.9, 0, 0, 0.3, 0.5);
+      ekle(new THREE.BoxGeometry(2, 1, 3.4), '#6b4a2e', 4, 0.8, 2, 0, -0.6, 0);
+      ekle(new THREE.TorusGeometry(0.6, 0.1, 4, 10), '#3a2e26', 1.5, 0.6, 1.2, 0, Math.PI / 2, 0);
+      ekle(new THREE.BoxGeometry(0.8, 0.8, 0.8), '#8a6a3a', -2, 0.4, 1.5);
+      ekle(new THREE.BoxGeometry(0.8, 0.8, 0.8), '#8a6a3a', -2.6, 0.4, -0.8, 0, 0.5, 0);
+      break;
+    case 'ag':
+      for (let i = 0; i < 5; i++) {
+        const a = (i / 5) * Math.PI * 2;
+        ekle(new THREE.DodecahedronGeometry(1.6, 0), '#6d6b65', Math.sin(a) * 7, 0.8, Math.cos(a) * 7);
+        ekle(new THREE.TorusGeometry(2.4, 0.03, 3, 16), '#e8e8e8', Math.sin(a + 0.6) * 5, 2.2, Math.cos(a + 0.6) * 5, 0, a, 0);
+      }
+      break;
+    case 'harabe':
+      for (let i = 0; i < 8; i++) {
+        const a = (i / 8) * Math.PI * 2;
+        const boy = i % 3 === 0 ? 2 : 5.5;
+        ekle(new THREE.CylinderGeometry(0.6, 0.7, boy, 8), '#b8b2a2', Math.sin(a) * 8, boy / 2, Math.cos(a) * 8);
+      }
+      ekle(new THREE.BoxGeometry(10, 2.4, 1), '#a39d8e', 0, 1.2, -10, 0, 0.1, 0);
+      ekle(new THREE.BoxGeometry(6, 1.4, 1), '#a39d8e', -9, 0.7, 2, 0, 1.3, 0);
+      break;
+    case 'tapinak':
+      ekle(new THREE.BoxGeometry(12, 1, 9), '#7f7a6d', 0, 0.2, 0);
+      ekle(new THREE.BoxGeometry(9, 1, 7), '#7f7a6d', 0, 1.0, 0, 0.05, 0, 0.04);
+      [-3, 3].forEach((x) => [-2.5, 2.5].forEach((z) => ekle(new THREE.CylinderGeometry(0.5, 0.5, 4, 8), '#a29d92', x, 3, z)));
+      ekle(new THREE.BoxGeometry(8, 0.6, 6), '#8f8a7d', 0, 5.2, 0, 0, 0, 0.12);
+      break;
+    case 'yuva':
+      for (let i = 0; i < 14; i++) {
+        const a = (i / 14) * Math.PI * 2;
+        ekle(new THREE.DodecahedronGeometry(1.8, 0), '#2e2a26', Math.sin(a) * 9, 0.6, Math.cos(a) * 9);
+      }
+      for (let i = 0; i < 10; i++) {
+        const a = i * 2.3;
+        ekle(new THREE.BoxGeometry(0.15, 0.15, 1.6), '#e6e0cf', Math.sin(a) * 5, 0.1, Math.cos(a) * 5, 0, a, 0);
+      }
+      break;
+    default:
+      return null;
+  }
+  return g;
+}
+
 export function sahneKur(gl, d) {
   const genislik = gl.drawingBufferWidth;
   const yukseklik = gl.drawingBufferHeight;
@@ -139,53 +229,113 @@ export function sahneKur(gl, d) {
   gunes.position.set(40, 80, 20);
   sahne.add(gunes);
 
-  // Zemin: çimen, köy meydanı, yollar
-  const zemin = new THREE.Mesh(new THREE.CircleGeometry(DUNYA.yaricap + 40, 64), mat('#5f8a3c'));
+  // Zemin: her bölge kendi renginde bir halka; kuzeydeki bataklık dağ halkasının üstüne çizilir
+  const zemin = new THREE.Mesh(new THREE.CircleGeometry(DUNYA.yaricap + 60, 64), mat('#6e6a62'));
   zemin.rotation.x = -Math.PI / 2;
+  zemin.position.y = -0.02;
   sahne.add(zemin);
-  const meydan = new THREE.Mesh(new THREE.CircleGeometry(DUNYA.koyYaricap, 32), mat('#a88a5c'));
-  meydan.rotation.x = -Math.PI / 2;
-  meydan.position.y = 0.02;
-  sahne.add(meydan);
+  BOLGELER.forEach((b, i) => {
+    const geo = b.ic === 0
+      ? new THREE.CircleGeometry(b.dis, 40)
+      : b.aci
+        ? new THREE.RingGeometry(b.ic, b.dis, 48, 1, Math.PI / 2 - b.aci, b.aci * 2)
+        : new THREE.RingGeometry(b.ic, b.dis, 96, 1);
+    const halka = new THREE.Mesh(geo, mat(b.zemin));
+    halka.rotation.x = -Math.PI / 2;
+    halka.position.y = b.aci ? 0.012 : 0.004 + (b.id === 'nehir' ? 0.006 : 0);
+    sahne.add(halka);
+  });
   const yolMat = mat('#9c8358');
   [0, Math.PI / 2].forEach((a) => {
     const yol = new THREE.Mesh(new THREE.PlaneGeometry(4, DUNYA.yaricap * 2), yolMat);
     yol.rotation.x = -Math.PI / 2;
     yol.rotation.z = a;
-    yol.position.y = 0.015;
+    yol.position.y = 0.02;
     sahne.add(yol);
   });
-  // Bataklık: kuzeyde koyu yeşil halka parçası
-  const bataklik = new THREE.Mesh(new THREE.RingGeometry(240, DUNYA.yaricap, 48, 1, Math.PI / 2 - 0.6, 1.2), mat('#2f4a35'));
-  bataklik.rotation.x = -Math.PI / 2;
-  bataklik.position.y = 0.03;
-  sahne.add(bataklik);
+  // Köprüler: dört yolun çayı geçtiği yerde taş köprü ve korkuluk
+  const tasMat = mat('#a29d92');
+  [0, Math.PI / 2, Math.PI, -Math.PI / 2].forEach((a) => {
+    const kopru = new THREE.Group();
+    const govde = new THREE.Mesh(new THREE.BoxGeometry(DUNYA.kopruYari * 2, 0.5, 9), tasMat);
+    govde.position.y = 0.2;
+    kopru.add(govde);
+    [-1, 1].forEach((yan) => {
+      const korkuluk = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.8, 9), tasMat);
+      korkuluk.position.set(yan * (DUNYA.kopruYari - 0.1), 0.8, 0);
+      kopru.add(korkuluk);
+    });
+    const r = (DUNYA.nehirIc + DUNYA.nehirDis) / 2;
+    kopru.position.set(Math.sin(a) * r, 0, R(Math.cos(a) * r));
+    kopru.rotation.y = -a;
+    sahne.add(kopru);
+  });
   // Dünyanın sınırı: alçak taş duvar
   const duvar = new THREE.Mesh(new THREE.TorusGeometry(DUNYA.yaricap + 1, 0.8, 4, 96), mat('#7d7a70'));
   duvar.rotation.x = Math.PI / 2;
   sahne.add(duvar);
 
-  // Ağaçlar ve kayalar: örneklenmiş (instanced) çizim
+  // Ağaçlar (çam, meşe, ölü ağaç) ve kayalar: örneklenmiş (instanced) çizim
   const agaclar = d.engeller.filter((e) => e.tur === 'agac');
   const kayalar = d.engeller.filter((e) => e.tur === 'kaya');
   const evler = d.engeller.filter((e) => e.tur === 'ev');
   const m4 = new THREE.Matrix4();
-  const gov = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.18, 0.25, 1.6, 6), mat('#6b4a2e'), agaclar.length);
-  const yap = new THREE.InstancedMesh(new THREE.ConeGeometry(1.4, 3.2, 7), mat('#2f6b32'), agaclar.length);
-  agaclar.forEach((e, i) => {
-    const o = e.boy;
-    m4.makeScale(o, o, o).setPosition(e.x, 0.8 * o, R(e.y));
-    gov.setMatrixAt(i, m4);
-    m4.makeScale(o, o, o).setPosition(e.x, 2.9 * o, R(e.y));
-    yap.setMatrixAt(i, m4);
+  const q = new THREE.Quaternion();
+  const olcek = new THREE.Vector3();
+  const yer = new THREE.Vector3();
+  const ornekle = (geo, renk, liste, yerlestir) => {
+    if (!liste.length) return;
+    const im = new THREE.InstancedMesh(geo, mat(renk), liste.length);
+    liste.forEach((e, i) => {
+      yerlestir(e);
+      m4.compose(yer, q, olcek);
+      im.setMatrixAt(i, m4);
+    });
+    sahne.add(im);
+  };
+  const yon0 = new THREE.Euler();
+  const turu = (t) => agaclar.filter((e) => (e.agacTur || 'cam') === t);
+  const govdeYerlestir = (yukseklik) => (e) => {
+    q.identity();
+    olcek.set(e.boy, e.boy, e.boy);
+    yer.set(e.x, yukseklik * e.boy, R(e.y));
+  };
+  // Çam
+  ornekle(new THREE.CylinderGeometry(0.18, 0.25, 1.6, 6), '#6b4a2e', turu('cam'), govdeYerlestir(0.8));
+  ornekle(new THREE.ConeGeometry(1.4, 3.2, 7), '#2f6b32', turu('cam'), govdeYerlestir(2.9));
+  // Meşe: kalın gövde, yuvarlak geniş taç
+  ornekle(new THREE.CylinderGeometry(0.3, 0.4, 2.2, 7), '#5e4128', turu('mese'), govdeYerlestir(1.1));
+  ornekle(new THREE.IcosahedronGeometry(1.9, 0), '#3f6e2c', turu('mese'), (e) => {
+    q.identity();
+    olcek.set(e.boy * 1.15, e.boy * 0.9, e.boy * 1.15);
+    yer.set(e.x, 3.2 * e.boy, R(e.y));
   });
-  sahne.add(gov, yap);
-  const kaya = new THREE.InstancedMesh(new THREE.DodecahedronGeometry(1, 0), mat('#8a8780'), kayalar.length);
-  kayalar.forEach((e, i) => {
-    m4.makeScale(e.r, e.r * 0.7, e.r).setPosition(e.x, e.r * 0.3, R(e.y));
-    kaya.setMatrixAt(i, m4);
+  // Ölü ağaç: çıplak gövde ve iki eğik dal
+  ornekle(new THREE.CylinderGeometry(0.12, 0.22, 3.2, 5), '#4a3b30', turu('olu'), govdeYerlestir(1.6));
+  ornekle(new THREE.BoxGeometry(0.12, 1.4, 0.12), '#4a3b30', turu('olu'), (e) => {
+    q.setFromEuler(yon0.set(0, e.x, 0.8));
+    olcek.set(e.boy, e.boy, e.boy);
+    yer.set(e.x + 0.4 * e.boy, 2.4 * e.boy, R(e.y));
   });
-  sahne.add(kaya);
+  ornekle(new THREE.BoxGeometry(0.1, 1.1, 0.1), '#4a3b30', turu('olu'), (e) => {
+    q.setFromEuler(yon0.set(0, e.y, -0.7));
+    olcek.set(e.boy, e.boy, e.boy);
+    yer.set(e.x - 0.35 * e.boy, 2.0 * e.boy, R(e.y));
+  });
+  ornekle(new THREE.DodecahedronGeometry(1, 0), '#8a8780', kayalar, (e) => {
+    q.identity();
+    olcek.set(e.r, e.r * 0.7, e.r);
+    yer.set(e.x, e.r * 0.3, R(e.y));
+  });
+
+  // Önemli yerler
+  YERLER.forEach((yr) => {
+    const g = yerModeli(yr);
+    if (!g) return;
+    g.position.set(yr.x, 0, R(yr.y));
+    sahne.add(g);
+  });
+
   evler.forEach((e) => {
     const ev = new THREE.Group();
     const duvarlar = new THREE.Mesh(new THREE.BoxGeometry(5, 3, 5), mat('#d8c7a1'));
@@ -253,6 +403,10 @@ export function sahneKur(gl, d) {
   const kamKonum = new THREE.Vector3();
   let ilk = true;
   let saat = 0;
+  let sis = 0;
+  let sisHedef = 0;
+  const gok = new THREE.Color('#9cc7e8');
+  const sisRengi = new THREE.Color('#8a9688');
 
   return {
     boyut(w, h) {
@@ -276,6 +430,14 @@ export function sahneKur(gl, d) {
     kare(dt) {
       saat += dt;
       const o = d.oyuncu;
+      // Bölgenin sisi: Sisli Kıyı ve bataklıkta görüş kısalır
+      const b = bolgeBul(o.x, o.y);
+      sisHedef = b.sis || 0;
+      sis += (sisHedef - sis) * Math.min(1, dt * 0.8);
+      sahne.fog.near = 45 - 32 * sis;
+      sahne.fog.far = 120 - 78 * sis;
+      sahne.fog.color.copy(gok).lerp(sisRengi, sis);
+      sahne.background.copy(sahne.fog.color);
       oyuncu.position.set(o.x, 0, R(o.y));
       oyuncu.rotation.y = -o.yon;
       oyuncu.visible = !d.olu;

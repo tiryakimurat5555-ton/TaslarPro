@@ -112,18 +112,66 @@ export const YETENEKLER = {
 
 // Canavarlar: seviye aralığı, bölge (köyden uzaklık, metre), görünüş
 export const CANAVARLAR = {
-  kurt: { efekt: 'kurt', ad: 'Kurt', seviye: [1, 3], bolge: [25, 70], renk: '#8a8f96', boy: 0.9, sekil: 'dortayak', hiz: 3.6, sayi: 14, ses: 'hırlıyor' },
-  domuz: { efekt: 'domuz', ad: 'Yaban domuzu', seviye: [3, 6], bolge: [55, 95], renk: '#6b4a34', boy: 0.9, sekil: 'dortayak', hiz: 3.2, sayi: 12, ses: 'homurdanıyor' },
-  goblin: { efekt: 'goblin', ad: 'Goblin', seviye: [5, 9], bolge: [85, 125], renk: '#5f8f3a', boy: 1.0, sekil: 'iki', hiz: 3.4, sayi: 14, ses: 'kıkırdıyor' },
-  haydut: { efekt: 'insan', ad: 'Haydut', seviye: [8, 12], bolge: [115, 150], renk: '#7a3b3b', boy: 1.6, sekil: 'iki', hiz: 3.5, sayi: 12, ses: 'bağırıyor' },
-  orkAkinci: { efekt: 'ork', ad: 'Ork akıncı', seviye: [11, 16], bolge: [140, 175], renk: '#3f6b2e', boy: 1.9, sekil: 'iki', hiz: 3.5, sayi: 12, ses: 'kükrüyor' },
-  orumcek: { efekt: 'orumcek', ad: 'Dev örümcek', seviye: [15, 20], bolge: [165, 200], renk: '#2b2b33', boy: 1.1, sekil: 'orumcek', hiz: 3.8, sayi: 12, ses: 'tıkırdıyor' },
-  golem: { efekt: 'golem', ad: 'Taş golem', seviye: [19, 24], bolge: [190, 225], renk: '#8d8a80', boy: 2.4, sekil: 'iki', hiz: 2.6, sayi: 10, ses: 'gürlüyor' },
-  golge: { efekt: 'golge', ad: 'Gölge şövalye', seviye: [23, 28], bolge: [215, 250], renk: '#2e2440', boy: 2.0, sekil: 'iki', hiz: 3.6, sayi: 10, ses: 'fısıldıyor' },
-  ejder: { efekt: 'ejder', ad: 'Bataklık ejderi', seviye: [30, 30], bolge: [262, 268], renk: '#3c6b5e', boy: 3.4, sekil: 'dortayak', hiz: 3.0, sayi: 1, ses: 'kükrüyor', patron: true },
+  kurt: { efekt: 'kurt', ad: 'Kurt', seviye: [1, 3], bolge: [25, 72], renk: '#8a8f96', boy: 0.9, sekil: 'dortayak', hiz: 3.6, sayi: 14, ses: 'hırlıyor' },
+  domuz: { efekt: 'domuz', ad: 'Yaban domuzu', seviye: [3, 6], bolge: [86, 109], renk: '#6b4a34', boy: 0.9, sekil: 'dortayak', hiz: 3.2, sayi: 12, ses: 'homurdanıyor' },
+  goblin: { efekt: 'goblin', ad: 'Goblin', seviye: [5, 9], bolge: [115, 137], renk: '#5f8f3a', boy: 1.0, sekil: 'iki', hiz: 3.4, sayi: 14, ses: 'kıkırdıyor' },
+  haydut: { efekt: 'insan', ad: 'Haydut', seviye: [8, 12], bolge: [143, 162], renk: '#7a3b3b', boy: 1.6, sekil: 'iki', hiz: 3.5, sayi: 12, ses: 'bağırıyor' },
+  orkAkinci: { efekt: 'ork', ad: 'Ork akıncı', seviye: [11, 16], bolge: [168, 187], renk: '#3f6b2e', boy: 1.9, sekil: 'iki', hiz: 3.5, sayi: 12, ses: 'kükrüyor' },
+  orumcek: { efekt: 'orumcek', ad: 'Dev örümcek', seviye: [15, 20], bolge: [193, 209], renk: '#2b2b33', boy: 1.1, sekil: 'orumcek', hiz: 3.8, sayi: 12, ses: 'tıkırdıyor' },
+  golem: { efekt: 'golem', ad: 'Taş golem', seviye: [19, 24], bolge: [215, 232], renk: '#8d8a80', boy: 2.4, sekil: 'iki', hiz: 2.6, sayi: 10, ses: 'gürlüyor' },
+  golge: { efekt: 'golge', ad: 'Gölge şövalye', seviye: [23, 28], bolge: [238, 255], renk: '#2e2440', boy: 2.0, sekil: 'iki', hiz: 3.6, sayi: 10, ses: 'fısıldıyor' },
+  ejder: { efekt: 'ejder', ad: 'Bataklık ejderi', seviye: [30, 30], bolge: [268, 272], renk: '#3c6b5e', boy: 3.4, sekil: 'dortayak', hiz: 3.0, sayi: 1, ses: 'kükrüyor', patron: true },
 };
 
-export const DUNYA = { yaricap: 285, koyYaricap: 18 };
+export const DUNYA = { yaricap: 285, koyYaricap: 18, nehirIc: 76.5, nehirDis: 81.5, kopruYari: 2.8 };
+
+// Bölgeler: köyden dışa doğru halkalar. Ejder Bataklığı yalnız kuzeyde (açı ±0,6 radyan).
+// agac: ağaç sayısı, agacTur: cam (çam), mese (meşe), olu (ölü ağaç); kaya: kaya sayısı; sis: 0-1
+export const BOLGELER = [
+  { id: 'koy', ad: 'Akpınar Köyü', ic: 0, dis: 18, zemin: '#a88a5c', agac: 0, kaya: 0, sis: 0, canavar: null,
+    tarif: 'Dört evli küçük bir köy. Ortada meydan ve kuyu var; Muhtar meydanın kuzeyinde, Tüccar batısında durur. Canavarlar köye giremez.' },
+  { id: 'cayir', ad: 'Çayır Yamaçları', ic: 18, dis: 76.5, zemin: '#6f9e45', agac: 70, agacTur: 'cam', kaya: 25, sis: 0, canavar: 'kurt',
+    tarif: 'Köyü saran açık, yeşil çayırlar. Seyrek çam ağaçları, bir çoban ağılı ve tepede bir gözetleme kulesi var. Kurtlar dolaşır, seviye 1 ile 3.' },
+  { id: 'nehir', ad: 'Gümüş Çay', ic: 76.5, dis: 81.5, zemin: '#3d7fb8', agac: 0, kaya: 0, sis: 0, canavar: null,
+    tarif: 'Köyü halka gibi saran bir çay. Yüzülmez; dört yolun üzerindeki dört köprüden geçilir. Suyun sesi yaklaştıkça duyulur.' },
+  { id: 'mese', ad: 'Meşe Korusu', ic: 81.5, dis: 112, zemin: '#4c7a32', agac: 190, agacTur: 'mese', kaya: 15, sis: 0.1, canavar: 'domuz',
+    tarif: 'Sık meşe ağaçlarıyla dolu gölgeli bir koru. Ortasında köyün kutsal saydığı Yaşlı Meşe durur. Yaban domuzları gezer, seviye 3 ile 6.' },
+  { id: 'goblin', ad: 'Goblin Tepeleri', ic: 112, dis: 140, zemin: '#6b8a3c', agac: 60, agacTur: 'cam', kaya: 40, sis: 0.05, canavar: 'goblin',
+    tarif: 'İnişli çıkışlı tepeler. Kuzeydoğuda goblinlerin çadırlı kampı var. Goblinler, seviye 5 ile 9.' },
+  { id: 'haydut', ad: 'Haydut Geçidi', ic: 140, dis: 165, zemin: '#8a7a4a', agac: 45, agacTur: 'cam', kaya: 45, sis: 0.05, canavar: 'haydut',
+    tarif: 'Eski ticaret yolunun geçtiği kuru, sarımsı topraklar. Batı yolunda yağmalanmış bir kervan, kuzeybatıda haydut kampı var. Haydutlar, seviye 8 ile 12.' },
+  { id: 'kizil', ad: 'Kızıl Sınır', ic: 165, dis: 190, zemin: '#8a5a3c', agac: 25, agacTur: 'olu', kaya: 50, sis: 0.1, canavar: 'orkAkinci',
+    tarif: 'Ork akınlarıyla kızıla dönmüş, yanık topraklar. Güneydoğuda kazıklarla çevrili ork savaş kampı var. Ork akıncılar, seviye 11 ile 16.' },
+  { id: 'kayalik', ad: 'Örümcek Kayalıkları', ic: 190, dis: 212, zemin: '#7d7b74', agac: 10, agacTur: 'olu', kaya: 110, sis: 0.15, canavar: 'orumcek',
+    tarif: 'Ağaçsız, kaya dolu gri bir arazi. Güneybatıda ağlarla örülü örümcek yuvası var. Dev örümcekler, seviye 15 ile 20.' },
+  { id: 'harabe', ad: 'Golem Harabeleri', ic: 212, dis: 235, zemin: '#8f8a76', agac: 15, agacTur: 'cam', kaya: 60, sis: 0.2, canavar: 'golem',
+    tarif: 'Eski bir krallığın yıkıntıları. Kuzeydoğuda sütunları ayakta kalmış kale harabesi var. Taş golemler, seviye 19 ile 24.' },
+  { id: 'sisli', ad: 'Sisli Kıyı', ic: 235, dis: 258, zemin: '#4a5a48', agac: 70, agacTur: 'olu', kaya: 30, sis: 0.6, canavar: 'golge',
+    tarif: 'Bataklığın kıyısında sisli, ölü ağaçlı bir bölge. Kuzeybatıda yarısı suya gömülmüş bir tapınak var. Gölge şövalyeler, seviye 23 ile 28.' },
+  { id: 'bataklik', ad: 'Ejder Bataklığı', ic: 258, dis: 285, aci: 0.6, zemin: '#2f4a35', agac: 30, agacTur: 'olu', kaya: 20, sis: 0.85, canavar: 'ejder',
+    tarif: 'Dünyanın kuzey ucundaki kara bataklık. En içinde Bataklık ejderinin yuvası var. Seviye 30, son düşman.' },
+  { id: 'dag', ad: 'Sınır Dağları', ic: 258, dis: 285, zemin: '#6e6a62', agac: 20, agacTur: 'cam', kaya: 60, sis: 0.3, canavar: null,
+    tarif: 'Dünyanın dış kenarı: kayalık, ıssız dağ etekleri. Ötesine geçilmez.' },
+];
+
+// Önemli yerler. Yaklaşınca keşfedilir, keşif deneyim verir. r: çarpışma yarıçapı (0 = içinden geçilir)
+export const YERLER = [
+  { id: 'kopruK', ad: 'Kuzey köprüsü', x: 0, y: 79, tur: 'kopru', r: 0, tarif: 'Gümüş Çay üzerinde, kuzey yolundaki taş köprü.' },
+  { id: 'kopruD', ad: 'Doğu köprüsü', x: 79, y: 0, tur: 'kopru', r: 0, tarif: 'Gümüş Çay üzerinde, doğu yolundaki taş köprü.' },
+  { id: 'kopruG', ad: 'Güney köprüsü', x: 0, y: -79, tur: 'kopru', r: 0, tarif: 'Gümüş Çay üzerinde, güney yolundaki taş köprü.' },
+  { id: 'kopruB', ad: 'Batı köprüsü', x: -79, y: 0, tur: 'kopru', r: 0, tarif: 'Gümüş Çay üzerinde, batı yolundaki taş köprü.' },
+  { id: 'kule', ad: 'Gözetleme kulesi', x: 32, y: 42, tur: 'kule', r: 2.2, tarif: 'Çayırın tepesinde, köyü kurtlara karşı gözleyen ahşap kule.' },
+  { id: 'agil', ad: 'Çoban ağılı', x: -42, y: -34, tur: 'agil', r: 0, tarif: 'Çitle çevrili boş bir koyun ağılı. Kurtlar koyunları kaçırmış.' },
+  { id: 'yasliMese', ad: 'Yaşlı Meşe', x: -62, y: -74, tur: 'yasliMese', r: 2.4, tarif: 'Meşe Korusunun ortasındaki dev, yüzyıllık ağaç.' },
+  { id: 'goblinKamp', ad: 'Goblin kampı', x: 88, y: 88, tur: 'kamp', r: 0, renk: '#6b5a3a', tarif: 'Yamalı çadırlardan kurulmuş, çöplerle dolu goblin kampı.' },
+  { id: 'kervan', ad: 'Yağmalanmış kervan', x: -152, y: 6, tur: 'kervan', r: 2.5, tarif: 'Batı yolunda devrilmiş arabalar ve dağılmış sandıklar.' },
+  { id: 'haydutKamp', ad: 'Haydut kampı', x: -108, y: 104, tur: 'kamp', r: 0, renk: '#5a2e2e', tarif: 'Kızıl bezlerle örtülü çadırlar ve sönmüş bir kamp ateşi.' },
+  { id: 'orkKamp', ad: 'Ork savaş kampı', x: 122, y: -128, tur: 'orkKamp', r: 0, tarif: 'Sivri kazıklarla çevrili, kara çadırlı ork kampı.' },
+  { id: 'orumcekYuva', ad: 'Örümcek yuvası', x: -142, y: -142, tur: 'ag', r: 0, tarif: 'Kayaların arasına gerilmiş dev ağlar.' },
+  { id: 'kale', ad: 'Kale harabesi', x: 168, y: 148, tur: 'harabe', r: 0, tarif: 'Yıkık duvarlar ve hâlâ ayakta duran sütunlar.' },
+  { id: 'tapinak', ad: 'Batık tapınak', x: -150, y: 186, tur: 'tapinak', r: 3, tarif: 'Yarısı bataklığa gömülmüş eski bir tapınak.' },
+  { id: 'yuva', ad: 'Ejder yuvası', x: 0, y: 274, tur: 'yuva', r: 0, tarif: 'Kemiklerle çevrili kara bir çukur. Bataklık ejderi burada yaşar.' },
+];
 
 export const NADIRLIK = [
   { ad: 'Sıradan', carpan: 1, ek: 0, renk: '#cfcfcf' },
@@ -158,15 +206,15 @@ export const ESYA_KATSAYI = { silah: 4, kask: 1.2, zirh: 2.4, eldiven: 0.9, cizm
 export const IKSIR = { ad: 'Can iksiri', fiyat: 15, oran: 0.4, bekleme: 10 };
 
 export const GOREVLER = [
-  { id: 'kurt', ad: 'Kurt sürüsü', veren: 'Muhtar', hedef: 'kurt', sayi: 5, xp: 300, altin: 30, metin: 'Kurtlar koyunlarımızı kapıyor. Köyün çevresindeki 5 kurdu avla.' },
-  { id: 'domuz', ad: 'Tarla bekçisi', veren: 'Muhtar', hedef: 'domuz', sayi: 6, xp: 1800, altin: 60, metin: 'Yaban domuzları tarlaları eşeliyor. 6 tanesini avla.' },
-  { id: 'goblin', ad: 'Goblin baskını', veren: 'Muhtar', hedef: 'goblin', sayi: 8, xp: 9000, altin: 120, metin: 'Doğudaki goblinler köye saldırmaya hazırlanıyor. 8 goblin avla.' },
-  { id: 'haydut', ad: 'Yol kesenler', veren: 'Muhtar', hedef: 'haydut', sayi: 8, xp: 26000, altin: 200, metin: 'Ticaret yolunu haydutlar kesti. 8 haydudu temizle.' },
-  { id: 'ork', ad: 'Akıncı tehdidi', veren: 'Muhtar', hedef: 'orkAkinci', sayi: 10, xp: 70000, altin: 350, metin: 'Ork akıncıları sınırda toplanıyor. 10 tanesini durdur.' },
-  { id: 'orumcek', ad: 'Ağların ardında', veren: 'Muhtar', hedef: 'orumcek', sayi: 10, xp: 140000, altin: 500, metin: 'Kayalıklarda dev örümcekler yuva yaptı. 10 tanesini yok et.' },
-  { id: 'golem', ad: 'Yürüyen taşlar', veren: 'Muhtar', hedef: 'golem', sayi: 10, xp: 260000, altin: 700, metin: 'Eski büyüyle uyanan taş golemleri durdur. 10 tane.' },
-  { id: 'golge', ad: 'Gölge yemini', veren: 'Muhtar', hedef: 'golge', sayi: 10, xp: 420000, altin: 1000, metin: 'Bataklığın kıyısında gölge şövalyeler dolaşıyor. 10 tanesini yen.' },
-  { id: 'ejder', ad: 'Bataklık ejderi', veren: 'Muhtar', hedef: 'ejder', sayi: 1, xp: 600000, altin: 3000, metin: 'Her şeyin kaynağı bataklıktaki ejder. Onu yen ve krallığı kurtar.' },
+  { id: 'kurt', ad: 'Kurt sürüsü', veren: 'Muhtar', hedef: 'kurt', sayi: 5, xp: 300, altin: 30, metin: 'Kurtlar koyunlarımızı kapıyor. Köyü saran Çayır Yamaçlarındaki 5 kurdu avla.' },
+  { id: 'domuz', ad: 'Tarla bekçisi', veren: 'Muhtar', hedef: 'domuz', sayi: 6, xp: 1800, altin: 60, metin: 'Yaban domuzları tarlaları eşeliyor. Gümüş Çayın ötesindeki Meşe Korusunda 6 tanesini avla.' },
+  { id: 'goblin', ad: 'Goblin baskını', veren: 'Muhtar', hedef: 'goblin', sayi: 8, xp: 9000, altin: 120, metin: 'Goblin Tepelerindeki goblinler köye saldırmaya hazırlanıyor. 8 goblin avla.' },
+  { id: 'haydut', ad: 'Yol kesenler', veren: 'Muhtar', hedef: 'haydut', sayi: 8, xp: 26000, altin: 200, metin: 'Haydut Geçidinde ticaret yolunu haydutlar kesti. 8 haydudu temizle.' },
+  { id: 'ork', ad: 'Akıncı tehdidi', veren: 'Muhtar', hedef: 'orkAkinci', sayi: 10, xp: 70000, altin: 350, metin: 'Ork akıncıları Kızıl Sınırda toplanıyor. 10 tanesini durdur.' },
+  { id: 'orumcek', ad: 'Ağların ardında', veren: 'Muhtar', hedef: 'orumcek', sayi: 10, xp: 140000, altin: 500, metin: 'Örümcek Kayalıklarında dev örümcekler yuva yaptı. 10 tanesini yok et.' },
+  { id: 'golem', ad: 'Yürüyen taşlar', veren: 'Muhtar', hedef: 'golem', sayi: 10, xp: 260000, altin: 700, metin: 'Golem Harabelerinde eski büyüyle uyanan taş golemleri durdur. 10 tane.' },
+  { id: 'golge', ad: 'Gölge yemini', veren: 'Muhtar', hedef: 'golge', sayi: 10, xp: 420000, altin: 1000, metin: 'Sisli Kıyıda gölge şövalyeler dolaşıyor. 10 tanesini yen.' },
+  { id: 'ejder', ad: 'Bataklık ejderi', veren: 'Muhtar', hedef: 'ejder', sayi: 1, xp: 600000, altin: 3000, metin: 'Her şeyin kaynağı en kuzeydeki Ejder Bataklığında yaşayan ejder. Kuzey yolunu izle, onu yen ve krallığı kurtar.' },
 ];
 
 export const PUSULA = ['kuzey', 'kuzeydoğu', 'doğu', 'güneydoğu', 'güney', 'güneybatı', 'batı', 'kuzeybatı'];

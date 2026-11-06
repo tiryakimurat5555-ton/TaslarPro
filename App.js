@@ -14,7 +14,7 @@ import * as M from './oyun/mantik.js';
 import { ULUSLAR, IRKLAR, SINIFLAR, YETENEKLER, NITELIKLER, GOREVLER, YUVALAR, NADIRLIK, IKSIR, SEVIYE_SINIRI } from './oyun/veri.js';
 import { sahneKur } from './oyun/sahne.js';
 import * as Efekt from './oyun/efekt.js';
-import { CANAVARLAR } from './oyun/veri.js';
+import { CANAVARLAR, BOLGELER, YERLER, DUNYA } from './oyun/veri.js';
 import { Gezgin, Katman, Okunur, Sayfa, DogrudanAlan, useOdak, useSihirliEylem } from './oyun/gezgin.js';
 
 const OYUN_ADI = 'İki Sancak';
@@ -164,6 +164,8 @@ const NASIL = [
   'Savaş: Hedef düğmesi en yakın düşmanı seçer ve yerini söyler. Saldır düğmesi seni hedefe yürütür ve otomatik saldırtır. Yetenek düğmeleri mana harcar ve bir süre beklemeye girer.',
   'Yönler saat gibi söylenir: saat 12 tam önün, 3 sağın, 6 arkan, 9 solun.',
   'Kulaklıkla oynamak en iyisi: sana saldıran canavarlar bulundukları yönden ses verir, arkadakiler boğuk duyulur. Hedef seçiliyken menzil dışındaysa hedefin yönünden bip sesi gelir, yaklaştıkça sıklaşır. Canın azalınca kalp atışı duyarsın.',
+  'Dünya köyden dışa doğru halka halka bölgelere ayrılır: Çayır Yamaçları, Gümüş Çay, Meşe Korusu, Goblin Tepeleri, Haydut Geçidi, Kızıl Sınır, Örümcek Kayalıkları, Golem Harabeleri, Sisli Kıyı ve en kuzeyde Ejder Bataklığı. Uzaklaştıkça canavarlar güçlenir. Köyü saran Gümüş Çay yalnız dört yolun üzerindeki köprülerden geçilir; Saldır ve Görev hedefini bul seni köprüye kendisi götürür.',
+  'Önemli yerlere yaklaşınca keşfedersin ve deneyim kazanırsın. Menüdeki Harita, bölgeleri ve yerleri yönleri ve uzaklıklarıyla okur.',
   'Görev hedefini bul düğmesi, görevin istediği en yakın canavara seni yürütür. Bir canavarı öldürünce sana saldıran başka biri varsa hedef otomatik ona geçer.',
   'Etrafı tara düğmesi yakındaki herkesi söyler. Üstteki durum çubuğuna dokununca canın, manan ve deneyimin okunur.',
   'Canın azalırsa İksir düğmesiyle iksir iç. Köydeki Tüccar’dan iksir alabilir, ganimetleri satabilirsin. Menüdeki Köye dön, 5 saniye kıpırdamazsan seni köye ışınlar.',
@@ -475,6 +477,12 @@ function Oyun({ karakter, ayar, cikis, ayarDegistir }) {
       case 'konusma':
         Efekt.cal('etkinles', 0.5);
         return;
+      case 'bolge':
+        Efekt.cal('bolge', o.yeni ? 0.9 : 0.5);
+        return;
+      case 'kesif':
+        Efekt.cal('kesif', 0.9);
+        return;
       default:
     }
   };
@@ -491,6 +499,7 @@ function Oyun({ karakter, ayar, cikis, ayarDegistir }) {
     let canavarSesSayac = 0;
     let sonarSayac = 0;
     let kalpSayac = 0;
+    let suSayac = 0;
     let rehberMesafe = 0;
     let calisiyor = true;
     let raf;
@@ -512,8 +521,20 @@ function Oyun({ karakter, ayar, cikis, ayarDegistir }) {
         if (sonuc.carpti && simdi - carpmaSon > 1500) {
           carpmaSon = simdi;
           titret('hafif', a);
-          Efekt.cal('carpma', 0.7);
-          if (a.kip !== 'gorerek') Ses.soyle('Önün kapalı.', 2);
+          if (sonuc.nehir) {
+            Efekt.cal('su', 0.9);
+            if (a.kip !== 'gorerek') Ses.soyle('Önünde Gümüş Çay akıyor. Köprüler dört yolun üzerinde.', 2);
+          } else {
+            Efekt.cal('carpma', 0.7);
+            if (a.kip !== 'gorerek') Ses.soyle('Önün kapalı.', 2);
+          }
+        }
+        // Çayın sesi: yaklaştıkça duyulur
+        suSayac -= dt;
+        if (suSayac <= 0) {
+          suSayac = 2.2;
+          const uz = Math.abs(Math.hypot(d.oyuncu.x, d.oyuncu.y) - (DUNYA.nehirIc + DUNYA.nehirDis) / 2);
+          if (uz < 14) Efekt.cal('su', Math.max(0.12, 0.7 - uz / 20));
         }
         // Ayak sesleri: yürüdükçe
         adimYol += yurunen;
@@ -791,6 +812,7 @@ function Oyun({ karakter, ayar, cikis, ayarDegistir }) {
                   <Dugme etiket={`Karakter${k.serbestPuan ? `, ${k.serbestPuan} puan dağıtılabilir` : ''}`} onEtkin={() => panelAc('karakter', `Karakter. ${k.ad}, ${IRKLAR[k.irk].ad} ${SINIFLAR[k.sinif].ad}, seviye ${k.seviye}.`)} />
                   <Dugme etiket={`Çanta, ${k.envanter.length} eşya`} onEtkin={() => panelAc('canta', `Çanta. ${k.envanter.length} eşya.`)} />
                   <Dugme etiket="Görev" onEtkin={() => panelAc('gorev', M.gorevDurumu(k).metin)} />
+                  <Dugme etiket="Harita" ipucu="Bölgeler ve önemli yerler, yönleri ve uzaklıklarıyla" onEtkin={() => panelAc('harita', `Harita. ${M.konumOzeti(d)}`)} />
                   <Dugme
                     etiket="Köye dön"
                     ipucu="5 saniye kıpırdamazsan köye ışınlanırsın"
@@ -813,6 +835,7 @@ function Oyun({ karakter, ayar, cikis, ayarDegistir }) {
               {panel === 'canta' && <CantaPaneli d={d} tuccarda={npc && npc.id === 'tuccar'} geri={() => panelAc('menu', 'Menü.')} />}
               {panel === 'tuccar' && <TuccarPaneli d={d} canta={() => panelAc('canta', 'Çanta. Satmak istediğin eşyayı seç.')} geri={panelKapat} />}
               {panel === 'gorev' && <GorevPaneli k={k} geri={() => panelAc('menu', 'Menü.')} />}
+              {panel === 'harita' && <HaritaPaneli d={d} geri={() => panelAc('menu', 'Menü.')} />}
               {panel === 'ayarlar' && <Ayarlar ayar={ayar} degistir={ayarDegistir} geri={() => panelAc('menu', 'Menü.')} />}
             </Sayfa>
           </SafeAreaView>
@@ -950,6 +973,38 @@ function TuccarPaneli({ d, canta, geri }) {
       <Dugme etiket={`5 can iksiri al, ${IKSIR.fiyat * 5} altın`} devre={k.altin < IKSIR.fiyat * 5} onEtkin={() => al(5)} />
       <Dugme etiket={`Eşya sat, çantada ${k.envanter.length} eşya`} onEtkin={canta} />
       <Dugme etiket="Oyuna dön" onEtkin={geri} stil={st.buyukDugme} />
+    </>
+  );
+}
+
+function HaritaPaneli({ d, geri }) {
+  const k = d.k;
+  const b = M.bolgeBul(d.oyuncu.x, d.oyuncu.y);
+  const gezilen = k.gezilen || [];
+  const kesif = k.kesif || [];
+  const yerler = YERLER.map((yr) => ({ yr, m: M.mesafe(yr, d.oyuncu) })).sort((a, c) => a.m - c.m);
+  return (
+    <>
+      <Baslik>Harita</Baslik>
+      <Okunur stil={st.metin}>{M.konumOzeti(d)}</Okunur>
+      <Okunur stil={st.altBaslik}>Bulunduğun bölge: {b.ad}</Okunur>
+      <Okunur stil={st.metin}>{b.tarif}</Okunur>
+      <Okunur stil={st.altBaslik}>Bölgeler, köyden dışa doğru</Okunur>
+      {BOLGELER.map((x) => (
+        <Okunur key={x.id} stil={[st.metin, !gezilen.includes(x.id) && { color: R.soluk }]}>
+          {x.ad}, köyden {Math.round(x.ic)} ile {Math.round(x.dis)} metre arası{x.aci ? ', yalnız kuzeyde' : ''}
+          {x.canavar ? `, ${CANAVARLAR[x.canavar].ad} seviye ${CANAVARLAR[x.canavar].seviye.join(' ile ')}` : ''}. {gezilen.includes(x.id) ? 'Gezildi.' : 'Henüz gidilmedi.'}
+        </Okunur>
+      ))}
+      <Okunur stil={st.altBaslik}>
+        Önemli yerler, yakından uzağa. {kesif.length} / {YERLER.length} keşfedildi
+      </Okunur>
+      {yerler.map(({ yr, m }) => (
+        <Okunur key={yr.id} stil={[st.metin, !kesif.includes(yr.id) && { color: R.soluk }]}>
+          {yr.ad}: {M.saatSozu(M.saatYonu(d.oyuncu, yr))}, {Math.round(m)} metre. {kesif.includes(yr.id) ? yr.tarif : 'Henüz keşfedilmedi.'}
+        </Okunur>
+      ))}
+      <Dugme etiket="Geri" onEtkin={geri} stil={st.buyukDugme} />
     </>
   );
 }

@@ -96,8 +96,31 @@ const konusmalar = (s) => s.evaluate(() => window.__konusmalar.join(' | '));
     const k = await konusmalar(s);
     kontrol(/öldü/.test(k), 'en az bir canavar öldü');
     kontrol(!/NaN|undefined/.test(k), 'konuşmalarda bozuk metin yok');
+    // Bölgeleri dolaş ve görüntü al
+    for (const [ad, x, y, yon] of [['kopru', 0, 66, 0], ['mese', -50, -62, 3.6], ['goblin', 80, 72, 0.8], ['kizil', 112, -116, 2.4], ['harabe', 160, 136, 0.9], ['sisli', -140, 175, 5.6], ['bataklik', 0, 252, 0]]) {
+      await s.evaluate(([x, y, yon]) => {
+        const d = globalThis.__ikiSancakDunya;
+        d.hedefId = null;
+        d.otoSaldiri = false;
+        d.yaklas = false;
+        d.oyuncu.x = x;
+        d.oyuncu.y = y;
+        d.oyuncu.yon = yon;
+        d.canavarlar.forEach((c) => (c.durum = 'bos'));
+      }, [x, y, yon]);
+      await bekle(2500);
+      await s.screenshot({ path: path.join(CIKIS, `b-${ad}.png`) });
+    }
+    const bk = await konusmalar(s);
+    kontrol(/Meşe Korusu/.test(bk) && /Keşif:/.test(bk), 'bölge ve keşif duyuruları geldi');
     await tikla(s, 'Menü');
     await bekle(300);
+    await tikla(s, 'Harita');
+    await bekle(300);
+    await s.screenshot({ path: path.join(CIKIS, 'h-harita.png') });
+    kontrol(await var_(s, 'Geri'), 'harita paneli açıldı');
+    await tikla(s, 'Geri');
+    await bekle(200);
     await tikla(s, 'Karakter');
     await bekle(300);
     await s.screenshot({ path: path.join(CIKIS, '4-karakter.png') });
@@ -166,7 +189,7 @@ const konusmalar = (s) => s.evaluate(() => window.__konusmalar.join(' | '));
     await bekle(500);
     kontrol(await var_(s, 'Geri'), 'başka düğmenin üstüne çift dokunma seçili Nasıl oynanır sayfasını açtı');
     // Geri düğmesine kaydırarak gel, ekranın üstüne çift dokun
-    for (let i = 0; i < 12; i++) await kaydir(80);
+    for (let i = 0; i < 20; i++) await kaydir(80);
     kontrol(/Geri, düğme|Son öğe/.test(await sonSoz()), 'kaydırarak Geri düğmesine gelindi');
     await s.mouse.click(420, 200);
     await bekle(100);

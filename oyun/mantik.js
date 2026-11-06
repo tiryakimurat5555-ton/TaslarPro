@@ -17,6 +17,8 @@ import {
   GOREVLER,
   PUSULA,
   YUVALAR,
+  BOLGELER,
+  YERLER,
 } from './veri.js';
 
 // ---------- Rastgelelik ----------
@@ -76,6 +78,8 @@ export function karakterOlustur({ ad, ulus, irk, sinif }) {
     konum: { x: 0, y: 1, yon: 0 },
     oldurulen: 0,
     olum: 0,
+    kesif: [],
+    gezilen: ['koy'],
   };
   const h = hesapla(k);
   k.can = h.enCan;
@@ -280,21 +284,60 @@ export function metreSozu(m) {
 }
 
 // ---------- Dünya ----------
+// Bölge bulma: köyden uzaklık halkaları; Ejder Bataklığı yalnız kuzeyde
+export function bolgeBul(x, y) {
+  const r = Math.hypot(x, y);
+  const a = Math.atan2(x, y);
+  for (const b of BOLGELER) {
+    if (r < b.ic || r >= b.dis) continue;
+    if (b.aci && Math.abs(a) > b.aci) continue;
+    return b;
+  }
+  return BOLGELER[BOLGELER.length - 1];
+}
+export function bolgeSeviyesi(b) {
+  return b.canavar ? CANAVARLAR[b.canavar].seviye[0] : 1;
+}
+const CANAVAR_YUVASI = { kurt: 'agil', goblin: 'goblinKamp', haydut: 'haydutKamp', orkAkinci: 'orkKamp', orumcek: 'orumcekYuva', golem: 'kale', golge: 'tapinak', ejder: 'yuva' };
+const KOPRULER = [0, Math.PI / 2, Math.PI, -Math.PI / 2];
+// Çayın içinde mi? (köprüler yolların üstünde)
+export function nehirde(x, y) {
+  const r = Math.hypot(x, y);
+  if (r < DUNYA.nehirIc || r > DUNYA.nehirDis) return false;
+  return Math.min(Math.abs(x), Math.abs(y)) > DUNYA.kopruYari;
+}
+
 export function dunyaOlustur(karakter, tohum = 7) {
   const rng = tohumluUretec(tohum);
   const engeller = [];
-  // Ağaçlar ve kayalar: köyün dışında
-  for (let i = 0; i < 520; i++) {
-    const a = rng() * Math.PI * 2;
-    const r = arasi(rng, DUNYA.koyYaricap + 6, DUNYA.yaricap - 4);
-    const x = Math.sin(a) * r;
-    const y = Math.cos(a) * r;
-    // köyden çıkan dört yol açık kalsın
-    const yolda = Math.min(Math.abs(x), Math.abs(y)) < 3.5;
-    if (yolda) continue;
-    const kaya = rng() < 0.22;
-    engeller.push({ x, y, r: kaya ? arasi(rng, 0.8, 1.8) : arasi(rng, 0.5, 0.9), tur: kaya ? 'kaya' : 'agac', boy: arasi(rng, 0.8, 1.4) });
-  }
+  // Ağaçlar ve kayalar: her bölgenin kendi sıklığı ve ağaç türüyle
+  const yerlereYakin = (x, y, m) => YERLER.some((yr) => Math.hypot(x - yr.x, y - yr.y) < m);
+  BOLGELER.forEach((b) => {
+    const koy = (adet, kaya) => {
+      let konan = 0;
+      for (let deneme = 0; konan < adet && deneme < adet * 6; deneme++) {
+        let a = rng() * Math.PI * 2;
+        if (b.aci) a = (rng() * 2 - 1) * b.aci;
+        const r = arasi(rng, b.ic + 2, b.dis - 2);
+        const x = Math.sin(a) * r;
+        const y = Math.cos(a) * r;
+        if (bolgeBul(x, y) !== b) continue;
+        if (Math.min(Math.abs(x), Math.abs(y)) < 3.5) continue; // yollar açık kalsın
+        if (yerlereYakin(x, y, 9)) continue;
+        engeller.push(
+          kaya
+            ? { x, y, r: arasi(rng, 0.8, 1.9), tur: 'kaya', boy: arasi(rng, 0.8, 1.4) }
+            : { x, y, r: b.agacTur === 'mese' ? arasi(rng, 0.7, 1.1) : arasi(rng, 0.5, 0.9), tur: 'agac', agacTur: b.agacTur, boy: arasi(rng, 0.8, 1.4) }
+        );
+        konan++;
+      }
+    };
+    if (b.agac) koy(b.agac, false);
+    if (b.kaya) koy(b.kaya, true);
+  });
+  YERLER.forEach((yr) => {
+    if (yr.r) engeller.push({ x: yr.x, y: yr.y, r: yr.r, tur: 'yer', boy: 1 });
+  });
   // Köy evleri
   const evler = [
     { x: -11, y: 8, r: 3.2, tur: 'ev', boy: 1 },
@@ -311,11 +354,21 @@ export function dunyaOlustur(karakter, tohum = 7) {
   let id = 1;
   Object.entries(CANAVARLAR).forEach(([tur, c]) => {
     for (let i = 0; i < c.sayi; i++) {
-      // Canavarlar köyün doğu yarısından başlayıp çevreye dağılır; patron hep kuzeyde
-      const a = c.patron ? 0 : rng() * Math.PI * 2;
-      const r = arasi(rng, c.bolge[0], c.bolge[1]);
-      const x = Math.sin(a) * r;
-      const y = Math.cos(a) * r;
+      // Canavarlar kendi bölgelerine dağılır; bir kısmı bölgedeki kampın ya da yuvanın çevresinde toplanır
+      const yuva = YERLER.find((yr) => yr.id === CANAVAR_YUVASI[tur]);
+      let x;
+      let y;
+      if (yuva && (c.patron || rng() < 0.4)) {
+        const a = rng() * Math.PI * 2;
+        const r = c.patron ? 2 : arasi(rng, 4, 12);
+        x = yuva.x + Math.sin(a) * r;
+        y = yuva.y + Math.cos(a) * r;
+      } else {
+        const a = rng() * Math.PI * 2;
+        const r = arasi(rng, c.bolge[0], c.bolge[1]);
+        x = Math.sin(a) * r;
+        y = Math.cos(a) * r;
+      }
       const seviye = tamArasi(rng, c.seviye[0], c.seviye[1]);
       const st = canavarStat(tur, seviye);
       canavarlar.push({
@@ -781,6 +834,11 @@ function hareketEt(d, dx, dy) {
       ny = e.y + (ey / m) * min;
     }
   }
+  // Çay: köprü dışında geçilmez
+  if (nehirde(nx, ny)) {
+    d.nehirCarpti = true;
+    return true;
+  }
   const r = Math.hypot(nx, ny);
   if (r > DUNYA.yaricap) {
     nx = (nx / r) * DUNYA.yaricap;
@@ -794,8 +852,59 @@ function hareketEt(d, dx, dy) {
 
 // Hedefe yürürken önündeki ağaç ya da kayanın yanından dolaş
 function engelVar(d, x, y) {
+  if (nehirde(x, y)) return true;
   for (const e of d.engeller) if (Math.hypot(x - e.x, y - e.y) < e.r + 0.55) return true;
   return false;
+}
+// Hedef çayın öbür yakasındaysa önce köprüye yürü
+function yolNoktasi(d, hedefNokta) {
+  const o = d.oyuncu;
+  const ro = Math.hypot(o.x, o.y);
+  const rh = Math.hypot(hedefNokta.x, hedefNokta.y);
+  const orta = (DUNYA.nehirIc + DUNYA.nehirDis) / 2;
+  // Köprünün üstündeyken: köprü doğrultusunda hedefin yakasına çık
+  if (ro > DUNYA.nehirIc - 0.6 && ro < DUNYA.nehirDis + 0.6) {
+    const a = KOPRULER.reduce((en, k) => (Math.abs(aciNormal(Math.atan2(o.x, o.y) - k)) < Math.abs(aciNormal(Math.atan2(o.x, o.y) - en)) ? k : en), 0);
+    // Önce köprünün ortasına (yol çizgisine) gel, sonra karşıya ya da geri çık
+    const dik = Math.abs(o.x * Math.cos(a) - o.y * Math.sin(a));
+    if (dik > 1.2) return { x: Math.sin(a) * ro, y: Math.cos(a) * ro };
+    const cik = rh > orta ? DUNYA.nehirDis + 4 : DUNYA.nehirIc - 4;
+    return { x: Math.sin(a) * cik, y: Math.cos(a) * cik };
+  }
+  if (ro >= orta && rh >= orta) {
+    // İkisi de dış yakada ama düz çizgi çayın içinden geçiyorsa halka boyunca dolaş
+    const dx = hedefNokta.x - o.x;
+    const dy = hedefNokta.y - o.y;
+    const L2 = dx * dx + dy * dy || 1;
+    const t = Math.max(0, Math.min(1, -(o.x * dx + o.y * dy) / L2));
+    const enYakin = Math.hypot(o.x + dx * t, o.y + dy * t);
+    if (enYakin > DUNYA.nehirDis + 1.5) return hedefNokta;
+    const ao = Math.atan2(o.x, o.y);
+    const fark = aciNormal(Math.atan2(hedefNokta.x, hedefNokta.y) - ao);
+    const a = ao + Math.sign(fark) * Math.min(Math.abs(fark), 0.45);
+    const rr = Math.max(ro, DUNYA.nehirDis + 7);
+    return { x: Math.sin(a) * rr, y: Math.cos(a) * rr };
+  }
+  if ((ro < orta) === (rh < orta)) return hedefNokta;
+  // En kısa yolu veren köprü
+  let enA = 0;
+  let enM = 1e9;
+  for (const a of KOPRULER) {
+    const k = { x: Math.sin(a) * orta, y: Math.cos(a) * orta };
+    const m = mesafe(o, k) + mesafe(k, hedefNokta);
+    if (m < enM) {
+      enM = m;
+      enA = a;
+    }
+  }
+  const icNokta = { x: Math.sin(enA) * (DUNYA.nehirIc - 5), y: Math.cos(enA) * (DUNYA.nehirIc - 5) };
+  const disNokta = { x: Math.sin(enA) * (DUNYA.nehirDis + 5), y: Math.cos(enA) * (DUNYA.nehirDis + 5) };
+  const yakin = ro < orta ? icNokta : disNokta;
+  const uzak = ro < orta ? disNokta : icNokta;
+  // Köprü yolunun üstündeysek karşıya geç, değilsek köprünün bu yakasına git
+  const yolaUzaklik = Math.abs(Math.cos(enA)) > 0.5 ? Math.abs(o.x) : Math.abs(o.y);
+  if (yolaUzaklik < 2.2 && Math.abs(ro - orta) < 10) return uzak;
+  return yakin;
 }
 function engeldenKacan(d, aci) {
   const o = d.oyuncu;
@@ -860,7 +969,18 @@ export function guncelle(d, dt, girdi = {}) {
       const m = mesafe(o, c);
       if (m > h.menzil) {
         if (d.yaklas) {
-          o.yon = engeldenKacan(d, yonAcisi(o, c));
+          const yn = yolNoktasi(d, c);
+          // Takılma kurtarma: 1,5 saniyede yarım metre yaklaşamadıysan bir süre yana sap
+          const kalan = mesafe(o, yn);
+          if (!d.ilerleme || d.zaman - d.ilerleme.zaman > 1.5) {
+            if (d.ilerleme && d.ilerleme.kalan - kalan < 0.5 && !(d.sapma && d.sapma.bitis > d.zaman)) {
+              d.sapma = { aci: (d.rng() < 0.5 ? -1 : 1) * (1 + d.rng() * 0.8), bitis: d.zaman + 1.3 };
+            }
+            d.ilerleme = { zaman: d.zaman, kalan };
+          }
+          let aci = yonAcisi(o, yn);
+          if (d.sapma && d.sapma.bitis > d.zaman) aci += d.sapma.aci;
+          o.yon = engeldenKacan(d, aci);
           const v = HIZ.yuru * dt;
           carpti = hareketEt(d, Math.sin(o.yon) * v, Math.cos(o.yon) * v) || carpti;
         }
@@ -985,9 +1105,34 @@ export function guncelle(d, dt, girdi = {}) {
     }
   }
 
+  // Bölge değişimi ve keşif
+  const b = bolgeBul(o.x, o.y);
+  if (b.id !== d.bolgeId) {
+    const ilk = d.bolgeId === undefined;
+    d.bolgeId = b.id;
+    k.gezilen = k.gezilen || [];
+    if (!ilk && b.id !== 'nehir') {
+      if (!k.gezilen.includes(b.id)) {
+        k.gezilen.push(b.id);
+        olay(d, 'bolge', `${b.ad}. ${b.tarif}`, 3, { bolge: b.id, yeni: true });
+      } else olay(d, 'bolge', `${b.ad}.`, 2, { bolge: b.id });
+    } else if (!k.gezilen.includes(b.id)) k.gezilen.push(b.id);
+  }
+  k.kesif = k.kesif || [];
+  for (const yr of YERLER) {
+    if (k.kesif.includes(yr.id)) continue;
+    if (Math.abs(yr.x - o.x) > 13 || Math.abs(yr.y - o.y) > 13 || mesafe(yr, o) > 13) continue;
+    k.kesif.push(yr.id);
+    const xp = Math.round(gerekenXp(Math.min(SEVIYE_SINIRI, bolgeSeviyesi(bolgeBul(yr.x, yr.y)))) * 0.12);
+    olay(d, 'kesif', `Keşif: ${yr.ad}. ${yr.tarif} ${xp} deneyim.`, 3, { yer: yr.id });
+    xpEkle(k, xp).forEach((s) => olay(d, 'seviye', `Seviye atladın! Artık seviye ${s.seviye}.${s.yeniYetenek.length ? ` Yeni yetenek: ${s.yeniYetenek.join(', ')}.` : ''}`, 5, { seviye: s.seviye }));
+  }
+
   // Konumu karaktere yaz (kayıt için)
   k.konum = { x: o.x, y: o.y, yon: o.yon };
-  return { carpti };
+  const nehir = !!d.nehirCarpti;
+  d.nehirCarpti = false;
+  return { carpti, nehir };
 }
 
 // Olayları al ve listeyi boşalt
@@ -1007,16 +1152,22 @@ export function durumOzeti(d) {
   return m;
 }
 
+export function enYakinYer(d, menzil = 60) {
+  return YERLER.map((yr) => ({ yr, m: mesafe(yr, d.oyuncu) }))
+    .filter((x) => x.m < menzil)
+    .sort((a, b) => a.m - b.m)[0] || null;
+}
+
 export function konumOzeti(d) {
   const o = d.oyuncu;
   const r = Math.hypot(o.x, o.y);
-  let yer;
-  if (r < DUNYA.koyYaricap) yer = 'Köydesin';
-  else {
-    const koyYonu = { x: 0, y: 0 };
-    yer = `Köy ${saatSozu(saatYonu(o, koyYonu))}, ${Math.round(r)} metre`;
-  }
-  return `${yer}. Yüzün ${pusulaYonu(o.yon)} yönüne dönük.`;
+  const b = bolgeBul(o.x, o.y);
+  let m = `Bölge: ${b.ad}.`;
+  if (r >= DUNYA.koyYaricap) m += ` Köy ${saatSozu(saatYonu(o, { x: 0, y: 0 }))}, ${Math.round(r)} metre.`;
+  const yy = enYakinYer(d);
+  if (yy && yy.m > 3) m += ` En yakın yer: ${yy.yr.ad}, ${saatSozu(saatYonu(o, yy.yr))}, ${metreSozu(yy.m)}.`;
+  if (b.id === 'cayir' && r > 60) m += ' Gümüş Çay yakında; köprüler dört yolun üzerinde.';
+  return `${m} Yüzün ${pusulaYonu(o.yon)} yönüne dönük.`;
 }
 
 export function etrafiTara(d, menzil = 35) {
@@ -1028,6 +1179,8 @@ export function etrafiTara(d, menzil = 35) {
   const parcalar = [];
   npc.forEach(({ n, m }) => parcalar.push(`${n.ad}, ${saatSozu(saatYonu(d.oyuncu, n))}, ${metreSozu(m)}`));
   liste.forEach(({ c, m }) => parcalar.push(`${c.ad} seviye ${c.seviye}, ${saatSozu(saatYonu(d.oyuncu, c))}, ${metreSozu(m)}`));
+  const yy = enYakinYer(d, 40);
+  if (yy) parcalar.push(`${yy.yr.ad}, ${saatSozu(saatYonu(d.oyuncu, yy.yr))}, ${metreSozu(yy.m)}`);
   if (!parcalar.length) return `${menzil} metre içinde kimse yok. ${konumOzeti(d)}`;
   return parcalar.join('. ') + '.';
 }
@@ -1039,6 +1192,8 @@ export function kayitHazirla(k) {
 export function kayittanYukle(veri) {
   if (!veri || veri.surum !== 1 || !SINIFLAR[veri.sinif]) return null;
   const k = veri;
+  k.kesif = k.kesif || [];
+  k.gezilen = k.gezilen || [];
   const h = hesapla(k);
   k.can = Math.min(h.enCan, Math.max(1, k.can || h.enCan));
   k.mana = Math.min(h.enMana, k.mana || 0);

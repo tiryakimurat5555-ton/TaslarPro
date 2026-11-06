@@ -222,6 +222,15 @@ def hedef():
     return arpej([880, 1320], 0.06, 0.12, egri=6) * 0.6
 
 
+def su():
+    n = int(2.4 * SR)
+    x = filtre(gurultu(2.4), 'bandpass', [400, 2500]) * (0.6 + 0.4 * np.sin(2 * np.pi * 0.7 * t(2.4)))
+    for i in range(18):
+        f0 = rng.uniform(600, 1400)
+        x = topla(x, kaydir(sinus(lambda q: f0 + 500 * q / 0.04, 0.04) * zarf(int(0.04 * SR), 0.003, egri=6) * 0.25, rng.uniform(0, 2.3)))
+    return normal(x * np.hanning(n)) * 0.7
+
+
 # Canavar sesleri
 def kurt():
     n = int(0.7 * SR)
@@ -305,6 +314,7 @@ TEK = {
     'iska': iska, 'kritik': kritik, 'oldur': oldur, 'altin': altin, 'seviye': lambda: arpej([392, 494, 587, 784, 988], 0.11, 0.9, egri=3),
     'gorev': lambda: arpej([659, 988], 0.15, 0.7, egri=3), 'iksir': iksir, 'ganimet': lambda: arpej([1319, 1568, 1976, 2637], 0.05, 0.35),
     'adim1': lambda: adim(False), 'adim2': lambda: adim(True), 'carpma': carpma, 'hata': hata, 'olum': olum, 'dogus': dogus,
+    'su': su, 'bolge': lambda: arpej([440, 554, 659], 0.12, 0.8, egri=3) * 0.7, 'kesif': lambda: arpej([784, 988, 1175, 1568], 0.07, 0.6, egri=4),
     'odak': odak, 'sinir': sinir, 'etkinles': etkinles, 'kalp': kalp, 'isinlan': isinlan, 'kalkan': kalkan, 'hedef': hedef,
 }
 YONLU = {
