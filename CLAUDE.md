@@ -79,9 +79,12 @@
   ksilofon: tonejs-instruments, MIT; davul/bongo: Tonejs/audio drum-samples). Notalar en yakın örnekten playbackRate ile.
   Setler SETLER/NOTALAR tablolarında; "sentez" seti eski osilatör sesleri ve yükleme hatasında yedek. GitHub Pages'te
   charset/viewport meta etiketleri dosyanın başında olmalı (artifact iskeleti yok).
-- Besteci (6 Kasım, Murat "daha profesyonel melodi" istedi): playStep içinde tam dizi (majör / minör, minörde V için yeden ses),
-  ILERLEMELER (4 ölçülük akor ilerlemeleri), 2 ölçülük motif (RITIMLER seyrek/orta/yoğun + kontur), 8 ölçülük cümle A A B A,
-  7. ölçüde kadans (tonikte uzun nota) ve davul dolgusu, ses yürütmeli arka plan akorları (sesYurut), bas kalıpları (kök, beşli,
-  yaklaşma notası), eşlik arpej ya da gitar tıngırdatma (eslikTip), her 32 ölçüde ton IV'e geçer. Başta 2 ölçü giriş (yalnız akor+bas).
-  Kuş sesi sıçraması melodiye kısa süsleme ekler. Çalgılar melodiCal/eslikCal/basCal/padCal/vurmali ile örnek ya da sentez.
-
+- Besteci (6 Kasım, ikinci sürüm; Murat "hazır kalıp olmasın, duyduğu frekanslardan sıfırdan melodi üretsin" dedi):
+  hazır ilerleme/motif YOK. perdeBul: FFT (4096) 150-8000 Hz en belirgin tepe, çevresinden 30/hassasiyet dB yüksekse perdeli ses;
+  parabolik ara değerle frekans → midi. Olay takibi (B.olay): yeni perde = kuyruğa 'bas', susunca 'bit'. playStep her 16'lıkta
+  kuyruğu tüketir: en güçlü olay nota olur (perdeyiNotala: oktavla 62-86 aralığına, tona; ölçü başında akor tonuna yaslanır),
+  'bit' gelince nota bırakılır (notaBirak). B.kroma (6 sn) → her ölçü akorSec (dizi akorları içinden en uygun), B.uzunKroma (45 sn)
+  → tonTahmin (Krumhansl profilleri, 8 ölçüde bir, belirgin iyileşmede geçer, VoiceOver duyurur). "Ton türü" seçimi: ortama göre /
+  saate göre / hep majör / hep minör. Ritim ve bas ritmi adımlardan, bas notası akor kökünden, eşlik akor arpeji/tıngırdatma.
+  Deneme ortamı (ORTAM, ortamUret) gerçekten ses üretir (kuş şarkıları, motor, korna, martı, dalga) ve çözümleyiciye girer;
+  yani deneme de aynı algı yolundan geçer. "Deneme ortamının sesini de duy" ile ortam sesi kulağa da verilir.

@@ -69,7 +69,7 @@ input[type=range]{accent-color:var(--lamba);width:100%}
 <main class="sayfa">
   <header>
     <h1>Sokağın <span>Şarkısı</span></h1>
-    <p class="alt">Yürü, telefon etrafı dinlesin. Adımların ritmi, kuşlar melodiyi, trafik basları çalar. Her yürüyüşün kendi şarkısı olur.</p>
+    <p class="alt">Yürü, telefon etrafı dinlesin. Hazır melodi yok: duyduğu her kuş, korna ya da zil sesinin perdesi notaya dönüşür, ortamın tonu ve akorları da bu seslerden çıkar. Adımların ise ritmi çalar.</p>
   </header>
 
   <div class="butonlar">
@@ -93,7 +93,8 @@ input[type=range]{accent-color:var(--lamba);width:100%}
     <div class="olcum"><label for="mBas">Bas sesler (trafik, rüzgâr)</label><meter id="mBas" min="0" max="1" value="0"></meter></div>
     <div class="olcum"><label for="mTiz">Tiz sesler (kuş, zil)</label><meter id="mTiz" min="0" max="1" value="0"></meter></div>
     <div class="olcum"><label for="mOrtam">Ortam yoğunluğu</label><meter id="mOrtam" min="0" max="1" value="0"></meter></div>
-    <div class="olcum"><label id="lDuygu">Duygu</label><b id="duyguYazi" aria-labelledby="lDuygu" style="font-size:1.2rem">Neşeli</b></div>
+    <div class="olcum"><label id="lDuygu">Ortamın tonu</label><b id="duyguYazi" aria-labelledby="lDuygu" style="font-size:1.2rem">Dinleniyor</b></div>
+    <div class="olcum" style="grid-column:1/-1"><label id="lDuyulan">Son duyulan perde</label><b id="duyulan" aria-labelledby="lDuyulan" style="font-size:1.2rem">Henüz yok</b></div>
   </section>
 
   <section class="panel" aria-labelledby="hAyar">
@@ -122,17 +123,19 @@ input[type=range]{accent-color:var(--lamba);width:100%}
         </select>
       </label>
       <div class="satir">
-        <label class="kontrol"><span>Duygu</span>
+        <label class="kontrol"><span>Ton türü</span>
           <select id="duygu">
-            <option value="oto">Saate göre</option>
-            <option value="nese">Neşeli (sabah)</option>
-            <option value="huzun">Gizemli (gece)</option>
+            <option value="oto">Ortama göre (sesler belirler)</option>
+            <option value="saat">Saate göre</option>
+            <option value="nese">Hep majör (neşeli)</option>
+            <option value="huzun">Hep minör (gizemli)</option>
           </select>
         </label>
         <label class="kontrol"><span>Mikrofon hassasiyeti</span>
           <input type="range" id="hassas" min="0.5" max="2.5" step="0.1" value="1.2">
         </label>
       </div>
+      <label class="onay"><input type="checkbox" id="ortamDuy" checked>Deneme ortamının sesini de duy</label>
       <label class="onay"><input type="checkbox" id="sesliBildirim" checked>Değişiklikleri sesli anlat (VoiceOver)</label>
     </div>
   </section>
@@ -164,10 +167,7 @@ const PROG={nese:[0,3,1,4],huzun:[0,2,3,1]};
 const mtof=m=>440*Math.pow(2,(m-69)/12);
 const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
 
-function mood(){
-  const v=$('duygu').value; if(v!=='oto') return v;
-  const h=new Date().getHours(); return (h>=6&&h<18)?'nese':'huzun';
-}
+function mood(){ return B.mod; }
 function sn(i,m){const sc=SCALE[m];return sc[((i%5)+5)%5]+12*Math.floor(i/5);}
 
 function announce(msg,force){
@@ -268,64 +268,88 @@ function vurCal(tur,t,v,wet){
 
 function part(lane,t,color,size){S.parts.push({lane,t,color,size}); if(S.parts.length>200)S.parts.shift();}
 
-// ==== BESTECİ: armoni, motif, cümle yapısı ====
-// Gerçek bir şarkı gibi: akor ilerlemesi, 2 ölçülük motif, 8 ölçülük cümleler (A A B A), kadans, dolgu.
+// ==== BESTECİ: melodi ve armoni tamamen duyulan seslerden ====
+// Hazır kalıp yok. Mikrofonda (ya da deneme ortamında) algılanan her perdeli ses (kuş, korna, zil, ses)
+// bir notaya dönüşür: perdesi notanın yüksekliğini, süresi uzunluğunu, gücü vurgusunu belirler.
+// Duyulan seslerin nota dağılımından ortamın tonu (Krumhansl yöntemi) ve her ölçünün akoru çıkarılır.
 const DIZI={nese:[0,2,4,5,7,9,11],huzun:[0,2,3,5,7,8,10]};
-const KOK={nese:60,huzun:57};
-const ILERLEMELER={
-  nese:[[0,4,5,3],[0,5,3,4],[3,4,0,5],[0,3,1,4],[5,3,0,4],[0,2,3,4]],
-  huzun:[[0,5,2,6],[0,6,5,4],[0,3,6,2],[0,5,3,4],[5,6,0,0],[0,3,4,0]]
-};
-const RITIMLER={ // [adım, uzunluk] 16'lık nota cinsinden
-  seyrek:[[[0,8],[8,8]],[[0,6],[6,10]],[[0,12],[12,4]],[[4,4],[8,8]],[[0,16]]],
-  orta:[[[0,4],[4,2],[6,2],[8,8]],[[0,3],[3,3],[6,2],[8,4],[12,4]],[[0,6],[6,2],[8,4],[12,4]],[[2,2],[4,4],[8,2],[10,6]],[[0,4],[4,4],[8,6],[14,2]]],
-  yogun:[[[0,2],[2,2],[4,2],[6,2],[8,4],[12,2],[14,2]],[[0,3],[3,3],[6,2],[8,2],[10,2],[12,4]],[[0,2],[2,4],[6,2],[8,2],[10,2],[12,2],[14,2]],[[0,1],[1,1],[2,2],[4,4],[8,2],[10,2],[12,4]]]
-};
-const B={ilerleme:null,ilerlemeB:null,motifA:null,motifB:null,ses:null,md:9,ton:0,bas:0,son:null};
-const sec=a=>a[Math.floor(Math.random()*a.length)];
+const PROFIL={nese:[6.35,2.23,3.48,2.33,4.38,4.09,2.52,5.19,2.39,3.66,2.29,2.88],
+              huzun:[6.33,2.68,3.52,5.38,2.60,3.53,2.54,4.75,3.98,2.69,3.34,3.17]};
+const NOTA_AD=['Do','Do diyez','Re','Mi bemol','Mi','Fa','Fa diyez','Sol','Sol diyez','La','Si bemol','Si'];
+const B={kokPc:0,mod:'nese',kok:60,akor:0,oncekiAkor:[],ses:null,tonPuan:-1,
+  kroma:new Float32Array(12),uzunKroma:new Float32Array(12),kuyruk:[],calan:null,
+  olay:{aktif:false,midi:0,son:0,guc:0},sonDuyulan:null};
+const tonAdi=()=>NOTA_AD[B.kokPc]+(B.mod==='nese'?' majör':' minör');
+function kokMidi(pc){return 54+((pc-54)%12+12)%12;} // 54..65 arası
 
-function motifYap(){
-  // her yoğunluk için iki ölçülük ritim ve her nota için kontur adımı
-  const r={seyrek:[sec(RITIMLER.seyrek),sec(RITIMLER.seyrek)],orta:[sec(RITIMLER.orta),sec(RITIMLER.orta)],yogun:[sec(RITIMLER.yogun),sec(RITIMLER.yogun)]};
-  const kontur=[]; let yon=Math.random()<0.5?1:-1;
-  for(let i=0;i<20;i++){ if(Math.random()<0.25) yon=-yon; kontur.push(Math.random()<0.7?yon:(Math.random()<0.5?2*yon:0)); }
-  return {r,kontur};
-}
-function sarkiYenile(m){
-  B.ilerleme=sec(ILERLEMELER[m]); B.ilerlemeB=sec(ILERLEMELER[m]);
-  B.motifA=motifYap(); B.motifB=motifYap();
-}
-// derece → midi (ton ve mod dahil)
-function dm(der,m){const d=DIZI[m],o=Math.floor(der/7),i=((der%7)+7)%7;return KOK[m]+B.ton+d[i]+12*o;}
-function akorDereceleri(kok){return [kok,kok+2,kok+4];}
-function akorMidi(kok,m){ // armonik minör: minörde V akorunun üçlüsü yükselir
-  return akorDereceleri(kok).map((d,i)=>dm(d,m)+((m==='huzun'&&((kok%7)+7)%7===4&&i===1)?1:0));
+function dm(der,m){m=m||B.mod;const d=DIZI[m],o=Math.floor(der/7),i=((der%7)+7)%7;return B.kok+d[i]+12*o;}
+function akorMidi(kok){ // minörde V akorunun üçlüsü yükselir (armonik minör)
+  return [kok,kok+2,kok+4].map((d,i)=>dm(d)+((B.mod==='huzun'&&((kok%7)+7)%7===4&&i===1)?1:0));
 }
 function aralikta(n,alt,ust){while(n<alt)n+=12;while(n>ust)n-=12;return n;}
-function sesYurut(akor,alt,ust){ // önceki akora en yakın çevrimi seç (ses yürütme)
+function sesYurut(akor,alt,ust){
   const adaylar=[];
   for(let c=0;c<3;c++){const v=akor.map((n,i)=>aralikta(n+(i<c?12:0),alt,ust)).sort((a,b)=>a-b);adaylar.push(v);}
   if(!B.ses) return (B.ses=adaylar[0]);
   let en=adaylar[0],ef=1e9; adaylar.forEach(v=>{const f=v.reduce((a,n,i)=>a+Math.abs(n-(B.ses[i]||n)),0); if(f<ef){ef=f;en=v;}});
   return (B.ses=en);
 }
-function akorTonunaYapis(der,kok){ // dereceyi en yakın akor tonuna çek
-  let en=der,ef=99; for(let k=-3;k<=3;k++){const d=der+k, r=((d-kok)%7+7)%7; if((r===0||r===2||r===4)&&Math.abs(k)<ef){ef=Math.abs(k);en=d;}} return en;
+function insan(t){return t+(Math.random()-0.5)*0.01;}
+
+// Ortamın tonu: uzun süreli nota dağılımı ile 24 ton profilinin korelasyonu
+function tonTahmin(ilk){
+  const k=B.uzunKroma, top=k.reduce((a,b)=>a+b,0); if(top<0.5) return;
+  const kisit=$('duygu').value, saat=new Date().getHours();
+  const modlar=kisit==='nese'||kisit==='huzun'?[kisit]:(kisit==='saat'?[(saat>=6&&saat<18)?'nese':'huzun']:['nese','huzun']);
+  const ort=top/12; let en=null,ep=-2;
+  modlar.forEach(m=>{const p=PROFIL[m],po=p.reduce((a,b)=>a+b,0)/12;
+    for(let r=0;r<12;r++){let n=0,a=0,b=0;
+      for(let i=0;i<12;i++){const x=k[(i+r)%12]-ort,y=p[i]-po;n+=x*y;a+=x*x;b+=y*y;}
+      const c=n/Math.sqrt(a*b||1); if(c>ep){ep=c;en={r,m};}}});
+  if(!en) return;
+  const ayni=en.r===B.kokPc&&en.m===B.mod;
+  // eski ton yeniden puanlanır; yeni ton belirgin şekilde daha iyiyse geçilir
+  if(!ayni&&(ilk||ep>B.tonPuan+0.08)){
+    B.kokPc=en.r;B.mod=en.m;B.kok=kokMidi(en.r);B.ses=null;
+    announce('Ortamın tonu: '+tonAdi()+'.');
+  }
+  B.tonPuan=ep;
 }
-function yogunluk(){
-  const a=Math.max(S.high,S.level*0.8);
-  if(a<0.3||(!S.walking&&a<0.5)) return 'seyrek';
-  if(a<0.6||!S.walking) return 'orta'; return 'yogun';
+// Her ölçünün akoru: son birkaç saniyede duyulan notalara en çok uyan dizi akoru
+function akorSec(){
+  const k=B.kroma, top=k.reduce((a,b)=>a+b,0);
+  if(top<0.15) return; // sessizlikte akor değişmez
+  const dereceler=B.mod==='nese'?[0,1,2,3,4,5]:[0,2,3,4,5,6];
+  let en=B.akor,ep=-1;
+  dereceler.forEach(d=>{const n=akorMidi(d);
+    let p=k[n[0]%12]*1+k[n[1]%12]*0.8+k[n[2]%12]*0.9;
+    p/=top; if(B.oncekiAkor.slice(-2).every(x=>x===d)&&B.oncekiAkor.length>=2) p-=0.12;
+    if(d===0) p+=0.04;
+    if(p>ep){ep=p;en=d;}});
+  B.akor=en; B.oncekiAkor.push(en); if(B.oncekiAkor.length>4) B.oncekiAkor.shift();
 }
-function insan(t){return t+(Math.random()-0.5)*0.012;}
+// Duyulan perdeyi melodi aralığına ve tona yerleştir
+function perdeyiNotala(midi,s){
+  let m=Math.round(midi); while(m>86)m-=12; while(m<62)m+=12;
+  const dizi=DIZI[B.mod].map(x=>(x+B.kokPc)%12);
+  let en=m,ef=99; for(let k=-2;k<=2;k++){const pc=(((m+k)%12)+12)%12; if(dizi.includes(pc)&&Math.abs(k)<ef){ef=Math.abs(k);en=m+k;}}
+  if(s===0){ // ölçü başında akor tonuna yaslan
+    const at=akorMidi(B.akor).map(x=>x%12); let e2=en,f2=99;
+    for(let k=-2;k<=2;k++){const pc=(((en+k)%12)+12)%12; if(at.includes(pc)&&Math.abs(k)<f2){f2=Math.abs(k);e2=en+k;}}
+    en=e2;
+  }
+  if(B.mod==='huzun'&&((B.akor%7)+7)%7===4&&(((en-B.kokPc)%12)+12)%12===10) en+=1; // yeden ses
+  return en;
+}
 
 // ---- çalgı dağıtıcıları (örnek ya da sentez) ----
 function melodiCal(midi,t,v,dur){const st=SETLER[aktifSet];
-  if(!st){pluck(t,midi,0.05+0.17*v);return;}
-  const g=ornekCal(st.melodi,midi+(st.mk||0),t,0.15+0.5*v,dur+0.9); if(g)out(g,0.5); part(0,t,'#7fd6c2',5+v*10);}
+  part(0,t,'#7fd6c2',5+v*10);
+  if(!st){pluck(t,midi,0.05+0.17*v);return null;}
+  const g=ornekCal(st.melodi,midi+(st.mk||0),t,0.15+0.5*v,dur); if(g)out(g,0.5); return g;}
 function eslikCal(midi,t,v){const st=SETLER[aktifSet];
   if(!st){pluck(t,midi-12,0.03+0.06*v);return;}
-  const g=ornekCal(st.eslik,midi,t,0.08+0.22*v,1.4); if(g)out(g,0.4); part(0,t,'#5f9e90',3);}
+  const g=ornekCal(st.eslik,midi,t,0.07+0.2*v,1.4); if(g)out(g,0.4); part(0,t,'#5f9e90',3);}
 function basCal(midi,t,v,dur){const st=SETLER[aktifSet];
   if(!st){bass(t,midi,0.1+0.35*v,dur);return;}
   const g=ornekCal(st.bas,midi,t,0.22+0.6*v,dur+0.15); if(g)out(g,0.08); part(2,t,'#8e9cff',5+v*6);}
@@ -339,37 +363,46 @@ function trampet(t,v){const c=S.ctx,s=c.createBufferSource(),f=c.createBiquadFil
   o.frequency.value=190;go.gain.setValueAtTime(v*0.6,t);go.gain.exponentialRampToValueAtTime(0.0001,t+0.08);
   s.connect(f);f.connect(g);out(g,0.15);o.connect(go);out(go,0);s.start(t,Math.random()*0.5);s.stop(t+0.2);o.start(t);o.stop(t+0.1);}
 function vurmali(tur,t,v){const st=SETLER[aktifSet];
+  part(1,t,tur==='zil'?'#c9d3dc':'#f4b544',tur==='zil'?3:(tur==='dip'?7:5));
   if(!st){ if(tur==='dip')kick(t,0.3+0.5*v); else if(tur==='vurus')trampet(t,0.1+0.25*v); else hat(t,0.03+0.1*v); return; }
-  vurCal(tur,t,tur==='zil'?0.06+0.25*v:0.2+0.6*v,tur==='vurus'?0.15:0.05);
-  part(1,t,tur==='zil'?'#c9d3dc':'#f4b544',tur==='zil'?3:(tur==='dip'?7:5));}
+  vurCal(tur,t,tur==='zil'?0.06+0.25*v:0.2+0.6*v,tur==='vurus'?0.15:0.05);}
+function notaBirak(t){ const g=B.calan; if(!g) return; B.calan=null;
+  try{ g.gain.cancelScheduledValues(t); g.gain.setTargetAtTime(0.0001,t,0.09); }catch(e){} }
 
 function playStep(s,t){
-  const m=mood(), spb=60/S.bpm, lv=S.level;
+  const spb=60/S.bpm, lv=S.level, onaltilik=spb/4;
   if(s===0){
-    if(!B.ilerleme||S.bar%32===0||B.mod!==m){B.mod=m; sarkiYenile(m);}
-    B.ton=(Math.floor(S.bar/32)%2)?5:0; // her 32 ölçüde bir dördüncü derece tonuna geçiş
+    if(S.bar-(S.basBar||0)===2) tonTahmin(true); else if(S.bar%8===0) tonTahmin(false);
+    akorSec();
   }
-  const cumle=Math.floor(S.bar/8)%4, olcu=S.bar%8;          // A A B A
-  const ilerleme=(cumle===2)?B.ilerlemeB:B.ilerleme;
-  const kok=ilerleme[olcu%4], akor=akorMidi(kok,m);
-  const sonrakiKok=ilerleme[(olcu+1)%4];
-  const giris=S.bar-(S.basBar||0)<2;
-  const dolgu=olcu===7&&S.walking;
+  const akor=akorMidi(B.akor), olcu=S.bar%8;
+  const giris=S.bar-(S.basBar||0)<2, dolgu=olcu===7&&S.walking;
 
-  // --- Arka plan akorları (ses yürütmeli) ---
+  // --- Melodi: duyulan seslerden ---
+  let yeni=null,bitti=false;
+  B.kuyruk.forEach(o=>{ if(o.tip==='bas'){ if(!yeni||o.guc>yeni.guc) yeni=o; bitti=false; } else bitti=true; });
+  B.kuyruk.length=0;
+  if(yeni){
+    notaBirak(t);
+    const n=perdeyiNotala(yeni.midi,s), v=clamp(yeni.guc);
+    B.calan=melodiCal(n,t,0.4+0.6*v,2.6);
+    B.kroma[((n%12)+12)%12]+=0.3*v;
+    if(bitti) notaBirak(t+onaltilik*1.5);
+  } else if(bitti) notaBirak(t);
+
+  // --- Arka plan akorları ---
   if(s===0){ const ses=sesYurut(akor,50,70); padCal(ses,t,1-Math.min(lv,0.8),spb*4.3); }
 
-  // --- Bas ---
-  const kb=aralikta(akor[0],36,47), besli=kb+(dm(kok+4,m)-dm(kok,m));
+  // --- Bas: akorun kökü, ritmi adımlardan ---
+  const kb=aralikta(akor[0],36,47), besli=kb+(akor[2]-akor[0]);
   if(!S.walking){ if(s===0) basCal(kb,t,0.4+0.5*S.low,spb*3.8); }
   else{
     if(s===0) basCal(kb,t,0.5+0.5*S.low,spb*1.5);
     if(s===6&&S.low>0.35) basCal(kb,insan(t),0.35*S.low+0.2,spb*0.45);
     if(s===8) basCal(besli,t,0.4+0.4*S.low,spb*1.4);
-    if(s===14&&S.low>0.45){ const yaklasma=aralikta(dm(sonrakiKok,m),36,47)-(Math.random()<0.5?1:2); basCal(yaklasma,insan(t),0.3+0.3*S.low,spb*0.45); }
   }
 
-  // --- Eşlik: arpej ya da tıngırdatma ---
+  // --- Eşlik: duyulan akorun arpeji ya da tıngırdatma ---
   const st=SETLER[aktifSet];
   if(!giris&&(S.walking||lv>0.35)){
     const ses=B.ses||akor;
@@ -377,16 +410,16 @@ function playStep(s,t){
       if(s===0||s===6||s===10||(s===14&&lv>0.5)) ses.forEach((n,i)=>eslikCal(n,t+i*0.018,s===0?0.9:0.55));
     } else if(s%2===0){
       const desen=[0,1,2,1,0,2,1,2], n=ses[desen[(s/2)%8]]-(st&&st.eslik===st.melodi?12:0);
-      eslikCal(n,insan(t),s%8===0?0.8:0.5);
+      eslikCal(n,insan(t),s%8===0?0.7:0.4);
     }
   }
 
-  // --- Ritim ---
+  // --- Ritim: adımlardan ---
   if(!giris){
     if(S.walking){
       if(s===0||s===8) vurmali('dip',t,s===0?1:0.8);
       if(s===10&&lv>0.5) vurmali('dip',insan(t),0.55);
-      if(dolgu&&s>=12){ vurmali('vurus',t,0.35+0.15*(s-12)); }
+      if(dolgu&&s>=12) vurmali('vurus',t,0.35+0.15*(s-12));
       else if(s===4||s===12) vurmali('vurus',insan(t),0.6+0.3*lv);
       if(!(dolgu&&s>=12)){
         if(s%2===0&&lv>0.25) vurmali('zil',insan(t),s%4===2?0.7:0.4);
@@ -397,60 +430,85 @@ function playStep(s,t){
       if(s===8&&lv>0.15) vurmali('zil',insan(t),0.4);
     }
   }
-
-  // --- Melodi (motif + cümle yapısı) ---
-  if(giris) return;
-  const motif=(cumle===2)?B.motifB:B.motifA;
-  const yog=yogunluk(), alt=7+Math.round(S.high*3), ust=alt+9;
-  if(olcu===7){ // kadans: tonik üzerinde uzun nota
-    if(s===0){ let d=B.md; let en=d,ef=99; for(let k=-4;k<=4;k++){if(((d+k)%7+7)%7===0&&Math.abs(k)<ef){ef=Math.abs(k);en=d+k;}}
-      B.md=Math.max(alt-2,Math.min(ust,en)); melodiCal(dm(B.md,m),t,0.75,spb*3.5); }
-    return;
-  }
-  const ritim=motif.r[yog][olcu%2], idx=ritim.findIndex(n=>n[0]===s);
-  if(idx>=0){
-    const [, uzun]=ritim[idx];
-    let hareket=motif.kontur[(olcu%2)*8+idx]||0;
-    if(olcu===2||olcu===3) hareket=-hareket; // varyasyon: ters kontur
-    let d=B.md+hareket;
-    const guclu=s===0||s===8||uzun>=6;
-    if(guclu) d=akorTonunaYapis(d,kok);
-    if(d>ust) d-=2; if(d<alt) d+=2;
-    B.md=d;
-    let midi=dm(d,m);
-    if(m==='huzun'&&((kok%7)+7)%7===4&&((d%7)+7)%7===6) midi+=1; // yeden ses
-    const vurgu=s===0?0.85:(s===8?0.7:0.55);
-    melodiCal(midi,insan(t),vurgu*(0.7+0.3*S.high),spb*uzun/4);
-  } else if(s%2===1&&S.ctx.currentTime<S.chirpUntil&&Math.random()<0.6){
-    // kuş cevabı: akor tonundan kısa süsleme
-    const d=akorTonunaYapis(B.md+7,kok); melodiCal(dm(d,m),t,0.35,0.2);
-  }
 }
 
-const SCENES={
-  park:{low:.15,high:.55,level:.35,spike:.035},
-  cadde:{low:.78,high:.25,level:.75,spike:.004},
-  sahil:{low:.5,high:.18,level:.45,spike:.006,wave:true},
-  sessiz:{low:.06,high:.08,level:.08,spike:.002}
-};
+// ==== ALGI: ses analizi ve perde (frekans) bulma ====
+// Deneme ortamı gerçekten ses üretir (kuş cıvıltısı, motor, korna, dalga); bu ses mikrofon yerine
+// çözümleyiciye girer, böylece deneme ile gerçek yürüyüş aynı algı yolundan geçer.
+const ORTAM={yatak:null,yatakF:null,yatakG:null,motor:null,motorF:null,motorG:null,duy:null,giris:null,sonraki:0};
+function ortamKur(){
+  const c=S.ctx; ORTAM.giris=c.createGain(); ORTAM.duy=c.createGain(); ORTAM.giris.connect(ORTAM.duy); ORTAM.duy.connect(master);
+  ORTAM.duy.gain.value=$('ortamDuy').checked?0.35:0;
+  const k=c.createBufferSource(); k.buffer=noiseBuf; k.loop=true;
+  ORTAM.yatakF=c.createBiquadFilter(); ORTAM.yatakF.type='lowpass'; ORTAM.yatakG=c.createGain(); ORTAM.yatakG.gain.value=0.02;
+  k.connect(ORTAM.yatakF); ORTAM.yatakF.connect(ORTAM.yatakG); ORTAM.yatakG.connect(ORTAM.giris); k.start(); ORTAM.yatak=k;
+  const o=c.createOscillator(); o.type='sawtooth'; o.frequency.value=85;
+  ORTAM.motorF=c.createBiquadFilter(); ORTAM.motorF.type='lowpass'; ORTAM.motorF.frequency.value=260;
+  ORTAM.motorG=c.createGain(); ORTAM.motorG.gain.value=0; o.connect(ORTAM.motorF); ORTAM.motorF.connect(ORTAM.motorG); ORTAM.motorG.connect(ORTAM.giris); o.start(); ORTAM.motor=o;
+  return ORTAM.giris;
+}
+function ortamTon(f1,f2,t,dur,v,tip){ // kayan tek bir ses (cıvıltı, martı, korna)
+  const c=S.ctx,o=c.createOscillator(),g=c.createGain(); o.type=tip||'sine';
+  o.frequency.setValueAtTime(f1,t); o.frequency.exponentialRampToValueAtTime(f2,t+dur);
+  g.gain.setValueAtTime(0.0001,t); g.gain.linearRampToValueAtTime(v,t+0.01); g.gain.setValueAtTime(v,t+dur*0.7); g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+  o.connect(g); g.connect(ORTAM.giris); o.start(t); o.stop(t+dur+0.02);
+}
+function kusOt(t,uzak){ // bir kuşun kısa şarkısı: kendi perde dizisi
+  const taban=2200+Math.random()*2600, adet=2+Math.floor(Math.random()*6), yon=Math.random()<0.5?1:-1;
+  let f=taban, z=t;
+  for(let i=0;i<adet;i++){ const d=0.06+Math.random()*0.14, f2=f*(1+(Math.random()-0.3)*0.25*yon);
+    ortamTon(f,f2,z,d,uzak?0.05:0.18); f=f*Math.pow(2,(Math.round((Math.random()-0.5)*7))/12); z+=d+0.03+Math.random()*0.12; }
+}
+function ortamUret(){
+  if(S.mode!=='demo'||!ORTAM.giris) return;
+  const c=S.ctx, now=c.currentTime, sc=(document.querySelector('input[name=sahne]:checked')||{}).value||'park';
+  const ayar={park:{yf:3000,yg:0.025,mg:0},cadde:{yf:700,yg:0.16,mg:0.05},sahil:{yf:1100,yg:0.06+0.08*(0.5+0.5*Math.sin(now*0.8)),mg:0},sessiz:{yf:2000,yg:0.004,mg:0}}[sc];
+  ORTAM.yatakF.frequency.setTargetAtTime(ayar.yf,now,0.3); ORTAM.yatakG.gain.setTargetAtTime(ayar.yg,now,0.3);
+  ORTAM.motorG.gain.setTargetAtTime(ayar.mg,now,0.5); ORTAM.motor.frequency.setTargetAtTime(80+25*Math.sin(now*0.3),now,0.5);
+  if(now<ORTAM.sonraki) return;
+  const t=now+0.02;
+  if(sc==='park'){ kusOt(t,false); ORTAM.sonraki=now+0.6+Math.random()*1.8; }
+  else if(sc==='cadde'){ const r=Math.random();
+    if(r<0.35){ ortamTon(415,415,t,0.35+Math.random()*0.3,0.12,'square'); ortamTon(523,523,t,0.35,0.08,'square'); }
+    else if(r<0.6) kusOt(t,true);
+    else ortamTon(880,660,t,0.5,0.06,'triangle'); // uzaktan zil/siren
+    ORTAM.sonraki=now+1.5+Math.random()*3; }
+  else if(sc==='sahil'){ if(Math.random()<0.6){ const f=1300+Math.random()*500; ortamTon(f,f*0.62,t,0.45,0.12,'triangle'); ortamTon(f*0.9,f*0.6,t+0.5,0.35,0.09,'triangle'); }
+    else kusOt(t,true); ORTAM.sonraki=now+1.2+Math.random()*2.5; }
+  else { if(Math.random()<0.5) kusOt(t,true); ORTAM.sonraki=now+3+Math.random()*4; }
+}
+
 function analyse(){
-  let lo,hi,lv;
-  if(S.mode==='mic'&&S.analyser){
-    const a=S.analyser,f=S.freq,binHz=S.ctx.sampleRate/a.fftSize,k=parseFloat($('hassas').value);
-    a.getByteFrequencyData(f);
-    const avg=(h1,h2)=>{const i1=Math.max(1,Math.floor(h1/binHz)),i2=Math.min(f.length-1,Math.floor(h2/binHz));let s=0;for(let i=i1;i<=i2;i++)s+=f[i];return s/(i2-i1+1)/255;};
-    a.getFloatTimeDomainData(S.time); let r=0; for(let i=0;i<S.time.length;i++)r+=S.time[i]*S.time[i];
-    lo=clamp((avg(40,300)-0.18)*1.8*k); hi=clamp((avg(2000,8000)-0.06)*3*k); lv=clamp(Math.sqrt(r/S.time.length)*9*k);
-  } else {
-    const sc=SCENES[(document.querySelector('input[name=sahne]:checked')||{}).value||'park'], now=S.ctx.currentTime;
-    const wave=sc.wave?0.35*Math.sin(now*0.9):0;
-    if(Math.random()<sc.spike) S.sim.spike=1;
-    S.sim.spike*=0.9;
-    lo=clamp(sc.low+wave+(Math.random()-.5)*.15); hi=clamp(sc.high+S.sim.spike*.5+(Math.random()-.5)*.1);
-    lv=clamp(sc.level+wave*.5+(Math.random()-.5)*.1);
-  }
-  if(hi>S.high+0.18) S.chirpUntil=S.ctx.currentTime+0.25;
+  const a=S.analyser; if(!a) return;
+  const f=S.freq,binHz=S.ctx.sampleRate/a.fftSize,k=parseFloat($('hassas').value);
+  a.getByteFrequencyData(f);
+  const avg=(h1,h2)=>{const i1=Math.max(1,Math.floor(h1/binHz)),i2=Math.min(f.length-1,Math.floor(h2/binHz));let s=0;for(let i=i1;i<=i2;i++)s+=f[i];return s/(i2-i1+1)/255;};
+  a.getFloatTimeDomainData(S.time); let r=0; for(let i=0;i<S.time.length;i++)r+=S.time[i]*S.time[i];
+  const lo=clamp((avg(40,300)-0.18)*1.8*k), hi=clamp((avg(2000,8000)-0.06)*3*k), lv=clamp(Math.sqrt(r/S.time.length)*9*k);
   S.low+=(lo-S.low)*0.06; S.high+=(hi-S.high)*0.08; S.level+=(lv-S.level)*0.05;
+  perdeBul(binHz,k);
+}
+// Spektrumdaki en belirgin tepe: çevresinden çok yüksekse perdeli bir sestir
+function perdeBul(binHz,k){
+  const a=S.analyser,d=S.fdb; a.getFloatFrequencyData(d);
+  const i1=Math.floor(150/binHz),i2=Math.min(d.length-2,Math.floor(8000/binHz));
+  let ep=-1e9,ei=-1,top=0;
+  for(let i=i1;i<=i2;i++){const v=d[i]; top+=v; if(v>ep){ep=v;ei=i;}}
+  const ort=top/(i2-i1+1), belirgin=ep-ort, now=S.ctx.currentTime, O=B.olay;
+  const esik=30/k, perdeli=ei>0&&belirgin>esik&&ep>-80;
+  if(perdeli){
+    const y1=d[ei-1],y2=d[ei],y3=d[ei+1], kay=0.5*(y1-y3)/(y1-2*y2+y3||1);
+    const frek=(ei+clamp(kay,-0.5,0.5))*binHz, midi=69+12*Math.log2(frek/440), guc=clamp((belirgin-esik)/25);
+    B.sonDuyulan={frek,midi,zaman:now};
+    const pc=((Math.round(midi)%12)+12)%12; B.kroma[pc]+=0.04*(0.3+guc); B.uzunKroma[pc]+=0.04*(0.3+guc);
+    if(!O.aktif||Math.abs(midi-O.midi)>0.7){
+      if(O.aktif) B.kuyruk.push({tip:'bit'});
+      O.aktif=true; O.midi=midi; O.guc=guc; B.kuyruk.push({tip:'bas',midi,guc});
+    } else O.midi=O.midi*0.8+midi*0.2;
+    O.son=now;
+  } else if(O.aktif&&now-O.son>0.07){ O.aktif=false; B.kuyruk.push({tip:'bit'}); }
+  const sk=Math.exp(-0.025/6), uk=Math.exp(-0.025/45);
+  for(let i=0;i<12;i++){B.kroma[i]*=sk;B.uzunKroma[i]*=uk;}
 }
 
 function addStep(){
@@ -474,6 +532,7 @@ function updateWalk(){
   const target=S.walking?clamp(S.cadence*(night?0.85:0.95),70,150):(night?60:66);
   S.bpm+=(target-S.bpm)*0.03;
   revSend.gain.value=night?0.5:0.28;
+  ortamUret();
   if(S.walking&&!was) announce('Yürüyüş başladı, ritim devreye girdi.');
   if(!S.walking&&was) announce('Durdun, müzik yavaşlıyor.');
 }
@@ -503,7 +562,9 @@ function ui(){
   if(now-uiT>250){uiT=now;
     $('tempo').textContent=Math.round(S.bpm); $('adim').textContent=S.walking?Math.round(S.cadence):0;
     $('mBas').value=S.low; $('mTiz').value=S.high; $('mOrtam').value=S.level;
-    $('duyguYazi').textContent=mood()==='nese'?'Neşeli':'Gizemli';
+    $('duyguYazi').textContent=S.bar-(S.basBar||0)>=2?tonAdi():'Dinleniyor';
+    const sd=B.sonDuyulan;
+    $('duyulan').textContent=sd&&S.ctx.currentTime-sd.zaman<1.5?Math.round(sd.frek)+' Hz, '+NOTA_AD[((Math.round(sd.midi)%12)+12)%12]:'Perdeli ses yok';
     describe();
   }
   draw(); requestAnimationFrame(ui);
@@ -536,14 +597,15 @@ async function start(useMic){
   if(!S.ctx) buildAudio();
   await S.ctx.resume();
   S.mode='demo';
+  const a=S.ctx.createAnalyser(); a.fftSize=4096; a.smoothingTimeConstant=0.2;
+  S.analyser=a; S.freq=new Uint8Array(a.frequencyBinCount); S.fdb=new Float32Array(a.frequencyBinCount); S.time=new Float32Array(a.fftSize);
   if(useMic){
     try{
       S.stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:false,autoGainControl:false}});
-      const src=S.ctx.createMediaStreamSource(S.stream), a=S.ctx.createAnalyser();
-      a.fftSize=2048; a.smoothingTimeConstant=0.6; src.connect(a);
-      S.analyser=a; S.freq=new Uint8Array(a.frequencyBinCount); S.time=new Float32Array(a.fftSize); S.mode='mic';
+      S.ctx.createMediaStreamSource(S.stream).connect(a); S.mode='mic';
     }catch(e){ S.mode='demo'; }
   }
+  if(S.mode==='demo') ortamKur().connect(a);
   let motionOk=false;
   if(window.DeviceMotionEvent){
     const p=motionP?await motionP:'granted';
@@ -553,7 +615,9 @@ async function start(useMic){
   else { $('sahneSec').hidden=true; }
   try{ if(navigator.wakeLock) S.wake=await navigator.wakeLock.request('screen'); }catch(e){}
   aktifSet='sentez'; setDegistir($('setSec').value);
-  S.running=true; S.nextTime=S.ctx.currentTime+0.1; S.step16=0; S.basBar=S.bar; B.ses=null; B.ilerleme=null;
+  S.running=true; S.nextTime=S.ctx.currentTime+0.1; S.step16=0; S.basBar=S.bar; B.ses=null; B.kuyruk.length=0; B.calan=null; B.olay.aktif=false; B.tonPuan=-1;
+  B.kroma.fill(0); B.uzunKroma.fill(0); B.akor=0; B.oncekiAkor=[]; B.sonDuyulan=null;
+  { const kisit=$('duygu').value, h=new Date().getHours(); B.mod=kisit==='nese'||kisit==='huzun'?kisit:((h>=6&&h<18)||kisit==='oto'?'nese':'huzun'); B.kokPc=B.mod==='nese'?0:9; B.kok=kokMidi(B.kokPc); }
   S.tick=setInterval(loop,25); requestAnimationFrame(ui);
   $('baslaMik').hidden=true; $('baslaDemo').hidden=true; $('durdur').hidden=false;
   $('kayit').disabled=!(recDest&&window.MediaRecorder);
@@ -567,6 +631,7 @@ function stop(){
   window.removeEventListener('devicemotion',onMotion);
   if(S.wake){S.wake.release().catch(()=>{});S.wake=null;}
   // Ses motorunu tamamen kapat: iOS'ta açık kalan ses oturumu VoiceOver'ı susturuyordu
+  ORTAM.giris=null; ORTAM.sonraki=0;
   const eski=S.ctx; S.ctx=null; S.parts=[]; aktifSet='sentez'; Object.keys(TAMPON).forEach(k=>delete TAMPON[k]);
   if(eski){ setTimeout(()=>{eski.close().catch(()=>{}); try{ if(navigator.audioSession) navigator.audioSession.type='auto'; }catch(e){}},300); }
   else { try{ if(navigator.audioSession) navigator.audioSession.type='auto'; }catch(e){} }
@@ -604,6 +669,8 @@ $('baslaDemo').addEventListener('click',()=>start(false));
 $('durdur').addEventListener('click',stop);
 $('adimAt').addEventListener('click',()=>{addStep(); if(!S.running) setStatus('Önce yürüyüşü başlat.');});
 $('kayit').addEventListener('click',toggleRec);
+$('ortamDuy').addEventListener('change',()=>{ if(ORTAM.duy&&S.ctx) ORTAM.duy.gain.value=$('ortamDuy').checked?0.35:0; });
+$('duygu').addEventListener('change',()=>{ if(S.running){ B.tonPuan=-1; tonTahmin(true); } });
 $('setSec').addEventListener('change',()=>{ if(S.running) setDegistir($('setSec').value); });
 document.querySelectorAll('input[name=sahne]').forEach(r=>r.addEventListener('change',()=>announce('Ortam: '+sceneName(),true)));
 window.addEventListener('pagehide',()=>{ if(S.running) stop(); });
