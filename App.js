@@ -12,12 +12,14 @@ import * as Ses from './oyun/ses.js';
 import * as M from './oyun/mantik.js';
 import { ULUSLAR, IRKLAR, SINIFLAR, YETENEKLER, NITELIKLER, GOREVLER, YUVALAR, NADIRLIK, IKSIR, SEVIYE_SINIRI } from './oyun/veri.js';
 import { sahneKur } from './oyun/sahne.js';
+import * as Efekt from './oyun/efekt.js';
+import { CANAVARLAR } from './oyun/veri.js';
 import { Gezgin, Katman, Okunur, Sayfa, DogrudanAlan, useOdak, useSihirliEylem } from './oyun/gezgin.js';
 
 const OYUN_ADI = 'İki Sancak';
 const AYAR_ANAHTAR = 'ikisancak-ayar-v1';
 const KAYIT_ANAHTAR = 'ikisancak-karakter-v1';
-const VARSAYILAN_AYAR = { kip: null, hiz: 1.0, titresim: true, rehber: true };
+const VARSAYILAN_AYAR = { kip: null, hiz: 1.0, titresim: true, rehber: true, efekt: true, otoPuan: true };
 const ADLAR = ['Alpay', 'Tuğrul', 'Ilgaz', 'Bora', 'Ayaz', 'Aybike', 'Toygar', 'Erkut', 'Yağmur', 'Atlas', 'Selvi', 'Kaya'];
 
 const R = {
@@ -158,6 +160,8 @@ const NASIL = [
   'Hareket: ekranın sol alt yarısına parmağını koyup kaydır. Yukarı ileri yürür, aşağı geri gider, sağa ve sola kaydırmak o yöne döndürür. Bir şeye çarparsan oyun söyler.',
   'Savaş: Hedef düğmesi en yakın düşmanı seçer ve yerini söyler. Saldır düğmesi seni hedefe yürütür ve otomatik saldırtır. Yetenek düğmeleri mana harcar ve bir süre beklemeye girer.',
   'Yönler saat gibi söylenir: saat 12 tam önün, 3 sağın, 6 arkan, 9 solun.',
+  'Kulaklıkla oynamak en iyisi: sana saldıran canavarlar bulundukları yönden ses verir, arkadakiler boğuk duyulur. Hedef seçiliyken menzil dışındaysa hedefin yönünden bip sesi gelir, yaklaştıkça sıklaşır. Canın azalınca kalp atışı duyarsın.',
+  'Görev hedefini bul düğmesi, görevin istediği en yakın canavara seni yürütür. Bir canavarı öldürünce sana saldıran başka biri varsa hedef otomatik ona geçer.',
   'Etrafı tara düğmesi yakındaki herkesi söyler. Üstteki durum çubuğuna dokununca canın, manan ve deneyimin okunur.',
   'Canın azalırsa İksir düğmesiyle iksir iç. Köydeki Tüccar’dan iksir alabilir, ganimetleri satabilirsin. Menüdeki Köye dön, 5 saniye kıpırdamazsan seni köye ışınlar.',
   'Sesle oynarken oyun VoiceOver gibi çalışır: dokunduğun ya da parmağını gezdirdiğin öğeyi okur, sağa sola kaydırınca sonraki ve önceki öğeye geçer, ekranın herhangi bir yerine iki kez dokununca seçili öğe çalışır. İki parmakla bir kez dokunmak konuşmayı susturur, iki parmakla iki kez dokunmak saldırtır. Üç parmakla yukarı ya da aşağı kaydırmak sayfayı kaydırır.',
@@ -218,6 +222,25 @@ function Ayarlar({ ayar, degistir, geri }) {
         onEtkin={() => {
           degistir({ titresim: !ayar.titresim });
           Ses.hemen(`Titreşim ${!ayar.titresim ? 'açık' : 'kapalı'}`);
+        }}
+      />
+      <Dugme
+        etiket={`Ses efektleri: ${ayar.efekt !== false ? 'açık' : 'kapalı'}`}
+        ipucu="Vuruş, ayak, canavar ve hedef sesleri"
+        onEtkin={() => {
+          const yeni = ayar.efekt === false;
+          degistir({ efekt: yeni });
+          Efekt.efektAyarla({ acik: yeni });
+          Ses.hemen(`Ses efektleri ${yeni ? 'açık' : 'kapalı'}`);
+        }}
+      />
+      <Dugme
+        etiket={`Nitelik puanlarını otomatik dağıt: ${ayar.otoPuan !== false ? 'açık' : 'kapalı'}`}
+        ipucu="Seviye atlayınca puanlar sınıfına göre dağıtılır"
+        onEtkin={() => {
+          const yeni = ayar.otoPuan === false;
+          degistir({ otoPuan: yeni });
+          Ses.hemen(`Otomatik dağıtma ${yeni ? 'açık' : 'kapalı'}`);
         }}
       />
       <Dugme
@@ -363,6 +386,7 @@ function Oyun({ karakter, ayar, cikis, ayarDegistir }) {
   }, []);
 
   useEffect(() => {
+    Efekt.onYukle(['kilic', 'ok', 'ates', 'topuz', 'iska', 'oldur', 'altin', 'adim1', 'adim2', 'sonar_2', 'aldin_2', 'odak', 'etkinles']);
     Ses.altyaziDinle(setAltyazi);
     Ses.soyle(`Maceraya hoş geldin, ${d.k.ad}. ${M.konumOzeti(d)} ${M.gorevDurumu(d.k).metin}`, 3);
     const alt = AppState.addEventListener('change', (s) => {
@@ -375,6 +399,77 @@ function Oyun({ karakter, ayar, cikis, ayarDegistir }) {
     };
   }, []);
 
+  // Olaylara göre ses efekti
+  const efektCal = (o) => {
+    const k = d.k;
+    const canavar = o.id ? d.canavarlar.find((c) => c.id === o.id) : null;
+    switch (o.tur) {
+      case 'hasarVerdin': {
+        let ad = { savasci: 'kilic', okcu: 'ok', buyucu: 'ates', rahip: 'topuz' }[k.sinif];
+        if (o.kaynak === 'buzOku') ad = 'buz';
+        if (o.kaynak === 'zehir') return;
+        Efekt.cal(o.kritik ? 'kritik' : ad, 0.8);
+        return;
+      }
+      case 'iska':
+      case 'kacindin':
+        Efekt.cal('iska', 0.6);
+        return;
+      case 'hasarAldin':
+        if (canavar) Efekt.yonlu('aldin', d.oyuncu, canavar, 1);
+        else Efekt.cal('aldin_2', 1);
+        return;
+      case 'oldurdun':
+        Efekt.cal('oldur', 0.9);
+        setTimeout(() => Efekt.cal(o.ganimet ? 'ganimet' : 'altin', 0.8), 350);
+        return;
+      case 'saldiriyor':
+        if (canavar) {
+          canavar.__sesZaman = d.zaman;
+          Efekt.yonlu(CANAVARLAR[canavar.tur].efekt, d.oyuncu, canavar, 1);
+        }
+        return;
+      case 'hedef':
+        if (canavar) Efekt.yonlu('sonar', d.oyuncu, canavar, 0.8);
+        else Efekt.cal('hata', 0.5);
+        return;
+      case 'seviye':
+        Efekt.cal('seviye', 1);
+        return;
+      case 'gorev':
+        Efekt.cal('gorev', 1);
+        return;
+      case 'iyilestin':
+        Efekt.cal('iyiles', 0.9);
+        return;
+      case 'iksir':
+        Efekt.cal(/içtin/.test(o.metin) ? 'iksir' : 'hata', 0.8);
+        return;
+      case 'yetenek':
+        if (['kalkanDuvari', 'manaKalkani', 'kutsalKalkan', 'savasNarasi'].includes(o.id)) Efekt.cal('kalkan', 0.9);
+        else if (o.id === 'arinmaIsigi') Efekt.cal('iyiles', 0.7);
+        return;
+      case 'menzil':
+      case 'yetenekHazirDegil':
+        Efekt.cal('hata', 0.6);
+        return;
+      case 'oldun':
+        Efekt.cal('olum', 1);
+        return;
+      case 'dogdun':
+        Efekt.cal('dogus', 0.9);
+        return;
+      case 'isinlanma':
+        if (/başladı/.test(o.metin)) Efekt.cal('isinlan', 0.8);
+        else if (/Köydesin/.test(o.metin)) Efekt.cal('dogus', 0.7);
+        return;
+      case 'konusma':
+        Efekt.cal('etkinles', 0.5);
+        return;
+      default:
+    }
+  };
+
   // Ana döngü: mantık, olaylar, çizim
   useEffect(() => {
     let son = Date.now();
@@ -382,6 +477,11 @@ function Oyun({ karakter, ayar, cikis, ayarDegistir }) {
     let kayitSayac = 0;
     let carpmaSon = 0;
     let rehberSon = 0;
+    let adimYol = 0;
+    let adimSira = false;
+    let canavarSesSayac = 0;
+    let sonarSayac = 0;
+    let kalpSayac = 0;
     let rehberMesafe = 0;
     let calisiyor = true;
     let raf;
@@ -395,24 +495,77 @@ function Oyun({ karakter, ayar, cikis, ayarDegistir }) {
         girdi.current = { ileri: 0, don: 0 };
       }
       if (!panelRef.current) {
+        const oncekiX = d.oyuncu.x;
+        const oncekiY = d.oyuncu.y;
         const sonuc = M.guncelle(d, dt, girdi.current);
         const a = ayarRef.current;
+        const yurunen = Math.hypot(d.oyuncu.x - oncekiX, d.oyuncu.y - oncekiY);
         if (sonuc.carpti && simdi - carpmaSon > 1500) {
           carpmaSon = simdi;
           titret('hafif', a);
+          Efekt.cal('carpma', 0.7);
           if (a.kip !== 'gorerek') Ses.soyle('Önün kapalı.', 2);
+        }
+        // Ayak sesleri: yürüdükçe
+        adimYol += yurunen;
+        if (adimYol > 1.6) {
+          adimYol = 0;
+          adimSira = !adimSira;
+          Efekt.cal(adimSira ? 'adim1' : 'adim2', 0.35);
         }
         for (const o of M.olaylariAl(d)) {
           if (sahneRef.current) sahneRef.current.efekt(o);
+          efektCal(o);
           if (o.tur === 'hasarAldin') titret('hafif', a);
           else if (o.tur === 'seviye' || o.tur === 'gorev') titret('iyi', a);
           else if (o.tur === 'oldun') titret('kotu', a);
           else if (o.tur === 'oldurdun' || o.tur === 'saldiriyor') titret('orta', a);
+          if (o.tur === 'seviye' && a.otoPuan && d.k.serbestPuan) {
+            M.otomatikDagit(d.k);
+            Ses.soyle('Nitelik puanların sınıfına göre dağıtıldı.', 1);
+          }
           if (o.metin) Ses.soyle(o.metin, o.oncelik);
+        }
+        // Seni kovalayan canavarlar, bulundukları yönden ses verir (en yakın 2)
+        canavarSesSayac -= dt;
+        if (canavarSesSayac <= 0) {
+          canavarSesSayac = 1.1;
+          d.canavarlar
+            .filter((c) => !c.olu && c.durum === 'kovala')
+            .map((c) => ({ c, m: M.mesafe(c, d.oyuncu) }))
+            .filter((x) => x.m < 24)
+            .sort((x, y) => x.m - y.m)
+            .slice(0, 2)
+            .forEach(({ c }) => {
+              if (!c.__sesZaman || d.zaman - c.__sesZaman > 2.6) {
+                c.__sesZaman = d.zaman + Math.random() * 0.6;
+                Efekt.yonlu(CANAVARLAR[c.tur].efekt, d.oyuncu, c, 0.85);
+              }
+            });
+        }
+        // Hedef sonarı: hedef menzil dışındayken yönünden bip sesi gelir, yaklaştıkça sıklaşır
+        const hs = M.hedef(d);
+        if (hs && !d.olu) {
+          const m = M.mesafe(d.oyuncu, hs);
+          const menzil = M.hesapla(d.k).menzil;
+          sonarSayac -= dt;
+          if (m > menzil && sonarSayac <= 0) {
+            sonarSayac = Math.max(0.45, Math.min(1.6, m / 25));
+            Efekt.yonlu('sonar', d.oyuncu, hs, 0.6);
+          }
+        }
+        // Can azken kalp atışı
+        const hh = M.hesapla(d.k);
+        if (!d.olu && d.k.can < hh.enCan * 0.3) {
+          kalpSayac -= dt;
+          if (kalpSayac <= 0) {
+            kalpSayac = d.k.can < hh.enCan * 0.15 ? 0.6 : 0.9;
+            Efekt.cal('kalp', 0.8);
+          }
         }
         // Hedef rehberi: yürürken hedefin yönünü ve uzaklığını söyler
         const h = M.hedef(d);
-        if (a.rehber && a.kip !== 'gorerek' && h && simdi - rehberSon > 4000) {
+        if (a.rehber && a.kip !== 'gorerek' && h && simdi - rehberSon > 6000) {
           const m = M.mesafe(d.oyuncu, h);
           const hareketli = d.yaklas || Math.abs(girdi.current.ileri) > 0.1;
           if (hareketli && m > M.hesapla(d.k).menzil && Math.abs(m - rehberMesafe) > 2.5) {
@@ -555,6 +708,12 @@ function Oyun({ karakter, ayar, cikis, ayarDegistir }) {
         <View style={st.baglamSatir}>
           {d.olu && <Dugme etiket="Yeniden doğ" onEtkin={() => M.yenidenDog(d)} stil={st.baglamDugme} />}
           {!d.olu && npc && <Dugme etiket={`${npc.ad} ile konuş`} onEtkin={npcKonus} stil={st.baglamDugme} />}
+          {!d.olu && !npc && k.gorev.durum === 'aktif' && !hedef && (
+            <Dugme etiket="Görev hedefini bul" ipucu="Görevin istediği en yakın canavara yürür" onEtkin={() => M.gorevHedefiBul(d)} stil={st.baglamDugme} />
+          )}
+          {!d.olu && !npc && k.gorev.durum === 'tamam' && Math.hypot(d.oyuncu.x, d.oyuncu.y) > 20 && !d.isinlanma && (
+            <Dugme etiket="Ödül için köye dön" ipucu="5 saniye kıpırdamazsan köye ışınlanırsın" onEtkin={() => M.koyeDon(d)} stil={st.baglamDugme} />
+          )}
           {!d.olu && (d.otoSaldiri || d.yaklas) && <Dugme etiket="Dur" ipucu="Saldırıyı ve yürüyüşü durdurur" onEtkin={() => { M.dur(d); Ses.soyle('Durdun.', 2); }} stil={st.baglamDugme} />}
         </View>
 
@@ -823,6 +982,10 @@ export default function App() {
       setEkran(a.kip ? 'menu' : 'kip');
     })();
   }, []);
+
+  useEffect(() => {
+    Efekt.efektAyarla({ acik: ayar.efekt !== false });
+  }, [ayar.efekt]);
 
   const ayarDegistir = useCallback((deg) => {
     setAyar((a) => {

@@ -10,6 +10,7 @@
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, ScrollView, PanResponder, StyleSheet, Dimensions } from 'react-native';
 import * as Ses from './ses.js';
+import * as Efekt from './efekt.js';
 
 const GezginBaglam = createContext(null);
 const KatmanBaglam = createContext(0);
@@ -241,6 +242,7 @@ export function Gezgin({ acik, children, titresim }) {
     if (!o) return;
     odak.current = o.id;
     setOdakKutu(o.r);
+    Efekt.cal('odak', 0.5);
     Ses.hemen(seslendir(o.b, ipucu));
     gorunurYap(o);
   };
@@ -277,6 +279,7 @@ export function Gezgin({ acik, children, titresim }) {
     if (i < 0) i = yon > 0 ? -1 : l.length;
     const j = i + yon;
     if (j < 0 || j >= l.length) {
+      Efekt.cal('sinir', 0.7);
       Ses.hemen(yon > 0 ? 'Son öğe.' : 'İlk öğe.');
       return;
     }
@@ -299,6 +302,7 @@ export function Gezgin({ acik, children, titresim }) {
       return;
     }
     if (titresim) titresim();
+    Efekt.cal('etkinles', 0.5);
     b.etkin && b.etkin();
   };
 

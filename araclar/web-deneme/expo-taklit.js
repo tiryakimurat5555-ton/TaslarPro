@@ -21,7 +21,7 @@ export function createAudioPlayer(kaynak) {
     loop: false,
     volume: 1,
     play() {
-      window.__sesler.push(kaynak && kaynak.ad);
+      window.__sesler.push(typeof kaynak === 'string' ? kaynak.replace(/^.*\//, '').replace('.mp3', '') : kaynak && kaynak.ad);
     },
     pause() {},
     seekTo() {},

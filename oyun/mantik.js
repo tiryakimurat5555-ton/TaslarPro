@@ -495,10 +495,20 @@ function canavarOldu(d, c) {
   c.dirilme = d.zaman + (CANAVARLAR[c.tur].patron ? 300 : 25);
   c.durum = 'bos';
   k.oldurulen += 1;
+  let sonraki = null;
   if (d.hedefId === c.id) {
     d.hedefId = null;
-    d.otoSaldiri = false;
-    d.yaklas = false;
+    // Sana saldıran başka bir canavar varsa ona geç (otomatik hedef)
+    if (d.otoHedef !== false) {
+      sonraki = d.canavarlar
+        .filter((m) => !m.olu && m.id !== c.id && m.durum === 'kovala' && mesafe(m, d.oyuncu) < 16)
+        .sort((a, b) => mesafe(a, d.oyuncu) - mesafe(b, d.oyuncu))[0];
+    }
+    if (sonraki) d.hedefId = sonraki.id;
+    else {
+      d.otoSaldiri = false;
+      d.yaklas = false;
+    }
   }
   // Seviye farkı çok büyükse deneyim azalır
   const fark = k.seviye - c.seviye;
@@ -520,7 +530,8 @@ function canavarOldu(d, c) {
     k.iksir += 1;
     metin += ' Bir can iksiri buldun.';
   }
-  olay(d, 'oldurdun', metin, 3, { id: c.id });
+  olay(d, 'oldurdun', metin, 3, { id: c.id, ganimet: metin.includes('Ganimet') });
+  if (sonraki) olay(d, 'hedef', `Sıradaki hedef: ${sonraki.ad}, ${saatSozu(saatYonu(d.oyuncu, sonraki))}.`, 2, { id: sonraki.id, otomatik: true });
   // Görev
   const g = GOREVLER[k.gorev.sira];
   if (g && k.gorev.durum === 'aktif' && g.hedef === c.tur) {
@@ -688,6 +699,29 @@ export function koyeDon(d) {
 }
 
 // ---------- NPC ve görev ----------
+// Görevin istediği en yakın canavarı hedefle ve ona yürü
+export function gorevHedefiBul(d) {
+  const k = d.k;
+  const g = GOREVLER[k.gorev.sira];
+  if (!g || k.gorev.durum !== 'aktif') {
+    olay(d, 'hedef', 'Etkin bir av görevin yok.', 2);
+    return null;
+  }
+  const c = d.canavarlar
+    .filter((m) => !m.olu && m.tur === g.hedef)
+    .sort((a, b) => mesafe(a, d.oyuncu) - mesafe(b, d.oyuncu))[0];
+  if (!c) {
+    olay(d, 'hedef', `Şu an hiç ${CANAVARLAR[g.hedef].ad} yok, biraz sonra yeniden doğarlar.`, 2);
+    return null;
+  }
+  d.hedefId = c.id;
+  d.otoSaldiri = true;
+  d.yaklas = true;
+  d.isinlanma = null;
+  olay(d, 'hedef', `Görev hedefi: ${hedefTarifi(d, c)}. Ona yürüyorsun.`, 3, { id: c.id });
+  return c;
+}
+
 export function yakinNpc(d, menzil = 4) {
   return d.npcler.find((n) => mesafe(n, d.oyuncu) <= menzil) || null;
 }
@@ -888,7 +922,9 @@ export function guncelle(d, dt, girdi = {}) {
       const algi = tip.patron ? 14 : 7;
       if (!d.olu && saldirgan && mOyuncu < algi && Math.hypot(o.x, o.y) > 22) {
         c.durum = 'kovala';
-        olay(d, 'saldiriyor', `${c.ad} sana saldırıyor, ${saatSozu(saatYonu(o, c))}.`, 3, { id: c.id });
+        // Hedefin yoksa saldıran canavar hedefin olur
+        if (!hedef(d) && d.otoHedef !== false) d.hedefId = c.id;
+        olay(d, 'saldiriyor', `${c.ad} sana saldırıyor, ${saatSozu(saatYonu(o, c))}.${d.hedefId === c.id ? ' Hedefin oldu.' : ''}`, 3, { id: c.id });
       } else {
         // Gezinme
         c.sayac -= dt;

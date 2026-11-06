@@ -112,15 +112,15 @@ export const YETENEKLER = {
 
 // Canavarlar: seviye aralığı, bölge (köyden uzaklık, metre), görünüş
 export const CANAVARLAR = {
-  kurt: { ad: 'Kurt', seviye: [1, 3], bolge: [25, 70], renk: '#8a8f96', boy: 0.9, sekil: 'dortayak', hiz: 3.6, sayi: 14, ses: 'hırlıyor' },
-  domuz: { ad: 'Yaban domuzu', seviye: [3, 6], bolge: [55, 95], renk: '#6b4a34', boy: 0.9, sekil: 'dortayak', hiz: 3.2, sayi: 12, ses: 'homurdanıyor' },
-  goblin: { ad: 'Goblin', seviye: [5, 9], bolge: [85, 125], renk: '#5f8f3a', boy: 1.0, sekil: 'iki', hiz: 3.4, sayi: 14, ses: 'kıkırdıyor' },
-  haydut: { ad: 'Haydut', seviye: [8, 12], bolge: [115, 150], renk: '#7a3b3b', boy: 1.6, sekil: 'iki', hiz: 3.5, sayi: 12, ses: 'bağırıyor' },
-  orkAkinci: { ad: 'Ork akıncı', seviye: [11, 16], bolge: [140, 175], renk: '#3f6b2e', boy: 1.9, sekil: 'iki', hiz: 3.5, sayi: 12, ses: 'kükrüyor' },
-  orumcek: { ad: 'Dev örümcek', seviye: [15, 20], bolge: [165, 200], renk: '#2b2b33', boy: 1.1, sekil: 'orumcek', hiz: 3.8, sayi: 12, ses: 'tıkırdıyor' },
-  golem: { ad: 'Taş golem', seviye: [19, 24], bolge: [190, 225], renk: '#8d8a80', boy: 2.4, sekil: 'iki', hiz: 2.6, sayi: 10, ses: 'gürlüyor' },
-  golge: { ad: 'Gölge şövalye', seviye: [23, 28], bolge: [215, 250], renk: '#2e2440', boy: 2.0, sekil: 'iki', hiz: 3.6, sayi: 10, ses: 'fısıldıyor' },
-  ejder: { ad: 'Bataklık ejderi', seviye: [30, 30], bolge: [262, 268], renk: '#3c6b5e', boy: 3.4, sekil: 'dortayak', hiz: 3.0, sayi: 1, ses: 'kükrüyor', patron: true },
+  kurt: { efekt: 'kurt', ad: 'Kurt', seviye: [1, 3], bolge: [25, 70], renk: '#8a8f96', boy: 0.9, sekil: 'dortayak', hiz: 3.6, sayi: 14, ses: 'hırlıyor' },
+  domuz: { efekt: 'domuz', ad: 'Yaban domuzu', seviye: [3, 6], bolge: [55, 95], renk: '#6b4a34', boy: 0.9, sekil: 'dortayak', hiz: 3.2, sayi: 12, ses: 'homurdanıyor' },
+  goblin: { efekt: 'goblin', ad: 'Goblin', seviye: [5, 9], bolge: [85, 125], renk: '#5f8f3a', boy: 1.0, sekil: 'iki', hiz: 3.4, sayi: 14, ses: 'kıkırdıyor' },
+  haydut: { efekt: 'insan', ad: 'Haydut', seviye: [8, 12], bolge: [115, 150], renk: '#7a3b3b', boy: 1.6, sekil: 'iki', hiz: 3.5, sayi: 12, ses: 'bağırıyor' },
+  orkAkinci: { efekt: 'ork', ad: 'Ork akıncı', seviye: [11, 16], bolge: [140, 175], renk: '#3f6b2e', boy: 1.9, sekil: 'iki', hiz: 3.5, sayi: 12, ses: 'kükrüyor' },
+  orumcek: { efekt: 'orumcek', ad: 'Dev örümcek', seviye: [15, 20], bolge: [165, 200], renk: '#2b2b33', boy: 1.1, sekil: 'orumcek', hiz: 3.8, sayi: 12, ses: 'tıkırdıyor' },
+  golem: { efekt: 'golem', ad: 'Taş golem', seviye: [19, 24], bolge: [190, 225], renk: '#8d8a80', boy: 2.4, sekil: 'iki', hiz: 2.6, sayi: 10, ses: 'gürlüyor' },
+  golge: { efekt: 'golge', ad: 'Gölge şövalye', seviye: [23, 28], bolge: [215, 250], renk: '#2e2440', boy: 2.0, sekil: 'iki', hiz: 3.6, sayi: 10, ses: 'fısıldıyor' },
+  ejder: { efekt: 'ejder', ad: 'Bataklık ejderi', seviye: [30, 30], bolge: [262, 268], renk: '#3c6b5e', boy: 3.4, sekil: 'dortayak', hiz: 3.0, sayi: 1, ses: 'kükrüyor', patron: true },
 };
 
 export const DUNYA = { yaricap: 285, koyYaricap: 18 };

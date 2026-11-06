@@ -26,7 +26,7 @@ async function ac(tarayici, onYukle) {
   await bekle(600);
   return { s, hatalar, ctx };
 }
-const tikla = (s, etiket) => s.locator(etiket === 'Geri' ? '[aria-label="Geri"]' : `[aria-label^="${etiket}"]`).first().click();
+const tikla = (s, etiket) => s.locator(['Geri', 'Görev'].includes(etiket) ? `[aria-label="${etiket}"]` : `[aria-label^="${etiket}"]`).first().click();
 const var_ = async (s, etiket) => (await s.locator(`[aria-label^="${etiket}"]`).count()) > 0;
 const konusmalar = (s) => s.evaluate(() => window.__konusmalar.join(' | '));
 
@@ -54,6 +54,18 @@ const konusmalar = (s) => s.evaluate(() => window.__konusmalar.join(' | '));
       await bekle(400);
     }
     kontrol((await konusmalar(s)).length >= 0, 'konuşma kaydı');
+    // Muhtar'dan uzaklaş ve görev hedefini bul
+    await s.evaluate(() => {
+      const d = globalThis.__ikiSancakDunya;
+      d.oyuncu.y = -10;
+    });
+    await bekle(600);
+    if (await var_(s, 'Görev hedefini bul')) {
+      await tikla(s, 'Görev hedefini bul');
+      await bekle(800);
+      kontrol(/Görev hedefi: Kurt/.test(await konusmalar(s)), 'görev hedefi bulundu ve yüründü');
+      await tikla(s, 'Dur');
+    } else kontrol(false, 'Görev hedefini bul düğmesi görünmedi');
     // Joystick: kuzeye yürü (canavarlar dışarıda)
     const sol = s.locator('[aria-label^="Hareket alanı"]');
     const kutu = await sol.boundingBox();
@@ -77,6 +89,10 @@ const konusmalar = (s) => s.evaluate(() => window.__konusmalar.join(' | '));
       }
     }
     await s.screenshot({ path: path.join(CIKIS, '3-savas.png') });
+    const sesler = await s.evaluate(() => [...new Set(window.__sesler)].join(' '));
+    console.log('Çalan sesler:', sesler);
+    kontrol(/oldur/.test(sesler) && /ok/.test(sesler) && /adim/.test(sesler), 'savaş ve ayak sesleri çaldı');
+    kontrol(/sonar_|kurt_|domuz_/.test(sesler), 'yönlü sesler çaldı');
     const k = await konusmalar(s);
     kontrol(/öldü/.test(k), 'en az bir canavar öldü');
     kontrol(!/NaN|undefined/.test(k), 'konuşmalarda bozuk metin yok');
