@@ -79,3 +79,9 @@
   ksilofon: tonejs-instruments, MIT; davul/bongo: Tonejs/audio drum-samples). Notalar en yakın örnekten playbackRate ile.
   Setler SETLER/NOTALAR tablolarında; "sentez" seti eski osilatör sesleri ve yükleme hatasında yedek. GitHub Pages'te
   charset/viewport meta etiketleri dosyanın başında olmalı (artifact iskeleti yok).
+- Besteci (6 Kasım, Murat "daha profesyonel melodi" istedi): playStep içinde tam dizi (majör / minör, minörde V için yeden ses),
+  ILERLEMELER (4 ölçülük akor ilerlemeleri), 2 ölçülük motif (RITIMLER seyrek/orta/yoğun + kontur), 8 ölçülük cümle A A B A,
+  7. ölçüde kadans (tonikte uzun nota) ve davul dolgusu, ses yürütmeli arka plan akorları (sesYurut), bas kalıpları (kök, beşli,
+  yaklaşma notası), eşlik arpej ya da gitar tıngırdatma (eslikTip), her 32 ölçüde ton IV'e geçer. Başta 2 ölçü giriş (yalnız akor+bas).
+  Kuş sesi sıçraması melodiye kısa süsleme ekler. Çalgılar melodiCal/eslikCal/basCal/padCal/vurmali ile örnek ya da sentez.
+

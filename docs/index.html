@@ -214,10 +214,10 @@ function pluck(t,m,v){const c=S.ctx,o=c.createOscillator(),o2=c.createOscillator
 
 // ==== GERÇEK ENSTRÜMANLAR (ses örnekleri) ====
 const SETLER={
-  akustik:{melodi:'arp',bas:'kontrbas',pad:'viyolonsel',ritim:'davul',mk:0},
-  piyano:{melodi:'piyano',bas:'piyano',pad:'viyolonsel',ritim:'davul',mk:0},
-  gitar:{melodi:'gitar',bas:'kontrbas',pad:'viyolonsel',ritim:'bongo',mk:-12},
-  ksilofon:{melodi:'ksilofon',bas:'kontrbas',pad:'piyano',ritim:'bongo',mk:0},
+  akustik:{melodi:'arp',eslik:'arp',eslikTip:'arpej',bas:'kontrbas',pad:'viyolonsel',ritim:'davul',mk:0},
+  piyano:{melodi:'piyano',eslik:'piyano',eslikTip:'arpej',bas:'piyano',pad:'viyolonsel',ritim:'davul',mk:0},
+  gitar:{melodi:'gitar',eslik:'gitar',eslikTip:'vurus',bas:'kontrbas',pad:'viyolonsel',ritim:'bongo',mk:-12},
+  ksilofon:{melodi:'ksilofon',eslik:'piyano',eslikTip:'arpej',bas:'kontrbas',pad:null,ritim:'bongo',mk:0},
   sentez:null
 };
 const NOTALAR={
@@ -240,13 +240,13 @@ async function yukle(yol){
 async function setYukle(ad){
   const st=SETLER[ad]; if(!st) return;
   const liste=new Set();
-  [st.melodi,st.bas,st.pad].forEach(e=>NOTALAR[e].forEach(n=>liste.add(e+'/'+n)));
+  [st.melodi,st.eslik,st.bas,st.pad].filter(Boolean).forEach(e=>NOTALAR[e].forEach(n=>liste.add(e+'/'+n)));
   Object.values(VURMALI[st.ritim]).forEach(n=>liste.add(st.ritim+'/'+n));
   await Promise.all([...liste].map(yukle));
 }
 async function setDegistir(ad){
   if(!S.ctx) return;
-  if(!SETLER[ad]){aktifSet='sentez';return;}
+  if(!SETLER[ad]){aktifSet='sentez';setStatus('Çalıyor: Elektronik (sentez).');return;}
   setStatus('Enstrüman sesleri yükleniyor…');
   try{ await setYukle(ad); if(S.ctx){aktifSet=ad; setStatus('Çalıyor: '+$('setSec').selectedOptions[0].textContent+'.');} }
   catch(e){ aktifSet='sentez'; setStatus('Enstrüman sesleri yüklenemedi, elektronik seslerle çalıyor.'); }
@@ -268,45 +268,162 @@ function vurCal(tur,t,v,wet){
 
 function part(lane,t,color,size){S.parts.push({lane,t,color,size}); if(S.parts.length>200)S.parts.shift();}
 
+// ==== BESTECİ: armoni, motif, cümle yapısı ====
+// Gerçek bir şarkı gibi: akor ilerlemesi, 2 ölçülük motif, 8 ölçülük cümleler (A A B A), kadans, dolgu.
+const DIZI={nese:[0,2,4,5,7,9,11],huzun:[0,2,3,5,7,8,10]};
+const KOK={nese:60,huzun:57};
+const ILERLEMELER={
+  nese:[[0,4,5,3],[0,5,3,4],[3,4,0,5],[0,3,1,4],[5,3,0,4],[0,2,3,4]],
+  huzun:[[0,5,2,6],[0,6,5,4],[0,3,6,2],[0,5,3,4],[5,6,0,0],[0,3,4,0]]
+};
+const RITIMLER={ // [adım, uzunluk] 16'lık nota cinsinden
+  seyrek:[[[0,8],[8,8]],[[0,6],[6,10]],[[0,12],[12,4]],[[4,4],[8,8]],[[0,16]]],
+  orta:[[[0,4],[4,2],[6,2],[8,8]],[[0,3],[3,3],[6,2],[8,4],[12,4]],[[0,6],[6,2],[8,4],[12,4]],[[2,2],[4,4],[8,2],[10,6]],[[0,4],[4,4],[8,6],[14,2]]],
+  yogun:[[[0,2],[2,2],[4,2],[6,2],[8,4],[12,2],[14,2]],[[0,3],[3,3],[6,2],[8,2],[10,2],[12,4]],[[0,2],[2,4],[6,2],[8,2],[10,2],[12,2],[14,2]],[[0,1],[1,1],[2,2],[4,4],[8,2],[10,2],[12,4]]]
+};
+const B={ilerleme:null,ilerlemeB:null,motifA:null,motifB:null,ses:null,md:9,ton:0,bas:0,son:null};
+const sec=a=>a[Math.floor(Math.random()*a.length)];
+
+function motifYap(){
+  // her yoğunluk için iki ölçülük ritim ve her nota için kontur adımı
+  const r={seyrek:[sec(RITIMLER.seyrek),sec(RITIMLER.seyrek)],orta:[sec(RITIMLER.orta),sec(RITIMLER.orta)],yogun:[sec(RITIMLER.yogun),sec(RITIMLER.yogun)]};
+  const kontur=[]; let yon=Math.random()<0.5?1:-1;
+  for(let i=0;i<20;i++){ if(Math.random()<0.25) yon=-yon; kontur.push(Math.random()<0.7?yon:(Math.random()<0.5?2*yon:0)); }
+  return {r,kontur};
+}
+function sarkiYenile(m){
+  B.ilerleme=sec(ILERLEMELER[m]); B.ilerlemeB=sec(ILERLEMELER[m]);
+  B.motifA=motifYap(); B.motifB=motifYap();
+}
+// derece → midi (ton ve mod dahil)
+function dm(der,m){const d=DIZI[m],o=Math.floor(der/7),i=((der%7)+7)%7;return KOK[m]+B.ton+d[i]+12*o;}
+function akorDereceleri(kok){return [kok,kok+2,kok+4];}
+function akorMidi(kok,m){ // armonik minör: minörde V akorunun üçlüsü yükselir
+  return akorDereceleri(kok).map((d,i)=>dm(d,m)+((m==='huzun'&&((kok%7)+7)%7===4&&i===1)?1:0));
+}
+function aralikta(n,alt,ust){while(n<alt)n+=12;while(n>ust)n-=12;return n;}
+function sesYurut(akor,alt,ust){ // önceki akora en yakın çevrimi seç (ses yürütme)
+  const adaylar=[];
+  for(let c=0;c<3;c++){const v=akor.map((n,i)=>aralikta(n+(i<c?12:0),alt,ust)).sort((a,b)=>a-b);adaylar.push(v);}
+  if(!B.ses) return (B.ses=adaylar[0]);
+  let en=adaylar[0],ef=1e9; adaylar.forEach(v=>{const f=v.reduce((a,n,i)=>a+Math.abs(n-(B.ses[i]||n)),0); if(f<ef){ef=f;en=v;}});
+  return (B.ses=en);
+}
+function akorTonunaYapis(der,kok){ // dereceyi en yakın akor tonuna çek
+  let en=der,ef=99; for(let k=-3;k<=3;k++){const d=der+k, r=((d-kok)%7+7)%7; if((r===0||r===2||r===4)&&Math.abs(k)<ef){ef=Math.abs(k);en=d;}} return en;
+}
+function yogunluk(){
+  const a=Math.max(S.high,S.level*0.8);
+  if(a<0.3||(!S.walking&&a<0.5)) return 'seyrek';
+  if(a<0.6||!S.walking) return 'orta'; return 'yogun';
+}
+function insan(t){return t+(Math.random()-0.5)*0.012;}
+
+// ---- çalgı dağıtıcıları (örnek ya da sentez) ----
+function melodiCal(midi,t,v,dur){const st=SETLER[aktifSet];
+  if(!st){pluck(t,midi,0.05+0.17*v);return;}
+  const g=ornekCal(st.melodi,midi+(st.mk||0),t,0.15+0.5*v,dur+0.9); if(g)out(g,0.5); part(0,t,'#7fd6c2',5+v*10);}
+function eslikCal(midi,t,v){const st=SETLER[aktifSet];
+  if(!st){pluck(t,midi-12,0.03+0.06*v);return;}
+  const g=ornekCal(st.eslik,midi,t,0.08+0.22*v,1.4); if(g)out(g,0.4); part(0,t,'#5f9e90',3);}
+function basCal(midi,t,v,dur){const st=SETLER[aktifSet];
+  if(!st){bass(t,midi,0.1+0.35*v,dur);return;}
+  const g=ornekCal(st.bas,midi,t,0.22+0.6*v,dur+0.15); if(g)out(g,0.08); part(2,t,'#8e9cff',5+v*6);}
+function padCal(notalar,t,v,dur){const st=SETLER[aktifSet];
+  if(!st){pad(t,notalar,0.04+0.09*v,dur);return;}
+  if(!st.pad) return;
+  notalar.forEach(n=>{const g=ornekCal(st.pad,n,t,0.05+0.11*v,dur,0.35); if(g)out(g,0.6);});}
+function trampet(t,v){const c=S.ctx,s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain(),o=c.createOscillator(),go=c.createGain();
+  s.buffer=noiseBuf;f.type='bandpass';f.frequency.value=1800;f.Q.value=0.8;
+  g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(0.0001,t+0.16);
+  o.frequency.value=190;go.gain.setValueAtTime(v*0.6,t);go.gain.exponentialRampToValueAtTime(0.0001,t+0.08);
+  s.connect(f);f.connect(g);out(g,0.15);o.connect(go);out(go,0);s.start(t,Math.random()*0.5);s.stop(t+0.2);o.start(t);o.stop(t+0.1);}
+function vurmali(tur,t,v){const st=SETLER[aktifSet];
+  if(!st){ if(tur==='dip')kick(t,0.3+0.5*v); else if(tur==='vurus')trampet(t,0.1+0.25*v); else hat(t,0.03+0.1*v); return; }
+  vurCal(tur,t,tur==='zil'?0.06+0.25*v:0.2+0.6*v,tur==='vurus'?0.15:0.05);
+  part(1,t,tur==='zil'?'#c9d3dc':'#f4b544',tur==='zil'?3:(tur==='dip'?7:5));}
+
 function playStep(s,t){
-  const m=mood(), root=ROOT[m], spb=60/S.bpm, lv=S.level;
-  const ci=PROG[m][S.bar%4], chord=[ci,ci+2,ci+4].map(i=>root+sn(i,m));
+  const m=mood(), spb=60/S.bpm, lv=S.level;
+  if(s===0){
+    if(!B.ilerleme||S.bar%32===0||B.mod!==m){B.mod=m; sarkiYenile(m);}
+    B.ton=(Math.floor(S.bar/32)%2)?5:0; // her 32 ölçüde bir dördüncü derece tonuna geçiş
+  }
+  const cumle=Math.floor(S.bar/8)%4, olcu=S.bar%8;          // A A B A
+  const ilerleme=(cumle===2)?B.ilerlemeB:B.ilerleme;
+  const kok=ilerleme[olcu%4], akor=akorMidi(kok,m);
+  const sonrakiKok=ilerleme[(olcu+1)%4];
+  const giris=S.bar-(S.basBar||0)<2;
+  const dolgu=olcu===7&&S.walking;
+
+  // --- Arka plan akorları (ses yürütmeli) ---
+  if(s===0){ const ses=sesYurut(akor,50,70); padCal(ses,t,1-Math.min(lv,0.8),spb*4.3); }
+
+  // --- Bas ---
+  const kb=aralikta(akor[0],36,47), besli=kb+(dm(kok+4,m)-dm(kok,m));
+  if(!S.walking){ if(s===0) basCal(kb,t,0.4+0.5*S.low,spb*3.8); }
+  else{
+    if(s===0) basCal(kb,t,0.5+0.5*S.low,spb*1.5);
+    if(s===6&&S.low>0.35) basCal(kb,insan(t),0.35*S.low+0.2,spb*0.45);
+    if(s===8) basCal(besli,t,0.4+0.4*S.low,spb*1.4);
+    if(s===14&&S.low>0.45){ const yaklasma=aralikta(dm(sonrakiKok,m),36,47)-(Math.random()<0.5?1:2); basCal(yaklasma,insan(t),0.3+0.3*S.low,spb*0.45); }
+  }
+
+  // --- Eşlik: arpej ya da tıngırdatma ---
   const st=SETLER[aktifSet];
-  if(st){
-    if(S.walking){ if(s%4===0){vurCal('dip',t,0.55+0.4*lv);part(1,t,'#f4b544',7);} if((s===4||s===12)&&lv>0.3){vurCal('vurus',t,0.25+0.3*lv,0.15);part(1,t,'#f4b544',5);} }
-    else if(s===0&&lv>0.2){vurCal('dip',t,0.35);part(1,t,'#f4b544',7);}
-    if(s%4===2&&lv>0.15){vurCal('zil',t,0.08+0.25*lv,0.1);part(1,t,'#c9d3dc',3);}
-    else if(s%2===1&&lv>0.6){vurCal('zil',t,0.07);part(1,t,'#c9d3dc',3);}
-    if(s===0||s===8){const g=ornekCal(st.bas,chord[0]-12,t,0.25+0.55*S.low,spb*1.8);if(g)out(g,0.1);part(2,t,'#8e9cff',9);}
-    if(s===14&&S.low>0.55){const g=ornekCal(st.bas,chord[1]-12,t,0.35*S.low,spb*0.6);if(g)out(g,0.1);part(2,t,'#8e9cff',6);}
-    if(s===0) chord.forEach(n=>{const g=ornekCal(st.pad,n-12,t,0.06+0.12*(1-lv),spb*4.2,0.35);if(g)out(g,0.6);});
-    if(s%2===0){
-      const chirp=S.ctx.currentTime<S.chirpUntil, chance=chirp?0.95:S.high*0.55;
-      if(Math.random()<chance){
-        const target=Math.round(S.high*9);
-        S.melIdx+=Math.sign(target-S.melIdx)+Math.round((Math.random()-0.5)*2.4); S.melIdx=clamp(S.melIdx,0,10);
-        const v=0.18+0.35*S.high, g=ornekCal(st.melodi,root+12+sn(S.melIdx,m)+st.mk,t,v,2.5);
-        if(g)out(g,0.55); part(0,t,'#7fd6c2',6+v*14);
-      }
+  if(!giris&&(S.walking||lv>0.35)){
+    const ses=B.ses||akor;
+    if(st&&st.eslikTip==='vurus'){
+      if(s===0||s===6||s===10||(s===14&&lv>0.5)) ses.forEach((n,i)=>eslikCal(n,t+i*0.018,s===0?0.9:0.55));
+    } else if(s%2===0){
+      const desen=[0,1,2,1,0,2,1,2], n=ses[desen[(s/2)%8]]-(st&&st.eslik===st.melodi?12:0);
+      eslikCal(n,insan(t),s%8===0?0.8:0.5);
     }
+  }
+
+  // --- Ritim ---
+  if(!giris){
+    if(S.walking){
+      if(s===0||s===8) vurmali('dip',t,s===0?1:0.8);
+      if(s===10&&lv>0.5) vurmali('dip',insan(t),0.55);
+      if(dolgu&&s>=12){ vurmali('vurus',t,0.35+0.15*(s-12)); }
+      else if(s===4||s===12) vurmali('vurus',insan(t),0.6+0.3*lv);
+      if(!(dolgu&&s>=12)){
+        if(s%2===0&&lv>0.25) vurmali('zil',insan(t),s%4===2?0.7:0.4);
+        else if(s%2===1&&lv>0.7) vurmali('zil',insan(t),0.25);
+      }
+    } else {
+      if(s===0&&lv>0.3) vurmali('dip',t,0.4);
+      if(s===8&&lv>0.15) vurmali('zil',insan(t),0.4);
+    }
+  }
+
+  // --- Melodi (motif + cümle yapısı) ---
+  if(giris) return;
+  const motif=(cumle===2)?B.motifB:B.motifA;
+  const yog=yogunluk(), alt=7+Math.round(S.high*3), ust=alt+9;
+  if(olcu===7){ // kadans: tonik üzerinde uzun nota
+    if(s===0){ let d=B.md; let en=d,ef=99; for(let k=-4;k<=4;k++){if(((d+k)%7+7)%7===0&&Math.abs(k)<ef){ef=Math.abs(k);en=d+k;}}
+      B.md=Math.max(alt-2,Math.min(ust,en)); melodiCal(dm(B.md,m),t,0.75,spb*3.5); }
     return;
   }
-  if(S.walking){ if(s%4===0) kick(t,0.45+0.35*lv); }
-  else if(s===0 && lv>0.2) kick(t,0.25);
-  if(s%4===2 && lv>0.15) hat(t,0.04+0.12*lv);
-  else if(s%2===1 && lv>0.6) hat(t,0.03);
-  if(s===0||s===8) bass(t,chord[0]-12,0.12+0.38*S.low,spb*1.7);
-  if(s===14 && S.low>0.55) bass(t,chord[1]-12,0.2*S.low,spb*0.5);
-  if(s===0) pad(t,chord,0.05+0.09*(1-lv),spb*4.2);
-  if(s%2===0){
-    const chirp=S.ctx.currentTime<S.chirpUntil;
-    const chance=chirp?0.95:S.high*0.55;
-    if(Math.random()<chance){
-      const target=Math.round(S.high*9);
-      S.melIdx+=Math.sign(target-S.melIdx)+Math.round((Math.random()-0.5)*2.4);
-      S.melIdx=clamp(S.melIdx,0,10);
-      pluck(t,root+12+sn(S.melIdx,m),0.08+0.14*S.high);
-    }
+  const ritim=motif.r[yog][olcu%2], idx=ritim.findIndex(n=>n[0]===s);
+  if(idx>=0){
+    const [, uzun]=ritim[idx];
+    let hareket=motif.kontur[(olcu%2)*8+idx]||0;
+    if(olcu===2||olcu===3) hareket=-hareket; // varyasyon: ters kontur
+    let d=B.md+hareket;
+    const guclu=s===0||s===8||uzun>=6;
+    if(guclu) d=akorTonunaYapis(d,kok);
+    if(d>ust) d-=2; if(d<alt) d+=2;
+    B.md=d;
+    let midi=dm(d,m);
+    if(m==='huzun'&&((kok%7)+7)%7===4&&((d%7)+7)%7===6) midi+=1; // yeden ses
+    const vurgu=s===0?0.85:(s===8?0.7:0.55);
+    melodiCal(midi,insan(t),vurgu*(0.7+0.3*S.high),spb*uzun/4);
+  } else if(s%2===1&&S.ctx.currentTime<S.chirpUntil&&Math.random()<0.6){
+    // kuş cevabı: akor tonundan kısa süsleme
+    const d=akorTonunaYapis(B.md+7,kok); melodiCal(dm(d,m),t,0.35,0.2);
   }
 }
 
@@ -436,7 +553,7 @@ async function start(useMic){
   else { $('sahneSec').hidden=true; }
   try{ if(navigator.wakeLock) S.wake=await navigator.wakeLock.request('screen'); }catch(e){}
   aktifSet='sentez'; setDegistir($('setSec').value);
-  S.running=true; S.nextTime=S.ctx.currentTime+0.1; S.step16=0;
+  S.running=true; S.nextTime=S.ctx.currentTime+0.1; S.step16=0; S.basBar=S.bar; B.ses=null; B.ilerleme=null;
   S.tick=setInterval(loop,25); requestAnimationFrame(ui);
   $('baslaMik').hidden=true; $('baslaDemo').hidden=true; $('durdur').hidden=false;
   $('kayit').disabled=!(recDest&&window.MediaRecorder);
