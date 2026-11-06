@@ -109,13 +109,17 @@ const konusmalar = (s) => s.evaluate(() => window.__konusmalar.join(' | '));
       const k = await s.locator(`[aria-label^="${etiket}"]`).first().boundingBox();
       return { x: k.x + k.width / 2, y: k.y + k.height / 2 };
     };
+    // kez 1: dokunup seç; kez 2: dokunup seç, sonra çift dokunarak çalıştır (VoiceOver gibi)
     const dokun = async (etiket, kez = 1) => {
       const m = await merkez(etiket);
-      for (let i = 0; i < kez; i++) {
+      await s.mouse.click(m.x, m.y);
+      await bekle(420);
+      if (kez === 2) {
         await s.mouse.click(m.x, m.y);
-        await bekle(120);
+        await bekle(100);
+        await s.mouse.click(m.x, m.y);
+        await bekle(350);
       }
-      await bekle(250);
     };
     const kaydir = async (dx) => {
       await s.mouse.move(200, 400);
@@ -134,6 +138,23 @@ const konusmalar = (s) => s.evaluate(() => window.__konusmalar.join(' | '));
     kontrol(/Nasıl oynanır/.test(await sonSoz()), 'sağa kaydırma sonraki öğeyi okudu: ' + (await sonSoz()));
     await kaydir(-80);
     kontrol(/Yeni karakter/.test(await sonSoz()), 'sola kaydırma önceki öğeye döndü');
+    // Başka bir düğmenin üstüne çift dokunmak da seçili öğeyi çalıştırır (VoiceOver gibi)
+    await kaydir(80);
+    const ayarMerkez = await merkez('Ayarlar');
+    await s.mouse.click(ayarMerkez.x, ayarMerkez.y);
+    await bekle(100);
+    await s.mouse.click(ayarMerkez.x, ayarMerkez.y);
+    await bekle(500);
+    kontrol(await var_(s, 'Geri'), 'başka düğmenin üstüne çift dokunma seçili Nasıl oynanır sayfasını açtı');
+    // Geri düğmesine kaydırarak gel, ekranın üstüne çift dokun
+    for (let i = 0; i < 12; i++) await kaydir(80);
+    kontrol(/Geri, düğme|Son öğe/.test(await sonSoz()), 'kaydırarak Geri düğmesine gelindi');
+    await s.mouse.click(200, 300);
+    await bekle(100);
+    await s.mouse.click(200, 300);
+    await bekle(500);
+    kontrol(await var_(s, 'Yeni karakter'), 'Geri düğmesi çift dokunuşla çalıştı');
+    await dokun('Yeni karakter');
     // Ekranın boş bir yerine iki kez dokun: seçili öğe (Yeni karakter) çalışır
     await s.mouse.click(200, 820);
     await bekle(100);

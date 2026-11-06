@@ -368,14 +368,32 @@ export function Gezgin({ acik, children, titresim }) {
           }
           if (d.kip === 'kesif') return;
           if (yol < 15 && gecen < 350) {
-            // Dokunuş
-            if (simdi - (durum.sonDokunus || 0) < 380) {
-              durum.sonDokunus = 0;
+            // Dokunuş. VoiceOver gibi: tek dokunuş biraz beklenir; ikinci dokunuş gelirse seçimi DEĞİŞTİRMEDEN
+            // seçili öğe çalışır. Böylece ekranın herhangi bir yerine çift dokunmak, o noktadaki öğeyi değil seçili öğeyi çalıştırır.
+            const zaman = (e.nativeEvent && e.nativeEvent.timestamp) || simdi;
+            const bekleyen = durum.tekDokunus;
+            if (bekleyen && zaman - bekleyen.zaman < 330) {
+              clearTimeout(bekleyen.zamanlayici);
+              durum.tekDokunus = null;
               etkinlestir();
             } else {
-              durum.sonDokunus = simdi;
-              const a = altindaki(d.x0, d.y0);
-              if (a) odakla(a, false);
+              // Gecikmiş bir tek dokunuş varsa önce onu uygula
+              if (bekleyen) {
+                clearTimeout(bekleyen.zamanlayici);
+                bekleyen.uygula();
+              }
+              const tx = d.x0;
+              const ty = d.y0;
+              const yeni = {
+                zaman,
+                uygula: () => {
+                  if (durum.tekDokunus === yeni) durum.tekDokunus = null;
+                  const a = altindaki(tx, ty);
+                  if (a) odakla(a, false);
+                },
+              };
+              yeni.zamanlayici = setTimeout(yeni.uygula, 300);
+              durum.tekDokunus = yeni;
             }
             return;
           }

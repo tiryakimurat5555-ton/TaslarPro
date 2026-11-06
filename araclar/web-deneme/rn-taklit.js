@@ -236,10 +236,10 @@ function panOlaylari(p) {
         son = { dx: m.clientX - x0, dy: m.clientY - y0, numberActiveTouches: parmak };
         cfg.onPanResponderMove && cfg.onPanResponderMove({ nativeEvent: {} }, son);
       };
-      const birak = () => {
+      const birak = (m) => {
         window.removeEventListener('mousemove', tasi);
         window.removeEventListener('mouseup', birak);
-        cfg.onPanResponderRelease && cfg.onPanResponderRelease({ nativeEvent: {} }, son);
+        cfg.onPanResponderRelease && cfg.onPanResponderRelease({ nativeEvent: { timestamp: m ? m.timeStamp : performance.now() } }, son);
       };
       window.addEventListener('mousemove', tasi);
       window.addEventListener('mouseup', birak);
