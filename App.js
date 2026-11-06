@@ -6,7 +6,7 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { GLView } from 'expo-gl';
 import * as Haptics from 'expo-haptics';
-import { setAudioModeAsync } from 'expo-audio';
+import { setAudioModeAsync, setIsAudioActiveAsync } from 'expo-audio';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Ses from './oyun/ses.js';
@@ -1045,7 +1045,10 @@ export default function App() {
 
   useEffect(() => {
     // Sessiz moddayken de konuşsun
-    setAudioModeAsync({ playsInSilentMode: true, interruptionMode: 'doNotMix', shouldPlayInBackground: false }).catch(() => {});
+    // Efektler VoiceOver ile karışarak çalar; oturum açılışta bir kez açılır ve açık kalır
+    setAudioModeAsync({ playsInSilentMode: true, interruptionMode: 'mixWithOthers', shouldPlayInBackground: false })
+      .then(() => setIsAudioActiveAsync(true))
+      .catch(() => {});
     // Oyun yatay ekranda oynanır
     try {
       ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE).catch(() => {});

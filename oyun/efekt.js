@@ -39,7 +39,9 @@ function oynatici(ad) {
   const k = SESLER[ad];
   if (!k) return null;
   try {
-    p = createAudioPlayer(k);
+    // keepAudioSessionActive: expo-audio her efekt bitince ses oturumunu kapatıyordu; oturumun her efektte
+    // açılıp kapanması iPhone'da VoiceOver'ın (ve konuşmanın) sesini dalgalandırıyordu. Oturum hep açık kalır.
+    p = createAudioPlayer(k, { keepAudioSessionActive: true });
     oynaticilar[ad] = p;
   } catch (e) {
     p = null;

@@ -29,6 +29,7 @@ export function createAudioPlayer(kaynak) {
   };
 }
 export async function setAudioModeAsync() {}
+export async function setIsAudioActiveAsync() {}
 
 export function impactAsync() {}
 export function notificationAsync() {}
