@@ -227,12 +227,19 @@ function panOlaylari(p) {
       const r = e.currentTarget.getBoundingClientRect();
       const x0 = e.clientX;
       const y0 = e.clientY;
-      cfg.onPanResponderGrant && cfg.onPanResponderGrant({ nativeEvent: { locationX: x0 - r.left, locationY: y0 - r.top } });
-      const tasi = (m) => cfg.onPanResponderMove && cfg.onPanResponderMove({ nativeEvent: {} }, { dx: m.clientX - x0, dy: m.clientY - y0 });
+      if (cfg.onStartShouldSetPanResponder && !cfg.onStartShouldSetPanResponder()) return;
+      const parmak = window.__parmak || 1;
+      const ne = { locationX: x0 - r.left, locationY: y0 - r.top, pageX: x0, pageY: y0, touches: new Array(parmak).fill({}) };
+      cfg.onPanResponderGrant && cfg.onPanResponderGrant({ nativeEvent: ne });
+      let son = { dx: 0, dy: 0, numberActiveTouches: parmak };
+      const tasi = (m) => {
+        son = { dx: m.clientX - x0, dy: m.clientY - y0, numberActiveTouches: parmak };
+        cfg.onPanResponderMove && cfg.onPanResponderMove({ nativeEvent: {} }, son);
+      };
       const birak = () => {
         window.removeEventListener('mousemove', tasi);
         window.removeEventListener('mouseup', birak);
-        cfg.onPanResponderRelease && cfg.onPanResponderRelease({ nativeEvent: {} }, {});
+        cfg.onPanResponderRelease && cfg.onPanResponderRelease({ nativeEvent: {} }, son);
       };
       window.addEventListener('mousemove', tasi);
       window.addEventListener('mouseup', birak);
@@ -248,17 +255,17 @@ const View = React.forwardRef(function View(p, ref) {
   );
 });
 
-function Text(p) {
+const Text = React.forwardRef(function Text(p, ref) {
   return (
-    <span style={{ display: 'block', whiteSpace: 'pre-wrap', ...css(p.style), ...dokunma(p) }} {...erisim(p)}>
+    <span ref={ref} style={{ display: 'block', whiteSpace: 'pre-wrap', ...css(p.style), ...dokunma(p) }} {...erisim(p)}>
       {p.children}
     </span>
   );
-}
+});
 
 // Eylemler (VoiceOver ozel eylemleri) denemede pencereden cagrilabilsin
 let eylemSayac = 0;
-function Pressable(p) {
+const Pressable = React.forwardRef(function Pressable(p, ref) {
   const id = React.useMemo(() => 'p' + eylemSayac++, []);
   if (p.onAccessibilityAction) {
     window.__eylemler = window.__eylemler || {};
@@ -266,6 +273,7 @@ function Pressable(p) {
   }
   return (
     <div
+      ref={ref}
       data-dugme={id}
       onClick={() => p.onPress && p.onPress()}
       onMouseDown={() => p.onPressIn && p.onPressIn()}
@@ -276,15 +284,26 @@ function Pressable(p) {
       {p.children}
     </div>
   );
-}
+});
 
-function ScrollView(p) {
+const ScrollView = React.forwardRef(function ScrollView(p, ref) {
+  const dis = React.useRef(null);
+  React.useImperativeHandle(ref, () => ({
+    scrollTo: ({ y }) => {
+      if (dis.current) dis.current.scrollTop = y;
+    },
+  }));
   return (
-    <div style={{ ...css(p.style, true), overflow: 'auto', flexShrink: 1, minHeight: 0 }}>
+    <div
+      ref={dis}
+      onScroll={(e) => p.onScroll && p.onScroll({ nativeEvent: { contentOffset: { y: e.currentTarget.scrollTop } } })}
+      style={{ ...css(p.style, true), overflow: 'auto', flexShrink: 1, minHeight: 0 }}
+    >
       <div style={css(p.contentContainerStyle, true)}>{p.children}</div>
     </div>
   );
-}
+});
+const Dimensions = { get: () => ({ width: window.innerWidth, height: window.innerHeight }) };
 
 function Modal(p) {
   if (!p.visible) return null;
@@ -330,4 +349,4 @@ function useWindowDimensions() {
   return { width: 390, height: 844 };
 }
 
-export { View, Text, Pressable, StyleSheet, Animated, Easing, Modal, ScrollView, Switch, AccessibilityInfo, useWindowDimensions, PanResponder, AppState, Platform, TextInput };
+export { View, Text, Pressable, StyleSheet, Animated, Easing, Modal, ScrollView, Switch, AccessibilityInfo, useWindowDimensions, PanResponder, AppState, Platform, TextInput, Dimensions };

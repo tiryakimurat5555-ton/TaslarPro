@@ -1,7 +1,7 @@
 // İki Sancak (çalışma adı) — erişilebilir, kendi sesiyle konuşan 3B fantastik RPG.
 // Yapı: oyun/veri.js (veri), oyun/mantik.js (saf mantık), oyun/ses.js (ses motoru), oyun/sahne.js (3B çizim)
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { View, Text, Pressable, StyleSheet, ScrollView, TextInput, AccessibilityInfo, AppState, PanResponder } from 'react-native';
+import { View, Text, Pressable, StyleSheet, TextInput, AccessibilityInfo, AppState } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { GLView } from 'expo-gl';
@@ -12,6 +12,7 @@ import * as Ses from './oyun/ses.js';
 import * as M from './oyun/mantik.js';
 import { ULUSLAR, IRKLAR, SINIFLAR, YETENEKLER, NITELIKLER, GOREVLER, YUVALAR, NADIRLIK, IKSIR, SEVIYE_SINIRI } from './oyun/veri.js';
 import { sahneKur } from './oyun/sahne.js';
+import { Gezgin, Katman, Okunur, Sayfa, DogrudanAlan, useOdak, useSihirliEylem } from './oyun/gezgin.js';
 
 const OYUN_ADI = 'İki Sancak';
 const AYAR_ANAHTAR = 'ikisancak-ayar-v1';
@@ -34,7 +35,6 @@ const R = {
 };
 
 const KipBaglam = createContext('kendi');
-let ipucuSayac = 0;
 
 function titret(tur, ayar) {
   if (!ayar || !ayar.titresim) return;
@@ -46,41 +46,22 @@ function titret(tur, ayar) {
   } catch (e) {}
 }
 
-// Sesle oynarken: bir dokunuş adını söyler, hızlı iki dokunuş çalıştırır.
-// Görerek ve VoiceOver kipinde tek dokunuş çalıştırır.
+// Düğme. Sesle oynarken dokunuşları gezgin (oyunun ekran okuyucusu) yönetir:
+// dokun ya da kaydırarak seç, iki kez dokunarak çalıştır. Görerek ve VoiceOver kipinde tek dokunuş çalıştırır.
 function Dugme({ etiket, ipucu, onEtkin, stil, yaziStil, devre, children, kisa }) {
   const kip = useContext(KipBaglam);
-  const son = useRef(0);
+  const ref = useRef(null);
+  useOdak(ref, { etiket, ipucu, tur: 'dugme', devre: !!devre, etkin: onEtkin });
   const bas = () => {
-    if (kip === 'kendi') {
-      const simdi = Date.now();
-      if (simdi - son.current < 500) {
-        son.current = 0;
-        if (devre) {
-          Ses.hemen(`${etiket}, şu an kullanılamaz.`);
-          return;
-        }
-        onEtkin && onEtkin();
-      } else {
-        son.current = simdi;
-        let m = etiket;
-        if (ipucu) m += '. ' + ipucu;
-        if (ipucuSayac < 4) {
-          ipucuSayac++;
-          m += '. Çalıştırmak için hızlıca iki kez dokun.';
-        }
-        Ses.hemen(m);
-      }
-    } else {
-      if (devre) {
-        if (kip === 'voiceover') Ses.soyle(`${etiket}, şu an kullanılamaz.`, 3);
-        return;
-      }
-      onEtkin && onEtkin();
+    if (devre) {
+      if (kip === 'voiceover') Ses.soyle(`${etiket}, şu an kullanılamaz.`, 3);
+      return;
     }
+    onEtkin && onEtkin();
   };
   return (
     <Pressable
+      ref={ref}
       onPress={bas}
       accessibilityRole="button"
       accessibilityLabel={etiket}
@@ -99,9 +80,9 @@ function Dugme({ etiket, ipucu, onEtkin, stil, yaziStil, devre, children, kisa }
 
 function Baslik({ children }) {
   return (
-    <Text style={st.baslik} accessibilityRole="header">
+    <Okunur stil={st.baslik} baslik>
       {children}
-    </Text>
+    </Okunur>
   );
 }
 
@@ -128,7 +109,7 @@ function KipSecim({ sec }) {
     return (
       <View style={st.kipKap}>
         <Baslik>{OYUN_ADI}</Baslik>
-        <Text style={st.metin}>VoiceOver açık. İstersen VoiceOver ile oynayabilirsin. Oyunun kendi sesini tercih edersen önce VoiceOver'ı kapat, sonra ekranın alt yarısına dokun.</Text>
+        <Okunur stil={st.metin}>VoiceOver açık. İstersen VoiceOver ile oynayabilirsin. Oyunun kendi sesini tercih edersen önce VoiceOver'ı kapat, sonra ekranın alt yarısına dokun.</Okunur>
         <Pressable accessibilityRole="button" accessibilityLabel="VoiceOver ile oyna" onPress={() => sec('voiceover')} style={[st.kipYari, { backgroundColor: '#24324a' }]}>
           <Text style={st.kipYazi}>VoiceOver ile oyna</Text>
         </Pressable>
@@ -159,16 +140,16 @@ function AnaMenu({ kayitVar, kayitOzet, devam, yeni, ayarlar, nasil }) {
     Ses.soyle(`${OYUN_ADI}, ana menü. ${kayitVar ? 'Devam et, ' : ''}Yeni karakter, Nasıl oynanır, Ayarlar.`, 3);
   }, [kayitVar]);
   return (
-    <ScrollView contentContainerStyle={st.sayfa}>
+    <Sayfa contentContainerStyle={st.sayfa}>
       <Text style={st.oyunAdi} accessibilityRole="header">
         {OYUN_ADI}
       </Text>
-      <Text style={st.soluk}>Deneme sürümü, seviye sınırı {SEVIYE_SINIRI}</Text>
+      <Okunur stil={st.soluk}>Deneme sürümü, seviye sınırı {SEVIYE_SINIRI}</Okunur>
       {kayitVar && <Dugme etiket={`Devam et: ${kayitOzet}`} onEtkin={devam} stil={st.buyukDugme} />}
       <Dugme etiket="Yeni karakter" ipucu={kayitVar ? 'Kayıtlı karakterin silinir' : undefined} onEtkin={yeni} stil={st.buyukDugme} />
       <Dugme etiket="Nasıl oynanır" onEtkin={nasil} stil={st.buyukDugme} />
       <Dugme etiket="Ayarlar" onEtkin={ayarlar} stil={st.buyukDugme} />
-    </ScrollView>
+    </Sayfa>
   );
 }
 
@@ -179,7 +160,8 @@ const NASIL = [
   'Yönler saat gibi söylenir: saat 12 tam önün, 3 sağın, 6 arkan, 9 solun.',
   'Etrafı tara düğmesi yakındaki herkesi söyler. Üstteki durum çubuğuna dokununca canın, manan ve deneyimin okunur.',
   'Canın azalırsa İksir düğmesiyle iksir iç. Köydeki Tüccar’dan iksir alabilir, ganimetleri satabilirsin. Menüdeki Köye dön, 5 saniye kıpırdamazsan seni köye ışınlar.',
-  'Sesle oynarken bir düğmeye bir kez dokununca adı okunur, hızlıca iki kez dokununca çalışır.',
+  'Sesle oynarken oyun VoiceOver gibi çalışır: dokunduğun ya da parmağını gezdirdiğin öğeyi okur, sağa sola kaydırınca sonraki ve önceki öğeye geçer, ekranın herhangi bir yerine iki kez dokununca seçili öğe çalışır. İki parmakla bir kez dokunmak konuşmayı susturur, iki parmakla iki kez dokunmak saldırtır. Üç parmakla yukarı ya da aşağı kaydırmak sayfayı kaydırır.',
+  'Hareket alanı doğrudan dokunma alanıdır: parmağını oraya koyunca okunmaz, doğrudan yürürsün.',
 ];
 
 function Nasil({ geri }) {
@@ -187,15 +169,15 @@ function Nasil({ geri }) {
     Ses.soyle('Nasıl oynanır. ' + NASIL.join(' '), 3);
   }, []);
   return (
-    <ScrollView contentContainerStyle={st.sayfa}>
+    <Sayfa contentContainerStyle={st.sayfa}>
       <Baslik>Nasıl oynanır</Baslik>
       {NASIL.map((m, i) => (
-        <Text key={i} style={st.metin}>
+        <Okunur key={i} stil={st.metin}>
           {m}
-        </Text>
+        </Okunur>
       ))}
       <Dugme etiket="Geri" onEtkin={geri} stil={st.buyukDugme} />
-    </ScrollView>
+    </Sayfa>
   );
 }
 
@@ -212,9 +194,9 @@ function Ayarlar({ ayar, degistir, geri }) {
     Ses.hemen(`Konuşma hızı ${Math.round(h * 100)}`);
   };
   return (
-    <ScrollView contentContainerStyle={st.sayfa}>
+    <Sayfa contentContainerStyle={st.sayfa}>
       <Baslik>Ayarlar</Baslik>
-      <Text style={st.altBaslik}>Oynama biçimi: {kipAdi[ayar.kip]}</Text>
+      <Okunur stil={st.altBaslik}>Oynama biçimi: {kipAdi[ayar.kip]}</Okunur>
       {Object.entries(kipAdi).map(([k, ad]) => (
         <Dugme
           key={k}
@@ -226,7 +208,7 @@ function Ayarlar({ ayar, degistir, geri }) {
           }}
         />
       ))}
-      <Text style={st.altBaslik}>Konuşma hızı: {Math.round(ayar.hiz * 100)}</Text>
+      <Okunur stil={st.altBaslik}>Konuşma hızı: {Math.round(ayar.hiz * 100)}</Okunur>
       <View style={st.satir}>
         <Dugme etiket="Yavaşlat" onEtkin={() => hiz(-0.1)} stil={{ flex: 1 }} />
         <Dugme etiket="Hızlandır" onEtkin={() => hiz(0.1)} stil={{ flex: 1 }} />
@@ -247,7 +229,7 @@ function Ayarlar({ ayar, degistir, geri }) {
         }}
       />
       <Dugme etiket="Geri" onEtkin={geri} stil={st.buyukDugme} />
-    </ScrollView>
+    </Sayfa>
   );
 }
 
@@ -276,11 +258,11 @@ function Yarat({ bitti, iptal }) {
     setAdim(sonraki);
   };
   return (
-    <ScrollView contentContainerStyle={st.sayfa} keyboardShouldPersistTaps="handled">
+    <Sayfa contentContainerStyle={st.sayfa} keyboardShouldPersistTaps="handled">
       <Baslik>Yeni karakter</Baslik>
       {adim === 'ulus' && (
         <>
-          <Text style={st.altBaslik}>Ulus</Text>
+          <Okunur stil={st.altBaslik}>Ulus</Okunur>
           {Object.entries(ULUSLAR).map(([k, u]) => (
             <Dugme key={k} etiket={u.ad} ipucu={u.aciklama} onEtkin={() => secenek('ulus', k, 'irk')} stil={st.secenek}>
               <Text style={[st.secenekAd, { color: u.renk }]}>{u.ad}</Text>
@@ -291,7 +273,7 @@ function Yarat({ bitti, iptal }) {
       )}
       {adim === 'irk' && (
         <>
-          <Text style={st.altBaslik}>Irk</Text>
+          <Okunur stil={st.altBaslik}>Irk</Okunur>
           {ULUSLAR[s.ulus].irklar.map((k) => (
             <Dugme key={k} etiket={IRKLAR[k].ad} ipucu={IRKLAR[k].aciklama} onEtkin={() => secenek('irk', k, 'sinif')} stil={st.secenek}>
               <Text style={st.secenekAd}>{IRKLAR[k].ad}</Text>
@@ -302,7 +284,7 @@ function Yarat({ bitti, iptal }) {
       )}
       {adim === 'sinif' && (
         <>
-          <Text style={st.altBaslik}>Sınıf</Text>
+          <Okunur stil={st.altBaslik}>Sınıf</Okunur>
           {Object.entries(SINIFLAR).map(([k, c]) => (
             <Dugme key={k} etiket={c.ad} ipucu={c.aciklama} onEtkin={() => secenek('sinif', k, 'ad')} stil={st.secenek}>
               <Text style={[st.secenekAd, { color: c.renk }]}>{c.ad}</Text>
@@ -313,7 +295,7 @@ function Yarat({ bitti, iptal }) {
       )}
       {adim === 'ad' && (
         <>
-          <Text style={st.altBaslik}>Ad</Text>
+          <Okunur stil={st.altBaslik}>Ad</Okunur>
           {kip !== 'kendi' && (
             <TextInput
               value={s.ad}
@@ -327,7 +309,7 @@ function Yarat({ bitti, iptal }) {
             />
           )}
           {kip !== 'kendi' && <Dugme etiket="Bu adla devam et" devre={!s.ad.trim()} onEtkin={() => setAdim('onay')} stil={st.buyukDugme} />}
-          <Text style={st.soluk}>Hazır adlar</Text>
+          <Okunur stil={st.soluk}>Hazır adlar</Okunur>
           <View style={st.sarmal}>
             {ADLAR.map((a) => (
               <Dugme key={a} etiket={a} onEtkin={() => secenek('ad', a, 'onay')} stil={st.adDugme} />
@@ -337,15 +319,15 @@ function Yarat({ bitti, iptal }) {
       )}
       {adim === 'onay' && (
         <>
-          <Text style={st.metin}>
+          <Okunur stil={st.metin}>
             {s.ad}, {IRKLAR[s.irk].ad} {SINIFLAR[s.sinif].ad}, {ULUSLAR[s.ulus].ad}
-          </Text>
+          </Okunur>
           <Dugme etiket="Onayla ve başla" onEtkin={() => bitti(s)} stil={st.buyukDugme} />
           <Dugme etiket="Baştan seç" onEtkin={() => setAdim('ulus')} />
         </>
       )}
       <Dugme etiket="Vazgeç, ana menüye dön" onEtkin={iptal} />
-    </ScrollView>
+    </Sayfa>
   );
 }
 
@@ -363,6 +345,7 @@ function Oyun({ karakter, ayar, cikis, ayarDegistir }) {
   const dRef = useRef(null);
   if (!dRef.current) dRef.current = M.dunyaOlustur(karakter);
   const d = dRef.current;
+  globalThis.__ikiSancakDunya = d; // denemeler için
   const sahneRef = useRef(null);
   const girdi = useRef({ ileri: 0, don: 0 });
   const adimBitis = useRef(0);
@@ -444,7 +427,7 @@ function Oyun({ karakter, ayar, cikis, ayarDegistir }) {
           kaydet();
         }
       }
-      if (sahneRef.current) {
+      if (sahneRef.current && !panelRef.current) {
         try {
           sahneRef.current.kare(dt);
         } catch (e) {
@@ -475,33 +458,25 @@ function Oyun({ karakter, ayar, cikis, ayarDegistir }) {
   }, []);
 
   // Sol yarı: parmakla kaydırma (joystick)
-  const joystick = useMemo(
-    () =>
-      PanResponder.create({
-        onStartShouldSetPanResponder: () => true,
-        onMoveShouldSetPanResponder: () => true,
-        onPanResponderGrant: (e) => {
-          const { locationX, locationY } = e.nativeEvent;
-          setTopuz({ x: locationX, y: locationY, dx: 0, dy: 0 });
-          adimBitis.current = 0;
-        },
-        onPanResponderMove: (e, g) => {
-          const ileri = Math.max(-1, Math.min(1, -g.dy / 60));
-          const don = Math.max(-1, Math.min(1, g.dx / 70));
-          girdi.current = { ileri: Math.abs(ileri) < 0.15 ? 0 : ileri, don: Math.abs(don) < 0.15 ? 0 : don };
-          setTopuz((t) => (t ? { ...t, dx: Math.max(-50, Math.min(50, g.dx)), dy: Math.max(-50, Math.min(50, g.dy)) } : t));
-        },
-        onPanResponderRelease: () => {
-          girdi.current = { ileri: 0, don: 0 };
-          setTopuz(null);
-        },
-        onPanResponderTerminate: () => {
-          girdi.current = { ileri: 0, don: 0 };
-          setTopuz(null);
-        },
-      }),
-    []
-  );
+  const jBasla = useCallback((x, y) => {
+    setTopuz({ x, y, dx: 0, dy: 0 });
+    adimBitis.current = 0;
+  }, []);
+  const jTasi = useCallback((dx, dy) => {
+    const ileri = Math.max(-1, Math.min(1, -dy / 60));
+    const don = Math.max(-1, Math.min(1, dx / 70));
+    girdi.current = { ileri: Math.abs(ileri) < 0.15 ? 0 : ileri, don: Math.abs(don) < 0.15 ? 0 : don };
+    setTopuz((t) => (t ? { ...t, dx: Math.max(-50, Math.min(50, dx)), dy: Math.max(-50, Math.min(50, dy)) } : t));
+  }, []);
+  const jBirak = useCallback(() => {
+    girdi.current = { ileri: 0, don: 0 };
+    setTopuz(null);
+  }, []);
+
+  // İki parmakla iki kez dokunma: Saldır
+  useSihirliEylem(() => {
+    if (!panelRef.current) M.saldir(d);
+  });
 
   // VoiceOver kipinde adım adım hareket
   const adimAt = (ileri, don, sure, soz) => {
@@ -554,12 +529,7 @@ function Oyun({ karakter, ayar, cikis, ayarDegistir }) {
         importantForAccessibility={panel ? 'no-hide-descendants' : 'auto'}
       >
         {/* Durum çubuğu */}
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={`Durum. ${M.durumOzeti(d)}`}
-          onPress={() => Ses.hemen(M.durumOzeti(d))}
-          style={st.hud}
-        >
+        <Dugme etiket={`Durum. ${M.durumOzeti(d)}`} onEtkin={() => Ses.hemen(M.durumOzeti(d))} stil={st.hud}>
           <View style={st.satir}>
             <Text style={st.hudAd}>
               {k.ad} · Sv {k.seviye}
@@ -576,7 +546,7 @@ function Oyun({ karakter, ayar, cikis, ayarDegistir }) {
               Hedef: {hedef.ad} Sv {hedef.seviye} · %{Math.round((hedef.can / hedef.enCan) * 100)} · {Math.round(M.mesafe(d.oyuncu, hedef))} m
             </Text>
           )}
-        </Pressable>
+        </Dugme>
         {!!altyazi && (
           <Text style={st.altyazi} numberOfLines={3} accessibilityElementsHidden importantForAccessibility="no">
             {altyazi}
@@ -602,7 +572,7 @@ function Oyun({ karakter, ayar, cikis, ayarDegistir }) {
               <Dugme etiket="Geri git" onEtkin={() => adimAt(-1, 0, 700)} kisa stil={st.voDugme} />
             </View>
           ) : (
-            <View style={st.sol} {...joystick.panHandlers} accessible accessibilityLabel="Hareket alanı. Parmağını koyup kaydır.">
+            <DogrudanAlan etiket="Hareket alanı. Parmağını koyup kaydır: yukarı ileri, aşağı geri, sağ ve sol döndürür" basla={jBasla} tasi={jTasi} birak={jBirak} stil={st.sol}>
               {topuz ? (
                 <View pointerEvents="none" style={[st.topuzKap, { left: topuz.x - 55, top: topuz.y - 55 }]}>
                   <View style={[st.topuz, { transform: [{ translateX: topuz.dx }, { translateY: topuz.dy }] }]} />
@@ -612,7 +582,7 @@ function Oyun({ karakter, ayar, cikis, ayarDegistir }) {
                   Hareket{'\n'}parmağını kaydır
                 </Text>
               )}
-            </View>
+            </DogrudanAlan>
           )}
           <View style={st.sag}>
             <View style={st.izgara}>
@@ -634,8 +604,9 @@ function Oyun({ karakter, ayar, cikis, ayarDegistir }) {
 
       {panel && (
         <View style={st.panelOrt} accessibilityViewIsModal>
+          <Katman seviye={1}>
           <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
-            <ScrollView contentContainerStyle={st.sayfa}>
+            <Sayfa contentContainerStyle={st.sayfa}>
               {panel === 'menu' && (
                 <>
                   <Baslik>Menü</Baslik>
@@ -668,8 +639,9 @@ function Oyun({ karakter, ayar, cikis, ayarDegistir }) {
               {panel === 'tuccar' && <TuccarPaneli d={d} canta={() => panelAc('canta', 'Çanta. Satmak istediğin eşyayı seç.')} geri={panelKapat} />}
               {panel === 'gorev' && <GorevPaneli k={k} geri={() => panelAc('menu', 'Menü.')} />}
               {panel === 'ayarlar' && <Ayarlar ayar={ayar} degistir={ayarDegistir} geri={() => panelAc('menu', 'Menü.')} />}
-            </ScrollView>
+            </Sayfa>
           </SafeAreaView>
+          </Katman>
         </View>
       )}
     </View>
@@ -691,10 +663,10 @@ function KarakterPaneli({ d, geri }) {
       <Baslik>
         {k.ad}, seviye {k.seviye}
       </Baslik>
-      <Text style={st.metin}>
+      <Okunur stil={st.metin}>
         {IRKLAR[k.irk].ad} {SINIFLAR[k.sinif].ad}, {ULUSLAR[k.ulus].ad}
-      </Text>
-      <Text style={st.altBaslik}>Nitelikler{k.serbestPuan ? `, ${k.serbestPuan} puan dağıtılabilir` : ''}</Text>
+      </Okunur>
+      <Okunur stil={st.altBaslik}>Nitelikler{k.serbestPuan ? `, ${k.serbestPuan} puan dağıtılabilir` : ''}</Okunur>
       {NITELIKLER.map((n) => (
         <Dugme
           key={n.ad}
@@ -714,16 +686,16 @@ function KarakterPaneli({ d, geri }) {
           }}
         />
       )}
-      <Text style={st.altBaslik}>Değerler</Text>
-      <Text style={st.metin} accessible>
+      <Okunur stil={st.altBaslik}>Değerler</Okunur>
+      <Okunur stil={st.metin}>
         Can {h.enCan}, mana {h.enMana}, saldırı {h.saldiri}, savunma {h.savunma}, kritik vuruş yüzde {Math.round(h.kritik * 100)}, saldırı menzili {h.menzil} metre.
-      </Text>
-      <Text style={st.altBaslik}>Yetenekler</Text>
+      </Okunur>
+      <Okunur stil={st.altBaslik}>Yetenekler</Okunur>
       {YETENEKLER[k.sinif].map((y) => (
-        <Text key={y.id} style={st.metin} accessible>
+        <Okunur key={y.id} stil={st.metin}>
           {y.ad}: {y.seviye > k.seviye ? `seviye ${y.seviye}'te açılır. ` : ''}
           {y.aciklama} {y.mana} mana, {y.bekleme} saniye bekleme.
-        </Text>
+        </Okunur>
       ))}
       <Dugme etiket="Geri" onEtkin={geri} stil={st.buyukDugme} />
     </>
@@ -736,14 +708,14 @@ function CantaPaneli({ d, tuccarda, geri }) {
   return (
     <>
       <Baslik>Çanta</Baslik>
-      <Text style={st.altBaslik}>Kuşandıkların</Text>
+      <Okunur stil={st.altBaslik}>Kuşandıkların</Okunur>
       {Object.keys(YUVALAR).map((y) => (
-        <Text key={y} style={st.metin} accessible>
+        <Okunur key={y} stil={st.metin}>
           {YUVALAR[y]}: {k.kusanilan[y] ? M.esyaTarifi(k.kusanilan[y]) : 'boş'}
-        </Text>
+        </Okunur>
       ))}
-      <Text style={st.altBaslik}>Çantadakiler, {k.envanter.length} eşya</Text>
-      {!k.envanter.length && <Text style={st.soluk}>Çantan boş. Canavarlardan ganimet düşer.</Text>}
+      <Okunur stil={st.altBaslik}>Çantadakiler, {k.envanter.length} eşya</Okunur>
+      {!k.envanter.length && <Okunur stil={st.soluk}>Çantan boş. Canavarlardan ganimet düşer.</Okunur>}
       {k.envanter.map((e) => {
         const eski = k.kusanilan[e.yuva];
         const fark = eski ? e.deger - eski.deger : e.deger;
@@ -779,7 +751,7 @@ function CantaPaneli({ d, tuccarda, geri }) {
           </View>
         );
       })}
-      {!tuccarda && k.envanter.length > 0 && <Text style={st.soluk}>Eşya satmak için köydeki Tüccar ile konuş.</Text>}
+      {!tuccarda && k.envanter.length > 0 && <Okunur stil={st.soluk}>Eşya satmak için köydeki Tüccar ile konuş.</Okunur>}
       <Dugme etiket="Geri" onEtkin={geri} stil={st.buyukDugme} />
     </>
   );
@@ -796,9 +768,9 @@ function TuccarPaneli({ d, canta, geri }) {
   return (
     <>
       <Baslik>Tüccar</Baslik>
-      <Text style={st.metin}>
+      <Okunur stil={st.metin}>
         {k.altin} altının, {k.iksir} iksirin var.
-      </Text>
+      </Okunur>
       <Dugme etiket={`1 can iksiri al, ${IKSIR.fiyat} altın`} devre={k.altin < IKSIR.fiyat} onEtkin={() => al(1)} />
       <Dugme etiket={`5 can iksiri al, ${IKSIR.fiyat * 5} altın`} devre={k.altin < IKSIR.fiyat * 5} onEtkin={() => al(5)} />
       <Dugme etiket={`Eşya sat, çantada ${k.envanter.length} eşya`} onEtkin={canta} />
@@ -812,12 +784,12 @@ function GorevPaneli({ k, geri }) {
   return (
     <>
       <Baslik>Görev</Baslik>
-      <Text style={st.metin}>{g.metin}</Text>
-      <Text style={st.altBaslik}>Görev zinciri</Text>
+      <Okunur stil={st.metin}>{g.metin}</Okunur>
+      <Okunur stil={st.altBaslik}>Görev zinciri</Okunur>
       {GOREVLER.map((x, i) => (
-        <Text key={x.id} style={[st.metin, i > k.gorev.sira && { color: R.soluk }]} accessible>
+        <Okunur key={x.id} stil={[st.metin, i > k.gorev.sira && { color: R.soluk }]}>
           {i + 1}. {x.ad}: {i < k.gorev.sira ? 'bitti' : i === k.gorev.sira ? 'şu anki görev' : 'sırada'}
-        </Text>
+        </Okunur>
       ))}
       <Dugme etiket="Geri" onEtkin={geri} stil={st.buyukDugme} />
     </>
@@ -863,7 +835,7 @@ export default function App() {
   const kipSec = (kip) => {
     ayarDegistir({ kip });
     Ses.ayarla({ kip });
-    Ses.hemen(kip === 'gorerek' ? 'Görerek oyna seçildi.' : kip === 'voiceover' ? 'VoiceOver ile oyna seçildi.' : 'Sesle oyna seçildi. Bir düğmeye bir kez dokununca adı okunur, hızlıca iki kez dokununca çalışır.');
+    Ses.hemen(kip === 'gorerek' ? 'Görerek oyna seçildi.' : kip === 'voiceover' ? 'VoiceOver ile oyna seçildi.' : 'Sesle oyna seçildi. Oyun VoiceOver gibi çalışır: parmağını ekranda gezdir ya da sağa sola kaydırarak öğeler arasında dolaş. Seçili öğeyi çalıştırmak için ekranın herhangi bir yerine iki kez dokun. İki parmakla dokununca konuşma susar.');
     setEkran('menu');
   };
 
@@ -916,10 +888,12 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <KipBaglam.Provider value={ayar.kip || 'kendi'}>
+        <Gezgin acik={ayar.kip === 'kendi'} titresim={() => titret('hafif', ayar)}>
         <View style={{ flex: 1, backgroundColor: R.zemin }}>
           <StatusBar style="light" />
           {ekran === 'oyun' || ekran === 'kip' ? icerik : <SafeAreaView style={{ flex: 1 }}>{icerik}</SafeAreaView>}
         </View>
+        </Gezgin>
       </KipBaglam.Provider>
     </SafeAreaProvider>
   );

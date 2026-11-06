@@ -102,19 +102,70 @@ const konusmalar = (s) => s.evaluate(() => window.__konusmalar.join(' | '));
     kontrol(!hatalar.length, 'sayfa hatası yok ' + hatalar.slice(0, 3).join(' / '));
   }
 
-  // 2) Sesle oynama: tek dokunuş okur, iki dokunuş çalıştırır
+  // 2) Sesle oynama: VoiceOver hareketleri (gezgin)
   {
     const { s, hatalar } = await ac(t);
+    const merkez = async (etiket) => {
+      const k = await s.locator(`[aria-label^="${etiket}"]`).first().boundingBox();
+      return { x: k.x + k.width / 2, y: k.y + k.height / 2 };
+    };
+    const dokun = async (etiket, kez = 1) => {
+      const m = await merkez(etiket);
+      for (let i = 0; i < kez; i++) {
+        await s.mouse.click(m.x, m.y);
+        await bekle(120);
+      }
+      await bekle(250);
+    };
+    const kaydir = async (dx) => {
+      await s.mouse.move(200, 400);
+      await s.mouse.down();
+      await s.mouse.move(200 + dx, 400, { steps: 3 });
+      await s.mouse.up();
+      await bekle(250);
+    };
+    const sonSoz = () => s.evaluate(() => window.__konusmalar[window.__konusmalar.length - 1] || '');
     await tikla(s, 'Sesle oyna');
+    await bekle(700);
+    await dokun('Yeni karakter');
+    kontrol(/Yeni karakter, düğme/.test(await sonSoz()), 'tek dokunuş öğeyi okudu');
+    kontrol(await var_(s, 'Nasıl oynanır'), 'tek dokunuş çalıştırmadı');
+    await kaydir(80);
+    kontrol(/Nasıl oynanır/.test(await sonSoz()), 'sağa kaydırma sonraki öğeyi okudu: ' + (await sonSoz()));
+    await kaydir(-80);
+    kontrol(/Yeni karakter/.test(await sonSoz()), 'sola kaydırma önceki öğeye döndü');
+    // Ekranın boş bir yerine iki kez dokun: seçili öğe (Yeni karakter) çalışır
+    await s.mouse.click(200, 820);
+    await bekle(100);
+    await s.mouse.click(200, 820);
+    await bekle(500);
+    kontrol(await var_(s, 'Gün Ulusu'), 'herhangi bir yere iki kez dokunmak seçili öğeyi çalıştırdı');
+    await dokun('Gün Ulusu', 2);
+    await dokun('İnsan', 2);
+    await dokun('Rahip', 2);
+    await dokun('Bora', 2);
+    await dokun('Onayla ve başla', 2);
+    await bekle(1500);
+    kontrol(await var_(s, 'Saldır'), 'sesle karakter yaratıldı, oyun açıldı');
+    const once = await s.evaluate(() => ({ ...globalThis.__ikiSancakDunya.oyuncu }));
+    const m = await merkez('Hareket alanı');
+    await s.mouse.move(m.x, m.y);
+    await s.mouse.down();
+    await s.mouse.move(m.x + 40, m.y - 60, { steps: 4 });
+    await bekle(2000);
+    await s.mouse.up();
+    const sonra = await s.evaluate(() => ({ ...globalThis.__ikiSancakDunya.oyuncu }));
+    kontrol(Math.hypot(sonra.x - once.x, sonra.y - once.y) > 3 && Math.abs(sonra.yon - once.yon) > 0.2, 'hareket alanında doğrudan yürüdü ve döndü');
+    await dokun('Menü', 2);
+    kontrol(await var_(s, 'Oyuna dön'), 'menü açıldı');
+    await bekle(500);
+    await kaydir(80);
+    const ilk = await sonSoz();
+    kontrol(/Menü|Oyuna dön/.test(ilk), 'panelde gezinme panel öğelerinden başladı: ' + ilk);
+    await dokun('Oyuna dön', 2);
     await bekle(300);
-    const once = await konusmalar(s);
-    await tikla(s, 'Yeni karakter');
-    await bekle(300);
-    kontrol(await var_(s, 'Nasıl oynanır'), 'tek dokunuş menüden çıkarmadı');
-    kontrol((await konusmalar(s)).length > once.length, 'tek dokunuş adı okudu');
-    await s.locator('[aria-label^="Yeni karakter"]').first().dblclick();
-    await bekle(300);
-    kontrol(await var_(s, 'Gün Ulusu'), 'iki dokunuş çalıştırdı');
+    kontrol(!(await var_(s, 'Oyuna dön')), 'menü kapandı');
+    await s.screenshot({ path: path.join(CIKIS, '7-sesle.png') });
     kontrol(!hatalar.length, 'sesle kipte sayfa hatası yok ' + hatalar.slice(0, 3).join(' / '));
   }
 
