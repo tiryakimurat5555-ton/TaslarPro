@@ -394,9 +394,18 @@ export function dunyaOlustur(karakter, tohum = 7) {
     }
   });
   const k = karakter;
+  // Eski kayıtlarda karakter çayın içinde kalmışsa en yakın kıyıya al
+  let bx = k.konum.x;
+  let by = k.konum.y;
+  if (nehirde(bx, by)) {
+    const r = Math.hypot(bx, by);
+    const yeniR = r < (DUNYA.nehirIc + DUNYA.nehirDis) / 2 ? DUNYA.nehirIc - 1.5 : DUNYA.nehirDis + 1.5;
+    bx = (bx / r) * yeniR;
+    by = (by / r) * yeniR;
+  }
   return {
     k,
-    oyuncu: { x: k.konum.x, y: k.konum.y, yon: k.konum.yon },
+    oyuncu: { x: bx, y: by, yon: k.konum.yon },
     engeller,
     npcler,
     canavarlar,
