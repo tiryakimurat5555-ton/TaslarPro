@@ -584,7 +584,7 @@ function DecipherDialog({ data, onDismiss }) {
                 </T>
               ) : (
                 <T size={11} color={TextMuted}>
-                  🎒 4 yuvan da dolu olduğundan yedek kulübeye alındı. Envanter {'>'} Yetenekler menüsünden kuşanabilirsin!
+                  {'🎒 4 yuvan da dolu olduğundan yedek kulübeye alındı. Envanter > Yetenekler menüsünden kuşanabilirsin!'}
                 </T>
               )}
             </Column>

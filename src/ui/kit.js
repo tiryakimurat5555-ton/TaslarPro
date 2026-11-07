@@ -446,6 +446,7 @@ export function Dialog({ visible = true, onDismiss, children, style, full, dismi
           <View
             accessibilityViewIsModal
             accessibilityLabel={label}
+            onAccessibilityEscape={onDismiss}
             style={[
               full
                 ? { flex: 1, backgroundColor: DarkBg }
