@@ -1,10 +1,10 @@
 // KT/ui/screens/LabyrinthScreen.kt karşılığı: Katakomp Labirenti (biyom seçimi, oda keşfi, tuzak/bulmaca/gladyatör/sandık, otomatik savaş).
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import * as kt from '../../kt.js';
 import { LabyrinthBiomeType, AllianceDecision } from '../../domain/model.js';
 import { GladiatorPsychologyCard } from '../components/GladiatorPsychologyView.js';
-import { CombatLiveStatusCard, CombatLogBubble } from './ArenaScreen.js';
+import { CombatLiveStatusCard, CombatLogBubble, useCombatLogAnnouncer } from './ArenaScreen.js';
 import { Column, Row, Surface, Card, Spacer, T, Btn, TextBtn, AlertDialog, useFlow, announce } from '../kit.js';
 import { AmberGold, AmberGoldDark, AmberGoldLight, DarkBg, DarkBorder, DarkSurface, DarkSurfaceCard, TextGold, TextLight, TextMuted, HealthGreen, HealthRed, Color, Typography, alpha, color } from '../theme.js';
 
@@ -56,17 +56,8 @@ export function LabyrinthScreen({ viewModel, modifier }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [odaAnahtari]);
 
-  // Canlı savaş akışı: yeni hamleler okunur (CombatLogBubble etiketiyle aynı metin; kit aynı metni iki kez okumaz)
-  const okunanHamle = useRef(0);
-  useEffect(() => {
-    const logs = labyrinthCombatLogs || [];
-    if (logs.length < okunanHamle.current) okunanHamle.current = 0;
-    for (let i = okunanHamle.current; i < logs.length; i++) {
-      const log = logs[i];
-      announce(`Hamle ${log.round}: ${log.narrativeText}`);
-    }
-    okunanHamle.current = logs.length;
-  }, [labyrinthCombatLogs]);
+  // Canlı savaş akışı: yeni hamleler Arena ile aynı biçimde VoiceOver'a okunur
+  useCombatLogAnnouncer(labyrinthCombatLogs, isLabyrinthFighting || labyrinthCombatResult != null);
 
   let govde;
   if (isLabyrinthFighting || labyrinthCombatResult != null) {
