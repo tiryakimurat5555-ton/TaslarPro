@@ -1,11 +1,22 @@
-package com.silahsor.diyarinkaderi.domain.engine
+// CombatEngine.kt'den taşındı (birebir). Kotlin object CombatEngine -> dışa aktarılan CombatEngine nesnesi.
+import * as kt from '../../kt.js';
+import {
+  CombatEvent,
+  CombatLog,
+  CombatResult,
+  EquipmentSlot,
+  GladiatorSkill,
+  LeagueMatchResult,
+  SkillType,
+  SpectatorCombatResult,
+  TargetBodyPart,
+} from '../model.js';
+import { CombatStance, CombatTacticalPosition, DrawSituation, TextTemplateEngine } from './TextTemplateEngine.js';
 
-import com.silahsor.diyarinkaderi.domain.model.*
-import kotlin.math.max
-import kotlin.math.roundToInt
-import kotlin.random.Random
-
-object CombatEngine {
+/** GladiatorSkill(id, name, icon, type, tier, cooldownTurns, description, combatEffect) konumsal yapıcı */
+function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect) {
+    return new GladiatorSkill({ id, name, icon, type, tier, cooldownTurns, description, combatEffect })
+}
 
     function simulateBattle(player, enemy, handicapBet = null, knownWeakness = null) {
         const pStats = player.totalStats
@@ -26,7 +37,7 @@ object CombatEngine {
         const bodyParts = TargetBodyPart.values()
 
         // Battle continues until health drops to 0 or below (true knockout / death)
-        const equippedItems = player.equipped.values.filterNotNull()
+        const equippedItems = kt.filterNotNull(Object.values(player.equipped))
         const playerSpecialTraits = kt.mapNotNull(equippedItems, (it) => it.specialTrait)
         const playerLifesteal = kt.sumOf(equippedItems, (it) => it.lifestealPercent)
         const playerArmorPen = kt.sumOf(equippedItems, (it) => it.armorPenetrationPercent)
@@ -53,19 +64,19 @@ object CombatEngine {
         const playerCooldowns = {}
 
         const playerSkills = kt.mapNotNull(player.equippedSkillIds.slice(0, 4), (skillId) => {
-when (skillId) {
-                'skill_crushing_impact' -> GladiatorSkill('skill_player_crushing', 'Ezici Balyoz', '💥', SkillType.ATTACK, 1, 3, 'Tüm vücut ağırlığını tek noktaya odaklayarak savrulan ezici çekiç.', '+%35 Hasar ve Sersemletme')
-                'skill_iron_will' -> GladiatorSkill('skill_player_iron_will', 'Çelik İrade', '🛡️', SkillType.DEFENSE, 1, 4, 'Acıyı zırha çevirip darbeleri soğuran kadim silahşör iradesi.', '+6 Geçici Zırh ve Hasar Kırma')
-                'skill_counter_flurry' -> GladiatorSkill('skill_player_counter', 'Akrobatik Karşı Hamle', '⚡', SkillType.TACTICAL, 1, 3, 'Düşman silahından sıyrılıp açılan boşluğa saplanan yıldırım darbesi.', '+%40 Hasarlı Karşı Hamle')
-                'skill_east_dragon' -> GladiatorSkill('skill_east_dragon', 'Ejder Nefesi Hamlesi', '🐉', SkillType.ATTACK, 1, 3, 'Doğu mabetlerinden kalma kadim odaklanma; silahın ucunu kor gibi ısıtıp savunmayı eritir.', '+%40 Hasar ve Gard Kırma')
-                'skill_east_crane' -> GladiatorSkill('skill_east_crane', 'Turna Zarafeti', '🕊️', SkillType.TACTICAL, 1, 3, 'Rüzgarın akışına uyarak rakibin vuruş çizgisinden tüy gibi süzülme tekniği.', '+%20 Kaçınma ve Anında Karşı Açık')
-                'skill_east_storm' -> GladiatorSkill('skill_east_storm', 'Fırtına Kesisi', '🌪️', SkillType.ATTACK, 1, 2, 'Göz açıp kapayıncaya dek art arda indirilen seri ve kesici rüzgar darbeleri.', '+%30 Seri Hasar ve Kan Kaybı')
-                'skill_east_night' -> GladiatorSkill('skill_east_night', 'Gölge Adımı', '🌑', SkillType.TACTICAL, 1, 4, 'Rakibin göz kırpma anında gölgelere karışarak kör noktasına sızma sanatı.', '+%50 Kritik Vuruş ve Sersemletme')
-                'skill_east_tiger' -> GladiatorSkill('skill_east_tiger', 'Kaplan Pençesi', '🐅', SkillType.ATTACK, 1, 3, 'Vahşi bir içgüdüyle düşmanın etini parçalayan amansız pençe savuruşu.', '+%35 Hasar ve Ağır Kanama')
-                'skill_east_mountain' -> GladiatorSkill('skill_east_mountain', 'Kadim Dağ Duruşu', '🏔️', SkillType.DEFENSE, 1, 4, 'Köklerini toprağın derinliklerine salmış bir dağ gibi sarsılmaz direnç.', '+8 Geçici Zırh ve Hasar Kırma')
-                else -> null
+            switch (skillId) {
+                case 'skill_crushing_impact': return gs('skill_player_crushing', 'Ezici Balyoz', '💥', SkillType.ATTACK, 1, 3, 'Tüm vücut ağırlığını tek noktaya odaklayarak savrulan ezici çekiç.', '+%35 Hasar ve Sersemletme')
+                case 'skill_iron_will': return gs('skill_player_iron_will', 'Çelik İrade', '🛡️', SkillType.DEFENSE, 1, 4, 'Acıyı zırha çevirip darbeleri soğuran kadim silahşör iradesi.', '+6 Geçici Zırh ve Hasar Kırma')
+                case 'skill_counter_flurry': return gs('skill_player_counter', 'Akrobatik Karşı Hamle', '⚡', SkillType.TACTICAL, 1, 3, 'Düşman silahından sıyrılıp açılan boşluğa saplanan yıldırım darbesi.', '+%40 Hasarlı Karşı Hamle')
+                case 'skill_east_dragon': return gs('skill_east_dragon', 'Ejder Nefesi Hamlesi', '🐉', SkillType.ATTACK, 1, 3, 'Doğu mabetlerinden kalma kadim odaklanma; silahın ucunu kor gibi ısıtıp savunmayı eritir.', '+%40 Hasar ve Gard Kırma')
+                case 'skill_east_crane': return gs('skill_east_crane', 'Turna Zarafeti', '🕊️', SkillType.TACTICAL, 1, 3, 'Rüzgarın akışına uyarak rakibin vuruş çizgisinden tüy gibi süzülme tekniği.', '+%20 Kaçınma ve Anında Karşı Açık')
+                case 'skill_east_storm': return gs('skill_east_storm', 'Fırtına Kesisi', '🌪️', SkillType.ATTACK, 1, 2, 'Göz açıp kapayıncaya dek art arda indirilen seri ve kesici rüzgar darbeleri.', '+%30 Seri Hasar ve Kan Kaybı')
+                case 'skill_east_night': return gs('skill_east_night', 'Gölge Adımı', '🌑', SkillType.TACTICAL, 1, 4, 'Rakibin göz kırpma anında gölgelere karışarak kör noktasına sızma sanatı.', '+%50 Kritik Vuruş ve Sersemletme')
+                case 'skill_east_tiger': return gs('skill_east_tiger', 'Kaplan Pençesi', '🐅', SkillType.ATTACK, 1, 3, 'Vahşi bir içgüdüyle düşmanın etini parçalayan amansız pençe savuruşu.', '+%35 Hasar ve Ağır Kanama')
+                case 'skill_east_mountain': return gs('skill_east_mountain', 'Kadim Dağ Duruşu', '🏔️', SkillType.DEFENSE, 1, 4, 'Köklerini toprağın derinliklerine salmış bir dağ gibi sarsılmaz direnç.', '+8 Geçici Zırh ve Hasar Kırma')
+                default: return null
             }
-})
+        })
 
         while (pCurrentHp > 0 && eCurrentHp > 0) {
             decrementCooldowns(enemyCooldowns)
@@ -152,11 +163,9 @@ when (skillId) {
             const enemyStance = decideAiStance(eCurrentHp, eStats.maxHealth, pCurrentHp, pStats.maxHealth)
             const playerStance = (pCurrentHp < pStats.maxHealth * 0.3) ? CombatStance.DEFENSIVE : CombatStance.BALANCED
 
-            const playerFirst = if (pStats.speed === eStats.speed) {
-                kt.Random.nextBoolean()
-            } else {
-                pStats.speed > eStats.speed
-            }
+            const playerFirst = (pStats.speed === eStats.speed)
+                ? kt.Random.nextBoolean()
+                : pStats.speed > eStats.speed
 
             const isIronWillActive = hasIronWill && (pCurrentHp <= pStats.maxHealth * 0.40)
             const isCrushingRound = hasCrushingImpact && (round % 4 === 0)
@@ -722,35 +731,36 @@ when (skillId) {
         // If player won an exciting fight (close call or multiple crits) -> +2 fame.
         // If standard win -> +1 fame.
         // If loss or mundane fight -> 0 fame.
-        const earnedGold = when {
-            isPlayerWinner -> enemy.rewardGold
-            isDraw -> Math.max(6, kt.toInt((enemy.rewardGold * 0.6)))
-            else -> 4
-        }
-        const earnedExp = when {
-            isPlayerWinner -> enemy.rewardExp
-            isDraw -> Math.max(10, kt.toInt((enemy.rewardExp * 0.75)))
-            else -> 8
-        }
-        const earnedFame = when {
-            isPlayerWinner -> {
-                const baseFame = Math.max(1, enemy.rewardFame)
-                const dramaticBonus = (pCurrentHp < (pStats.maxHealth * 0.25) || critCount >= 3) ? 1 : 0
-                baseFame + dramaticBonus
-            }
-            isDraw -> 1 // Kasaba halkı böylesi efsanevi çifte nakavtı ayakta alkışlar!
-            else -> 0
+        const earnedGold = isPlayerWinner
+            ? enemy.rewardGold
+            : isDraw
+              ? Math.max(6, kt.toInt(enemy.rewardGold * 0.6))
+              : 4
+        const earnedExp = isPlayerWinner
+            ? enemy.rewardExp
+            : isDraw
+              ? Math.max(10, kt.toInt(enemy.rewardExp * 0.75))
+              : 8
+        let earnedFame
+        if (isPlayerWinner) {
+            const baseFame = Math.max(1, enemy.rewardFame)
+            const dramaticBonus = (pCurrentHp < (pStats.maxHealth * 0.25) || critCount >= 3) ? 1 : 0
+            earnedFame = baseFame + dramaticBonus
+        } else if (isDraw) {
+            earnedFame = 1 // Kasaba halkı böylesi efsanevi çifte nakavtı ayakta alkışlar!
+        } else {
+            earnedFame = 0
         }
 
         // Bet resolution
         let betWon = false
         let betEarnings = 0
         if (handicapBet != null && handicapBet.betAmount > 0) {
-            betWon = when (handicapBet.id) {
-                'fast_win' -> isPlayerWinner && round <= 15
-                'flawless_win' -> isPlayerWinner && pCurrentHp >= kt.toInt((pStats.maxHealth * 0.6))
-                'comeback_win' -> isPlayerWinner && pCurrentHp <= kt.toInt((pStats.maxHealth * 0.25))
-                else -> false
+            switch (handicapBet.id) {
+                case 'fast_win': betWon = isPlayerWinner && round <= 15; break
+                case 'flawless_win': betWon = isPlayerWinner && pCurrentHp >= kt.toInt(pStats.maxHealth * 0.6); break
+                case 'comeback_win': betWon = isPlayerWinner && pCurrentHp <= kt.toInt(pStats.maxHealth * 0.25); break
+                default: betWon = false
             }
             betEarnings = (betWon) ? kt.toInt((handicapBet.betAmount * handicapBet.multiplier)) : 0
         }
@@ -773,15 +783,14 @@ when (skillId) {
     }
 
     function decideAiStance(myHp, myMaxHp, oppHp, oppMaxHp) {
-        const myRatio = myHp / myMaxHp
-        const oppRatio = oppHp / oppMaxHp
+        // Kotlin Float bölmesi ve 0.30f / 0.75f karşılaştırması: Math.fround ile tek duyarlıklı
+        const myRatio = Math.fround(myHp / myMaxHp)
+        const oppRatio = Math.fround(oppHp / oppMaxHp)
 
-        return when {
-            myRatio < 0.30 -> CombatStance.DEFENSIVE
-            oppRatio < 0.30 || myRatio > 0.75 -> CombatStance.AGGRESSIVE
-            kt.Random.nextInt(100) < 40 -> CombatStance.OPPORTUNISTIC
-            else -> CombatStance.BALANCED
-        }
+        if (myRatio < Math.fround(0.30)) return CombatStance.DEFENSIVE
+        if (oppRatio < Math.fround(0.30) || myRatio > Math.fround(0.75)) return CombatStance.AGGRESSIVE
+        if (kt.Random.nextInt(100) < 40) return CombatStance.OPPORTUNISTIC
+        return CombatStance.BALANCED
     }
 
     function selectAiSkill(skills, cooldowns, attackerHp, attackerMaxHp) {
@@ -793,19 +802,17 @@ when (skillId) {
         if (kt.Random.nextInt(100) >= 38) return null
 
         const isLowHp = attackerHp <= attackerMaxHp * 0.4
-        const chosenSkill = if (isLowHp) {
-            kt.firstOrNull(readySkills, (it) => it.type === SkillType.ULTIMATE || it.type === SkillType.DEFENSE)
-                ?? kt.random(readySkills)
-        } else {
-            kt.random(readySkills)
-        }
+        const chosenSkill = isLowHp
+            ? (kt.firstOrNull(readySkills, (it) => it.type === SkillType.ULTIMATE || it.type === SkillType.DEFENSE)
+                ?? kt.random(readySkills))
+            : kt.random(readySkills)
 
         cooldowns[chosenSkill.id] = chosenSkill.cooldownTurns
         return chosenSkill
     }
 
     function decrementCooldowns(cooldowns) {
-        for (key in cooldowns.keys.toList()) {
+        for (const key of Object.keys(cooldowns)) {
             const cd = cooldowns[key] ?? 0
             if (cd > 0) {
                 cooldowns[key] = cd - 1
@@ -814,8 +821,8 @@ when (skillId) {
     }
 
     function hasRegenerationTrait(traits) {
-        return traits.some((trait) => {
-[
+        return traits.some((trait) => (
+            [
                 'trait_robe_sea_wind', 'trait_tash_ha_50', 'trait_tash_bt_50',
                 'trait_tash_pants_50', 'trait_seal_emerald_life', 'trait_ring_emerald_regrowth'
             ].includes(trait.id) || trait.name.toLowerCase().includes('yenilen') ||
@@ -825,24 +832,24 @@ when (skillId) {
                 trait.description.toLowerCase().includes('hayat aurası') ||
                 trait.description.toLowerCase().includes('yenilenme') ||
                 trait.description.toLowerCase().includes('taze polenler')
-})
+        ))
     }
 
     function hasResurrectionTrait(traits) {
-        return traits.some((trait) => {
-['trait_tash_ha_50', 'trait_tash_bt_50'].includes(trait.id) ||
+        return traits.some((trait) => (
+            ['trait_tash_ha_50', 'trait_tash_bt_50'].includes(trait.id) ||
                 trait.name.toLowerCase().includes('anka') ||
                 trait.name.toLowerCase().includes('diriliş') ||
                 trait.description.toLowerCase().includes('dirilir') ||
                 trait.description.toLowerCase().includes('ölümden döner') ||
                 trait.description.toLowerCase().includes('ölümden kurtarır') ||
                 trait.description.toLowerCase().includes('küllerinden')
-})
+        ))
     }
 
     function findReflectionTrait(traits) {
-        return kt.firstOrNull(traits, (trait) => {
-[
+        return kt.firstOrNull(traits, (trait) => (
+            [
                 'trait_staff_mirror', 'trait_tash_ha_09', 'trait_tash_ha_41',
                 'trait_seal_volcano_heart', 'trait_tash_ha_21'
             ].includes(trait.id) || trait.name.toLowerCase().includes('yansıt') ||
@@ -855,12 +862,12 @@ when (skillId) {
                 trait.description.toLowerCase().includes('geri teper') ||
                 trait.description.toLowerCase().includes('dağlayıp hasar') ||
                 trait.description.toLowerCase().includes('akkor sıcaklıkla')
-})
+        ))
     }
 
     function findBarrierTrait(traits) {
-        return kt.firstOrNull(traits, (trait) => {
-[
+        return kt.firstOrNull(traits, (trait) => (
+            [
                 'trait_staff_tsunami', 'trait_staff_sacred_pillar', 'trait_staff_aethelgard_light',
                 'trait_tash_pants_42', 'trait_tash_pants_09', 'trait_robe_archmage_vestment'
             ].includes(trait.id) || trait.name.toLowerCase().includes('bariyer') ||
@@ -876,22 +883,22 @@ when (skillId) {
                 trait.description.toLowerCase().includes('darbeyi emer') ||
                 trait.description.toLowerCase().includes('hasarı keser') ||
                 trait.description.toLowerCase().includes('hasarı yumuşatır')
-})
+        ))
     }
 
     function findLastStandDefenseTrait(traits) {
-        return kt.firstOrNull(traits, (trait) => {
-trait.name.toLowerCase().includes('azam sur') ||
+        return kt.firstOrNull(traits, (trait) => (
+            trait.name.toLowerCase().includes('azam sur') ||
                 trait.name.toLowerCase().includes('kebir hükmü') ||
                 (trait.description.toLowerCase().includes('can %30') &&
                     (trait.description.toLowerCase().includes('hasarı') && trait.description.toLowerCase().includes('keser') ||
                      trait.description.toLowerCase().includes('savunmayı')))
-})
+        ))
     }
 
     function findBleedTrait(traits) {
-        return kt.firstOrNull(traits, (trait) => {
-[
+        return kt.firstOrNull(traits, (trait) => (
+            [
                 'trait_tash_ax_5', 'trait_tash_arrow_bleed_01', 'trait_tash_glove_05', 'trait_tash_dg_04'
             ].includes(trait.id) || trait.id.startsWith('trait_tash_arrow_bleed_') ||
                 trait.name.toLowerCase().includes('kanama') ||
@@ -904,12 +911,12 @@ trait.name.toLowerCase().includes('azam sur') ||
                 trait.description.toLowerCase().includes('kan fışkırt') ||
                 trait.description.toLowerCase().includes('derin yarık') ||
                 trait.description.toLowerCase().includes('eti yarar')
-})
+        ))
     }
 
     function findExecutionTrait(traits) {
-        return kt.firstOrNull(traits, (trait) => {
-['trait_tash_tome_35', 'trait_tash_dg_47', 'trait_tash_dg_50', 'trait_tash_spn_45', 'trait_tash_sw_ext_31'].includes(trait.id) ||
+        return kt.firstOrNull(traits, (trait) => (
+            ['trait_tash_tome_35', 'trait_tash_dg_47', 'trait_tash_dg_50', 'trait_tash_spn_45', 'trait_tash_sw_ext_31'].includes(trait.id) ||
                 trait.name.toLowerCase().includes('infaz') ||
                 trait.name.toLowerCase().includes('ecel') ||
                 trait.name.toLowerCase().includes('kurt pençesi') ||
@@ -923,12 +930,12 @@ trait.name.toLowerCase().includes('azam sur') ||
                 trait.description.toLowerCase().includes('%40 altı') ||
                 trait.description.toLowerCase().includes('yarıdan az') ||
                 trait.description.toLowerCase().includes('yaralı düşmana')
-})
+        ))
     }
 
     function findArmorPenTrait(traits) {
-        return kt.firstOrNull(traits, (trait) => {
-['trait_tash_mc_20', 'trait_tash_mc_35', 'trait_tash_sw_ext_26', 'trait_tash_spn_13', 'trait_tash_spn_47', 'trait_tash_sp_8'].includes(trait.id) ||
+        return kt.firstOrNull(traits, (trait) => (
+            ['trait_tash_mc_20', 'trait_tash_mc_35', 'trait_tash_sw_ext_26', 'trait_tash_spn_13', 'trait_tash_spn_47', 'trait_tash_sp_8'].includes(trait.id) ||
                 trait.name.toLowerCase().includes('zırh del') ||
                 trait.name.toLowerCase().includes('zırh parçala') ||
                 trait.name.toLowerCase().includes('sur yarıcı') ||
@@ -951,12 +958,12 @@ trait.name.toLowerCase().includes('azam sur') ||
                 trait.description.toLowerCase().includes('zırh tanımaz') ||
                 trait.description.toLowerCase().includes('bodkin') ||
                 trait.description.toLowerCase().includes('elmas sivri')
-})
+        ))
     }
 
     function findLifestealTrait(traits) {
-        return kt.firstOrNull(traits, (trait) => {
-[
+        return kt.firstOrNull(traits, (trait) => (
+            [
                 'trait_tash_sw_7', 'trait_tash_ax_9', 'trait_tash_ax_10', 'trait_staff_lotus',
                 'trait_staff_soul_drain', 'trait_staff_shroud', 'trait_staff_thanatos_reap',
                 'trait_tash_tome_20', 'trait_tash_tome_46'
@@ -976,12 +983,12 @@ trait.name.toLowerCase().includes('azam sur') ||
                 trait.description.toLowerCase().includes('kül sömür') ||
                 trait.description.toLowerCase().includes('kanından beslen') ||
                 trait.description.toLowerCase().includes('özümse')
-})
+        ))
     }
 
     function findStunTrait(traits) {
-        return kt.firstOrNull(traits, (trait) => {
-['trait_tash_ax_1', 'trait_tash_ax_3', 'trait_tash_sp_12', 'trait_staff_earth_tremor', 'trait_staff_titan_earth'].includes(trait.id) ||
+        return kt.firstOrNull(traits, (trait) => (
+            ['trait_tash_ax_1', 'trait_tash_ax_3', 'trait_tash_sp_12', 'trait_staff_earth_tremor', 'trait_staff_titan_earth'].includes(trait.id) ||
                 trait.id.startsWith('trait_tash_mc_') ||
                 trait.name.toLowerCase().includes('sersem') ||
                 trait.name.toLowerCase().includes('afallat') ||
@@ -995,32 +1002,32 @@ trait.name.toLowerCase().includes('azam sur') ||
                 trait.description.toLowerCase().includes('sarsıcı güç') ||
                 trait.description.toLowerCase().includes('kemikleri sarsar') ||
                 trait.description.toLowerCase().includes('şok dalgası')
-})
+        ))
     }
 
     function findCritAmpTrait(traits) {
-        return kt.firstOrNull(traits, (trait) => {
-['trait_tash_sp_2', 'trait_tash_axe_03', 'trait_tailor_red_viper'].includes(trait.id) ||
+        return kt.firstOrNull(traits, (trait) => (
+            ['trait_tash_sp_2', 'trait_tash_axe_03', 'trait_tailor_red_viper'].includes(trait.id) ||
                 trait.name.toLowerCase().includes('kritik') ||
                 trait.description.toLowerCase().includes('kritik vuruş hasarını artır') ||
                 trait.description.toLowerCase().includes('kritik hasar potansiyelini katlar') ||
                 trait.description.toLowerCase().includes('ölümcül kritik hasar') ||
                 trait.description.toLowerCase().includes('kritik hasar')
-})
+        ))
     }
 
     function findSlowDebuffTrait(traits) {
-        return kt.firstOrNull(traits, (trait) => {
-['trait_tash_ax_11', 'trait_tash_sp_7', 'trait_tash_axe_15', 'trait_tash_axe_23'].includes(trait.id) ||
+        return kt.firstOrNull(traits, (trait) => (
+            ['trait_tash_ax_11', 'trait_tash_sp_7', 'trait_tash_axe_15', 'trait_tash_axe_23'].includes(trait.id) ||
                 trait.name.toLowerCase().includes('yavaşlat') ||
                 trait.description.toLowerCase().includes('yavaşlat') ||
                 trait.description.toLowerCase().includes('hızını düşür')
-})
+        ))
     }
 
     function findFireTrait(traits) {
-        return kt.firstOrNull(traits, (trait) => {
-[
+        return kt.firstOrNull(traits, (trait) => (
+            [
                 'trait_tash_sp_6', 'trait_tash_ax_6', 'trait_staff_ember', 'trait_staff_magma_eruption',
                 'trait_staff_brimstone', 'trait_staff_primeval_fire', 'trait_tash_tome_02', 'trait_tash_tome_10',
                 'trait_tash_tome_13', 'trait_tash_tome_24', 'trait_tash_tome_29', 'trait_tash_tome_34',
@@ -1036,12 +1043,12 @@ trait.name.toLowerCase().includes('azam sur') ||
                 trait.description.toLowerCase().includes('lav hasarı') ||
                 trait.description.toLowerCase().includes('erimiş lav') ||
                 trait.description.toLowerCase().includes('kavurucu')
-})
+        ))
     }
 
     function findLightningTrait(traits) {
-        return kt.firstOrNull(traits, (trait) => {
-[
+        return kt.firstOrNull(traits, (trait) => (
+            [
                 'trait_tash_sw_12', 'trait_tash_sp_11', 'trait_staff_static', 'trait_staff_thunderbolt',
                 'trait_staff_overload', 'trait_tash_tome_06', 'trait_tash_tome_15', 'trait_tash_tome_22',
                 'trait_tash_tome_32', 'trait_tash_tome_45'
@@ -1053,12 +1060,12 @@ trait.name.toLowerCase().includes('azam sur') ||
                 trait.description.toLowerCase().includes('şimşek hasarı') ||
                 trait.description.toLowerCase().includes('elektrik') ||
                 trait.description.toLowerCase().includes('şok')
-})
+        ))
     }
 
     function findPoisonTrait(traits) {
-        return kt.firstOrNull(traits, (trait) => {
-[
+        return kt.firstOrNull(traits, (trait) => (
+            [
                 'trait_tash_sw_8', 'trait_staff_viper_venom', 'trait_staff_spore', 'trait_tash_tome_16'
             ].includes(trait.id) || trait.name.toLowerCase().includes('zehir') ||
                 trait.name.toLowerCase().includes('engerek') ||
@@ -1067,12 +1074,12 @@ trait.name.toLowerCase().includes('azam sur') ||
                 trait.description.toLowerCase().includes('zehir') ||
                 trait.description.toLowerCase().includes('toksin') ||
                 trait.description.toLowerCase().includes('sporlar')
-})
+        ))
     }
 
     function findFrostTrait(traits) {
-        return kt.firstOrNull(traits, (trait) => {
-[
+        return kt.firstOrNull(traits, (trait) => (
+            [
                 'trait_staff_frost_bite', 'trait_staff_frost_vortex', 'trait_staff_absolute_frost',
                 'trait_staff_blizzard', 'trait_staff_absolute_zero', 'trait_tash_tome_03', 'trait_tash_tome_14',
                 'trait_tash_tome_28', 'trait_tash_tome_36', 'trait_tash_tome_44'
@@ -1084,12 +1091,12 @@ trait.name.toLowerCase().includes('azam sur') ||
                 trait.description.toLowerCase().includes('buz hasarı') ||
                 trait.description.toLowerCase().includes('dondur') ||
                 trait.description.toLowerCase().includes('buzul rünleri')
-})
+        ))
     }
 
     function findDestinyTrait(traits) {
-        return kt.firstOrNull(traits, (trait) => {
-[
+        return kt.firstOrNull(traits, (trait) => (
+            [
                 'trait_tash_sw_13', 'trait_tash_ax_12', 'trait_staff_supernova', 'trait_staff_singularity',
                 'trait_staff_mirror_destiny', 'trait_tash_tome_26', 'trait_tash_tome_41', 'trait_tash_tome_42',
                 'trait_tash_tome_47', 'trait_tash_tome_48', 'trait_tash_tome_50'
@@ -1102,12 +1109,12 @@ trait.name.toLowerCase().includes('azam sur') ||
                 trait.description.toLowerCase().includes('yıkıcı hasar') ||
                 trait.description.toLowerCase().includes('kara delik') ||
                 trait.description.toLowerCase().includes('tekillik')
-})
+        ))
     }
 
     function findDualShotTrait(traits) {
-        return kt.firstOrNull(traits, (trait) => {
-trait.id.startsWith('trait_tash_bow_dual_') ||
+        return kt.firstOrNull(traits, (trait) => (
+            trait.id.startsWith('trait_tash_bow_dual_') ||
                 trait.id.startsWith('trait_tash_arrow_dual_') ||
                 trait.name.toLowerCase().includes('çift ok') ||
                 trait.name.toLowerCase().includes('çifte atış') ||
@@ -1118,12 +1125,12 @@ trait.id.startsWith('trait_tash_bow_dual_') ||
                 trait.description.toLowerCase().includes('ikinci ok') ||
                 trait.description.toLowerCase().includes('iki darbe vurarak') ||
                 trait.description.toLowerCase().includes('iki ölümcül temren')
-})
+        ))
     }
 
     function findTripleShotTrait(traits) {
-        return kt.firstOrNull(traits, (trait) => {
-trait.id.startsWith('trait_tash_bow_triple_') ||
+        return kt.firstOrNull(traits, (trait) => (
+            trait.id.startsWith('trait_tash_bow_triple_') ||
                 trait.id.startsWith('trait_tash_arrow_triple_') ||
                 trait.name.toLowerCase().includes('üçlü ok') ||
                 trait.name.toLowerCase().includes('üç kiriş') ||
@@ -1132,12 +1139,12 @@ trait.id.startsWith('trait_tash_bow_triple_') ||
                 trait.description.toLowerCase().includes('üç temren') ||
                 trait.description.toLowerCase().includes('3 tayfun oku') ||
                 trait.description.toLowerCase().includes('üç ok parçası')
-})
+        ))
     }
 
     function findEvasionBonusTrait(traits) {
-        return kt.firstOrNull(traits, (trait) => {
-trait.name.toLowerCase().includes('rüzgar adımı') ||
+        return kt.firstOrNull(traits, (trait) => (
+            trait.name.toLowerCase().includes('rüzgar adımı') ||
                 trait.name.toLowerCase().includes('çevik keçi') ||
                 trait.name.toLowerCase().includes('yılan çevikliği') ||
                 trait.name.toLowerCase().includes('kanatlı süzülüş') ||
@@ -1146,12 +1153,12 @@ trait.name.toLowerCase().includes('rüzgar adımı') ||
                 trait.description.toLowerCase().includes('sıyrılmayı') ||
                 trait.description.toLowerCase().includes('çevik dönüş') ||
                 trait.description.toLowerCase().includes('ani kaçış')
-})
+        ))
     }
 
     function findDeflectionBonusTrait(traits) {
-        return kt.firstOrNull(traits, (trait) => {
-trait.name.toLowerCase().includes('perçinli siper') ||
+        return kt.firstOrNull(traits, (trait) => (
+            trait.name.toLowerCase().includes('perçinli siper') ||
                 trait.name.toLowerCase().includes('halkalı örgü') ||
                 trait.name.toLowerCase().includes('çift kat plaka') ||
                 trait.name.toLowerCase().includes('safir kalkan') ||
@@ -1160,12 +1167,12 @@ trait.name.toLowerCase().includes('perçinli siper') ||
                 trait.description.toLowerCase().includes('enerji kalkanı') ||
                 trait.description.toLowerCase().includes('ok uçlarını dağıtır') ||
                 trait.description.toLowerCase().includes('sekerek geri iter')
-})
+        ))
     }
 
     function findBlindingTrait(traits) {
-        return kt.firstOrNull(traits, (trait) => {
-trait.name.toLowerCase().includes('güneş halo') ||
+        return kt.firstOrNull(traits, (trait) => (
+            trait.name.toLowerCase().includes('güneş halo') ||
                 trait.name.toLowerCase().includes('karanlık biçim') ||
                 trait.name.toLowerCase().includes('gölge vizör') ||
                 trait.name.toLowerCase().includes('sonsuz gece') ||
@@ -1175,21 +1182,24 @@ trait.name.toLowerCase().includes('güneş halo') ||
                 trait.description.toLowerCase().includes('hedef almayı imkansız') ||
                 trait.description.toLowerCase().includes('isabetini düşürür') ||
                 trait.description.toLowerCase().includes('görüşünü köreltir')
-})
+        ))
     }
 
-    private data class StrikeOutcome(
-        const damageDealt: Int,
-        const remainingHp: Int,
-        const log: CombatLog,
-        const lifestealHp = 0,
-        const wasDodged = false,
-        const appliedStun = false,
-        const reflectedDamage = 0,
-        const appliedBleed = false
-    )
+    // private data class StrikeOutcome
+    class StrikeOutcome {
+        constructor({ damageDealt, remainingHp, log, lifestealHp = 0, wasDodged = false, appliedStun = false, reflectedDamage = 0, appliedBleed = false }) {
+            this.damageDealt = damageDealt
+            this.remainingHp = remainingHp
+            this.log = log
+            this.lifestealHp = lifestealHp
+            this.wasDodged = wasDodged
+            this.appliedStun = appliedStun
+            this.reflectedDamage = reflectedDamage
+            this.appliedBleed = appliedBleed
+        }
+    }
 
-    function executeStrike(attackerName, defenderName, weapon, attackerStats, defenderStats, defenderHp, defenderMaxHp, round, isPlayer, bodyPart, stance, tacticalPosition = null, knownWeakness = null, specialTraits = [], defenderSpecialTraits = [], attackerHp = 100, attackerMaxHp = 100, gemLifestealPercent = 0, gemArmorPenPercent = 0, gemStunPercent = 0, isCrushingImpact = false, isIronWillActive = false, triggeredSkill = null, playerBuffs = []) {
+    function executeStrike({ attackerName, defenderName, weapon, attackerStats, defenderStats, defenderHp, defenderMaxHp, round, isPlayer, bodyPart, stance, tacticalPosition = null, knownWeakness = null, specialTraits = [], defenderSpecialTraits = [], attackerHp = 100, attackerMaxHp = 100, gemLifestealPercent = 0, gemArmorPenPercent = 0, gemStunPercent = 0, isCrushingImpact = false, isIronWillActive = false, triggeredSkill = null, playerBuffs = [] }) {
         // Rakip Açığı / Zayıf Nokta İstismarı Kontrolü
         const isWeaknessExploited = isPlayer && knownWeakness != null && (kt.Random.nextInt(100) < knownWeakness.exploitChancePercent)
 
@@ -1199,22 +1209,23 @@ trait.name.toLowerCase().includes('güneş halo') ||
         let damageMult = 1.0
         let critBonus = 0
 
-        when (stance) {
-            CombatStance.AGGRESSIVE -> {
+        switch (stance) {
+            case CombatStance.AGGRESSIVE:
                 damageMult = 1.25
                 critBonus = 8
                 dodgeBonus = -5
-            }
-            CombatStance.DEFENSIVE -> {
+                break
+            case CombatStance.DEFENSIVE:
                 damageMult = 0.8
                 blockBonus = 15
                 dodgeBonus = 10
-            }
-            CombatStance.OPPORTUNISTIC -> {
+                break
+            case CombatStance.OPPORTUNISTIC:
                 critBonus = 12
                 damageMult = 1.05
-            }
-            CombatStance.BALANCED -> {}
+                break
+            case CombatStance.BALANCED:
+                break
         }
 
         // Defansif Nitelikler: Kaçınma, Göz Kamaştırma ve Blok Bonusları
@@ -1235,11 +1246,9 @@ trait.name.toLowerCase().includes('güneş halo') ||
         // Dodge check (Açık istismar edildiyse veya Ezici Balyoz devredeyse rakip kaçamaz)
         const effectiveDodge = kt.coerceIn((defenderStats.dodgeChancePercent + dodgeBonus), 2, 65)
         if (!isWeaknessExploited && !isCrushingImpact && kt.Random.nextInt(100) < effectiveDodge) {
-            const narrative = if (triggeredSkill != null) {
-                TextTemplateEngine.generateSkillDodgeNarrative(attackerName, defenderName, triggeredSkill, weapon)
-            } else {
-                TextTemplateEngine.generateLog(attackerName, defenderName, weapon, CombatEvent.DODGED, bodyPart, 0, defenderHp, stance)
-            }
+            const narrative = (triggeredSkill != null)
+                ? TextTemplateEngine.generateSkillDodgeNarrative(attackerName, defenderName, triggeredSkill, weapon)
+                : TextTemplateEngine.generateLog(attackerName, defenderName, weapon, CombatEvent.DODGED, bodyPart, 0, defenderHp, stance)
             const log = new CombatLog({
                 round: round,
                 narrativeText: narrative,
@@ -1258,22 +1267,22 @@ trait.name.toLowerCase().includes('güneş halo') ||
         let skillAppliedBleed = false
         let skillAppliedStun = false
         if (triggeredSkill != null) {
-            when (triggeredSkill.type) {
-                SkillType.ULTIMATE -> {
+            switch (triggeredSkill.type) {
+                case SkillType.ULTIMATE:
                     damageMult *= 1.45
                     critBonus += 15
-                }
-                SkillType.ATTACK -> {
+                    break
+                case SkillType.ATTACK:
                     damageMult *= 1.25
                     critBonus += 5
-                }
-                SkillType.TACTICAL -> {
+                    break
+                case SkillType.TACTICAL:
                     damageMult *= 1.15
                     critBonus += 10
-                }
-                SkillType.DEFENSE -> {
+                    break
+                case SkillType.DEFENSE:
                     damageMult *= 1.10
-                }
+                    break
             }
 
             const skillDesc = (triggeredSkill.name + ' ' + triggeredSkill.description + ' ' + triggeredSkill.combatEffect).toLowerCase()
@@ -1289,7 +1298,7 @@ trait.name.toLowerCase().includes('güneş halo') ||
         }
 
         // Crit check (Açık yakalandığında kritik şansı da artar)
-        const effectiveCrit = kt.coerceIn((attackerStats.critChancePercent + critBonus + (if (isWeaknessExploited) 15 else 0)), 2, 85)
+        const effectiveCrit = kt.coerceIn((attackerStats.critChancePercent + critBonus + (isWeaknessExploited ? 15 : 0)), 2, 85)
         const isCrit = kt.Random.nextInt(100) < effectiveCrit
 
         // Block check (Açık istismar edildiyse bloklanamaz)
@@ -1336,115 +1345,93 @@ trait.name.toLowerCase().includes('güneş halo') ||
             // 3. Egzotik Silah / Asa Ateş ve Kor Etkisi
             if (fireTrait != null && kt.Random.nextInt(100) < 32) {
                 rawDamage += 8
-                traitTriggerNote += if (isPlayer) {
-                    `🔥 [${fireTrait.name.toUpperCase()}!] Asadan fışkıran kor alevler hasmın zırhını eritti (+8 Alev Hasarı)!\n`
-                } else {
-                    `🔥 [${fireTrait.name.toUpperCase()}!] ${attackerName}'in silahından fışkıran kor alevler ${defenderName}'in zırhını eritti (+8 Alev Hasarı)!\n`
-                }
+                traitTriggerNote += (isPlayer)
+                    ? `🔥 [${fireTrait.name.toUpperCase()}!] Asadan fışkıran kor alevler hasmın zırhını eritti (+8 Alev Hasarı)!\n`
+                    : `🔥 [${fireTrait.name.toUpperCase()}!] ${attackerName}'in silahından fışkıran kor alevler ${defenderName}'in zırhını eritti (+8 Alev Hasarı)!\n`
             }
 
             // 4. Yıldırım / Şimşek Etkisi
             if (lightningTrait != null && kt.Random.nextInt(100) < 30) {
                 rawDamage += 11
-                traitTriggerNote += if (isPlayer) {
-                    `⚡ [${lightningTrait.name.toUpperCase()}!] Göksel şimşekler hasmın üzerinde çaktı (+11 Yıldırım Hasarı)!\n`
-                } else {
-                    `⚡ [${lightningTrait.name.toUpperCase()}!] ${attackerName}'in göksel şimşekleri ${defenderName}'in üzerinde çaktı (+11 Yıldırım Hasarı)!\n`
-                }
+                traitTriggerNote += (isPlayer)
+                    ? `⚡ [${lightningTrait.name.toUpperCase()}!] Göksel şimşekler hasmın üzerinde çaktı (+11 Yıldırım Hasarı)!\n`
+                    : `⚡ [${lightningTrait.name.toUpperCase()}!] ${attackerName}'in göksel şimşekleri ${defenderName}'in üzerinde çaktı (+11 Yıldırım Hasarı)!\n`
             }
 
             // 5. Zehir & Spor Etkisi
             if (poisonTrait != null && kt.Random.nextInt(100) < 35) {
                 rawDamage += 7
-                traitTriggerNote += if (isPlayer) {
-                    `🐍 [${poisonTrait.name.toUpperCase()}!] Büyülü zehir ve sporlar rakibin yaralarına işledi (+7 Zehir Hasarı)!\n`
-                } else {
-                    `🐍 [${poisonTrait.name.toUpperCase()}!] ${attackerName}'in silahından sızan zehir ve sporlar ${defenderName}'in yaralarına işledi (+7 Zehir Hasarı)!\n`
-                }
+                traitTriggerNote += (isPlayer)
+                    ? `🐍 [${poisonTrait.name.toUpperCase()}!] Büyülü zehir ve sporlar rakibin yaralarına işledi (+7 Zehir Hasarı)!\n`
+                    : `🐍 [${poisonTrait.name.toUpperCase()}!] ${attackerName}'in silahından sızan zehir ve sporlar ${defenderName}'in yaralarına işledi (+7 Zehir Hasarı)!\n`
             }
 
             // 6. Ayaz / Dondurucu Soğuk Etkisi
             if (frostTrait != null && kt.Random.nextInt(100) < 30) {
                 rawDamage += 8
-                traitTriggerNote += if (isPlayer) {
-                    `❄️ [${frostTrait.name.toUpperCase()}!] Buzul rünleri hasmı dondurarak uzuvlarını sızlattı (+8 Buzul Hasarı)!\n`
-                } else {
-                    `❄️ [${frostTrait.name.toUpperCase()}!] ${attackerName}'in buzul rünleri ${defenderName}'i dondurarak uzuvlarını sızlattı (+8 Buzul Hasarı)!\n`
-                }
+                traitTriggerNote += (isPlayer)
+                    ? `❄️ [${frostTrait.name.toUpperCase()}!] Buzul rünleri hasmı dondurarak uzuvlarını sızlattı (+8 Buzul Hasarı)!\n`
+                    : `❄️ [${frostTrait.name.toUpperCase()}!] ${attackerName}'in buzul rünleri ${defenderName}'i dondurarak uzuvlarını sızlattı (+8 Buzul Hasarı)!\n`
             }
 
             // 7. Nihai Kader / Titan / Kozmik Etkisi
             if (destinyTrait != null && (attackerHp <= (attackerMaxHp * 0.35) || kt.Random.nextInt(100) < 25)) {
                 rawDamage += 15
-                traitTriggerNote += if (isPlayer) {
-                    `⚜️ [${destinyTrait.name.toUpperCase()}!] Kozmik kudret arenayı titreterek zırhları paramparça etti (+15 Yıkıcı Hasar)!\n`
-                } else {
-                    `⚜️ [${destinyTrait.name.toUpperCase()}!] ${attackerName}'in kozmik kudreti arenayı titreterek zırhları paramparça etti (+15 Yıkıcı Hasar)!\n`
-                }
+                traitTriggerNote += (isPlayer)
+                    ? `⚜️ [${destinyTrait.name.toUpperCase()}!] Kozmik kudret arenayı titreterek zırhları paramparça etti (+15 Yıkıcı Hasar)!\n`
+                    : `⚜️ [${destinyTrait.name.toUpperCase()}!] ${attackerName}'in kozmik kudreti arenayı titreterek zırhları paramparça etti (+15 Yıkıcı Hasar)!\n`
             }
 
             // 8. Egzotik Sersemletme
             const stunTrait = findStunTrait(specialTraits)
             if (stunTrait != null && kt.Random.nextInt(100) < 20) {
                 hasExoticStun = true
-                traitTriggerNote += if (isPlayer) {
-                    `🔨 [${stunTrait.name.toUpperCase()}!] Masif şok dalgası hasmı sersemletti!\n`
-                } else {
-                    `🔨 [${stunTrait.name.toUpperCase()}!] ${attackerName}'in masif şok dalgası ${defenderName}'i sersemletti!\n`
-                }
+                traitTriggerNote += (isPlayer)
+                    ? `🔨 [${stunTrait.name.toUpperCase()}!] Masif şok dalgası hasmı sersemletti!\n`
+                    : `🔨 [${stunTrait.name.toUpperCase()}!] ${attackerName}'in masif şok dalgası ${defenderName}'i sersemletti!\n`
             }
 
             // 9. Çift Ok Salvosu (İkili Atan Yaylar)
             const dualShotTrait = findDualShotTrait(specialTraits)
             if (dualShotTrait != null && kt.Random.nextInt(100) < 35) {
                 rawDamage += 9
-                traitTriggerNote += if (isPlayer) {
-                    `🏹 [${dualShotTrait.name.toUpperCase()}!] Kiriş ardışık iki kez gerildi; fırlayan ikinci ok hedefin böğrüne saplandı (+9 Ek Hasar)!\n`
-                } else {
-                    `🏹 [${dualShotTrait.name.toUpperCase()}!] ${attackerName} kirişi seri bir hamleyle tekrar çekip ikinci oku ${defenderName}'in böğrüne sapladı (+9 Ek Hasar)!\n`
-                }
+                traitTriggerNote += (isPlayer)
+                    ? `🏹 [${dualShotTrait.name.toUpperCase()}!] Kiriş ardışık iki kez gerildi; fırlayan ikinci ok hedefin böğrüne saplandı (+9 Ek Hasar)!\n`
+                    : `🏹 [${dualShotTrait.name.toUpperCase()}!] ${attackerName} kirişi seri bir hamleyle tekrar çekip ikinci oku ${defenderName}'in böğrüne sapladı (+9 Ek Hasar)!\n`
             }
 
             // 10. Üçlü Ok Yağmuru (Üçlü Atan Salvo Yayları & Arbaletler)
             const tripleShotTrait = findTripleShotTrait(specialTraits)
             if (tripleShotTrait != null && kt.Random.nextInt(100) < 30) {
                 rawDamage += 16
-                traitTriggerNote += if (isPlayer) {
-                    `🎯 [${tripleShotTrait.name.toUpperCase()}!] Yaydan aynı anda fırlayan üç temren havayı yırtarak hedefin savunmasını delip geçti (+16 Yayılım Hasarı)!\n`
-                } else {
-                    `🎯 [${tripleShotTrait.name.toUpperCase()}!] ${attackerName}'in yayından aynı anda fırlayan üç temren ${defenderName}'in savunmasını delip geçti (+16 Yayılım Hasarı)!\n`
-                }
+                traitTriggerNote += (isPlayer)
+                    ? `🎯 [${tripleShotTrait.name.toUpperCase()}!] Yaydan aynı anda fırlayan üç temren havayı yırtarak hedefin savunmasını delip geçti (+16 Yayılım Hasarı)!\n`
+                    : `🎯 [${tripleShotTrait.name.toUpperCase()}!] ${attackerName}'in yayından aynı anda fırlayan üç temren ${defenderName}'in savunmasını delip geçti (+16 Yayılım Hasarı)!\n`
             }
 
             // 11. Ok & Temren Özel Elemental ve Kuşatma Etkileri
             const arrowFireTrait = kt.firstOrNull(specialTraits, (it) => it.id.startsWith('trait_tash_arrow_fire_'))
             if (arrowFireTrait != null && kt.Random.nextInt(100) < 30) {
                 rawDamage += 7
-                traitTriggerNote += if (isPlayer) {
-                    `🔥 [${arrowFireTrait.name.toUpperCase()}!] Okun ucundaki kor katran alev alarak hedefin zırhını dağladı (+7 Alev Hasarı)!\n`
-                } else {
-                    `🔥 [${arrowFireTrait.name.toUpperCase()}!] ${attackerName}'in alevli oku ${defenderName}'in zırhını dağladı (+7 Alev Hasarı)!\n`
-                }
+                traitTriggerNote += (isPlayer)
+                    ? `🔥 [${arrowFireTrait.name.toUpperCase()}!] Okun ucundaki kor katran alev alarak hedefin zırhını dağladı (+7 Alev Hasarı)!\n`
+                    : `🔥 [${arrowFireTrait.name.toUpperCase()}!] ${attackerName}'in alevli oku ${defenderName}'in zırhını dağladı (+7 Alev Hasarı)!\n`
             }
 
             const arrowPoisonTrait = kt.firstOrNull(specialTraits, (it) => it.id.startsWith('trait_tash_arrow_poison_'))
             if (arrowPoisonTrait != null && kt.Random.nextInt(100) < 32) {
                 rawDamage += 6
-                traitTriggerNote += if (isPlayer) {
-                    `🐍 [${arrowPoisonTrait.name.toUpperCase()}!] Temrenden sızan yılan zehri hedefin yaralarına işledi (+6 Zehir Hasarı)!\n`
-                } else {
-                    `🐍 [${arrowPoisonTrait.name.toUpperCase()}!] ${attackerName}'in zehirli temreni ${defenderName}'in damarlarına işledi (+6 Zehir Hasarı)!\n`
-                }
+                traitTriggerNote += (isPlayer)
+                    ? `🐍 [${arrowPoisonTrait.name.toUpperCase()}!] Temrenden sızan yılan zehri hedefin yaralarına işledi (+6 Zehir Hasarı)!\n`
+                    : `🐍 [${arrowPoisonTrait.name.toUpperCase()}!] ${attackerName}'in zehirli temreni ${defenderName}'in damarlarına işledi (+6 Zehir Hasarı)!\n`
             }
 
             const arrowSiegeTrait = kt.firstOrNull(specialTraits, (it) => it.id.startsWith('trait_tash_arrow_siege_'))
             if (arrowSiegeTrait != null && kt.Random.nextInt(100) < 25) {
                 rawDamage += 10
-                traitTriggerNote += if (isPlayer) {
-                    `💣 [${arrowSiegeTrait.name.toUpperCase()}!] Ağır kuşatma cıvası kalkanı darmadağın ederek kemikleri sarstı (+10 Kuşatma Hasarı)!\n`
-                } else {
-                    `💣 [${arrowSiegeTrait.name.toUpperCase()}!] ${attackerName}'in ağır kuşatma cıvası ${defenderName}'in kalkanını sarsarak kemiklerini çatlattı (+10 Kuşatma Hasarı)!\n`
-                }
+                traitTriggerNote += (isPlayer)
+                    ? `💣 [${arrowSiegeTrait.name.toUpperCase()}!] Ağır kuşatma cıvası kalkanı darmadağın ederek kemikleri sarstı (+10 Kuşatma Hasarı)!\n`
+                    : `💣 [${arrowSiegeTrait.name.toUpperCase()}!] ${attackerName}'in ağır kuşatma cıvası ${defenderName}'in kalkanını sarsarak kemiklerini çatlattı (+10 Kuşatma Hasarı)!\n`
             }
         }
 
@@ -1516,11 +1503,9 @@ trait.name.toLowerCase().includes('güneş halo') ||
         const barrierTrait = findBarrierTrait(defenderSpecialTraits)
         if (barrierTrait != null) {
             finalDamage *= 0.78
-            traitTriggerNote += if (isPlayer) {
-                `🛡️ [${barrierTrait.name.toUpperCase()}!] Hasmın koruyucu aurası darbenin şiddetini emerek hafifletti (-%22 Hasar)!\n`
-            } else {
-                `🛡️ [${barrierTrait.name.toUpperCase()}!] Bedenini saran koruyucu bariyer darbenin şiddetini emerek hafifletti (-%22 Hasar)!\n`
-            }
+            traitTriggerNote += (isPlayer)
+                ? `🛡️ [${barrierTrait.name.toUpperCase()}!] Hasmın koruyucu aurası darbenin şiddetini emerek hafifletti (-%22 Hasar)!\n`
+                : `🛡️ [${barrierTrait.name.toUpperCase()}!] Bedenini saran koruyucu bariyer darbenin şiddetini emerek hafifletti (-%22 Hasar)!\n`
         }
 
         // Savunanın Son Direniş Nitelikleri (Azam Surları, Kebir Hükmü vb.)
@@ -1528,11 +1513,9 @@ trait.name.toLowerCase().includes('güneş halo') ||
             const lastStandTrait = findLastStandDefenseTrait(defenderSpecialTraits)
             if (lastStandTrait != null) {
                 finalDamage *= 0.65
-                traitTriggerNote += if (isPlayer) {
-                    `🛡️ [${lastStandTrait.name.toUpperCase()}!] Hasmın sur gibi iradesi kritik anda darbenin hasarını kırdı (-%35 Hasar)!\n`
-                } else {
-                    `🛡️ [${lastStandTrait.name.toUpperCase()}!] Çelik sur iraden kritik anda gelen darbenin hasarını kırdı (-%35 Hasar)!\n`
-                }
+                traitTriggerNote += (isPlayer)
+                    ? `🛡️ [${lastStandTrait.name.toUpperCase()}!] Hasmın sur gibi iradesi kritik anda darbenin hasarını kırdı (-%35 Hasar)!\n`
+                    : `🛡️ [${lastStandTrait.name.toUpperCase()}!] Çelik sur iraden kritik anda gelen darbenin hasarını kırdı (-%35 Hasar)!\n`
             }
         }
 
@@ -1541,11 +1524,9 @@ trait.name.toLowerCase().includes('güneş halo') ||
             const execTrait = findExecutionTrait(specialTraits)
             if (execTrait != null) {
                 finalDamage *= 1.25
-                traitTriggerNote += if (isPlayer) {
-                    `☠️ [${execTrait.name.toUpperCase()}!] Hasmın tükenen canını gören darben ölümcül bir infaza dönüştü (+%25 İnfaz Hasarı)!\n`
-                } else {
-                    `☠️ [${execTrait.name.toUpperCase()}!] ${attackerName} tükenen canını fırsat bilip ölümcül bir infaz darbesi vurdu (+%25 İnfaz Hasarı)!\n`
-                }
+                traitTriggerNote += (isPlayer)
+                    ? `☠️ [${execTrait.name.toUpperCase()}!] Hasmın tükenen canını gören darben ölümcül bir infaza dönüştü (+%25 İnfaz Hasarı)!\n`
+                    : `☠️ [${execTrait.name.toUpperCase()}!] ${attackerName} tükenen canını fırsat bilip ölümcül bir infaz darbesi vurdu (+%25 İnfaz Hasarı)!\n`
             }
         }
 
@@ -1580,11 +1561,9 @@ trait.name.toLowerCase().includes('güneş halo') ||
             if (lifestealTrait != null) {
                 const traitHeal = Math.max(2, Math.round((damageInt * 0.14)))
                 lifestealAmount += traitHeal
-                traitTriggerNote += if (isPlayer) {
-                    `🩸 [${lifestealTrait.name.toUpperCase()}!] Hasmın kanından ve ruhundan güç çektin (+${traitHeal} Can)!\n`
-                } else {
-                    `🩸 [${lifestealTrait.name.toUpperCase()}!] ${attackerName}, ${defenderName}'in kanından güç emerek yaralarını tazeledi (+${traitHeal} Can)!\n`
-                }
+                traitTriggerNote += (isPlayer)
+                    ? `🩸 [${lifestealTrait.name.toUpperCase()}!] Hasmın kanından ve ruhundan güç çektin (+${traitHeal} Can)!\n`
+                    : `🩸 [${lifestealTrait.name.toUpperCase()}!] ${attackerName}, ${defenderName}'in kanından güç emerek yaralarını tazeledi (+${traitHeal} Can)!\n`
             }
         }
 
@@ -1627,11 +1606,9 @@ trait.name.toLowerCase().includes('güneş halo') ||
             if ((bleedTrait != null && kt.Random.nextInt(100) < 40) || skillAppliedBleed) {
                 appliedBleed = true
                 const bleedLabel = bleedTrait?.name?.toUpperCase() ?? (triggeredSkill?.name?.toUpperCase() ?? 'AĞIR KANAMA')
-                traitTriggerNote += if (isPlayer) {
-                    `🩸 [${bleedLabel}!] Açılan derin yara hedefin oluk oluk kan kaybetmesine yol açtı!\n`
-                } else {
-                    `🩸 [${bleedLabel}!] ${attackerName}'in darbesi ${defenderName}'de derin bir kanama başlattı!\n`
-                }
+                traitTriggerNote += (isPlayer)
+                    ? `🩸 [${bleedLabel}!] Açılan derin yara hedefin oluk oluk kan kaybetmesine yol açtı!\n`
+                    : `🩸 [${bleedLabel}!] ${attackerName}'in darbesi ${defenderName}'de derin bir kanama başlattı!\n`
             }
         }
 
@@ -1639,20 +1616,16 @@ trait.name.toLowerCase().includes('güneş halo') ||
         if (skillAppliedStun) {
             traitTriggerNote += `💫 [${triggeredSkill?.name?.toUpperCase() ?? 'AFALLATMA'}!] Hedef darbenin şiddetiyle sarsılarak sersemledi!\n`
         } else if (appliedStun && !isCrushingImpact && !hasExoticStun) {
-            traitTriggerNote += if (isPlayer) {
-                '⚫ [OBSİDYEN SARSINTISI!] Rakip darbenin şokuyla sersemledi!\n'
-            } else {
-                `⚫ [OBSİDYEN SARSINTISI!] ${defenderName} darbenin şokuyla sersemledi!\n`
-            }
+            traitTriggerNote += (isPlayer)
+                ? '⚫ [OBSİDYEN SARSINTISI!] Rakip darbenin şokuyla sersemledi!\n'
+                : `⚫ [OBSİDYEN SARSINTISI!] ${defenderName} darbenin şokuyla sersemledi!\n`
         }
 
         const slowTrait = findSlowDebuffTrait(specialTraits)
         if (slowTrait != null && damageInt > 0) {
-            traitTriggerNote += if (isPlayer) {
-                `❄️ [${slowTrait.name.toUpperCase()}!] Çengelli ve dondurucu darbe hasmın adımlarını ve reflekslerini yavaşlattı!\n`
-            } else {
-                `❄️ [${slowTrait.name.toUpperCase()}!] ${attackerName}'in dondurucu darbesi ${defenderName}'in adımlarını ve reflekslerini yavaşlattı!\n`
-            }
+            traitTriggerNote += (isPlayer)
+                ? `❄️ [${slowTrait.name.toUpperCase()}!] Çengelli ve dondurucu darbe hasmın adımlarını ve reflekslerini yavaşlattı!\n`
+                : `❄️ [${slowTrait.name.toUpperCase()}!] ${attackerName}'in dondurucu darbesi ${defenderName}'in adımlarını ve reflekslerini yavaşlattı!\n`
         }
 
         const resolvedPosition = if (tacticalPosition != null && tacticalPosition !== CombatTacticalPosition.NEUTRAL) {
@@ -1675,11 +1648,9 @@ trait.name.toLowerCase().includes('güneş halo') ||
             TextTemplateEngine.generateDetailedLog(attackerName, defenderName, weapon, event, bodyPart, damageInt, remainingHp, stance, resolvedPosition)
         }
 
-        let narrative = if (isWeaknessExploited && knownWeakness != null) {
-            `💡 [AÇIK İSTİSMARI!] ${knownWeakness.combatExploitPhrase}\n${baseNarrative}`
-        } else {
-            baseNarrative
-        }
+        let narrative = (isWeaknessExploited && knownWeakness != null)
+            ? `💡 [AÇIK İSTİSMARI!] ${knownWeakness.combatExploitPhrase}\n${baseNarrative}`
+            : baseNarrative
 
         if (traitTriggerNote.length > 0) {
             narrative = `${traitTriggerNote}${narrative}`
@@ -1741,11 +1712,9 @@ trait.name.toLowerCase().includes('güneş halo') ||
             }
         }
 
-        const summary = if (winner != null) {
-            `${winner} nakavt ile kazandı (${rounds} raunt) (+3 Puan)`
-        } else {
-            `Mücadele Çifte Nakavt ile Berabere Bitti (${rounds} raunt) (+1'er Puan)`
-        }
+        const summary = (winner != null)
+            ? `${winner} nakavt ile kazandı (${rounds} raunt) (+3 Puan)`
+            : `Mücadele Çifte Nakavt ile Berabere Bitti (${rounds} raunt) (+1'er Puan)`
 
         const narrative = if (winner == null) {
             const situation = (rounds >= 30) ? DrawSituation.MUTUAL_EXHAUSTION : DrawSituation.DOUBLE_KNOCKOUT
