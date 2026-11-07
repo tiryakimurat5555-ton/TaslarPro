@@ -61,7 +61,8 @@ const Mavi = color(0xff4a90e2);
 /** Bir hamlenin VoiceOver metni (Kotlin contentDescription: "Hamle N: anlatım"). */
 export function combatLogLabel(log) {
   let s = `Hamle ${log.round}: ${log.narrativeText}`;
-  if (log.damage > 0) s += ` (-${log.damage} Can)`;
+  // Anlatım metni hasarı zaten yazıyorsa ikinci kez eklenmez
+  if (log.damage > 0 && !String(log.narrativeText).includes(`(-${log.damage} Can)`)) s += ` (-${log.damage} Can)`;
   return s;
 }
 

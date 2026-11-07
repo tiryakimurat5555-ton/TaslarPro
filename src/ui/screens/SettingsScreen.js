@@ -132,7 +132,7 @@ export function SettingsScreen({ onNavigateBack, modifier }) {
             </T>
             <Spacer h={6} />
             <T size={12} color={alpha(TextLight, 0.85)} lineHeight={18}>
-              Oyun içi müzikler ve ses efektleri TalkBack ekran okuyucusuyla tam uyumludur. Dövüş naraları, dükkan kapıları, zar ve ödül sesleri görsel öğelere ek olarak anlık işitsel geri bildirim sağlar.
+              Oyun içi müzikler ve ses efektleri VoiceOver ve TalkBack ekran okuyucularıyla tam uyumludur. Dövüş naraları, dükkan kapıları, zar ve ödül sesleri görsel öğelere ek olarak anlık işitsel geri bildirim sağlar.
             </T>
           </Column>
         </Card>

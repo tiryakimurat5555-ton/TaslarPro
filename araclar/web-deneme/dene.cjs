@@ -1,260 +1,35 @@
-// İki Sancak'ı Chromium'da açıp dener (3B dahil). Kullanım:
-//   bash araclar/web-deneme/yap.sh <paket> && NODE_PATH=/opt/npm-tools/node_modules node araclar/web-deneme/dene.cjs <paket> <ekran-klasoru>
+// Diyarın Kaderi'ni Chromium'da baştan oynar: yeni oyun, hikaye, isim, 5 sekme, dövüş, dükkan, han, görev, gün, kayıttan devam.
+// Kullanım: bash araclar/web-deneme/yap.sh /tmp/claude-0/web && NODE_PATH=/opt/npm-tools/node_modules node araclar/web-deneme/dene.cjs /tmp/claude-0/web /tmp/claude-0/ekran
 const { chromium } = require('playwright');
-const path = require('path');
 const fs = require('fs');
-
-const PAKET = path.resolve(process.argv[2] || '/tmp/oyun-web');
-const CIKIS = path.resolve(process.argv[3] || '/tmp/oyun-ekran');
-fs.mkdirSync(CIKIS, { recursive: true });
-const URL = 'file://' + path.join(PAKET, 'index.html');
-let hata = 0;
-const kontrol = (k, m) => {
-  if (!k) hata++;
-  console.log(k ? 'tamam:' : 'HATA:', m);
-};
-const bekle = (ms) => new Promise((r) => setTimeout(r, ms));
-
-async function ac(tarayici, onYukle) {
-  const ctx = await tarayici.newContext({ viewport: { width: 844, height: 390 }, deviceScaleFactor: 2 });
-  if (onYukle) await ctx.addInitScript(onYukle);
-  const s = await ctx.newPage();
-  const hatalar = [];
-  s.on('pageerror', (e) => hatalar.push(e.message));
-  s.on('console', (m) => m.type() === 'error' && hatalar.push(m.text()));
-  await s.goto(URL);
-  await bekle(600);
-  return { s, hatalar, ctx };
-}
-const tikla = (s, etiket) => s.locator(['Geri', 'Görev'].includes(etiket) ? `[aria-label="${etiket}"]` : `[aria-label^="${etiket}"]`).first().click();
-const var_ = async (s, etiket) => (await s.locator(`[aria-label^="${etiket}"]`).count()) > 0;
-const konusmalar = (s) => s.evaluate(() => window.__konusmalar.join(' | '));
-
+const O = process.argv[3] || '/tmp/claude-0/ekran'; fs.mkdirSync(O, { recursive: true });
 (async () => {
-  const t = await chromium.launch({ args: ['--use-gl=swiftshader', '--enable-webgl', '--ignore-gpu-blocklist'] });
+  const b = await chromium.launch(); const c = await b.newContext({ viewport: { width: 390, height: 844 } });
+  const s = await c.newPage(); const h = []; s.on('pageerror', e => h.push('PE ' + e.message + ' ' + (e.stack||'').split('\n').slice(1,3).join(' '))); s.on('console', m => m.type()==='error' && h.push('CE ' + m.text().slice(0,300)));
+  await s.goto('file://' + require('path').resolve(process.argv[2] || '/tmp/claude-0/web') + '/index.html'); await s.waitForTimeout(1200);
+  const et = async () => (await s.$$eval('[aria-label]', els => els.filter(e=>e.offsetParent!==null || e.getClientRects().length).map(e => e.getAttribute('aria-label')))) ;
+  const tik = async (bas) => { const l = s.locator(`[aria-label^="${bas}"]`).first(); if (!(await l.count())) { console.log('YOK:', bas); return false; } try { await l.click({ timeout: 3000 }); } catch (e) { console.log('TIKLANAMADI:', bas.slice(0,60)); await l.click({ force: true, timeout: 3000 }).catch(()=>{}); } await s.waitForTimeout(400); return true; };
+  const adim = async (ad) => { await s.screenshot({ path: `${O}/${ad}.png` }); console.log('\n##', ad, '\n', (await et()).slice(0,60).map(x=>x.slice(0,70)).join(' | ')); if (h.length) { console.log('HATALAR:', h.splice(0).slice(0,5).join('\n')); } };
+  await tik('Yeni Oyun'); await adim('1-hikaye');
+  for (let i = 0; i < 8; i++) { const labels = await et(); const n = labels.find(x => /^Sonraki|^Kırlangıç Arenasına/i.test(x)); console.log('sayfa:', labels.slice(0,4).map(x=>x.slice(0,50)).join(' / ')); if (!n) break; await tik(n); }
+  await adim('2-isim');
+  const f = s.locator('input').first(); if (await f.count()) { await f.fill('Deneme'); }
+  const lbl = (await et()).find(x => /(onayla|Onayla|Başla|başla)/.test(x)); console.log('onay:', lbl); if (lbl) await tik(lbl);
+  await s.waitForTimeout(800); await adim('3-oyun');
+  for (const sekme of ['Ev', 'Arena', 'Bölge', 'Görevler', 'Çanta']) { await tik(sekme); await s.waitForTimeout(500); await adim('4-' + sekme); }
 
-  // 1) Görerek: yeni karakter, oyun, savaş, menüler
-  {
-    const { s, hatalar } = await ac(t);
-    kontrol(await var_(s, 'Görerek oyna'), 'kip seçimi açıldı');
-    await tikla(s, 'Görerek oyna');
-    await bekle(300);
-    await tikla(s, 'Yeni karakter');
-    await tikla(s, 'Gün Ulusu');
-    await tikla(s, 'Elf');
-    await tikla(s, 'Okçu');
-    await tikla(s, 'Alpay');
-    await tikla(s, 'Onayla ve başla');
-    await bekle(2500);
-    await s.screenshot({ path: path.join(CIKIS, '1-oyun.png') });
-    kontrol(await var_(s, 'Saldır'), 'oyun ekranı açıldı');
-    // Muhtar ile konuş (başlangıçta yanında)
-    if (await var_(s, 'Muhtar ile konuş')) {
-      await tikla(s, 'Muhtar ile konuş');
-      await bekle(400);
-    }
-    kontrol((await konusmalar(s)).length >= 0, 'konuşma kaydı');
-    // Muhtar'dan uzaklaş ve görev hedefini bul
-    await s.evaluate(() => {
-      const d = globalThis.__ikiSancakDunya;
-      d.oyuncu.y = -10;
-    });
-    await bekle(600);
-    if (await var_(s, 'Görev hedefini bul')) {
-      await tikla(s, 'Görev hedefini bul');
-      await bekle(800);
-      kontrol(/Görev hedefi: Kurt/.test(await konusmalar(s)), 'görev hedefi bulundu ve yüründü');
-      await tikla(s, 'Dur');
-    } else kontrol(false, 'Görev hedefini bul düğmesi görünmedi');
-    // Joystick: kuzeye yürü (canavarlar dışarıda)
-    const sol = s.locator('[aria-label^="Hareket alanı"]');
-    const kutu = await sol.boundingBox();
-    await s.mouse.move(kutu.x + kutu.width / 2, kutu.y + kutu.height / 2);
-    await s.mouse.down();
-    await s.mouse.move(kutu.x + kutu.width / 2, kutu.y + kutu.height / 2 - 60, { steps: 5 });
-    await bekle(5000);
-    await s.mouse.up();
-    await s.screenshot({ path: path.join(CIKIS, '2-yuruyus.png') });
-    await tikla(s, 'Etrafı tara');
-    await bekle(300);
-    await tikla(s, 'Hedef');
-    await bekle(300);
-    await tikla(s, 'Saldır');
-    for (let i = 0; i < 6; i++) {
-      await bekle(4000);
-      if (await var_(s, 'Yeniden doğ')) await tikla(s, 'Yeniden doğ');
-      if (!(await var_(s, 'Dur'))) {
-        await tikla(s, 'Hedef');
-        await tikla(s, 'Saldır');
-      }
-    }
-    await s.screenshot({ path: path.join(CIKIS, '3-savas.png') });
-    const sesler = await s.evaluate(() => [...new Set(window.__sesler)].join(' '));
-    console.log('Çalan sesler:', sesler);
-    kontrol(/oldur/.test(sesler) && /ok/.test(sesler) && /adim/.test(sesler), 'savaş ve ayak sesleri çaldı');
-    kontrol(/sonar_|kurt_|domuz_/.test(sesler), 'yönlü sesler çaldı');
-    const k = await konusmalar(s);
-    kontrol(/öldü/.test(k), 'en az bir canavar öldü');
-    kontrol(!/NaN|undefined/.test(k), 'konuşmalarda bozuk metin yok');
-    // Bölgeleri dolaş ve görüntü al
-    for (const [ad, x, y, yon] of [['kopru', 0, 66, 0], ['mese', -50, -62, 3.6], ['goblin', 80, 72, 0.8], ['kizil', 112, -116, 2.4], ['harabe', 160, 136, 0.9], ['sisli', -140, 175, 5.6], ['bataklik', 0, 252, 0]]) {
-      await s.evaluate(([x, y, yon]) => {
-        const d = globalThis.__ikiSancakDunya;
-        d.hedefId = null;
-        d.otoSaldiri = false;
-        d.yaklas = false;
-        d.oyuncu.x = x;
-        d.oyuncu.y = y;
-        d.oyuncu.yon = yon;
-        d.canavarlar.forEach((c) => (c.durum = 'bos'));
-      }, [x, y, yon]);
-      await bekle(2500);
-      await s.screenshot({ path: path.join(CIKIS, `b-${ad}.png`) });
-    }
-    const bk = await konusmalar(s);
-    kontrol(/Meşe Korusu/.test(bk) && /Keşif:/.test(bk), 'bölge ve keşif duyuruları geldi');
-    await tikla(s, 'Menü');
-    await bekle(300);
-    await tikla(s, 'Harita');
-    await bekle(300);
-    await s.screenshot({ path: path.join(CIKIS, 'h-harita.png') });
-    kontrol(await var_(s, 'Geri'), 'harita paneli açıldı');
-    await tikla(s, 'Geri');
-    await bekle(200);
-    await tikla(s, 'Karakter');
-    await bekle(300);
-    await s.screenshot({ path: path.join(CIKIS, '4-karakter.png') });
-    await tikla(s, 'Geri');
-    await tikla(s, 'Çanta');
-    await bekle(200);
-    await s.screenshot({ path: path.join(CIKIS, '5-canta.png') });
-    await tikla(s, 'Geri');
-    await tikla(s, 'Görev');
-    await tikla(s, 'Geri');
-    await tikla(s, 'Kaydet ve ana menüye dön');
-    await bekle(400);
-    kontrol(await var_(s, 'Devam et'), 'kayıt sonrası Devam et görünüyor');
-    await tikla(s, 'Devam et');
-    await bekle(1200);
-    kontrol(await var_(s, 'Saldır'), 'kayıttan devam edildi');
-    console.log('Söylenenlerden örnek:', k.slice(0, 900));
-    kontrol(!hatalar.length, 'sayfa hatası yok ' + hatalar.slice(0, 3).join(' / '));
-  }
-
-  // 2) Sesle oynama: VoiceOver hareketleri (gezgin)
-  {
-    const { s, hatalar } = await ac(t);
-    const merkez = async (etiket) => {
-      const l = s.locator(`[aria-label^="${etiket}"]`).first();
-      await l.scrollIntoViewIfNeeded();
-      await bekle(450);
-      const k = await l.boundingBox();
-      return { x: k.x + k.width / 2, y: k.y + k.height / 2 };
-    };
-    // kez 1: dokunup seç; kez 2: dokunup seç, sonra çift dokunarak çalıştır (VoiceOver gibi)
-    const dokun = async (etiket, kez = 1) => {
-      const m = await merkez(etiket);
-      await s.mouse.click(m.x, m.y);
-      await bekle(420);
-      if (kez === 2) {
-        await s.mouse.click(m.x, m.y);
-        await bekle(100);
-        await s.mouse.click(m.x, m.y);
-        await bekle(350);
-      }
-    };
-    const kaydir = async (dx) => {
-      await s.mouse.move(420, 200);
-      await s.mouse.down();
-      await s.mouse.move(420 + dx, 200, { steps: 3 });
-      await s.mouse.up();
-      await bekle(250);
-    };
-    const sonSoz = () => s.evaluate(() => window.__konusmalar[window.__konusmalar.length - 1] || '');
-    await tikla(s, 'Sesle oyna');
-    await bekle(700);
-    await dokun('Yeni karakter');
-    kontrol(/Yeni karakter, düğme/.test(await sonSoz()), 'tek dokunuş öğeyi okudu');
-    kontrol(await var_(s, 'Nasıl oynanır'), 'tek dokunuş çalıştırmadı');
-    await kaydir(80);
-    kontrol(/Nasıl oynanır/.test(await sonSoz()), 'sağa kaydırma sonraki öğeyi okudu: ' + (await sonSoz()));
-    await kaydir(-80);
-    kontrol(/Yeni karakter/.test(await sonSoz()), 'sola kaydırma önceki öğeye döndü');
-    // Başka bir düğmenin üstüne çift dokunmak da seçili öğeyi çalıştırır (VoiceOver gibi)
-    await kaydir(80);
-    const ayarMerkez = await merkez('Ayarlar');
-    await s.mouse.click(ayarMerkez.x, ayarMerkez.y);
-    await bekle(100);
-    await s.mouse.click(ayarMerkez.x, ayarMerkez.y);
-    await bekle(500);
-    kontrol(await var_(s, 'Geri'), 'başka düğmenin üstüne çift dokunma seçili Nasıl oynanır sayfasını açtı');
-    // Geri düğmesine kaydırarak gel, ekranın üstüne çift dokun
-    for (let i = 0; i < 20; i++) await kaydir(80);
-    kontrol(/Geri, düğme|Son öğe/.test(await sonSoz()), 'kaydırarak Geri düğmesine gelindi');
-    await s.mouse.click(420, 200);
-    await bekle(100);
-    await s.mouse.click(420, 200);
-    await bekle(500);
-    kontrol(await var_(s, 'Yeni karakter'), 'Geri düğmesi çift dokunuşla çalıştı');
-    await dokun('Yeni karakter');
-    // Ekranın boş bir yerine iki kez dokun: seçili öğe (Yeni karakter) çalışır
-    await s.mouse.click(420, 370);
-    await bekle(100);
-    await s.mouse.click(420, 370);
-    await bekle(500);
-    kontrol(await var_(s, 'Gün Ulusu'), 'herhangi bir yere iki kez dokunmak seçili öğeyi çalıştırdı');
-    await dokun('Gün Ulusu', 2);
-    await dokun('İnsan', 2);
-    await dokun('Rahip', 2);
-    await dokun('Bora', 2);
-    await dokun('Onayla ve başla', 2);
-    await bekle(1500);
-    kontrol(await var_(s, 'Saldır'), 'sesle karakter yaratıldı, oyun açıldı');
-    const once = await s.evaluate(() => ({ ...globalThis.__ikiSancakDunya.oyuncu }));
-    const m = await merkez('Hareket alanı');
-    await s.mouse.move(m.x, m.y);
-    await s.mouse.down();
-    await s.mouse.move(m.x + 40, m.y - 60, { steps: 4 });
-    await bekle(2000);
-    await s.mouse.up();
-    const sonra = await s.evaluate(() => ({ ...globalThis.__ikiSancakDunya.oyuncu }));
-    kontrol(Math.hypot(sonra.x - once.x, sonra.y - once.y) > 3 && Math.abs(sonra.yon - once.yon) > 0.2, 'hareket alanında doğrudan yürüdü ve döndü');
-    await dokun('Menü', 2);
-    kontrol(await var_(s, 'Oyuna dön'), 'menü açıldı');
-    await bekle(500);
-    await kaydir(80);
-    const ilk = await sonSoz();
-    kontrol(/Menü|Oyuna dön/.test(ilk), 'panelde gezinme panel öğelerinden başladı: ' + ilk);
-    await dokun('Oyuna dön', 2);
-    await bekle(300);
-    kontrol(!(await var_(s, 'Oyuna dön')), 'menü kapandı');
-    await s.screenshot({ path: path.join(CIKIS, '7-sesle.png') });
-    kontrol(!hatalar.length, 'sesle kipte sayfa hatası yok ' + hatalar.slice(0, 3).join(' / '));
-  }
-
-  // 3) VoiceOver kipi: hareket düğmeleri
-  {
-    const { s, hatalar } = await ac(t, () => {
-      window.__voiceover = true;
-    });
-    await bekle(300);
-    await tikla(s, 'VoiceOver ile oyna');
-    await tikla(s, 'Yeni karakter');
-    await tikla(s, 'Ay Ulusu');
-    await tikla(s, 'Ork');
-    await tikla(s, 'Savaşçı');
-    await tikla(s, 'Kaya');
-    await tikla(s, 'Onayla ve başla');
-    await bekle(1500);
-    kontrol(await var_(s, 'İleri yürü'), 'VoiceOver kipinde hareket düğmeleri var');
-    await tikla(s, 'İleri yürü');
-    await bekle(1000);
-    const duyurular = await s.evaluate(() => window.__duyurular.join(' | '));
-    kontrol(duyurular.length > 0, 'duyurular VoiceOver’a gitti');
-    await s.screenshot({ path: path.join(CIKIS, '6-voiceover.png') });
-    kontrol(!hatalar.length, 'VoiceOver kipinde sayfa hatası yok ' + hatalar.slice(0, 3).join(' / '));
-  }
-  await t.close();
-  console.log(hata ? `${hata} hata` : 'Hepsi tamam');
-  process.exit(hata ? 1 : 0);
+  const yaz = async (ad) => { console.log('\n##', ad, (await et()).slice(0,40).map(x=>x.slice(0,60)).join(' | ')); console.log('duyuru:', (await s.evaluate(()=>window.__duyurular.splice(0).slice(-6).join(' // '))).slice(0,600)); if (h.length) console.log('HATALAR:', h.splice(0).slice(0,5).join('\n')); await s.screenshot({ path: `${O}/${ad}.png` }); };
+  await tik('Arena'); await tik('⚔️ KURADAKİ RAKİPLE'); for (let i=0;i<40;i++){ await s.waitForTimeout(3000); const l=(await et()).join('|'); if (/ZAFER|YENİLGİ|Zafer|Yenilgi|Mağlubiyet|Galibiyet/.test(l) && !/Hamle \d+: .*$/.test('')) { if (!(await s.evaluate(()=>!!document.querySelector('[aria-label*="Can durumu"]')))) break; } } await yaz('5-dovus');
+  const kapat = (await et()).find(x => /Kapat|Tamam|Devam|Arenadan|Zafer|Ayrıl/.test(x)); console.log('kapat:', kapat); if (kapat) await tik(kapat);
+  await yaz('5b-dovus-sonrasi');
+  await tik('Bölge'); await tik('Demirci Vorn'); await s.waitForTimeout(500); await yaz('6-demirci');
+  const al = (await et()).find(x => /^Satın Al/.test(x)); console.log('al:', al); if (al) await tik(al); await yaz('6b-satin');
+  await tik('Ayrıl'); await tik('İsli Kandil Hanı'); await yaz('7-han');
+  const zar = (await et()).find(x => /^Zar at/.test(x)); if (zar) { await tik(zar); await yaz('7b-zar'); }
+  await tik('Görevler'); await tik('Sözleşmeyi Başlat'); await yaz('8-gorev');
+  await tik('Ev'); await tik('İstirahat'); await s.waitForTimeout(6000); await yaz('9-gun');
+  await s.reload(); await s.waitForTimeout(1500); await yaz('10-yeniden');
+  await tik('Kayıtlı oyuna'); await s.waitForTimeout(800); await yaz('11-devam');
+  fs.writeFileSync('' + O + '/hatalar.txt', h.join('\n'));
+  await b.close();
 })();

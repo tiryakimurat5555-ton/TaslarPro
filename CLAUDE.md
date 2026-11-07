@@ -1,8 +1,9 @@
 # TaslarPro deposu — çalışma notları
 
-Depo artık **İki Sancak** (çalışma adı) için kullanılıyor: Knight Online ruhunda, fantastik, 3B, kendi sesiyle konuşan
-erişilebilir RPG (6 Kasım 2026'da başladı). Eski Renkli Taşlar oyunu `arsiv/renkli-taslar/` altında (App.js ve testleri);
-geri dönmek gerekirse oradan alınır. Expo projesi ve slug aynı (taslarpro), görünen ad "İki Sancak".
+Depo artık **Diyarın Kaderi** için kullanılıyor (7 Kasım 2026): Bahtiyar'ın Android (Kotlin + Jetpack Compose) gladyatör
+RPG'si "Silahşör: Diyarın Kaderi"nin Expo'ya birebir taşınması. Murat: "MMORPG'nin yerine", "hepsi birden", 18+ eşlikçi
+sahneleri "olduğu gibi taşı". Görünen ad "Diyarın Kaderi", slug/EAS projesi aynı (taslarpro), dikey ekran.
+Önceki oyunlar: İki Sancak `arsiv/iki-sancak/` (App.js, oyun/, efektler, araçlar), Renkli Taşlar `arsiv/renkli-taslar/`.
 
 ## Murat ile çalışma
 - Murat'ın yalnızca iPhone'u var; kodu elle düzenleyemez. Bütün dosyaları ben yazar, depoya gönderirim.
@@ -12,7 +13,28 @@ geri dönmek gerekirse oradan alınır. Expo projesi ve slug aynı (taslarpro), 
 - Test edilmemiş bir özelliği çalışıyor diye sunma. Görüntü ve ses ancak Murat Expo Go'da denediğinde doğrulanır.
 - Murat'a belge verirken Claude Docs kullanma (VoiceOver ile erişilebilirliği kötü dedi); sade, başlıklı, tablo başlıklı HTML sayfası yap.
 
-## İki Sancak
+## Diyarın Kaderi
+- Kotlin kaynağı depoda yok (Murat'ın gönderdiği DiyarinKaderi_Proje.zip). Taşıma kuralları: `src/TASIMA_KURALLARI.md`
+  (Kotlin → JS eşlemeleri; adlar Kotlin ile AYNI, İngilizce kalır; metinler birebir). Çalışma zamanı `src/kt.js`:
+  Data (data class: static T, defaults(), copy, register), defineEnum, MutableStateFlow, idiv, Random, koleksiyonlar, toJson/fromJson.
+- Dosyalar (Kotlin paketlerinin aynası): `src/domain/model.js` (tüm modeller), `src/domain/engine/*` (CombatEngine, DuoCombatEngine,
+  AestheticCombatEngine, LabyrinthGenerator, anlatım motorları, TextTemplateEngine), `src/data/*` (GameRepository: oyun durumu merkezi;
+  SaveManager: AsyncStorage 'diyarinkaderi-kayit-v1', açılışta initialize() ile belleğe alınır; dükkân/karakter/eşlikçi verileri),
+  `src/ui/viewmodel/GameViewModel.js` (getGameViewModel() tekil), `src/ui/screens/*`, `src/ui/kit.js` (Compose→RN bileşenleri, VoiceOver),
+  `src/ui/theme.js`, `src/audio/SoundManager.js` (expo-audio, keepAudioSessionActive, mixWithOthers; ayarlar 'diyarinkaderi-ses-v1'),
+  `src/R.js` (R.raw.x / R.drawable.x), `App.js` (MainActivity).
+- Sesler: `assets/ses/*.m4a` (Kotlin res/raw'dan AAC'ye sıkıştırıldı: müzik 56k, efekt 96k; 160 MB → 47 MB). Görsel `assets/gorsel/`.
+- VoiceOver: sekmeler "Ad, seçili, sekme 1 / 5"; dövüşte her hamle duyurulur; pencereler modal ve iki parmak Z ile kapanır;
+  düğme içeren kartlarda etiket başlıkta (iOS'ta etiketli kap içini gizler); dükkân satırı = bilgi düğmesi + "Satın Al: ad".
+- Bilinçli değişiklikler: ayarlar metninde "TalkBack" → "VoiceOver ve TalkBack"; boş çanta yuvaları VoiceOver'dan gizli;
+  hamle etiketinde hasar iki kez yazılmaz. Kotlin'den gelen tuhaflıklar korunur (ör. "Deneme'ın" eki, Estetik düelloda nesne yazdırma).
+- Testler: `bun test` (Kotlin testlerinin taşınmışı, 34 dosya 192 test; DeepCombat.. testExecutionTraitBonusDamage Kotlin'de de rastgele, ara sıra düşer).
+  Tarayıcı: `bash araclar/web-deneme/yap.sh /tmp/claude-0/web && NODE_PATH=/opt/npm-tools/node_modules node araclar/web-deneme/dene.cjs /tmp/claude-0/web /tmp/claude-0/ekran`
+  (yeni oyun → hikaye → isim → 5 sekme → dövüş → demirci → han → görev → gün → kayıttan devam).
+- Paket denetimi: `bun build index.js --outdir <geçici> --target=browser -e react -e react-native -e expo -e 'expo-*' -e '@react-native-async-storage/*' -e react-native-safe-area-context -e '*.m4a' -e '*.jpg' -e '*.png'`
+- Telefonda henüz denenmedi (7 Kasım).
+
+## İki Sancak (arşivde: yollar artık arsiv/iki-sancak/ altında)
 - Tasarım kararları (6 Kasım, Murat): fantastik dünya, 4 sınıf (Savaşçı, Okçu, Büyücü, Rahip), deneme için seviye sınırı 30,
   oyunun kendi ses motoru. Tasarım belgesi: claude.ai artifact "Karakter Sistemi" (karakter, nitelik, gelişim, yetenek, basma).
 - Dosyalar: `oyun/veri.js` (sınıf, ırk, ulus, yetenek, canavar, görev tabloları), `oyun/mantik.js` (saf mantık: karakter,
@@ -80,7 +102,7 @@ geri dönmek gerekirse oradan alınır. Expo projesi ve slug aynı (taslarpro), 
 - Expo SDK 58. Sürümler expo deposunun sdk-58 dalındaki packages/expo/bundledNativeModules.json'dan (expo-gl ~58.0.4, expo-speech ~58.0.3).
 - Yayın: main'e push → .github/workflows/expo-guncelleme.yml → eas update (branch main). EXPO_TOKEN gizli anahtarı gerekir.
   Kayıt: `git fetch -q origin yayin-kaydi && git show FETCH_HEAD:yayin-kaydi.txt`. docs/** yayını tetiklemez.
-- assets/sounds: Renkli Taşlar'ın ses efektleri (kullanılmıyor). İki Sancak'ın sesleri assets/efekt altında.
+- assets/sounds: Renkli Taşlar'ın ses efektleri (kullanılmıyor). İki Sancak'ın sesleri arsiv/iki-sancak/assets/efekt altında.
 
 ## Sokağın Şarkısı (6 Kasım 2026)
 - docs/index.html: yürüyüşü anlık müziğe çeviren tek dosyalık web prototipi (Web Audio, mikrofon analizi, adım sensörü,

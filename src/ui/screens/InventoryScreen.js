@@ -511,7 +511,7 @@ function EmptyInventorySlotBox({ index }) {
       align="center"
       justify="center"
       style={{ aspectRatio: 1 }}
-      label={`Boş Çanta Yuvası ${index}`}
+      hidden
     >
       <T color={DarkBorder} size={14}>
         —

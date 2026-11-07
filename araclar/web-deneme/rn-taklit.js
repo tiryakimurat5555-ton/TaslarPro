@@ -379,6 +379,7 @@ function Image(p) {
 function ActivityIndicator(p) {
   return <div aria-hidden="true" style={{ width: 24, height: 24, borderRadius: 12, border: '3px solid ' + (p.color || '#888') }} />;
 }
+const findNodeHandle = (x) => x;
 const BackHandler = { addEventListener: () => ({ remove() {} }) };
 const Keyboard = { dismiss() {}, addListener: () => ({ remove() {} }) };
 const Vibration = { vibrate() {} };
@@ -388,4 +389,4 @@ const PixelRatio = { get: () => 2, roundToNearestPixel: (x) => x };
 function KeyboardAvoidingView(p) { return <View {...p} />; }
 function SafeAreaView(p) { return <View {...p} />; }
 
-export { FlatList, Image, ActivityIndicator, BackHandler, Keyboard, Vibration, Linking, I18nManager, PixelRatio, KeyboardAvoidingView, SafeAreaView, View, Text, Pressable, StyleSheet, Animated, Easing, Modal, ScrollView, Switch, AccessibilityInfo, useWindowDimensions, PanResponder, AppState, Platform, TextInput, Dimensions };
+export { findNodeHandle, FlatList, Image, ActivityIndicator, BackHandler, Keyboard, Vibration, Linking, I18nManager, PixelRatio, KeyboardAvoidingView, SafeAreaView, View, Text, Pressable, StyleSheet, Animated, Easing, Modal, ScrollView, Switch, AccessibilityInfo, useWindowDimensions, PanResponder, AppState, Platform, TextInput, Dimensions };

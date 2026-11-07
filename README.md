@@ -1,9 +1,9 @@
-# İki Sancak (çalışma adı)
+# Silahşör: Diyarın Kaderi
 
-Fantastik, 3B, kendi sesiyle konuşan ve görmeden de oynanabilen bir rol yapma oyunu. Expo (React Native) ile yapılıyor.
+Türkçe, metin ağırlıklı gladyatör RPG'si. Bahtiyar'ın Android (Kotlin) oyununun Expo (React Native) sürümü; VoiceOver ile oynanabilir.
 
-- `oyun/` oyunun verisi, mantığı, ses motoru ve 3B sahnesi
-- `App.js` arayüz
-- `araclar/` testler
-- `arsiv/renkli-taslar/` bu depodaki önceki oyun (Renkli Taşlar)
+- `App.js` uygulama kökü, `src/` oyunun tamamı (modeller, savaş motorları, veriler, ekranlar)
+- `assets/ses/` müzik ve efektler
+- `test/` testler (`bun test`), `araclar/web-deneme/` tarayıcı denemesi
+- `arsiv/iki-sancak/`, `arsiv/renkli-taslar/` bu depodaki önceki oyunlar
 - `docs/` Sokağın Şarkısı web denemesi (GitHub Pages)
