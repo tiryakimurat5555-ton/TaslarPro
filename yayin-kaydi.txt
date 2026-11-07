@@ -1,0 +1,98 @@
+Commit: f3c371a57cbc96a81fbd3aeb2f454c0f15b1f918
+
+added 469 packages in 22s
+The following packages should be updated for best compatibility with the installed expo version:
+  react-native-safe-area-context@5.10.1 - expected version: ~5.11.1
+Your project may not work correctly until you install the expected versions of the packages.
+Found outdated dependencies
+- Exporting...
+[expo-cli] --non-interactive is not supported, use $CI=1 instead
+[expo-cli] Starting Metro Bundler
+[expo-cli] iOS Bundled 24414ms index.js (724 modules)
+[expo-cli] Android Bundled 31116ms index.js (729 modules)
+[expo-cli] Creating asset map
+[expo-cli] 
+[expo-cli] › Assets (32):
+[expo-cli] assets/gorsel/main_menu_bg.jpg (779KB)
+[expo-cli] assets/ses/anamuzik.m4a (1.3MB)
+[expo-cli] assets/ses/arena.m4a (4.3MB)
+[expo-cli] assets/ses/arenabasla.m4a (65KB)
+[expo-cli] assets/ses/bolge.m4a (4.3MB)
+[expo-cli] assets/ses/demirci.m4a (4.3MB)
+[expo-cli] assets/ses/digeraltin.m4a (7KB)
+[expo-cli] assets/ses/dovusbasla.m4a (11KB)
+[expo-cli] assets/ses/dukkangiris.m4a (42KB)
+[expo-cli] assets/ses/envanter.m4a (1.1MB)
+[expo-cli] assets/ses/ev.m4a (4.3MB)
+[expo-cli] assets/ses/gelistir.m4a (13KB)
+[expo-cli] assets/ses/gorevkabul.m4a (37KB)
+[expo-cli] assets/ses/gorevler.m4a (4.3MB)
+[expo-cli] assets/ses/gorevodul.m4a (37KB)
+[expo-cli] assets/ses/gungecir.m4a (57KB)
+[expo-cli] assets/ses/hikayegiris.m4a (4.3MB)
+[expo-cli] assets/ses/mektup.m4a (12KB)
+[expo-cli] assets/ses/sarkialtin.m4a (12KB)
+[expo-cli] assets/ses/satinal.m4a (19KB)
+[expo-cli] assets/ses/savas1.m4a (1.3MB)
+[expo-cli] assets/ses/savas2.m4a (1.3MB)
+[expo-cli] assets/ses/savas3.m4a (1.4MB)
+[expo-cli] assets/ses/savas4.m4a (1.4MB)
+[expo-cli] assets/ses/savas5.m4a (1.4MB)
+[expo-cli] assets/ses/sayfacevir.m4a (18KB)
+[expo-cli] assets/ses/sayfacevir2.m4a (20KB)
+[expo-cli] assets/ses/sayfacevir3.m4a (15KB)
+[expo-cli] assets/ses/simyaci.m4a (4.3MB)
+[expo-cli] assets/ses/tashisar.m4a (4.3MB)
+[expo-cli] assets/ses/tashisarhan.m4a (4.3MB)
+[expo-cli] assets/ses/zarat.m4a (12KB)
+[expo-cli] 
+[expo-cli] › ios bundles (2):
+[expo-cli] _expo/static/js/ios/index-03a19ed3e97f4b3851eefb77078885ad.hbc (3.5MB)
+[expo-cli] _expo/static/js/ios/index-03a19ed3e97f4b3851eefb77078885ad.hbc.map (7.3MB)
+[expo-cli] › android bundles (2):
+[expo-cli] _expo/static/js/android/index-46091134b96bb124d2f285eff9b50bd1.hbc (3.5MB)
+[expo-cli] _expo/static/js/android/index-46091134b96bb124d2f285eff9b50bd1.hbc.map (7.3MB)
+[expo-cli] › Files (2):
+[expo-cli] assetmap.json (12KB)
+[expo-cli] metadata.json (4.3KB)
+[expo-cli] 
+[expo-cli] Exported: dist
+✔ Exported bundle(s)
+- Uploading...
+- Uploading assetmap.json (0 / 12.1 KB)
+✔ Uploaded assetmap.json 
+✔ Uploaded 2 app bundles
+✔ Uploaded 32 assets (reused 2 assets)
+ℹ 33 iOS assets, 33 Android assets (maximum: 2000 total per update). Learn more about asset limits: https://expo.fyi/eas-update-asset-limits
+- Computing project fingerprints
+✔ Computed project fingerprints
+- Publishing...
+✔ Published!
+[
+  {
+    "id": "01a1b6d5-625e-763e-8e53-b9b85e196907",
+    "createdAt": "2026-11-07T16:26:40.094Z",
+    "group": "c59744f5-37fb-47d9-923b-455b748feccd",
+    "branch": "main",
+    "message": "Diyarın Kaderi Expo'ya taşındı (İki Sancak arşive)",
+    "runtimeVersion": "1.0.0",
+    "platform": "android",
+    "manifestPermalink": "https://u.expo.dev/update/01a1b6d5-625e-763e-8e53-b9b85e196907",
+    "isRollBackToEmbedded": false,
+    "gitCommitHash": "f3c371a57cbc96a81fbd3aeb2f454c0f15b1f918"
+  },
+  {
+    "id": "01a1b6d5-625e-744d-84b7-150f7b2eb52e",
+    "createdAt": "2026-11-07T16:26:40.094Z",
+    "group": "c59744f5-37fb-47d9-923b-455b748feccd",
+    "branch": "main",
+    "message": "Diyarın Kaderi Expo'ya taşındı (İki Sancak arşive)",
+    "runtimeVersion": "1.0.0",
+    "platform": "ios",
+    "manifestPermalink": "https://u.expo.dev/update/01a1b6d5-625e-744d-84b7-150f7b2eb52e",
+    "isRollBackToEmbedded": false,
+    "gitCommitHash": "f3c371a57cbc96a81fbd3aeb2f454c0f15b1f918"
+  }
+]
+EXPO_GO_BAGLANTISI=exp://u.expo.dev/e9796050-d2e8-4278-aa86-6a58bcc22c0a/group/c59744f5-37fb-47d9-923b-455b748feccd
+Sonuc: success
