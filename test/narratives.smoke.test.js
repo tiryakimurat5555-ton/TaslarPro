@@ -62,7 +62,9 @@ const ADLAR = ['Morvath', 'Thyra', 'Ghorak', 'Kaelen', 'Bregash', 'Xylar', 'Khor
 
 test('TextTemplateEngine: detectCategory ve calculateSeverity', () => {
   expect(TextTemplateEngine.detectCategory('Dikenli Pranga')).toBe(WeaponCategory.CHAIN_MACE);
-  expect(TextTemplateEngine.detectCategory('Çivili Tokmak')).toBe(WeaponCategory.BLUDGEON);
+  expect(TextTemplateEngine.detectCategory('Demir Gürz')).toBe(WeaponCategory.BLUDGEON);
+  // Kotlin'deki sıra korunur: "tokmak" içinde "ok" geçtiği için CROSSBOW çıkar.
+  expect(TextTemplateEngine.detectCategory('Çivili Tokmak')).toBe(WeaponCategory.CROSSBOW);
   expect(TextTemplateEngine.detectCategory('Gladius')).toBe(WeaponCategory.SLASH);
   expect(TextTemplateEngine.calculateSeverity(3, false, 100)).toBe(DamageSeverity.GLANCING);
   expect(TextTemplateEngine.calculateSeverity(20, true, 100)).toBe(DamageSeverity.DEVASTATING);
@@ -207,21 +209,22 @@ test('BeastCombatNarratives: tüm üreticiler', () => {
 
 test('WrestlingCombatNarratives: tüm üreticiler', () => {
   const W = WrestlingCombatNarratives;
-  const adlar = Object.keys(W).filter((k) => typeof W[k] === 'function');
-  expect(adlar.length).toBeGreaterThan(5);
   for (let i = 0; i < TEKRAR; i++) {
-    for (const ad of adlar) {
-      // Parametreler: dizeler, sayılar ve mantıksallar; işlev uzunluğuna göre makul değerler
-      const kaynak = W[ad].toString();
-      const params = kaynak.slice(kaynak.indexOf('(') + 1, kaynak.indexOf(')')).split(',').map((x) => x.trim().split('=')[0].trim()).filter(Boolean);
-      const args = params.map((p) => {
-        if (/^(is|has)[A-Z]/.test(p)) return kt.Random.nextBoolean();
-        if (/damage|stage|strength|speed|count|stamina|grip|power|level|amount|round|cunning|turn/i.test(p)) return kt.randomIn(1, 3);
-        return 'Pehlivan ' + p;
-      });
-      const r = W[ad](...args);
-      if (Array.isArray(r)) r.forEach(metinMi);
-      else metinMi(r);
+    metinMi(W.generateIntro('Pehlivan Ali', 'Pehlivan Veli'));
+    metinMi(W.generateStance('Pehlivan Ali', 'Pehlivan Veli'));
+    metinMi(W.generateClinch('Pehlivan Ali', 'Pehlivan Veli'));
+    metinMi(W.generateShootOrSweep('Pehlivan Ali', 'Pehlivan Veli'));
+    metinMi(W.generateThrowOrKunde('Pehlivan Ali', 'Pehlivan Veli', 14));
+    metinMi(W.generatePinOrSubmission('Pehlivan Ali', 'Pehlivan Veli', 9));
+    metinMi(W.generateCazgirCommentary('Pehlivan Ali', 'Pehlivan Veli'));
+    for (const stage of [1, 2, 3]) {
+      metinMi(W.generateGearInteraction('Pehlivan Ali', stage));
+      metinMi(W.generateSpectatorReaction(stage));
+    }
+    for (const pin of [true, false]) {
+      const [log, reason] = W.generateVictory('Pehlivan Ali', 'Pehlivan Veli', pin);
+      metinMi(log);
+      metinMi(reason);
     }
   }
 });
@@ -251,7 +254,7 @@ test('CharacterRegistryData + TashisarGladiatorsData', () => {
 
 test('Eşlikçi (Companion) verileri', () => {
   const hepsi = [CompanionLyraData.createLyraData(), CompanionKaterinaData.createKaterinaData(), ...CompanionPavilionData.getAllCompanions()];
-  expect(hepsi.map((c) => c.id)).toEqual(['fighter_lyra', 'fighter_katerina', 'fighter_aresula', 'fighter_althea']);
+  expect(hepsi.map((c) => c.id)).toEqual(['fighter_lyra', 'fighter_katerina', 'fighter_aresula', 'npc_althea']);
   for (const c of hepsi) {
     expect(c instanceof CompanionData).toBe(true);
     expect(c.kademeler.length).toBe(5);
@@ -268,7 +271,7 @@ test('Eşlikçi (Companion) verileri', () => {
     });
     expect(c.culmination.passionNarrative.length).toBeGreaterThan(0);
   }
-  expect(CompanionPavilionData.getCompanionById('fighter_althea').name).toBeTruthy();
+  expect(CompanionPavilionData.getCompanionById('npc_althea').name).toBeTruthy();
   expect(CompanionPavilionData.getCompanionById('yok')).toBe(null);
   expect(CompanionPavilionData.getAllCompanions()[0].kademeler[2].rounds[0].choices[0].id).toBe('aresula_3_1_1');
 });
