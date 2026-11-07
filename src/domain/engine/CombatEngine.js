@@ -1475,13 +1475,14 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
             traitTriggerNote += `⚙️ [${armorPenTrait.name.toUpperCase()}!] Silahın delici ucu hasmın zırhını yararak geçti (+%25 Zırh Delme)!\n`
         }
         const penFactor = (1.0 - kt.coerceIn(((gemArmorPenPercent / 100.0) + traitPenBonus), 0.0, 0.88))
-        const armorMitigation = when {
-            isWeaknessExploited -> defenderStats.armor * 0.1
-            isCrushingImpact -> 0.0
-            isMeteorProc -> defenderStats.armor * 0.2
-            else -> defenderStats.armor * 0.4
-        } * penFactor
-        let finalDamage = Math.max(if (isWeaknessExploited || isCrushingImpact) 4.0 else 1.0, rawDamage - armorMitigation)
+        const armorMitigation = (isWeaknessExploited
+            ? defenderStats.armor * 0.1
+            : isCrushingImpact
+              ? 0.0
+              : isMeteorProc
+                ? defenderStats.armor * 0.2
+                : defenderStats.armor * 0.4) * penFactor
+        let finalDamage = Math.max((isWeaknessExploited || isCrushingImpact) ? 4.0 : 1.0, rawDamage - armorMitigation)
 
         // Yetenek Topu: Demir İrade (Alınan hasarı %30 kırar)
         if (isIronWillActive) {
@@ -1531,20 +1532,19 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
         }
 
         const critAmpTrait = findCritAmpTrait(specialTraits)
-        const event = when {
-            isCrit -> {
-                const critMultiplier = (critAmpTrait != null) ? 2.2 : 1.8
-                finalDamage *= critMultiplier
-                if (critAmpTrait != null) {
-                    traitTriggerNote += `💥 [${critAmpTrait.name.toUpperCase()}!] Kritik darbenin yıkıcı şiddeti katlandı!\n`
-                }
-                CombatEvent.CRITICAL
+        let event
+        if (isCrit) {
+            const critMultiplier = (critAmpTrait != null) ? 2.2 : 1.8
+            finalDamage *= critMultiplier
+            if (critAmpTrait != null) {
+                traitTriggerNote += `💥 [${critAmpTrait.name.toUpperCase()}!] Kritik darbenin yıkıcı şiddeti katlandı!\n`
             }
-            isBlock -> {
-                finalDamage *= 0.4
-                CombatEvent.BLOCKED
-            }
-            else -> CombatEvent.HIT
+            event = CombatEvent.CRITICAL
+        } else if (isBlock) {
+            finalDamage *= 0.4
+            event = CombatEvent.BLOCKED
+        } else {
+            event = CombatEvent.HIT
         }
 
         const damageInt = Math.round(finalDamage)
@@ -1628,24 +1628,34 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                 : `❄️ [${slowTrait.name.toUpperCase()}!] ${attackerName}'in dondurucu darbesi ${defenderName}'in adımlarını ve reflekslerini yavaşlattı!\n`
         }
 
-        const resolvedPosition = if (tacticalPosition != null && tacticalPosition !== CombatTacticalPosition.NEUTRAL) {
-            tacticalPosition
-        } else when {
-            isWeaknessExploited -> CombatTacticalPosition.ADVANTAGE
-            defenderHp < (defenderMaxHp * 0.25) -> CombatTacticalPosition.ADVANTAGE
-            attackerHp < (attackerMaxHp * 0.25) -> CombatTacticalPosition.DESPERATION
-            else -> CombatTacticalPosition.NEUTRAL
-        }
+        const resolvedPosition = (tacticalPosition != null && tacticalPosition !== CombatTacticalPosition.NEUTRAL)
+            ? tacticalPosition
+            : isWeaknessExploited
+              ? CombatTacticalPosition.ADVANTAGE
+              : defenderHp < (defenderMaxHp * 0.25)
+                ? CombatTacticalPosition.ADVANTAGE
+                : attackerHp < (attackerMaxHp * 0.25)
+                  ? CombatTacticalPosition.DESPERATION
+                  : CombatTacticalPosition.NEUTRAL
 
-        const baseNarrative = if (triggeredSkill != null) {
-            when (event) {
-                CombatEvent.CRITICAL, CombatEvent.HIT -> TextTemplateEngine.generateSkillHitNarrative(attackerName, defenderName, triggeredSkill, event, damageInt, bodyPart, stance, resolvedPosition, weapon)
-                CombatEvent.BLOCKED -> TextTemplateEngine.generateSkillBlockNarrative(attackerName, defenderName, triggeredSkill, weapon) + ` (-${damageInt} Can)`
-                CombatEvent.DODGED -> TextTemplateEngine.generateSkillDodgeNarrative(attackerName, defenderName, triggeredSkill, weapon)
-                else -> TextTemplateEngine.generateDetailedLog(attackerName, defenderName, weapon, event, bodyPart, damageInt, remainingHp, stance, resolvedPosition)
+        let baseNarrative
+        if (triggeredSkill != null) {
+            switch (event) {
+                case CombatEvent.CRITICAL:
+                case CombatEvent.HIT:
+                    baseNarrative = TextTemplateEngine.generateSkillHitNarrative(attackerName, defenderName, triggeredSkill, event, damageInt, bodyPart, stance, resolvedPosition, weapon)
+                    break
+                case CombatEvent.BLOCKED:
+                    baseNarrative = TextTemplateEngine.generateSkillBlockNarrative(attackerName, defenderName, triggeredSkill, weapon) + ` (-${damageInt} Can)`
+                    break
+                case CombatEvent.DODGED:
+                    baseNarrative = TextTemplateEngine.generateSkillDodgeNarrative(attackerName, defenderName, triggeredSkill, weapon)
+                    break
+                default:
+                    baseNarrative = TextTemplateEngine.generateDetailedLog(attackerName, defenderName, weapon, event, bodyPart, damageInt, remainingHp, stance, resolvedPosition)
             }
         } else {
-            TextTemplateEngine.generateDetailedLog(attackerName, defenderName, weapon, event, bodyPart, damageInt, remainingHp, stance, resolvedPosition)
+            baseNarrative = TextTemplateEngine.generateDetailedLog(attackerName, defenderName, weapon, event, bodyPart, damageInt, remainingHp, stance, resolvedPosition)
         }
 
         let narrative = (isWeaknessExploited && knownWeakness != null)
@@ -1688,10 +1698,10 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
         let rounds = 0
 
         while (hp1 > 0 && hp2 > 0 && rounds < 35) {
-            const dmg1 = Math.max(1, f1Stats.damage - (f2Stats.armor / 2))
+            const dmg1 = Math.max(1, f1Stats.damage - kt.idiv(f2Stats.armor, 2))
             hp2 -= dmg1
 
-            const dmg2 = Math.max(1, f2Stats.damage - (f1Stats.armor / 2))
+            const dmg2 = Math.max(1, f2Stats.damage - kt.idiv(f1Stats.armor, 2))
             hp1 -= dmg2
             rounds++
 
@@ -1701,28 +1711,28 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
         // Çifte nakavt veya kilitlenme beraberlik kontrolü
         const isDraw = (hp1 <= 0 && hp2 <= 0) || (rounds >= 35 && Math.abs(hp1 - hp2) <= 15) || (kt.Random.nextInt(100) < 14)
 
-        const winner = if (isDraw) {
-            null
-        } else {
-            when {
-                hp2 <= 0 && hp1 > 0 -> fighter1.name
-                hp1 <= 0 && hp2 > 0 -> fighter2.name
-                hp1 > hp2 -> fighter1.name
-                else -> fighter2.name
-            }
-        }
+        const winner = isDraw
+            ? null
+            : (hp2 <= 0 && hp1 > 0)
+              ? fighter1.name
+              : (hp1 <= 0 && hp2 > 0)
+                ? fighter2.name
+                : hp1 > hp2
+                  ? fighter1.name
+                  : fighter2.name
 
         const summary = (winner != null)
             ? `${winner} nakavt ile kazandı (${rounds} raunt) (+3 Puan)`
             : `Mücadele Çifte Nakavt ile Berabere Bitti (${rounds} raunt) (+1'er Puan)`
 
-        const narrative = if (winner == null) {
+        let narrative
+        if (winner == null) {
             const situation = (rounds >= 30) ? DrawSituation.MUTUAL_EXHAUSTION : DrawSituation.DOUBLE_KNOCKOUT
-            TextTemplateEngine.generateDrawNarrative(fighter1.name, fighter1.weaponName, fighter2.name, fighter2.weaponName, situation)
+            narrative = TextTemplateEngine.generateDrawNarrative(fighter1.name, fighter1.weaponName, fighter2.name, fighter2.weaponName, situation)
         } else if (winner === fighter1.name) {
-            `${fighter1.name}, ${fighter1.weaponName} ile ${fighter2.name}'i dize getirip lig puanını kopardı!`
+            narrative = `${fighter1.name}, ${fighter1.weaponName} ile ${fighter2.name}'i dize getirip lig puanını kopardı!`
         } else {
-            `${fighter2.name}, ${fighter2.weaponName} ile ${fighter1.name}'in gardını düşürerek zaferi aldı!`
+            narrative = `${fighter2.name}, ${fighter2.weaponName} ile ${fighter1.name}'in gardını düşürerek zaferi aldı!`
         }
 
         return new LeagueMatchResult({
@@ -2302,4 +2312,31 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
             betWinnings: betWinnings
         })
     }
+
+export const CombatEngine = {
+    simulateBattle,
+    hasRegenerationTrait,
+    hasResurrectionTrait,
+    findReflectionTrait,
+    findBarrierTrait,
+    findLastStandDefenseTrait,
+    findBleedTrait,
+    findExecutionTrait,
+    findArmorPenTrait,
+    findLifestealTrait,
+    findStunTrait,
+    findCritAmpTrait,
+    findSlowDebuffTrait,
+    findFireTrait,
+    findLightningTrait,
+    findPoisonTrait,
+    findFrostTrait,
+    findDestinyTrait,
+    findDualShotTrait,
+    findTripleShotTrait,
+    findEvasionBonusTrait,
+    findDeflectionBonusTrait,
+    findBlindingTrait,
+    simulateNpcVsNpcMatch,
+    simulateDetailedNpcBattle,
 }
