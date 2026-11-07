@@ -16,44 +16,42 @@ export const DuoCombatNarratives = {
   },
 
   generateAllyIntercept(interceptorName, targetName, attackerName, damageAbsorbed, isShield, triggerCount = 1) {
-    return isShield
-      ? (
-        triggerCount === 1
-          ? kt.random([
+    if (isShield) {
+      if (triggerCount === 1) {
+        return kt.random([
           `🛡️ [MÜTTEFİK SİPERİ!] ${attackerName} tam ${targetName}'ın savunmasız böğrüne darbe indirecekken ${interceptorName} yıldırım gibi araya girdi! Ağır kalkanını yere mıhlayarak vuruşu zırhında soğurdu (${damageAbsorbed} Hasar absorbe edildi)!`,
           `🛡️ [FEDAKARCA ATILIŞ!] ${targetName} sendelediği anda ${interceptorName} öne fırladı; ${attackerName}'ın ölümcül namlusunu kalkanının göbeğiyle saptırarak yoldaşını mutlak bir darbeden kurtardı!`,
           `🛡️ [AŞILMAZ KALKAN DUVARI!] ${interceptorName} 'Arkama geç!' diye haykırarak kalkanını gerdi; ${attackerName}'ın savurduğu keskin çelik kalkanın üzerinde kıvılcımlar saçarak geri tepti (${damageAbsorbed} Hasar soğuruldu)!`
-        ])
-          :
-        triggerCount === 2
-          ? kt.random([
+        ]);
+      } else if (triggerCount === 2) {
+        return kt.random([
           `🛡️ [İKİNCİ SİPER: SARSILMAZ SADAKAT!] ${interceptorName}, kalkanında beliren çatlaklara aldırmadan ikinci kez ${attackerName} ile yoldaşının arasına daldı! 'Burayı geçemezsin!' narasıyla darbeyi bir kez daha göğüsledi (${damageAbsorbed} Hasar soğuruldu)!`,
           `🛡️ [YİNELENEN FEDAKARLIK!] ${attackerName}'ın ${targetName}'ı hedef alan ardışık hamlesi, yine ${interceptorName}'ın inatçı çelik kalkanına çarparak boşa düştü!`
-        ])
-          :
-        kt.random([
+        ]);
+      } else {
+        return kt.random([
           `🛡️ [ZİRVE SİPER: CAN PAHASINA SUR!] Kan ter içindeki ${interceptorName}, paramparça olmuş kalkanını son bir iradeyle havaya kaldırıp üçüncü kez darbenin önüne atıldı! Arenadaki kalabalık bu insanüstü yoldaşlık bağı karşısında ayağa fırladı (${damageAbsorbed} Hasar soğuruldu)!`,
           `🛡️ [ÖLÜMÜNE YOLDAŞLIK!] Kalkanından saçılan madeni parçalara rağmen ${interceptorName} ${targetName}'ın önüne adeta etten ve çelikten bir kale ördü!`
-        ])
-      )
-      : (
-        triggerCount === 1
-          ? kt.random([
+        ]);
+      }
+    } else {
+      if (triggerCount === 1) {
+        return kt.random([
           `🛡️ [GÖVDE SİPERİ!] ${interceptorName}, ${attackerName}'ın ${targetName}'a inen vuruşunun önüne tereddüt etmeden atıldı! Darbeyi zırhlı omzuyla göğüsleyerek yoldaşına nefes aldırdı (${damageAbsorbed} Hasar soğuruldu)!`,
           `🛡️ [NAMLU SAPTIRMA!] ${attackerName}'ın silahı tam hedefe ulaşacakken ${interceptorName} kılıcının kabzasıyla vuruş çizgisini yukarı saptırdı ve yoldaşını ölümcül yaradan kurtardı!`,
           `🛡️ [CAN PAHASINA ATILMA!] ${targetName}'ın tökezlediğini gören ${interceptorName} araya girerek vuruşun hızını kesti; çelik çeliğe çarptı, taş zemin sarsıldı!`
-        ])
-          :
-        triggerCount === 2
-          ? kt.random([
+        ]);
+      } else if (triggerCount === 2) {
+        return kt.random([
           `🛡️ [İKİNCİ GÖVDE SİPERİ!] Önceki darbenin omzunda bıraktığı sızıya aldırmayan ${interceptorName}, bir kez daha ${targetName}'ın önüne atılarak ${attackerName}'ın vuruşunu zırh plakalarında eritti!`,
           `🛡️ [AMANSIZ KORUMA!] ${interceptorName} yoldaşını geriye çekip kendi gövdesini siper etti; kanayan yarasına rağmen gardını bir an bile düşürmedi!`
-        ])
-          :
-        kt.random([
+        ]);
+      } else {
+        return kt.random([
           `🛡️ [SON DİRENİŞ SİPERİ!] Tükenmenin eşiğindeki ${interceptorName}, ${targetName}'ı kurtarmak için son nefesini harcarcasına kendini namlunun önüne fırlattı! Arenada yankılanan çarpışma sesi tribünleri buz kesti!`
-        ])
-      );
+        ]);
+      }
+    }
   },
 
   generatePincerDoubleTeam(attacker1, attacker2, target, bonusDamage, triggerCount = 1) {
@@ -82,11 +80,14 @@ export const DuoCombatNarratives = {
   generateSynergyCombo(synergyType, initiator, executor, target, extraDamage, triggerCount = 1, skill = null) {
     const skillName = skill?.name ?? synergyType.title;
     // 1. Eylem Cümlesi (Trigger Count'a göre evrilir)
-    const actionPhrase = (
-      triggerCount === 1 ? DuoCombatNarratives.synergyActionsFirstTime(triggerCount) :
-      triggerCount === 2 ? DuoCombatNarratives.synergyActionsRepeated(triggerCount) :
-      DuoCombatNarratives.synergyActionsClimax(triggerCount)
-    );
+    let actionPhrase;
+    if (triggerCount === 1) {
+      actionPhrase = DuoCombatNarratives.synergyActionsFirstTime(triggerCount);
+    } else if (triggerCount === 2) {
+      actionPhrase = DuoCombatNarratives.synergyActionsRepeated(triggerCount);
+    } else {
+      actionPhrase = DuoCombatNarratives.synergyActionsClimax(triggerCount);
+    }
     // 2. Enerji / Fiziksel Efekt
     const energyIndex = (triggerCount * 3 + kt.Random.nextInt(DuoCombatNarratives.energyDischargePool.length)) % DuoCombatNarratives.energyDischargePool.length;
     const energyPhrase = DuoCombatNarratives.energyDischargePool[energyIndex];
@@ -97,11 +98,14 @@ export const DuoCombatNarratives = {
     const targetImpactIndex = (triggerCount * 2 + kt.Random.nextInt(DuoCombatNarratives.targetConsequencePool.length)) % DuoCombatNarratives.targetConsequencePool.length;
     const targetImpactPhrase = DuoCombatNarratives.targetConsequencePool[targetImpactIndex];
     // Başlık etiketi
-    const headerTag = (
-      triggerCount === 1 ? `🔥 [${synergyType.title} İTTİFAKI]` :
-      triggerCount === 2 ? `⚡ [TEKRARLANAN FIRTINA: ${synergyType.title}]` :
-      `💥 [ZİRVE SENFONİ: ${synergyType.title}]`
-    );
+    let headerTag;
+    if (triggerCount === 1) {
+      headerTag = `🔥 [${synergyType.title} İTTİFAKI]`;
+    } else if (triggerCount === 2) {
+      headerTag = `⚡ [TEKRARLANAN FIRTINA: ${synergyType.title}]`;
+    } else {
+      headerTag = `💥 [ZİRVE SENFONİ: ${synergyType.title}]`;
+    }
     return `${headerTag} ${initiator}, ${executor} ile ${actionPhrase} '${skillName}' tekniğini ateşleyerek ${target}'ın üzerine atıldı; ${energyPhrase}, ${atmospherePhrase} (${target} ${targetImpactPhrase}, +${extraDamage} Uyum Hasarı)!`;
   },
 
@@ -118,59 +122,54 @@ export const DuoCombatNarratives = {
   },
 
   generateSkillExecutionNarrative(attacker, defender, weapon, skill, damage, isCrit, defenderHpLeft, defenderMaxHp, triggerCount = 1) {
-    const critText = isCrit
-      ? 've zırhı parçalayan YIKICI bir kritik darbe indirdi'
-      : 've savuşturulamaz sertlikte bir darbe indirdi';
+    let critText;
+    if (isCrit) {
+      critText = 've zırhı parçalayan YIKICI bir kritik darbe indirdi';
+    } else {
+      critText = 've savuşturulamaz sertlikte bir darbe indirdi';
+    }
     const critTag = isCrit ? '💥 [KRİTİK YETENEK]' : `${skill.icon} [YETENEK: ${skill.name}]`;
-    const executionPhrase = (
-      skill.type === SkillType.ATTACK
-        ? (
-        triggerCount === 1
-          ? kt.random([
+    let executionPhrase;
+    if (skill.type === SkillType.ATTACK) {
+      if (triggerCount === 1) {
+        executionPhrase = kt.random([
           `${attacker} tüm vücut ağırlığını ${weapon} namlusuna yükleyip '${skill.name}' hamlesiyle öne fırladı`,
           `${attacker} gözü dönmüş bir savaş narasıyla ${defender}'ın gardını delmek üzere '${skill.name}' tekniğini savurdu`,
           `${attacker} kumları ezen adımlarla hız alıp '${skill.name}' kudretini serbest bıraktı`
-        ])
-          :
-        triggerCount === 2
-          ? kt.random([
+        ]);
+      } else if (triggerCount === 2) {
+        executionPhrase = kt.random([
           `${attacker} aynı ölümcül ritmi hız kesmeden sürdürerek '${skill.name}' darbesini ikinci kez indirdi`,
           `${attacker} ilk vuruşun ivmesini kaybetmeden ${weapon} ile '${skill.name}' hamlesini bu kez daha vahşi bir açıyla tekrarladı`
-        ])
-          :
-        kt.random([
+        ]);
+      } else {
+        executionPhrase = kt.random([
           `${attacker} artık hasmın direncini tamamen kırmak üzere '${skill.name}' tekniğini zirve bir gazapla üçüncü kez hayata geçirdi`,
           `${attacker} durdurulamaz bir kasırgaya dönüşerek '${skill.name}' darbesiyle arenayı inletti`
-        ])
-      )
-        :
-      skill.type === SkillType.TACTICAL
-        ? (
-        triggerCount === 1
-          ? kt.random([
+        ]);
+      }
+    } else if (skill.type === SkillType.TACTICAL) {
+      if (triggerCount === 1) {
+        executionPhrase = kt.random([
           `${attacker} zemin seviyesinden akrobatik bir kavis çizerek '${skill.name}' ile hasmın kör noktasına aktı`,
           `${attacker} ${defender}'ın göz kırpma anındaki boşluğu affetmeyip '${skill.name}' tekniğiyle açık aradı`
-        ])
-          :
-        kt.random([
+        ]);
+      } else {
+        executionPhrase = kt.random([
           `${attacker} aynı çevik manevrayı bir kez daha tekrarlayıp '${skill.name}' ile hasmın dengesini altüst etti`,
           `${attacker} adeta bir gölge gibi süzülerek '${skill.name}' hamlesiyle ${defender}'ı savunmasız bıraktı`
-        ])
-      )
-        :
-      skill.type === SkillType.DEFENSE
-        ? kt.random([
+        ]);
+      }
+    } else if (skill.type === SkillType.DEFENSE) {
+      executionPhrase = kt.random([
         `${attacker} toprağa kök salmış kadim bir kaya gibi duruşunu sabitleyip '${skill.name}' zırhını kuşandı`,
         `${attacker} gelen baskıyı zırhında ve ruhunda sönümlemek üzere '${skill.name}' iradesini devreye soktu`
-      ])
-        :
-      skill.type === SkillType.ULTIMATE
-        ? kt.random([
+      ]);
+    } else if (skill.type === SkillType.ULTIMATE) {
+      executionPhrase = kt.random([
         `${attacker} tüm varlığını ve nefesini tek bir noktaya odaklayarak '${skill.name}' nihai tekniğini arenanın göbeğinde patlattı!`
-      ])
-        :
-      null
-    );
+      ]);
+    }
     const crowdVibe = DuoCombatNarratives.atmosphereReactionPool[kt.Random.nextInt(DuoCombatNarratives.atmosphereReactionPool.length)];
     return `${critTag} ${executionPhrase}; ${critText}! ${crowdVibe} (${damage} Hasar, Kalan Can: ${defenderHpLeft}/${defenderMaxHp})`;
   },

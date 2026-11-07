@@ -115,25 +115,35 @@ export const BeastCombatNarratives = {
   // === 6. ARENA TUZAKLARI VE ÇEVRE UNSURLARI (KURNAZLIK & TUZAK KONTROLÜ) ===
   generateArenaTrapTrigger(fighterName, beastName, trapType, isSuccess, cunning, damage) {
     if (trapType === ArenaTrapType.SPIKE_WALL) {
-      return isSuccess
-        ? `🪵 ${fighterName} sırtını son anda kazıklı ahşap bariyerin önünden çekti! Gözü dönmüş ${beastName} son hızla sivri kazıklara tosladı; göğsü delinen yaratık acı bir böğürtüyle kumlara çakıldı! (-${damage} Can, Tuzak: Kazıklı Bariyer)`
-        : `⚠️ ${fighterName} canavarı kazıklara yönlendirmeye çalıştı ancak ${beastName} son anda kazıkları fark edip yana kıvrıldı; tuzak boşa gitti!`;
+      if (isSuccess) {
+        return `🪵 ${fighterName} sırtını son anda kazıklı ahşap bariyerin önünden çekti! Gözü dönmüş ${beastName} son hızla sivri kazıklara tosladı; göğsü delinen yaratık acı bir böğürtüyle kumlara çakıldı! (-${damage} Can, Tuzak: Kazıklı Bariyer)`;
+      } else {
+        return `⚠️ ${fighterName} canavarı kazıklara yönlendirmeye çalıştı ancak ${beastName} son anda kazıkları fark edip yana kıvrıldı; tuzak boşa gitti!`;
+      }
     } else if (trapType === ArenaTrapType.HANGING_CAGE) {
-      return isSuccess
-        ? `⛓️ ${fighterName} duvardaki mandalı çıplak tekmeyle kırdı! Tavanda asılı ağır demir kafes büyük bir gürültüyle ${beastName}'nin üzerine indi; kafesin demirleri altında ezilen yaratık kımıldayamaz oldu! (-${damage} Can, Tuzak: Düşen Kafes)`
-        : `⚠️ ${fighterName} kafes mandalına vurdu ancak zincir paslandığı için zamanında düşmedi; yaratık boşluktan kaçtı!`;
+      if (isSuccess) {
+        return `⛓️ ${fighterName} duvardaki mandalı çıplak tekmeyle kırdı! Tavanda asılı ağır demir kafes büyük bir gürültüyle ${beastName}'nin üzerine indi; kafesin demirleri altında ezilen yaratık kımıldayamaz oldu! (-${damage} Can, Tuzak: Düşen Kafes)`;
+      } else {
+        return `⚠️ ${fighterName} kafes mandalına vurdu ancak zincir paslandığı için zamanında düşmedi; yaratık boşluktan kaçtı!`;
+      }
     } else if (trapType === ArenaTrapType.FIRE_BRAZIER) {
-      return isSuccess
-        ? `🔥 ${fighterName} arenanın pirinç köz çanağına sert bir döner tekme attı! Kor alevler ve kızgın küller ${beastName}'nin yüzüne saçıldı; gözleri ve burnu yanan canavar acıyla uluyarak kumlarda yuvarlandı! (-${damage} Can, Tuzak: Alev Çanağı)`
-        : `⚠️ ${fighterName} köz çanağını devirmek istedi ancak alev rüzgarı kendi görüşünü kapattı; yaratık dumanın arkasından fırladı!`;
+      if (isSuccess) {
+        return `🔥 ${fighterName} arenanın pirinç köz çanağına sert bir döner tekme attı! Kor alevler ve kızgın küller ${beastName}'nin yüzüne saçıldı; gözleri ve burnu yanan canavar acıyla uluyarak kumlarda yuvarlandı! (-${damage} Can, Tuzak: Alev Çanağı)`;
+      } else {
+        return `⚠️ ${fighterName} köz çanağını devirmek istedi ancak alev rüzgarı kendi görüşünü kapattı; yaratık dumanın arkasından fırladı!`;
+      }
     } else if (trapType === ArenaTrapType.CHAIN_RING) {
-      return isSuccess
-        ? `⛓️ ${fighterName} duvardaki ağır köle zincirini kapıp ${beastName}'nin boynuna doladı! Zinciri taşa çakılı halkaya kilitleyerek yaratığın manevra alanını sıfıra indirdi! (-${damage} Can, Tuzak: Zincir Kilidi)`
-        : '⚠️ Zincir yaratığın kaygan boynundan kayıp kumlara düştü; kilit hamlesi tutmadı!';
+      if (isSuccess) {
+        return `⛓️ ${fighterName} duvardaki ağır köle zincirini kapıp ${beastName}'nin boynuna doladı! Zinciri taşa çakılı halkaya kilitleyerek yaratığın manevra alanını sıfıra indirdi! (-${damage} Can, Tuzak: Zincir Kilidi)`;
+      } else {
+        return '⚠️ Zincir yaratığın kaygan boynundan kayıp kumlara düştü; kilit hamlesi tutmadı!';
+      }
     } else if (trapType === ArenaTrapType.GRAVEL_PIT) {
-      return isSuccess
-        ? `🪨 ${fighterName} yaratığı kızıl çakıl hendegine doğru cezbetti! Ayakları hendekte kayan ${beastName} dengesini kaybetti; tepeden üzerine indirilen ağır taş vuruşlarıyla sersemledi! (-${damage} Can, Tuzak: Çakıl Hendegi)`
-        : `⚠️ ${beastName} hendegi tek bir sıçrayışla aşarak ${fighterName}'nin arkasına düştü!`;
+      if (isSuccess) {
+        return `🪨 ${fighterName} yaratığı kızıl çakıl hendegine doğru cezbetti! Ayakları hendekte kayan ${beastName} dengesini kaybetti; tepeden üzerine indirilen ağır taş vuruşlarıyla sersemledi! (-${damage} Can, Tuzak: Çakıl Hendegi)`;
+      } else {
+        return `⚠️ ${beastName} hendegi tek bir sıçrayışla aşarak ${fighterName}'nin arkasına düştü!`;
+      }
     }
     return null;
   },
