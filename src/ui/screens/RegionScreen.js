@@ -1,7 +1,7 @@
 // KT/ui/screens/RegionScreen.kt
 // Bölge / kasaba merkezi: çarşı (zanaatkarlar, dükkanlar, eğitmenler, köşk), İsli Kandil Hanı, kaynak sahaları,
 // diyar haritası ve ilgili pencereler.
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 import {
   AlertDialog,
@@ -95,6 +95,17 @@ function ItemColumn({ items, gap = 14, contentStyle }) {
 }
 
 const FERMAN_RENK = color(0xff2a1f0d);
+
+/** Anahtar değişince (ilk açılış hariç) metni VoiceOver'a okutur: zar sonucu, dedikodu, fısıltı, şarkı, yanıt. */
+function useAnnounceOnChange(key, text) {
+  const onceki = useRef(key);
+  useEffect(() => {
+    if (onceki.current !== key) {
+      onceki.current = key;
+      if (key != null && text) announce(text);
+    }
+  }, [key, text]);
+}
 
 function inList(liste, x) {
   return liste.includes(x);
@@ -2066,6 +2077,7 @@ function TavernEavesdropCard({ currentTale, canEavesdrop, remainingCount, maxCou
       ? `${currentTale.speakerName}, ${currentTale.speakerTitle}. ${currentTale.category.displayName}. ${currentTale.title}. "${currentTale.narrative}"` +
         (clueText ? ` ${clueText}` : '')
       : null;
+  useAnnounceOnChange(currentTale, taleLabel);
   return (
     <Card color={DarkSurfaceCard} radius={12} borderColor={DarkBorder}>
       <Column pad={14}>
@@ -2119,7 +2131,7 @@ function TavernEavesdropCard({ currentTale, canEavesdrop, remainingCount, maxCou
 
         {/* Tale Content Card */}
         {currentTale != null ? (
-          <Surface radius={8} color={DarkSurface} borderColor={alpha(AmberGoldDark, 0.5)} borderWidth={1} label={taleLabel} live>
+          <Surface radius={8} color={DarkSurface} borderColor={alpha(AmberGoldDark, 0.5)} borderWidth={1} label={taleLabel}>
             <Column pad={12}>
               <Row justify="between" style={{ alignSelf: 'stretch' }} gap={6}>
                 <Column style={{ flexShrink: 1 }}>
@@ -2253,6 +2265,7 @@ function TavernMealsCard({ playerGold, dayState, onOrderSoup, onOrderRabbit, onR
 
 function TavernDiceGameCard({ playerGold, dayState, selectedBet, lastResult, onSelectBet, onRollDice }) {
   const sonucBaslik = lastResult != null ? (lastResult.playerWon ? '🏆 KAZANDIN!' : lastResult.isTie ? '🤝 BERABERE!' : '💀 KAYBETTİN...') : null;
+  useAnnounceOnChange(lastResult, lastResult != null ? `${sonucBaslik} ${lastResult.narrativeOutcome}` : null);
   return (
     <Card color={DarkSurface} radius={10} borderColor={DarkBorder}>
       <Column pad={14}>
@@ -2304,7 +2317,6 @@ function TavernDiceGameCard({ playerGold, dayState, selectedBet, lastResult, onS
               borderColor={lastResult.playerWon ? HealthGreen : lastResult.isTie ? AmberGold : HealthRed}
               borderWidth={1}
               label={`${sonucBaslik} ${lastResult.narrativeOutcome}`}
-              live
             >
               <Column pad={10}>
                 <T weight="bold" size={12} color={lastResult.playerWon ? HealthGreen : lastResult.isTie ? AmberGold : HealthRed}>
@@ -2326,6 +2338,7 @@ function TavernDiceGameCard({ playerGold, dayState, selectedBet, lastResult, onS
 function TavernBardCard({ currentSong, playerGold, onTipBard }) {
   const isEpicSong = currentSong != null ? kt.count(kt.lines(currentSong), (it) => kt.isNotBlank(it)) >= 6 : false;
   const sarkiBaslik = isEpicSong ? "👑 Destansı 8'lik Kahramanlık Şarkısı" : '🪕 Ozanın Dörtlüğü';
+  useAnnounceOnChange(currentSong, currentSong != null ? `${sarkiBaslik}. ${currentSong}` : null);
   return (
     <Card color={DarkSurfaceCard} radius={10} borderColor={DarkBorder}>
       <Column pad={14}>
@@ -2354,7 +2367,7 @@ function TavernBardCard({ currentSong, playerGold, onTipBard }) {
         {currentSong != null ? (
           <>
             <Spacer h={12} />
-            <Surface radius={8} color={DarkSurface} borderColor={isEpicSong ? alpha(AmberGold, 0.5) : DarkBorder} borderWidth={1} label={`${sarkiBaslik}. ${currentSong}`} live>
+            <Surface radius={8} color={DarkSurface} borderColor={isEpicSong ? alpha(AmberGold, 0.5) : DarkBorder} borderWidth={1} label={`${sarkiBaslik}. ${currentSong}`}>
               <Column pad={12}>
                 <Row gap={6}>
                   <T size={11} weight="bold" color={isEpicSong ? AmberGold : FamePurple}>
@@ -2378,6 +2391,7 @@ function TavernInformantCard({ weaknesses, knownWeaknessIds, playerGold, lastWhi
   const known = knownWeaknessIds || [];
   const canAffordBribe = playerGold >= 30;
   const allKnown = known.length >= weaknesses.length;
+  useAnnounceOnChange(lastWhisper, lastWhisper);
 
   return (
     <Card color={DarkSurface} radius={12} borderColor={DarkBorder}>
@@ -2452,7 +2466,7 @@ function TavernInformantCard({ weaknesses, knownWeaknessIds, playerGold, lastWhi
                   </TextBtn>
                 </Row>
                 <Spacer h={4} />
-                <T size={11} color={TextLight} lineHeight={15} live>
+                <T size={11} color={TextLight} lineHeight={15}>
                   {lastWhisper}
                 </T>
               </Column>
@@ -3121,6 +3135,8 @@ export function CompanionDialogueModal({ session, player, viewModel }) {
   const kademe = kt.firstOrNull(companion.kademeler, (it) => it.kademeLevel === session.kademeLevel) ?? companion.kademeler[0];
   const roundIndex = session.currentRoundIndex;
   const currentRound = kt.getOrNull(kademe.rounds, roundIndex);
+  const secilen = session.isShowingChoiceResponse ? session.selectedChoice : null;
+  useAnnounceOnChange(secilen, secilen != null ? `${companion.name}'in Karşılığı: ${secilen.narrativeResponse}` : null);
 
   let confirm = null;
   if (session.isCulminationReached) {
@@ -3197,7 +3213,7 @@ export function CompanionDialogueModal({ session, player, viewModel }) {
               </Column>
             </Surface>
 
-            <Surface radius={8} color={color(0xff1e101a)} borderColor={alpha(color(0xff8c1d40), 0.7)} borderWidth={1} label={`${companion.name}'in Karşılığı: ${choice.narrativeResponse}`} live>
+            <Surface radius={8} color={color(0xff1e101a)} borderColor={alpha(color(0xff8c1d40), 0.7)} borderWidth={1} label={`${companion.name}'in Karşılığı: ${choice.narrativeResponse}`}>
               <Column pad={10}>
                 <T size={11} weight="bold" color={color(0xffd47a8c)}>
                   {`${companion.name}'in Karşılığı:`}
