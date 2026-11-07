@@ -1,16 +1,16 @@
 {
   "expo": {
-    "name": "İki Sancak",
+    "name": "Diyarın Kaderi",
     "slug": "taslarpro",
     "owner": "murat5561",
     "version": "1.0.0",
-    "orientation": "landscape",
+    "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#14161b"
+      "backgroundColor": "#141210"
     },
     "ios": {
       "supportsTablet": true,

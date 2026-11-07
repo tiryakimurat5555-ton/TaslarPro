@@ -16,6 +16,7 @@ export function LinearGradient(p) {
 }
 
 window.__sesler = [];
+export function setAudioModeAsyncX() {}
 export function createAudioPlayer(kaynak) {
   return {
     loop: false,
@@ -26,6 +27,9 @@ export function createAudioPlayer(kaynak) {
     pause() {},
     seekTo() {},
     release() {},
+    addListener() { return { remove() {} }; },
+    playing: false,
+    duration: 1,
   };
 }
 export async function setAudioModeAsync() {}
@@ -50,6 +54,7 @@ export function SafeAreaView(p) {
 const AsyncStorage = {
   getItem: async (k) => localStorage.getItem(k),
   setItem: async (k, v) => localStorage.setItem(k, v),
+  removeItem: async (k) => localStorage.removeItem(k),
 };
 export default AsyncStorage;
 

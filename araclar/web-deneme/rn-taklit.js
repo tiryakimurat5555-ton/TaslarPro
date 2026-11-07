@@ -275,13 +275,13 @@ const Pressable = React.forwardRef(function Pressable(p, ref) {
     <div
       ref={ref}
       data-dugme={id}
-      onClick={() => p.onPress && p.onPress()}
+      onClick={() => !p.disabled && p.onPress && p.onPress({ nativeEvent: { locationX: 0 } })}
       onMouseDown={() => p.onPressIn && p.onPressIn()}
       onMouseUp={() => p.onPressOut && p.onPressOut()}
       style={{ cursor: 'pointer', ...css(typeof p.style === 'function' ? p.style({}) : p.style, true) }}
       {...erisim(p)}
     >
-      {p.children}
+      {typeof p.children === 'function' ? p.children({ pressed: false }) : p.children}
     </div>
   );
 });
@@ -333,7 +333,7 @@ const StyleSheet = {
 
 const PanResponder = { create: (cfg) => ({ panHandlers: { __pan: cfg } }) };
 const AppState = { addEventListener: () => ({ remove() {} }) };
-const Platform = { OS: 'ios' };
+const Platform = { OS: 'ios', select: (o) => (o.ios !== undefined ? o.ios : o.default) };
 function TextInput(p) {
   return <input aria-label={p.accessibilityLabel} placeholder={p.placeholder} value={p.value} onChange={(e) => p.onChangeText && p.onChangeText(e.target.value)} style={css(p.style)} />;
 }
@@ -341,6 +341,9 @@ function TextInput(p) {
 window.__duyurular = [];
 const AccessibilityInfo = {
   announceForAccessibility: (m) => window.__duyurular.push(m),
+  announceForAccessibilityWithOptions: (m) => window.__duyurular.push(m),
+  addEventListener: () => ({ remove() {} }),
+  setAccessibilityFocus() {},
   isReduceMotionEnabled: async () => false,
   isScreenReaderEnabled: async () => !!window.__voiceover,
 };
@@ -349,4 +352,40 @@ function useWindowDimensions() {
   return { width: 390, height: 844 };
 }
 
-export { View, Text, Pressable, StyleSheet, Animated, Easing, Modal, ScrollView, Switch, AccessibilityInfo, useWindowDimensions, PanResponder, AppState, Platform, TextInput, Dimensions };
+
+// FlatList: tum ogeleri cizer (deneme icin sanallastirma yok)
+const FlatList = React.forwardRef(function FlatList(p, ref) {
+  const veri = p.data || [];
+  const H = p.ListHeaderComponent, F = p.ListFooterComponent, B = p.ListEmptyComponent, A = p.ItemSeparatorComponent;
+  const ciz = (X) => (X == null ? null : React.isValidElement(X) ? X : <X />);
+  return (
+    <ScrollView ref={ref} style={p.style} contentContainerStyle={p.contentContainerStyle} horizontal={p.horizontal}>
+      {ciz(H)}
+      {veri.length === 0 ? ciz(B) : null}
+      {veri.map((item, index) => (
+        <React.Fragment key={p.keyExtractor ? p.keyExtractor(item, index) : index}>
+          {index > 0 && A ? <A /> : null}
+          {p.renderItem({ item, index })}
+        </React.Fragment>
+      ))}
+      {ciz(F)}
+    </ScrollView>
+  );
+});
+function Image(p) {
+  const kaynak = p.source && (p.source.uri || p.source.default || p.source);
+  return <img src={typeof kaynak === 'string' ? kaynak : ''} alt={p.accessibilityLabel || ''} style={{ objectFit: p.resizeMode === 'contain' ? 'contain' : 'cover', ...css(p.style) }} />;
+}
+function ActivityIndicator(p) {
+  return <div aria-hidden="true" style={{ width: 24, height: 24, borderRadius: 12, border: '3px solid ' + (p.color || '#888') }} />;
+}
+const BackHandler = { addEventListener: () => ({ remove() {} }) };
+const Keyboard = { dismiss() {}, addListener: () => ({ remove() {} }) };
+const Vibration = { vibrate() {} };
+const Linking = { openURL: async () => {} };
+const I18nManager = { isRTL: false };
+const PixelRatio = { get: () => 2, roundToNearestPixel: (x) => x };
+function KeyboardAvoidingView(p) { return <View {...p} />; }
+function SafeAreaView(p) { return <View {...p} />; }
+
+export { FlatList, Image, ActivityIndicator, BackHandler, Keyboard, Vibration, Linking, I18nManager, PixelRatio, KeyboardAvoidingView, SafeAreaView, View, Text, Pressable, StyleSheet, Animated, Easing, Modal, ScrollView, Switch, AccessibilityInfo, useWindowDimensions, PanResponder, AppState, Platform, TextInput, Dimensions };
