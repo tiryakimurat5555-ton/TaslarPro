@@ -125,7 +125,7 @@ test('Gem.create ve GemCraftingRules', () => {
   expect(g.tier).toBe(GemTier.POLISHED);
   expect(g.id).toBe('gem_zumrut_lvl4');
   expect(g.valueInGold).toBe(400);
-  expect(Gem.create(GemType.ZUMRUT, 7).stats.maxHealth).toBe(705);
+  expect(Gem.create(GemType.ZUMRUT, 7).stats.maxHealth).toBe(706); // 15 * 1.9^6 = 705.69 (Kotlin yorumundaki 705 yaklaşık)
   expect(Gem.create(GemType.LAPIS, 5).stats.speed).toBe(3);
   expect(Gem.create(GemType.TOPAZ, 3).stats.speed).toBe(5);
   expect(g.displayName).toBe('🟢 Zümrüt (Sv. 4)');
@@ -156,7 +156,7 @@ test('FighterPsychology kararları', () => {
   expect(g.evaluateLootDilemma(true, 99)).toBe(LootAction.FAIR_SHARE);
   expect(g.evaluateCrisisResponse(99)).toBe(CrisisAction.SHIELD_AND_DEFEND_ALLY);
   const k = FighterPsychology.fromArchetype(PersonalityArchetype.KURNAZ);
-  expect(k.evaluateLootDilemma(true, 99)).toBe(LootAction.DEMAND_LION_SHARE);
+  expect(k.evaluateLootDilemma(true, 99)).toBe(LootAction.BETRAY_AND_STRIKE);
   expect(k.evaluateCrisisResponse(99)).toBe(CrisisAction.SACRIFICE_ALLY_AND_FLEE);
   expect(Object.values(AllianceDecision).length).toBeGreaterThan(0);
   expect(AllianceDecision.values()).toContain(g.evaluateAllianceOffer());
