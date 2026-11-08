@@ -59,6 +59,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
+import Svg, { Path } from 'react-native-svg';
+import { GORSEL_YOLLARI } from './gorseller.js';
 import { AmberGold, AmberGoldDark, DarkBg, DarkBorder, DarkSurface, DarkSurfaceCard, TextGold, TextLight, TextMuted, SerifFont } from './theme.js';
 
 // ---------------------------------------------------------------------------
@@ -279,7 +281,16 @@ export function T(p) {
 // ---------------------------------------------------------------------------
 // Düğmeler
 // ---------------------------------------------------------------------------
-function dugmeIcerik(children, renk, boyut) {
+function dugmeIcerik(children, renk, boyut, gorsel, gorselRenk) {
+  if (gorsel) {
+    const b = Math.round((boyut || 14) * 1.45);
+    return (
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+        <Gorsel ad={gorsel} boyut={b} renk={gorselRenk || renk} />
+        <View style={{ flexShrink: 1 }}>{dugmeIcerik(children, renk, boyut)}</View>
+      </View>
+    );
+  }
   const tekMetin = typeof children === 'string' || typeof children === 'number' || (Array.isArray(children) && children.every((c) => typeof c === 'string' || typeof c === 'number'));
   if (tekMetin) {
     return (
@@ -347,7 +358,7 @@ function TemelDugme(p, tur) {
       disabled={!!disabled}
       style={({ pressed }) => [st, style, pressed && !disabled ? { opacity: 0.7 } : null]}
     >
-      {dugmeIcerik(children, yazi, textSize)}
+      {dugmeIcerik(children, yazi, textSize, p.gorsel, disabled ? null : p.gorselRenk)}
     </Pressable>
   );
 }
@@ -536,7 +547,7 @@ export function Spinner({ color = AmberGold, size = 36 }) {
 // ---------------------------------------------------------------------------
 // Seçim öğeleri
 // ---------------------------------------------------------------------------
-export function Chip({ selected, onPress, children, label, disabled, leading, style, selectedColor = AmberGoldDark, color = DarkSurfaceCard }) {
+export function Chip({ selected, onPress, children, label, disabled, leading, gorsel, style, selectedColor = AmberGoldDark, color = DarkSurfaceCard }) {
   const yazi = selected ? TextGold : TextLight;
   return (
     <Pressable
@@ -564,6 +575,7 @@ export function Chip({ selected, onPress, children, label, disabled, leading, st
       ]}
     >
       {leading || null}
+      {gorsel ? <Gorsel ad={gorsel} boyut={18} renk={selected ? TextGold : AmberGold} /> : null}
       {typeof children === 'string' || typeof children === 'number' ? <Text style={{ color: yazi, fontSize: 13, fontWeight: selected ? '700' : '500' }}>{children}</Text> : children}
     </Pressable>
   );
@@ -574,7 +586,8 @@ export function Tabs({ titles, selected, onSelect, scrollable, style, color = Da
   const n = titles.length;
   const ogeler = titles.map((t, i) => {
     const secili = i === selected;
-    const metin = typeof t === 'string' ? t : metinTopla(t);
+    const nesne = t && typeof t === 'object' && !React.isValidElement(t) ? t : null;
+    const metin = nesne ? nesne.baslik : typeof t === 'string' ? t : metinTopla(t);
     return (
       <Pressable
         key={i}
@@ -594,7 +607,16 @@ export function Tabs({ titles, selected, onSelect, scrollable, style, color = Da
           borderBottomColor: secili ? AmberGold : 'transparent',
         }}
       >
-        {typeof t === 'string' ? <Text style={{ color: secili ? TextGold : TextMuted, fontSize: 13, fontWeight: secili ? '700' : '500', textAlign: 'center' }}>{t}</Text> : t}
+        {nesne ? (
+          <View style={{ alignItems: 'center', gap: 3 }}>
+            {nesne.gorsel ? <Gorsel ad={nesne.gorsel} boyut={nesne.boyut || 22} renk={secili ? AmberGold : TextMuted} /> : null}
+            <Text style={{ color: secili ? TextGold : TextMuted, fontSize: 12, fontWeight: secili ? '700' : '500', textAlign: 'center' }}>{nesne.baslik}</Text>
+          </View>
+        ) : typeof t === 'string' ? (
+          <Text style={{ color: secili ? TextGold : TextMuted, fontSize: 13, fontWeight: secili ? '700' : '500', textAlign: 'center' }}>{t}</Text>
+        ) : (
+          t
+        )}
       </Pressable>
     );
   });
@@ -729,9 +751,86 @@ const IKONLAR = {
   ExpandLess: '▴',
 };
 /** Icons.Default.X / Icons.AutoMirrored.Filled.X → <Ikon name="X" />. Dekoratiftir. */
-// Murat isteğiyle (8 Kasım) oyundaki emojiler kaldırıldı; simgeler artık hiçbir şey çizmez.
+// Murat isteğiyle (8 Kasım) emojiler kaldırıldı; Material Icons karşılığı Ikon da artık hiçbir şey çizmez.
+// Görseller için Gorsel kullan.
 export function Ikon() {
   return null;
+}
+
+/**
+ * Oyun simgesi (game-icons.net, CC BY 3.0). VoiceOver'dan HER ZAMAN gizlidir; anlamı komşu metin/etiket taşır.
+ * <Gorsel ad="kilic" boyut={24} renk={AmberGold} />  — adlar src/ui/gorseller.js'te (GORSEL_YOLLARI).
+ */
+export function Gorsel({ ad, boyut = 24, renk = AmberGold, style, opaklik }) {
+  const d = GORSEL_YOLLARI[ad];
+  if (!d) {
+    if (typeof __DEV__ !== 'undefined' && __DEV__) console.warn('Bilinmeyen görsel: ' + ad);
+    return null;
+  }
+  return (
+    <View
+      accessible={false}
+      accessibilityElementsHidden
+      importantForAccessibility="no-hide-descendants"
+      pointerEvents="none"
+      style={[{ width: boyut, height: boyut, opacity: opaklik == null ? 1 : opaklik }, style]}
+    >
+      <Svg width={boyut} height={boyut} viewBox="0 0 512 512">
+        <Path d={d} fill={renk} />
+      </Svg>
+    </View>
+  );
+}
+
+/** Yuvarlak (ya da köşeli) zemin üstünde simge: kart başları, avatarlar, eşya kutuları için. Gizlidir. */
+export function GorselRozet({ ad, boyut = 44, renk = AmberGold, zemin, kenar, kare, oran = 0.6, style }) {
+  return (
+    <View
+      accessible={false}
+      accessibilityElementsHidden
+      importantForAccessibility="no-hide-descendants"
+      pointerEvents="none"
+      style={[
+        {
+          width: boyut,
+          height: boyut,
+          borderRadius: kare ? Math.round(boyut * 0.22) : boyut / 2,
+          backgroundColor: zemin || 'rgba(201,147,62,0.14)',
+          borderWidth: kenar ? 1.5 : 0,
+          borderColor: kenar || 'transparent',
+          alignItems: 'center',
+          justifyContent: 'center',
+        },
+        style,
+      ]}
+    >
+      <Gorsel ad={ad} boyut={Math.round(boyut * oran)} renk={renk} />
+    </View>
+  );
+}
+
+/** Başlık satırı: simge + başlık metni (heading). */
+export function GorselBaslik({ gorsel, children, renk = AmberGold, boyut = 16, gorselBoyut, style, label }) {
+  return (
+    <View style={[{ flexDirection: 'row', alignItems: 'center', gap: 8 }, style]}>
+      {gorsel ? <Gorsel ad={gorsel} boyut={gorselBoyut || Math.round(boyut * 1.5)} renk={renk} /> : null}
+      <T heading weight="bold" size={boyut} color={renk} label={label} style={{ flexShrink: 1 }}>
+        {children}
+      </T>
+    </View>
+  );
+}
+
+/** Simge + kısa değer (nitelik, ödül, fiyat satırları). label verilirse VoiceOver onu okur. */
+export function GorselDeger({ gorsel, children, renk = TextLight, gorselRenk, boyut = 13, style, label }) {
+  return (
+    <View style={[{ flexDirection: 'row', alignItems: 'center', gap: 5 }, style]} accessible={!!label} accessibilityLabel={label}>
+      <Gorsel ad={gorsel} boyut={Math.round(boyut * 1.4)} renk={gorselRenk || renk} />
+      <T size={boyut} color={renk} weight="semibold" style={{ flexShrink: 1 }}>
+        {children}
+      </T>
+    </View>
+  );
 }
 
 export function Img({ source, style, resizeMode = 'cover', label }) {
