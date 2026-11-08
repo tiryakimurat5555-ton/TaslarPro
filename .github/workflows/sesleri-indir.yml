@@ -24,7 +24,7 @@ jobs:
           mkdir -p .sesler/ham
           while read -r ad url; do
             [ -z "$ad" ] && continue
-            curl -fsSL -o ".sesler/ham/$ad.mp3" "$url"
+            curl -fsSL -o ".sesler/ham/$ad.mp3" "$url" || { echo "HATA: $ad indirilemedi"; continue; }
             echo "$ad indirildi ($(stat -c %s ".sesler/ham/$ad.mp3") bayt)"
           done < .sesler/liste.txt
 
