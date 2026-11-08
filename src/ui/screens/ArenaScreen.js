@@ -1530,11 +1530,12 @@ function SpectatorResultCard({ result, onDismiss }) {
         )}
 
         <Spacer h={6} />
-        <IkonluMetin gorsel="kontrol-listesi" gorselRenk={HealthGreen} boyut={16} style={{ alignSelf: 'stretch', justifyContent: 'center' }}>
-          <T size={11} color={HealthGreen} weight="semibold" align="center" style={{ flexShrink: 1 }}>
+        <Column align="center" gap={4} style={{ alignSelf: 'stretch' }}>
+          <Gorsel ad="kontrol-listesi" boyut={20} renk={HealthGreen} />
+          <T size={11} color={HealthGreen} weight="semibold" align="center">
             {katilim}
           </T>
-        </IkonluMetin>
+        </Column>
 
         <Spacer h={14} />
         <Btn onPress={onDismiss} color={AmberGold} contentColor={DarkBg} radius={8} gorsel="kapi">

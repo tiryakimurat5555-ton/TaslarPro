@@ -40,6 +40,14 @@ sahneleri "olduğu gibi taşı". Görünen ad "Diyarın Kaderi", slug/EAS projes
   (icon, avatarIcon) artık boş dize; `${x.icon} ` kalıpları silindi; kit Ikon hiçbir şey çizmez. Silahsız gösteride kritik atış
   artık '⚡' ile değil anlatım parçasıyla tanınır (GameViewModel KRITIK_ATIS_IPUCLARI). Kilitli arena sekmeleri "(Kilitli)" der.
   Yeni metin yazarken emoji KULLANMA.
+- Görseller (8 Kasım, Murat: "görsel koyulacak yerlere görsel koy, butonları görselleştir, düzyazı bırakma; ekran okuyucudan
+  gizlenebilir"; seçim: oyun simgeleri). game-icons.net (CC BY 3.0; künye Ayarlar ekranının altında) 224 simge
+  `src/ui/gorseller.js` (üretim: `node araclar/gorsel-uret.cjs <game-icons klasörü> araclar/gorsel-secim.txt`; klasör:
+  `git clone --depth 1 https://github.com/game-icons/icons`). react-native-svg 15.16.0 (SDK 58). Kit: Gorsel, GorselRozet,
+  GorselBaslik, GorselDeger; Btn/Chip `gorsel` prop; Tabs başlığı { baslik, gorsel }. Hepsi VoiceOver'dan gizli, etiketler aynı.
+  Eşleme: `src/ui/gorsel-esleme.js` (esyaGorseli+nadirlikRengi, tasGorseli+tasRengi, npcGorseli, odaGorseli, arenaGorseli...).
+  Ortak eylem simgeleri: kapat/ayrıl 'kapi', satın al 'sikkeler', sat 'para-kesesi', yükselt 'yukselt', dinlen 'yatak',
+  dövüş 'capraz-kilic', yola çık 'patika', ödül 'hediye', kilitli 'kilit', incele 'bilgi'/'gozlemci'.
   Tarayıcı taklidi CSS ile çizdiği için bu tür Yoga yükseklik hatalarını göstermez; pencerelerde Scroll kullanırken dikkat.
 
 ## İki Sancak (arşivde: yollar artık arsiv/iki-sancak/ altında)
