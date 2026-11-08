@@ -16,6 +16,8 @@ export function SettingsScreen({ onNavigateBack, modifier }) {
   const [sfxVol, setSfxVol] = useState(SoundManager.sfxVolume);
   const [bgmEnabled, setBgmEnabled] = useState(SoundManager.isBgmEnabled);
   const [sfxEnabled, setSfxEnabled] = useState(SoundManager.isSfxEnabled);
+  const [crowdVol, setCrowdVol] = useState(SoundManager.crowdVolume);
+  const [crowdEnabled, setCrowdEnabled] = useState(SoundManager.isCrowdEnabled);
 
   return (
     <Screen bg={DarkBg} style={modifier}>
@@ -122,6 +124,49 @@ export function SettingsScreen({ onNavigateBack, modifier }) {
             <OutlinedBtn onPress={() => SoundManager.playSfx(R.raw.dovusbasla)} disabled={!sfxEnabled} radius={8} style={{ alignSelf: 'stretch' }} gorsel="kilic-carpisma" gorselRenk={sfxEnabled ? AmberGold : alpha(AmberGold, 0.4)}>
               <T color={sfxEnabled ? AmberGold : alpha(AmberGold, 0.4)}>Efekt Sesini Test Et</T>
             </OutlinedBtn>
+          </Column>
+        </Card>
+
+        {/* ARENA SEYİRCİ SESİ (8 Kasım) */}
+        <Card color={DarkSurface} radius={12} borderColor={DarkBorder} borderWidth={1} style={{ alignSelf: 'stretch' }}>
+          <Column pad={16}>
+            <Row justify="between" style={{ alignSelf: 'stretch' }}>
+              <Row gap={8} style={{ flexShrink: 1 }}>
+                <Gorsel ad="arena" boyut={24} renk={AmberGold} />
+                <T heading size={16} weight="bold" color={TextGold} style={{ flexShrink: 1 }}>
+                  Arena Seyirci Sesi
+                </T>
+              </Row>
+              <Toggle
+                value={crowdEnabled}
+                onChange={(checked) => {
+                  setCrowdEnabled(checked);
+                  SoundManager.setCrowdEnabled(checked);
+                }}
+                label={crowdEnabled ? 'Arena seyirci sesi açık, kapatmak için dokunun' : 'Arena seyirci sesi kapalı, açmak için dokunun'}
+              />
+            </Row>
+
+            <Spacer h={6} />
+            <T size={12} color={TextLight} lineHeight={17}>
+              Arenadaki dövüş boyunca tribünlerin uğultusu. Hamle efektleri çalarken kendiliğinden kısılır.
+            </T>
+
+            <Slider
+              value={crowdVol}
+              onChange={(newVal) => {
+                setCrowdVol(newVal);
+                SoundManager.setCrowdVolume(newVal);
+              }}
+              min={0}
+              max={1}
+              step={0.05}
+              disabled={!crowdEnabled}
+              color={AmberGold}
+              label="Seyirci ses seviyesi"
+              valueText={`yüzde ${yuzde(crowdVol)}`}
+              style={{ marginTop: 10 }}
+            />
           </Column>
         </Card>
 

@@ -4,6 +4,7 @@ import * as kt from '../../kt.js';
 import { Data } from '../../kt.js';
 import { R } from '../../R.js';
 import { SoundManager } from '../../audio/SoundManager.js';
+import { ARENA_SESLERI, ARENA_SES_SURESI, hamleSesleri, oyuncuSilahi } from '../../audio/ArenaSesleri.js';
 import { GameRepository } from '../../data/GameRepository.js';
 import { StarterContent } from '../../data/StarterContent.js';
 import { ActiveCompanionSession, CombatEvent, CombatLog, DuoFighterLiveHp, StarterSkills } from '../../domain/model.js';
@@ -573,8 +574,9 @@ export class GameViewModel {
       this._liveEnemyHp.value = enemy.stats.maxHealth;
       this._combatResult.value = null;
 
-      // 1. Tuşa basıldığında dövüş başlangıç sesi
+      // 1. Tuşa basıldığında dövüş başlangıç sesi; seyirci uğultusu arenadan ayrılana kadar sürer (8 Kasım)
       SoundManager.playSfx(R.raw.dovusbasla, 6500);
+      SoundManager.playAmbience(ARENA_SESLERI.seyirci, 0.35);
       await kt.delay(800);
 
       // 2. Ardından arenabasla borazan ve arena kapı sesi devreye girer
@@ -585,11 +587,21 @@ export class GameViewModel {
       // 4. Sesin bitiminin ardından savaş müziği başlar ve çatışma hamleleri akar
       SoundManager.playRandomBattleMusic();
 
+      const silah = oyuncuSilahi(this.player.value);
       const fullResult = this.repository.executeCombat(enemy, bet);
 
-      // Stream logs tick-by-tick (hamle başına 3 saniye)
+      // Her hamle: önce efekt, efektin başında metin ekrana gelir (VoiceOver okur), seyirci tepkisi efekt bitince.
+      // Bir sonraki metin, efekt + metnin okunma süresi (saniyede ~30 harf) kadar bekler: en az 4,5, en çok 7 sn
+      // (eskiden sabit 3 sn). Efekt ve seyirci tepkisi bir sonraki efektten önce biter; sesler üst üste binmez.
       const accumulatedLogs = [];
       for (const log of fullResult.logs) {
+        const { sesler, seyirci } = hamleSesleri(log, silah, enemy, fullResult.isPlayerWinner);
+        const efekt = sesler[0];
+        const efektMs = ARENA_SES_SURESI[efekt] || 1000;
+        SoundManager.playSfx(ARENA_SESLERI[efekt], efektMs + 300);
+        let gecen = Math.min(efektMs, 450);
+        await kt.delay(gecen);
+
         accumulatedLogs.push(log);
         this._liveCombatLogs.value = accumulatedLogs.slice();
         if (log.isPlayerAttacker) {
@@ -597,7 +609,16 @@ export class GameViewModel {
         } else {
           this._livePlayerHp.value = log.defenderHpLeft;
         }
-        await kt.delay(3000);
+
+        if (seyirci) {
+          const kalan = Math.max(0, efektMs - gecen);
+          await kt.delay(kalan);
+          gecen += kalan;
+          SoundManager.playSfx(ARENA_SESLERI[seyirci], ARENA_SES_SURESI[seyirci] || 3000, null, 0.75);
+        }
+        const okumaMs = Math.round((String(log.narrativeText || '').length / 30) * 1000);
+        const aralik = Math.max(4500, Math.min(7000, efektMs + okumaMs), seyirci ? efektMs + (ARENA_SES_SURESI[seyirci] || 3000) : 0);
+        await kt.delay(Math.max(0, aralik - gecen));
       }
 
       await kt.delay(500);
@@ -607,6 +628,8 @@ export class GameViewModel {
   }
 
   dismissCombatModal() {
+    // Arenadan ayrılınca seyirci uğultusu yavaşça söner
+    SoundManager.stopAmbience(1500);
     this._combatResult.value = null;
     this._liveCombatLogs.value = [];
     this._isFighting.value = false;
