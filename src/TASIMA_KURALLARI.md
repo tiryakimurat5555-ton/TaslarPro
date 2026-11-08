@@ -114,7 +114,7 @@ Bileşen kiti `src/ui/kit.js` ve renkler `src/ui/theme.js` (Kotlin'deki adlar ay
 - Snackbar/Toast → `showSnack(mesaj)` (kit). Ses → `SoundManager.playSfx(R.raw.x)` aynen.
 
 ## Denetim
-- Sözdizimi/paketleme: `bun build <dosya> --outdir /tmp/claude-0/denetim-<adın> --target=browser -e react -e react-native -e 'expo-*' -e '@react-native-async-storage/*' -e 'react-native-safe-area-context' -e '*.m4a' -e '*.jpg' -e '*.png'`
+- Sözdizimi/paketleme: `bun build <dosya> --outdir /tmp/claude-0/denetim-<adın> --target=browser -e react -e react-native -e 'expo-*' -e '@react-native-async-storage/*' -e 'react-native-safe-area-context' -e react-native-svg -e '*.m4a' -e '*.jpg' -e '*.png'`
   hatasız geçmeli (çözülemeyen göreli içe aktarma = henüz yazılmamış dosya olabilir; o zaman adın doğru olduğunu KT'den teyit et).
 - Testler: `cd /home/claude/taslarpro && bun test test/<ad>.test.js`. JUnit `assertEquals(beklenen, gercek)` → `expect(gercek).toBe(beklenen)`
   (data için `toEqual` ya da `expect(kt.eq(a,b)).toBe(true)`), `assertTrue(x)` → `expect(x).toBe(true)`. Test başarısızsa önce

@@ -1,6 +1,6 @@
 // KT/ui/screens/LevelUpDialog.kt
 import React, { useEffect } from 'react';
-import { AlertDialog, Btn, Column, Row, Spacer, Surface, T, announce } from '../kit.js';
+import { AlertDialog, Btn, Column, Gorsel, GorselRozet, Row, Spacer, Surface, T, announce } from '../kit.js';
 import { AmberGold, AmberGoldDark, DarkBg, DarkBorder, DarkSurface, DarkSurfaceCard, ExpBlue, HealthGreen, TextGold, TextLight, TextMuted, alpha } from '../theme.js';
 
 export function LevelUpDialog({ event, onDismiss }) {
@@ -27,6 +27,7 @@ export function LevelUpDialog({ event, onDismiss }) {
           radius={8}
           style={{ alignSelf: 'stretch', flex: 1, minHeight: 44 }}
           label="Tamam, seviye atlama penceresini kapat ve maceraya devam et"
+          gorsel="patika"
         >
           <T weight="bold" size={14} color={DarkBg}>
             Tamam (Maceraya Devam Et)
@@ -35,14 +36,19 @@ export function LevelUpDialog({ event, onDismiss }) {
       }
       title={
         <Column align="center" style={{ alignSelf: 'stretch' }}>
+          <GorselRozet ad="seviye" boyut={56} renk={TextGold} kenar={AmberGold} zemin={alpha(AmberGoldDark, 0.3)} />
+          <Spacer h={8} />
           <T heading weight="extrabold" size={20} color={TextGold}>
             SEVİYE ATLADIN!
           </T>
           <Spacer h={4} />
           <Surface radius={6} color={alpha(AmberGoldDark, 0.25)} borderColor={AmberGold} borderWidth={1}>
-            <T weight="bold" size={13} color={AmberGold} style={{ paddingHorizontal: 10, paddingVertical: 3 }}>
-              {`Seviye ${event.oldLevel} ➔ Seviye ${event.newLevel}`}
-            </T>
+            <Row gap={6} style={{ paddingHorizontal: 10, paddingVertical: 3 }}>
+              <Gorsel ad="yukselt" boyut={16} renk={AmberGold} />
+              <T weight="bold" size={13} color={AmberGold}>
+                {`Seviye ${event.oldLevel} ➔ Seviye ${event.newLevel}`}
+              </T>
+            </Row>
           </Surface>
         </Column>
       }
@@ -54,18 +60,21 @@ export function LevelUpDialog({ event, onDismiss }) {
           <Spacer h={4} />
           <Surface radius={8} color={DarkSurfaceCard} borderColor={DarkBorder} borderWidth={1} style={{ alignSelf: 'stretch' }}>
             <Column pad={12} gap={6}>
-              <StatBonusRow icon="" label="Maksimum Can" bonus={`+${event.healthGained}`} extra={`(Yeni: ${event.newMaxHealth})`} color={HealthGreen} />
-              <StatBonusRow icon="" label="Saldırı Hasarı" bonus={`+${event.damageGained}`} extra="" color={AmberGold} />
-              <StatBonusRow icon="" label="Zırh & Koruma" bonus={`+${event.armorGained}`} extra="" color={ExpBlue} />
-              <StatBonusRow icon="" label="Hız & Çeviklik" bonus={`+${event.speedGained}`} extra="" color={TextGold} />
+              <StatBonusRow icon="can" label="Maksimum Can" bonus={`+${event.healthGained}`} extra={`(Yeni: ${event.newMaxHealth})`} color={HealthGreen} />
+              <StatBonusRow icon="kilic" label="Saldırı Hasarı" bonus={`+${event.damageGained}`} extra="" color={AmberGold} />
+              <StatBonusRow icon="kalkan" label="Zırh & Koruma" bonus={`+${event.armorGained}`} extra="" color={ExpBlue} />
+              <StatBonusRow icon="hiz" label="Hız & Çeviklik" bonus={`+${event.speedGained}`} extra="" color={TextGold} />
             </Column>
           </Surface>
           <Spacer h={4} />
           <Surface radius={6} color={DarkBg} style={{ alignSelf: 'stretch' }}>
             <Row pad={8} justify="between">
-              <T size={11} color={TextMuted}>
-                Sonraki Seviye:
-              </T>
+              <Row gap={6}>
+                <Gorsel ad="yildiz-madalya" boyut={16} renk={ExpBlue} />
+                <T size={11} color={TextMuted}>
+                  Sonraki Seviye:
+                </T>
+              </Row>
               <T size={11} weight="bold" color={ExpBlue}>
                 {`${event.nextLevelExp} EXP gerekli`}
               </T>
@@ -81,10 +90,8 @@ function StatBonusRow({ icon, label, bonus, extra, color }) {
   return (
     <Row justify="between" style={{ alignSelf: 'stretch' }}>
       <Row>
-        <T size={14} hidden>
-          {icon}
-        </T>
-        <Spacer w={6} />
+        <Gorsel ad={icon} boyut={20} renk={color} />
+        <Spacer w={8} />
         <T size={12} color={TextLight} weight="medium">
           {label}
         </T>

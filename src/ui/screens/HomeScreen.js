@@ -7,9 +7,10 @@ import {
   Card,
   Chip,
   Column,
+  Gorsel,
+  GorselRozet,
   Grid,
   IconBtn,
-  Ikon,
   OutlinedBtn,
   Progress,
   Row,
@@ -43,6 +44,48 @@ import {
 import { ChestType, GemType, GemCraftingRules, RoomType, CharacterCategory, FighterPsychology, PersonalityArchetype } from '../../domain/model.js';
 import { GladiatorPsychologyCard } from '../components/GladiatorPsychologyView.js';
 import * as kt from '../../kt.js';
+import { bolgeGorseli, karakterGorseli, mizacGorseli, nitelikGorseli, odaGorseli, sandikGorseli, tasGorseli, tasRengi, yetenekGorseli } from '../gorsel-esleme.js';
+
+// Görseller VoiceOver'dan gizlidir (kit Gorsel/GorselRozet); okunan metinler ve etiketler aynen korunur.
+const ExpBlueAcik = '#64B5F6';
+
+/** Hücreden eve geçiş şartının simgesi (şart başlığındaki anahtar sözcüğe göre). */
+function sartGorseli(baslik) {
+  const s = String(baslik || '').toLocaleLowerCase('tr-TR');
+  if (s.includes('şöhret')) return 'defne';
+  if (s.includes('tecrübe') || s.includes('seviye')) return 'seviye';
+  if (s.includes('tahkim') || s.includes('hücre')) return 'kale';
+  if (s.includes('harç') || s.includes('altın') || s.includes('mülk')) return 'sikkeler';
+  return 'kontrol-listesi';
+}
+
+/** Hammadde sandığındaki malzemenin simgesi. */
+function malzemeGorseli(matKey) {
+  switch (matKey) {
+    case 'mat_iron_ore':
+      return 'kazma';
+    case 'mat_stone':
+      return 'hammadde';
+    case 'mat_cloth':
+      return 'igne';
+    case 'mat_wood':
+      return 'balta';
+    case 'mat_herb':
+      return 'sifali-ot';
+    default:
+      return 'sandik';
+  }
+}
+
+/** Başlığın soluna simge koyan satır (başlığın metni ve rolü aynen kalır). */
+function SimgeliSatir({ gorsel, renk = AmberGold, boyut = 18, children, style }) {
+  return (
+    <Row gap={6} style={style}>
+      <Gorsel ad={gorsel} boyut={boyut} renk={renk} />
+      {children}
+    </Row>
+  );
+}
 
 export function HomeScreen({ viewModel, modifier }) {
   const player = useFlow(viewModel.player);
@@ -61,12 +104,13 @@ export function HomeScreen({ viewModel, modifier }) {
         {dayState.lastDawnNarrative != null ? (
           <Card color={alpha(AmberGoldDark, 0.15)} radius={10} borderColor={AmberGold} borderWidth={1} style={{ alignSelf: 'stretch' }}>
             <Column pad={14}>
-              <Row justify="between" style={{ alignSelf: 'stretch' }}>
+              <Row justify="between" gap={8} style={{ alignSelf: 'stretch' }}>
+                <Gorsel ad="tomar" boyut={24} renk={AmberGold} />
                 <T heading size={14} weight="bold" color={TextGold} style={{ flex: 1 }}>
                   {`Şafak Bülteni (${dayState.currentDay}. Gün)`}
                 </T>
                 <IconBtn label="Bülteni Kapat" onPress={() => viewModel.dismissDawnNarrative()}>
-                  <Ikon name="Close" color={AmberGold} />
+                  <Gorsel ad="kapi" boyut={22} renk={AmberGold} />
                 </IconBtn>
               </Row>
               <Spacer h={6} />
@@ -81,6 +125,7 @@ export function HomeScreen({ viewModel, modifier }) {
                 radius={6}
                 style={{ alignSelf: 'flex-end' }}
                 label="Okudum, bülteni kapat"
+                gorsel="kontrol-listesi"
               >
                 <T size={11} weight="bold" color={TextLight}>
                   ✓ Okudum / Kapat
@@ -99,15 +144,21 @@ export function HomeScreen({ viewModel, modifier }) {
                   Savaşçının Meskeni
                 </T>
                 <Surface radius={6} color={DarkBg} borderColor={AmberGold} borderWidth={1}>
-                  <T size={11} weight="bold" color={AmberGold} style={{ paddingHorizontal: 6, paddingVertical: 2 }}>
-                    {`${dayState.currentDay}. Gün`}
-                  </T>
+                  <Row gap={4} style={{ paddingHorizontal: 6, paddingVertical: 2 }}>
+                    <Gorsel ad={nitelikGorseli('gun')} boyut={14} renk={AmberGold} />
+                    <T size={11} weight="bold" color={AmberGold}>
+                      {`${dayState.currentDay}. Gün`}
+                    </T>
+                  </Row>
                 </Surface>
               </Row>
-              <Spacer h={2} />
-              <T style={Typography.titleLarge} color={TextGold} weight="bold">
-                {player.residenceTitle}
-              </T>
+              <Spacer h={6} />
+              <Row gap={12} style={{ alignSelf: 'stretch' }}>
+                <GorselRozet ad={player.isHouseUnlocked ? 'ev' : 'zindan-kapisi'} boyut={48} renk={AmberGold} kenar={AmberGoldDark} />
+                <T style={[Typography.titleLarge, { flex: 1 }]} color={TextGold} weight="bold">
+                  {player.residenceTitle}
+                </T>
+              </Row>
             </Column>
             <Spacer h={6} />
             <T style={Typography.bodyMedium} color={alpha(TextLight, 0.85)}>
@@ -119,15 +170,19 @@ export function HomeScreen({ viewModel, modifier }) {
             <Spacer h={14} />
 
             <Row justify="between" gap={8} style={{ alignSelf: 'stretch' }}>
-              <T weight="bold" color={AmberGold}>
-                {`Kasa: ${player.gold} Altın`}
-              </T>
+              <Row gap={5} style={{ flexShrink: 1 }}>
+                <Gorsel ad={nitelikGorseli('altin')} boyut={20} renk={AmberGold} />
+                <T weight="bold" color={AmberGold} style={{ flexShrink: 1 }}>
+                  {`Kasa: ${player.gold} Altın`}
+                </T>
+              </Row>
               <Btn
                 onPress={() => viewModel.advanceDay(0)}
                 color={dayState.isDailyArenaObligationMet ? HealthGreen : AmberGoldDark}
                 contentColor={TextLight}
                 radius={8}
                 style={{ flexShrink: 1 }}
+                gorsel="yatak"
                 label={dayState.isDailyArenaObligationMet ? 'İstirahat Et ve Yeni Güne Başla' : 'İstirahat Et, Arena Katılımı Gerekli'}
               >
                 <T weight="bold" size={11} color={TextLight} align="center">
@@ -149,9 +204,11 @@ export function HomeScreen({ viewModel, modifier }) {
           onOpenCodex={() => setShowCodexDialog(true)}
         />
 
-        <T heading style={Typography.titleMedium} color={TextLight} weight="bold">
-          {player.isHouseUnlocked ? `Ev Bölmeleri & Odalar (${rooms.length} Bölme)` : 'Hücre Bölmeleri & Teçhizat'}
-        </T>
+        <SimgeliSatir gorsel={player.isHouseUnlocked ? 'ev' : 'zindan-kapisi'} boyut={22}>
+          <T heading style={[Typography.titleMedium, { flexShrink: 1 }]} color={TextLight} weight="bold">
+            {player.isHouseUnlocked ? `Ev Bölmeleri & Odalar (${rooms.length} Bölme)` : 'Hücre Bölmeleri & Teçhizat'}
+          </T>
+        </SimgeliSatir>
 
         {/* Room Cards */}
         {rooms.map((room) => {
@@ -192,7 +249,7 @@ function HouseTransformationCard({ player, transformationStatus, onTransform }) 
         label={`Müstakil Karargah: ${player.residenceTitle}. Taş avlu, kütüphane ve biley silahhanesiyle donatılmış bağımsız karargahın. Tüm odalar için üst kademeler açıldı.`}
       >
         <Row pad={14} gap={12}>
-          
+          <GorselRozet ad="ev" boyut={48} renk={AmberGold} kenar={AmberGold} />
           <Column style={{ flex: 1 }}>
             <T weight="bold" size={14} color={TextGold}>
               {`Müstakil Mülk: ${player.residenceTitle}`}
@@ -211,7 +268,7 @@ function HouseTransformationCard({ player, transformationStatus, onTransform }) 
     <Card color={DarkSurfaceCard} radius={12} borderColor={transformationStatus.canTransform ? AmberGold : DarkBorder} borderWidth={1} style={{ alignSelf: 'stretch' }}>
       <Column pad={14}>
         <Row gap={8} label="Kendi Evine Geçiş ve Mülk Dönüşümü Şartları" heading>
-          
+          <GorselRozet ad="ev" boyut={40} renk={AmberGold} />
           <T weight="bold" size={15} color={TextGold} style={{ flexShrink: 1 }}>
             Kendi Evine Geçiş & Mülk Dönüşümü
           </T>
@@ -236,6 +293,7 @@ function HouseTransformationCard({ player, transformationStatus, onTransform }) 
               <T color={req.isMet ? HealthGreen : HealthRed} weight="bold" size={12}>
                 {req.isMet ? '✓' : '✕'}
               </T>
+              <Gorsel ad={sartGorseli(req.title)} boyut={18} renk={req.isMet ? HealthGreen : AmberGold} />
               <T size={12} color={TextLight} style={{ flexShrink: 1 }}>
                 {req.title}
               </T>
@@ -257,6 +315,7 @@ function HouseTransformationCard({ player, transformationStatus, onTransform }) 
           disabledContentColor={TextMuted}
           radius={8}
           style={{ alignSelf: 'stretch', minHeight: 42 }}
+          gorsel={transformationStatus.canTransform ? 'ev' : 'kilit'}
           label={
             transformationStatus.canTransform ? 'Kendi Evine Taşın ve Karargahını Kur, 500 Altın' : `Şartlar Karşılanmadı, ${metCount} / 4`
           }
@@ -275,14 +334,20 @@ function RoomCard({ room, canUpgrade, upgradeRequirementNote, canTrainToday, onU
   return (
     <Card color={DarkSurface} radius={10} borderColor={DarkBorder} borderWidth={1} style={{ alignSelf: 'stretch' }}>
       <Column pad={14}>
-        <Column heading label={`${room.name}, Kademe ${room.level}, Yükseltme Bedeli: ${room.upgradeCostGold} Altın`}>
-          <T weight="bold" color={TextGold} size={16}>
-            {`${room.type.title}`}
-          </T>
-          <T size={13} weight="semibold" color={AmberGold}>
-            {`Kademe ${room.level}/${room.maxLevel} • ${room.name}`}
-          </T>
-        </Column>
+        <Row gap={12} heading label={`${room.name}, Kademe ${room.level}, Yükseltme Bedeli: ${room.upgradeCostGold} Altın`} style={{ alignSelf: 'stretch' }}>
+          <GorselRozet ad={odaGorseli(room.type)} boyut={46} renk={AmberGold} kenar={alpha(AmberGold, 0.5)} kare />
+          <Column style={{ flex: 1 }}>
+            <T weight="bold" color={TextGold} size={16}>
+              {`${room.type.title}`}
+            </T>
+            <Row gap={4}>
+              <Gorsel ad={nitelikGorseli('seviye')} boyut={14} renk={AmberGold} />
+              <T size={13} weight="semibold" color={AmberGold} style={{ flexShrink: 1 }}>
+                {`Kademe ${room.level}/${room.maxLevel} • ${room.name}`}
+              </T>
+            </Row>
+          </Column>
+        </Row>
 
         <Spacer h={8} />
         <T size={13} color={alpha(TextLight, 0.9)} lineHeight={18}>
@@ -291,18 +356,24 @@ function RoomCard({ room, canUpgrade, upgradeRequirementNote, canTrainToday, onU
 
         <Spacer h={6} />
         <Surface color={DarkSurfaceCard} radius={6} style={{ alignSelf: 'stretch' }}>
-          <T size={12} color={FamePurple} weight="semibold" style={{ paddingHorizontal: 10, paddingVertical: 6 }}>
-            {`Sağladığı Tesir: ${room.bonusSummary}`}
-          </T>
+          <Row gap={6} style={{ paddingHorizontal: 10, paddingVertical: 6 }}>
+            <Gorsel ad="pariltilar" boyut={16} renk={FamePurple} />
+            <T size={12} color={FamePurple} weight="semibold" style={{ flexShrink: 1 }}>
+              {`Sağladığı Tesir: ${room.bonusSummary}`}
+            </T>
+          </Row>
         </Surface>
 
         {/* Sonraki Kademe Bilgisi */}
         {room.level < room.maxLevel ? (
           <>
             <Spacer h={6} />
-            <T size={11} color={TextMuted} lineHeight={15}>
-              {`Sonraki: ${room.nextUpgradeDescription}`}
-            </T>
+            <Row gap={6} align="start" style={{ alignSelf: 'stretch' }}>
+              <Gorsel ad="yukselt" boyut={14} renk={TextMuted} style={{ marginTop: 1 }} />
+              <T size={11} color={TextMuted} lineHeight={15} style={{ flex: 1 }}>
+                {`Sonraki: ${room.nextUpgradeDescription}`}
+              </T>
+            </Row>
           </>
         ) : null}
 
@@ -311,9 +382,12 @@ function RoomCard({ room, canUpgrade, upgradeRequirementNote, canTrainToday, onU
           <>
             <Spacer h={6} />
             <Surface color={alpha(HealthRed, 0.15)} radius={6} borderColor={alpha(HealthRed, 0.5)} borderWidth={1} style={{ alignSelf: 'stretch' }}>
-              <T size={11} color={HealthRed} weight="semibold" style={{ paddingHorizontal: 10, paddingVertical: 5 }} label={`Kilitli: ${upgradeRequirementNote}`}>
-                {`${upgradeRequirementNote}`}
-              </T>
+              <Row gap={6} style={{ paddingHorizontal: 10, paddingVertical: 5 }}>
+                <Gorsel ad="kilit" boyut={14} renk={HealthRed} />
+                <T size={11} color={HealthRed} weight="semibold" style={{ flex: 1 }} label={`Kilitli: ${upgradeRequirementNote}`}>
+                  {`${upgradeRequirementNote}`}
+                </T>
+              </Row>
             </Surface>
           </>
         ) : null}
@@ -330,6 +404,7 @@ function RoomCard({ room, canUpgrade, upgradeRequirementNote, canTrainToday, onU
               disabledContentColor={TextMuted}
               radius={8}
               style={{ alignSelf: 'stretch' }}
+              gorsel="hedef-kuklasi"
               label={canTrainToday ? 'Günlük İdman Yap, artı Tecrübe' : 'Bugünkü İdman Tamamlandı, Yarın Tekrar Gel'}
             >
               <T size={12} weight="bold" color={canTrainToday ? DarkBg : TextMuted} align="center">
@@ -342,7 +417,7 @@ function RoomCard({ room, canUpgrade, upgradeRequirementNote, canTrainToday, onU
         {room.type === RoomType.STORAGE_VAULT ? (
           <>
             <Spacer h={10} />
-            <Btn onPress={onOpenVault} color={color(0xff2c3e50)} contentColor={TextGold} radius={8} style={{ alignSelf: 'stretch' }} label="Sandık Odasını Aç, 4'lü Kasa Izgarası">
+            <Btn onPress={onOpenVault} color={color(0xff2c3e50)} contentColor={TextGold} radius={8} style={{ alignSelf: 'stretch' }} gorsel="sandik" label="Sandık Odasını Aç, 4'lü Kasa Izgarası">
               <T size={12} weight="bold" color={TextGold} align="center">
                 Sandık Odasını Aç (4'lü Kasa Izgarası)
               </T>
@@ -353,9 +428,12 @@ function RoomCard({ room, canUpgrade, upgradeRequirementNote, canTrainToday, onU
         <Spacer h={10} />
 
         <Row justify="between" gap={8} style={{ alignSelf: 'stretch' }}>
-          <T size={13} weight="semibold" color={canUpgrade ? AmberGold : TextMuted} style={{ flexShrink: 1 }}>
-            {azami ? 'Azami Kademe' : `Geliştirme: ${room.upgradeCostGold} Altın`}
-          </T>
+          <Row gap={5} style={{ flexShrink: 1 }}>
+            <Gorsel ad={azami ? 'kupa' : nitelikGorseli('altin')} boyut={18} renk={canUpgrade ? AmberGold : TextMuted} />
+            <T size={13} weight="semibold" color={canUpgrade ? AmberGold : TextMuted} style={{ flexShrink: 1 }}>
+              {azami ? 'Azami Kademe' : `Geliştirme: ${room.upgradeCostGold} Altın`}
+            </T>
+          </Row>
           <Btn
             onPress={onUpgrade}
             disabled={!canUpgrade}
@@ -364,6 +442,7 @@ function RoomCard({ room, canUpgrade, upgradeRequirementNote, canTrainToday, onU
             disabledColor={DarkSurfaceCard}
             disabledContentColor={TextMuted}
             radius={8}
+            gorsel={azami ? 'kupa' : 'yukselt'}
             label={azami ? `${room.type.title}, Azami Kademe` : `${room.type.title} Kademe Yükselt, ${room.upgradeCostGold} Altın`}
           >
             <T size={12} weight="bold" color={canUpgrade ? DarkBg : TextMuted}>
@@ -383,9 +462,7 @@ function CharacterRegistryCard({ unlockedCount, totalCount, isHouse, onOpenCodex
     <Card color={DarkSurface} radius={12} borderColor={alpha(AmberGoldDark, 0.6)} borderWidth={1} style={{ alignSelf: 'stretch' }}>
       <Row pad={14} justify="between" gap={8} style={{ alignSelf: 'stretch' }}>
         <Row gap={12} style={{ flex: 1 }} onPress={onOpenCodex} label={`${baslik}. ${alt}. Sicili açmak için dokunun.`}>
-          <T size={24} hidden>
-            {isHouse ? '' : ''}
-          </T>
+          <GorselRozet ad={isHouse ? 'kitaplik' : 'tomar'} boyut={44} renk={AmberGold} />
           <Column style={{ flex: 1 }}>
             <T style={Typography.titleMedium} weight="bold" color={TextGold}>
               {baslik}
@@ -395,7 +472,7 @@ function CharacterRegistryCard({ unlockedCount, totalCount, isHouse, onOpenCodex
             </T>
           </Column>
         </Row>
-        <Btn onPress={onOpenCodex} color={AmberGoldDark} contentColor={TextLight} radius={8} pad={8} label="Sicili Aç">
+        <Btn onPress={onOpenCodex} color={AmberGoldDark} contentColor={TextLight} radius={8} pad={8} label="Sicili Aç" gorsel="acik-kitap" textSize={12}>
           <T size={11} weight="bold" color={TextLight}>
             Sicili Aç
           </T>
@@ -438,7 +515,7 @@ function CharacterRegistryDialog({ profiles, onDismiss }) {
       onDismiss={onDismiss}
       containerColor={DarkSurface}
       confirm={
-        <Btn onPress={onDismiss} color={AmberGoldDark} contentColor={TextLight} radius={6}>
+        <Btn onPress={onDismiss} color={AmberGoldDark} contentColor={TextLight} radius={6} gorsel="kapi">
           <T weight="bold" size={12} color={TextLight}>
             Kapat
           </T>
@@ -446,8 +523,8 @@ function CharacterRegistryDialog({ profiles, onDismiss }) {
       }
       title={
         <Column>
-          <Row gap={8} label={`Diyar Şahsiyetleri & Karakter Sicili, ${unlockedCount} / ${profiles.length} Şahsiyet Keşfedildi`} heading>
-            
+          <Row gap={10} label={`Diyar Şahsiyetleri & Karakter Sicili, ${unlockedCount} / ${profiles.length} Şahsiyet Keşfedildi`} heading>
+            <GorselRozet ad="kitaplik" boyut={40} renk={AmberGold} />
             <Column style={{ flex: 1 }}>
               <T size={15} weight="bold" color={TextGold}>
                 Diyar Şahsiyetleri & Karakter Sicili
@@ -460,13 +537,13 @@ function CharacterRegistryDialog({ profiles, onDismiss }) {
           <Spacer h={10} />
           {/* Kategori Filtre Sekmeleri */}
           <Row gap={6} wrap style={{ alignSelf: 'stretch' }}>
-            <Chip selected={selectedTab === 0} onPress={() => setSelectedTab(0)} label={`Tümü, ${regionProfiles.length}`}>
+            <Chip selected={selectedTab === 0} onPress={() => setSelectedTab(0)} label={`Tümü, ${regionProfiles.length}`} gorsel="kitaplik">
               {`Tümü (${regionProfiles.length})`}
             </Chip>
-            <Chip selected={selectedTab === 1} onPress={() => setSelectedTab(1)} label={`Dövüşçü, ${gladCount}`}>
+            <Chip selected={selectedTab === 1} onPress={() => setSelectedTab(1)} label={`Dövüşçü, ${gladCount}`} gorsel="sparta-migferi">
               {`Dövüşçü (${gladCount})`}
             </Chip>
-            <Chip selected={selectedTab === 2} onPress={() => setSelectedTab(2)} label={`Ahali, ${ahaliCount}`}>
+            <Chip selected={selectedTab === 2} onPress={() => setSelectedTab(2)} label={`Ahali, ${ahaliCount}`} gorsel="koy">
               {`Ahali (${ahaliCount})`}
             </Chip>
           </Row>
@@ -476,16 +553,16 @@ function CharacterRegistryDialog({ profiles, onDismiss }) {
             <>
               <Spacer h={6} />
               <Row gap={6} wrap style={{ alignSelf: 'stretch' }}>
-                <Chip selected={selectedRegion === 'all'} onPress={() => setSelectedRegion('all')}>
+                <Chip selected={selectedRegion === 'all'} onPress={() => setSelectedRegion('all')} gorsel="dunya">
                   Tüm Bölgeler
                 </Chip>
                 {unlockedRegionsInProfiles.includes('kirlangic') ? (
-                  <Chip selected={selectedRegion === 'kirlangic'} onPress={() => setSelectedRegion('kirlangic')}>
+                  <Chip selected={selectedRegion === 'kirlangic'} onPress={() => setSelectedRegion('kirlangic')} gorsel={bolgeGorseli('kirlangic')}>
                     Kırlangıç
                   </Chip>
                 ) : null}
                 {unlockedRegionsInProfiles.includes('tashisar') ? (
-                  <Chip selected={selectedRegion === 'tashisar'} onPress={() => setSelectedRegion('tashisar')}>
+                  <Chip selected={selectedRegion === 'tashisar'} onPress={() => setSelectedRegion('tashisar')} gorsel={bolgeGorseli('tashisar')}>
                     Taş Hisar
                   </Chip>
                 ) : null}
@@ -507,7 +584,7 @@ function CharacterRegistryDialog({ profiles, onDismiss }) {
               label={`Kilitli: ${lockedAlertMessage}. Kapatmak için dokunun.`}
             >
               <Row pad={8} gap={6}>
-                
+                <Gorsel ad="kilit" boyut={16} renk={color(0xffffb4ab)} />
                 <T size={11} color={color(0xffffb4ab)} lineHeight={15} style={{ flex: 1 }}>
                   {lockedAlertMessage}
                 </T>
@@ -544,17 +621,15 @@ function CharacterRegistryDialog({ profiles, onDismiss }) {
                 >
                   <Column pad={8} align="center">
                     {/* Kare Portre / Fotoğraf Alanı */}
-                    <Box
-                      align="center"
-                      justify="center"
-                      radius={8}
-                      color={isUnlocked ? DarkBg : color(0xff0f0e0d)}
-                      borderColor={isUnlocked ? alpha(AmberGold, 0.5) : color(0xff2c2722)}
-                      borderWidth={1}
-                      style={{ width: 64, height: 64 }}
-                    >
-                      <T size={isUnlocked ? 30 : 22}>{isUnlocked ? profile.avatarIcon : ''}</T>
-                    </Box>
+                    <GorselRozet
+                      ad={isUnlocked ? karakterGorseli(profile) : 'kilit'}
+                      boyut={64}
+                      kare
+                      oran={isUnlocked ? 0.66 : 0.4}
+                      zemin={isUnlocked ? DarkBg : color(0xff0f0e0d)}
+                      kenar={isUnlocked ? alpha(AmberGold, 0.5) : color(0xff2c2722)}
+                      renk={isUnlocked ? (profile.isGladiator ? AmberGold : AmberGoldLight) : alpha(TextMuted, 0.45)}
+                    />
 
                     <Spacer h={6} />
 
@@ -596,6 +671,7 @@ function CharacterDetailDialog({ liveProfile, onDismiss }) {
 
   const sekmeler = [['Zihin', 0, 'Zihin'], ['Hikaye', 1, 'Hikaye'], isGladiator ? ['Dövüş', 2, 'Dövüş'] : ['Rol', 2, 'Rol']];
   const rozet = isGladiator ? 'Arena Gladyatörü' : `${profile.locationOrDuty ?? 'Kasaba Ahali'}`;
+  const sekmeGorselleri = ['ucuncu-goz', 'acik-kitap', isGladiator ? 'capraz-kilic' : 'ors'];
 
   let icerik;
   if (selectedTab === 0) {
@@ -609,7 +685,7 @@ function CharacterDetailDialog({ liveProfile, onDismiss }) {
         <Surface radius={8} color={DarkSurfaceCard} borderColor={alpha(AmberGoldDark, 0.4)} borderWidth={1} style={{ alignSelf: 'stretch' }}>
           <Column pad={10}>
             <Row gap={6}>
-              
+              <Gorsel ad="gozlemci" boyut={18} renk={AmberGold} />
               <T heading size={12} weight="bold" color={AmberGold}>
                 Görünüş ve Tasvir
               </T>
@@ -627,7 +703,7 @@ function CharacterDetailDialog({ liveProfile, onDismiss }) {
         <Surface radius={8} color={DarkSurfaceCard} borderColor={DarkBorder} borderWidth={1} style={{ alignSelf: 'stretch' }}>
           <Column pad={10}>
             <Row gap={6}>
-              
+              <Gorsel ad="tomar" boyut={18} renk={TextGold} />
               <T heading size={12} weight="bold" color={TextGold}>
                 Biyografi ve Diyar Geçmişi
               </T>
@@ -649,16 +725,19 @@ function CharacterDetailDialog({ liveProfile, onDismiss }) {
             <Surface radius={8} color={color(0xff1e1712)} borderColor={alpha(AmberGold, 0.6)} borderWidth={1} style={{ alignSelf: 'stretch' }}>
               <Column pad={10}>
                 <Row justify="between" style={{ alignSelf: 'stretch' }}>
-                  <Row gap={6}>
-                    
-                    <T heading size={12} weight="bold" color={TextGold}>
+                  <Row gap={6} style={{ flexShrink: 1 }}>
+                    <Gorsel ad="simsek" boyut={18} renk={TextGold} />
+                    <T heading size={12} weight="bold" color={TextGold} style={{ flexShrink: 1 }}>
                       Canlı Savaşçı Durumu & Güç
                     </T>
                   </Row>
                   <Surface radius={4} color={DarkBg}>
-                    <T size={10} weight="bold" color={AmberGold} style={{ paddingHorizontal: 6, paddingVertical: 2 }}>
-                      {`Seviye ${liveEnemy.level}`}
-                    </T>
+                    <Row gap={3} style={{ paddingHorizontal: 6, paddingVertical: 2 }}>
+                      <Gorsel ad={nitelikGorseli('seviye')} boyut={13} renk={AmberGold} />
+                      <T size={10} weight="bold" color={AmberGold}>
+                        {`Seviye ${liveEnemy.level}`}
+                      </T>
+                    </Row>
                   </Surface>
                 </Row>
 
@@ -672,29 +751,41 @@ function CharacterDetailDialog({ liveProfile, onDismiss }) {
                   style={{ alignSelf: 'stretch' }}
                   label={`Can: ${liveEnemy.stats.maxHealth} HP, Hasar: ${liveEnemy.stats.damage}, Zırh: ${liveEnemy.stats.armor}, Hız: ${liveEnemy.stats.speed}`}
                 >
-                  <T size={11} color={HealthGreen} weight="bold">
-                    {`Can: ${liveEnemy.stats.maxHealth} HP`}
-                  </T>
-                  <T size={11} color={HealthRed} weight="bold">
-                    {`Hasar: ${liveEnemy.stats.damage}`}
-                  </T>
-                  <T size={11} color={AmberGoldLight} weight="bold">
-                    {`Zırh: ${liveEnemy.stats.armor}`}
-                  </T>
-                  <T size={11} color={color(0xff64b5f6)} weight="bold">
-                    {`Hız: ${liveEnemy.stats.speed}`}
-                  </T>
+                  <SimgeliSatir gorsel={nitelikGorseli('can')} renk={HealthGreen} boyut={14} style={{ gap: 3 }}>
+                    <T size={11} color={HealthGreen} weight="bold">
+                      {`Can: ${liveEnemy.stats.maxHealth} HP`}
+                    </T>
+                  </SimgeliSatir>
+                  <SimgeliSatir gorsel={nitelikGorseli('hasar')} renk={HealthRed} boyut={14} style={{ gap: 3 }}>
+                    <T size={11} color={HealthRed} weight="bold">
+                      {`Hasar: ${liveEnemy.stats.damage}`}
+                    </T>
+                  </SimgeliSatir>
+                  <SimgeliSatir gorsel={nitelikGorseli('zirh')} renk={AmberGoldLight} boyut={14} style={{ gap: 3 }}>
+                    <T size={11} color={AmberGoldLight} weight="bold">
+                      {`Zırh: ${liveEnemy.stats.armor}`}
+                    </T>
+                  </SimgeliSatir>
+                  <SimgeliSatir gorsel={nitelikGorseli('hiz')} renk={ExpBlueAcik} boyut={14} style={{ gap: 3 }}>
+                    <T size={11} color={color(0xff64b5f6)} weight="bold">
+                      {`Hız: ${liveEnemy.stats.speed}`}
+                    </T>
+                  </SimgeliSatir>
                 </Row>
 
                 <Spacer h={6} />
 
                 <Row justify="between" wrap gap={4} style={{ alignSelf: 'stretch' }}>
-                  <T size={11} color={TextLight} label={`Silah: ${liveEnemy.weaponName}`}>
-                    {`Silah: ${liveEnemy.weaponName}`}
-                  </T>
-                  <T size={11} weight="bold" color={AmberGold} label={`Cüzdan: ${liveEnemy.personality.gold} Altın`}>
-                    {`Cüzdan: ${liveEnemy.personality.gold} Altın`}
-                  </T>
+                  <SimgeliSatir gorsel="kilic-kabza" renk={TextLight} boyut={14} style={{ gap: 3, flexShrink: 1 }}>
+                    <T size={11} color={TextLight} label={`Silah: ${liveEnemy.weaponName}`} style={{ flexShrink: 1 }}>
+                      {`Silah: ${liveEnemy.weaponName}`}
+                    </T>
+                  </SimgeliSatir>
+                  <SimgeliSatir gorsel="para-kesesi" renk={AmberGold} boyut={14} style={{ gap: 3 }}>
+                    <T size={11} weight="bold" color={AmberGold} label={`Cüzdan: ${liveEnemy.personality.gold} Altın`}>
+                      {`Cüzdan: ${liveEnemy.personality.gold} Altın`}
+                    </T>
+                  </SimgeliSatir>
                 </Row>
 
                 {liveEnemy.socketedGems.length > 0 ? (
@@ -706,14 +797,18 @@ function CharacterDetailDialog({ liveProfile, onDismiss }) {
                       style={{ alignSelf: 'stretch' }}
                       label={`Takılı Taşlar: ${liveEnemy.socketedGems.map((gem) => `${gem.type.displayName} Seviye ${gem.level}`).join(', ')}`}
                     >
+                      <Gorsel ad="elmas" boyut={14} renk={AmberGold} />
                       <T size={10} color={AmberGold} weight="bold">
                         Takılı Taşlar:
                       </T>
                       {liveEnemy.socketedGems.map((gem, i) => (
-                        <Surface key={i} radius={4} color={DarkBg} borderColor={alpha(AmberGold, 0.5)} borderWidth={1}>
-                          <T size={9} color={TextLight} style={{ paddingHorizontal: 4, paddingVertical: 2 }}>
-                            {`Sv.${gem.level}`}
-                          </T>
+                        <Surface key={i} radius={4} color={DarkBg} borderColor={alpha(tasRengi(gem.type), 0.7)} borderWidth={1}>
+                          <Row gap={3} style={{ paddingHorizontal: 4, paddingVertical: 2 }}>
+                            <Gorsel ad={tasGorseli(gem.type)} boyut={12} renk={tasRengi(gem.type)} />
+                            <T size={9} color={TextLight}>
+                              {`Sv.${gem.level}`}
+                            </T>
+                          </Row>
                         </Surface>
                       ))}
                     </Row>
@@ -722,9 +817,12 @@ function CharacterDetailDialog({ liveProfile, onDismiss }) {
 
                 <Spacer h={6} />
 
-                <T size={10} color={TextMuted} lineHeight={14}>
-                  {`Mizaç: ${liveEnemy.personality.archetype.title} - ${liveEnemy.personality.bio}`}
-                </T>
+                <Row gap={6} align="start" style={{ alignSelf: 'stretch' }}>
+                  <Gorsel ad={mizacGorseli(liveEnemy.personality.archetype)} boyut={16} renk={TextMuted} />
+                  <T size={10} color={TextMuted} lineHeight={14} style={{ flex: 1 }}>
+                    {`Mizaç: ${liveEnemy.personality.archetype.title} - ${liveEnemy.personality.bio}`}
+                  </T>
+                </Row>
 
                 {/* Canlı Günlük Hareketi */}
                 {liveEnemy.personality.latestDiary.length > 0 ? (
@@ -732,9 +830,11 @@ function CharacterDetailDialog({ liveProfile, onDismiss }) {
                     <Spacer h={8} />
                     <Surface radius={6} color={DarkBg} style={{ alignSelf: 'stretch' }}>
                       <Column pad={8}>
-                        <T size={10} weight="bold" color={AmberGold}>
-                          Son Günlük Hareketi:
-                        </T>
+                        <SimgeliSatir gorsel="not-defteri" boyut={14}>
+                          <T size={10} weight="bold" color={AmberGold}>
+                            Son Günlük Hareketi:
+                          </T>
+                        </SimgeliSatir>
                         <Spacer h={2} />
                         <T size={10} color={TextLight} lineHeight={14}>
                           {liveEnemy.personality.latestDiary}
@@ -751,7 +851,7 @@ function CharacterDetailDialog({ liveProfile, onDismiss }) {
               <Surface radius={8} color={color(0xff1e3a24)} borderColor={HealthGreen} borderWidth={1} style={{ alignSelf: 'stretch' }}>
                 <Column pad={10}>
                   <Row gap={6}>
-                    
+                    <Gorsel ad="hedef-tahtasi" boyut={18} renk={HealthGreen} />
                     <T heading size={12} weight="bold" color={HealthGreen} style={{ flexShrink: 1 }}>
                       {`Keşfedilen Kusur: ${weakness.flawTitle}`}
                     </T>
@@ -761,15 +861,17 @@ function CharacterDetailDialog({ liveProfile, onDismiss }) {
                     {weakness.hintDescription}
                   </T>
                   <Spacer h={4} />
-                  <T size={10} weight="bold" color={AmberGoldLight}>
-                    {`Taktik Üstünlük: %${weakness.exploitChancePercent} şansla +%${weakness.bonusDamagePercent} hasar & zırh kırma`}
-                  </T>
+                  <SimgeliSatir gorsel="capraz-kilic" renk={AmberGoldLight} boyut={14} style={{ alignSelf: 'stretch' }}>
+                    <T size={10} weight="bold" color={AmberGoldLight} style={{ flex: 1 }}>
+                      {`Taktik Üstünlük: %${weakness.exploitChancePercent} şansla +%${weakness.bonusDamagePercent} hasar & zırh kırma`}
+                    </T>
+                  </SimgeliSatir>
                 </Column>
               </Surface>
             ) : (
               <Surface radius={8} color={DarkSurfaceCard} borderColor={DarkBorder} borderWidth={1} style={{ alignSelf: 'stretch' }}>
                 <Row pad={10} gap={6}>
-                  
+                  <Gorsel ad="kilit" boyut={16} renk={TextMuted} />
                   <T size={10} color={TextMuted} lineHeight={14} style={{ flex: 1 }}>
                     Zaafiyet Henüz Bilinmiyor (İsli Kandil Hanı'ndaki masalara kulak kabartarak veya muhbire danışarak keşfedebilirsin).
                   </T>
@@ -784,19 +886,23 @@ function CharacterDetailDialog({ liveProfile, onDismiss }) {
           <Surface radius={8} color={color(0xff1b242e)} borderColor={color(0xff3e5a73)} borderWidth={1} style={{ alignSelf: 'stretch' }}>
             <Column pad={10}>
               <Row gap={6}>
-                
+                <Gorsel ad="ors" boyut={18} renk={TextGold} />
                 <T heading size={12} weight="bold" color={TextGold}>
                   Zanaat ve Diyar Rolü
                 </T>
               </Row>
               <Spacer h={4} />
-              <T size={11} weight="semibold" color={AmberGoldLight}>
-                {`Meslek / Uzmanlık: ${profile.roleOrWeapon}`}
-              </T>
+              <SimgeliSatir gorsel="demirci" renk={AmberGoldLight} boyut={14} style={{ alignSelf: 'stretch' }}>
+                <T size={11} weight="semibold" color={AmberGoldLight} style={{ flex: 1 }}>
+                  {`Meslek / Uzmanlık: ${profile.roleOrWeapon}`}
+                </T>
+              </SimgeliSatir>
               <Spacer h={2} />
-              <T size={11} color={TextLight}>
-                {`Konum / Dükkan: ${profile.locationOrDuty ?? 'Kırlangıç Kasabası'}`}
-              </T>
+              <SimgeliSatir gorsel="han-tabelasi" renk={TextLight} boyut={14} style={{ alignSelf: 'stretch' }}>
+                <T size={11} color={TextLight} style={{ flex: 1 }}>
+                  {`Konum / Dükkan: ${profile.locationOrDuty ?? 'Kırlangıç Kasabası'}`}
+                </T>
+              </SimgeliSatir>
             </Column>
           </Surface>
         ) : null}
@@ -807,7 +913,7 @@ function CharacterDetailDialog({ liveProfile, onDismiss }) {
             <Column pad={10}>
               <Row justify="between" style={{ alignSelf: 'stretch' }}>
                 <Row gap={6}>
-                  
+                  <Gorsel ad="yumruk" boyut={18} renk={TextGold} />
                   <T heading size={12} weight="bold" color={TextGold}>
                     {`Dövüş Yetenekleri (${skills.length} Sanat)`}
                   </T>
@@ -828,9 +934,7 @@ function CharacterDetailDialog({ liveProfile, onDismiss }) {
                     onPress={() => setSelectedSkill(skill)}
                     label={`${skill.name}, yeteneği incele`}
                   >
-                    <Box align="center" justify="center" radius={23} color={DarkBg} borderColor={AmberGold} borderWidth={1.5} style={{ width: 46, height: 46 }}>
-                      <T size={22}>{skill.icon}</T>
-                    </Box>
+                    <GorselRozet ad={yetenekGorseli(skill.type)} boyut={46} zemin={DarkBg} kenar={AmberGold} renk={AmberGold} oran={0.56} />
                     <Spacer h={4} />
                     <T size={9} weight="semibold" color={TextLight} lines={1}>
                       {skill.name}
@@ -850,7 +954,7 @@ function CharacterDetailDialog({ liveProfile, onDismiss }) {
       onDismiss={onDismiss}
       containerColor={DarkSurface}
       confirm={
-        <Btn onPress={onDismiss} color={AmberGoldDark} contentColor={TextLight} radius={6}>
+        <Btn onPress={onDismiss} color={AmberGoldDark} contentColor={TextLight} radius={6} gorsel="kapi">
           <T weight="bold" size={12} color={TextLight}>
             Kapat
           </T>
@@ -859,9 +963,7 @@ function CharacterDetailDialog({ liveProfile, onDismiss }) {
       title={
         <Row gap={12} style={{ alignSelf: 'stretch' }} label={`${profile.name}, ${profile.title}, ${isGladiator ? 'Arena Gladyatörü' : profile.locationOrDuty ?? 'Kasaba Ahali'}`} heading>
           {/* Büyük Kare Portre Alanı */}
-          <Box align="center" justify="center" radius={10} color={DarkBg} borderColor={AmberGold} borderWidth={1.5} style={{ width: 68, height: 68 }}>
-            <T size={34}>{profile.avatarIcon}</T>
-          </Box>
+          <GorselRozet ad={karakterGorseli(profile)} boyut={68} kare oran={0.66} zemin={DarkBg} kenar={AmberGold} renk={isGladiator ? AmberGold : AmberGoldLight} />
 
           <Column style={{ flex: 1 }}>
             <T weight="bold" size={17} color={TextGold}>
@@ -872,9 +974,12 @@ function CharacterDetailDialog({ liveProfile, onDismiss }) {
             </T>
             <Spacer h={3} />
             <Surface radius={4} color={isGladiator ? color(0xff331e1e) : color(0xff1b2e22)} style={{ alignSelf: 'flex-start' }}>
-              <T size={10} weight="bold" color={isGladiator ? HealthRed : HealthGreen} style={{ paddingHorizontal: 6, paddingVertical: 2 }}>
-                {rozet}
-              </T>
+              <Row gap={4} style={{ paddingHorizontal: 6, paddingVertical: 2 }}>
+                <Gorsel ad={isGladiator ? 'arena' : 'koy'} boyut={13} renk={isGladiator ? HealthRed : HealthGreen} />
+                <T size={10} weight="bold" color={isGladiator ? HealthRed : HealthGreen} style={{ flexShrink: 1 }}>
+                  {rozet}
+                </T>
+              </Row>
             </Surface>
           </Column>
         </Row>
@@ -898,6 +1003,7 @@ function CharacterDetailDialog({ liveProfile, onDismiss }) {
                   role="tab"
                   label={`${sesli}${isSelected ? ', seçili' : ''}, sekme ${index + 1} / 3`}
                 >
+                  <Gorsel ad={sekmeGorselleri[index]} boyut={20} renk={isSelected ? TextLight : TextMuted} />
                   <T size={11} weight={isSelected ? 'bold' : 'normal'} color={isSelected ? TextLight : TextMuted}>
                     {label}
                   </T>
@@ -922,7 +1028,7 @@ function SkillDetailDialog({ skill, onDismiss }) {
       onDismiss={onDismiss}
       containerColor={DarkSurface}
       confirm={
-        <Btn onPress={onDismiss} color={AmberGoldDark} contentColor={TextLight} radius={6}>
+        <Btn onPress={onDismiss} color={AmberGoldDark} contentColor={TextLight} radius={6} gorsel="kapi">
           <T weight="bold" size={12} color={TextLight}>
             Kapat
           </T>
@@ -930,22 +1036,26 @@ function SkillDetailDialog({ skill, onDismiss }) {
       }
       title={
         <Row gap={10} style={{ alignSelf: 'stretch' }} heading label={`${skill.name}, ${skill.type.displayName}, Kademe ${skill.tier} / 3`}>
-          <Box align="center" justify="center" radius={25} color={DarkBg} borderColor={AmberGold} borderWidth={1.5} style={{ width: 50, height: 50 }}>
-            <T size={24}>{skill.icon}</T>
-          </Box>
+          <GorselRozet ad={yetenekGorseli(skill.type)} boyut={50} zemin={DarkBg} kenar={AmberGold} renk={AmberGold} oran={0.56} />
           <Column style={{ flex: 1 }}>
             <T weight="bold" size={16} color={TextGold}>
               {skill.name}
             </T>
             <Row gap={6} wrap>
               <Surface radius={4} color={DarkSurfaceCard}>
-                <T size={10} color={AmberGold} style={{ paddingHorizontal: 6, paddingVertical: 2 }}>
-                  {`${skill.type.displayName}`}
-                </T>
+                <Row gap={3} style={{ paddingHorizontal: 6, paddingVertical: 2 }}>
+                  <Gorsel ad={yetenekGorseli(skill.type)} boyut={12} renk={AmberGold} />
+                  <T size={10} color={AmberGold}>
+                    {`${skill.type.displayName}`}
+                  </T>
+                </Row>
               </Surface>
-              <T size={11} color={TextMuted}>
-                {`Kademe ${skill.tier} / 3`}
-              </T>
+              <Row gap={3}>
+                <Gorsel ad="yildiz-madalya" boyut={13} renk={TextMuted} />
+                <T size={11} color={TextMuted}>
+                  {`Kademe ${skill.tier} / 3`}
+                </T>
+              </Row>
             </Row>
           </Column>
         </Row>
@@ -954,9 +1064,11 @@ function SkillDetailDialog({ skill, onDismiss }) {
         <Column gap={10} style={{ alignSelf: 'stretch' }}>
           <Surface radius={6} color={DarkBg} style={{ alignSelf: 'stretch' }}>
             <Column pad={10}>
-              <T size={10} weight="bold" color={TextMuted}>
-                Yetenek Tasviri:
-              </T>
+              <SimgeliSatir gorsel="tomar" renk={TextMuted} boyut={14}>
+                <T size={10} weight="bold" color={TextMuted}>
+                  Yetenek Tasviri:
+                </T>
+              </SimgeliSatir>
               <Spacer h={2} />
               <T size={12} color={TextLight} lineHeight={16} italic>
                 {skill.description}
@@ -967,7 +1079,7 @@ function SkillDetailDialog({ skill, onDismiss }) {
           <Surface radius={6} color={color(0xff1e3a24)} borderColor={alpha(HealthGreen, 0.7)} borderWidth={1} style={{ alignSelf: 'stretch' }}>
             <Column pad={10}>
               <Row gap={6}>
-                
+                <Gorsel ad="kilic-carpisma" boyut={16} renk={HealthGreen} />
                 <T size={11} weight="bold" color={HealthGreen}>
                   Savaş İçi Etki & Üstünlük:
                 </T>
@@ -977,9 +1089,11 @@ function SkillDetailDialog({ skill, onDismiss }) {
                 {skill.combatEffect}
               </T>
               <Spacer h={4} />
-              <T size={10} color={TextMuted}>
-                {`Bekleme Süresi: ${skill.cooldownTurns} Tur`}
-              </T>
+              <SimgeliSatir gorsel={nitelikGorseli('sure')} renk={TextMuted} boyut={14}>
+                <T size={10} color={TextMuted}>
+                  {`Bekleme Süresi: ${skill.cooldownTurns} Tur`}
+                </T>
+              </SimgeliSatir>
             </Column>
           </Surface>
         </Column>
@@ -1010,20 +1124,28 @@ export function StorageVaultDialog({ player, viewModel, onDismiss }) {
       const unlockCost = slotIndex === 2 ? 100 : 200;
       govde = (
         <Row justify="between" gap={8} style={{ alignSelf: 'stretch' }}>
-          <Column style={{ flex: 1 }} label={`${a11y} Açma Bedeli: ${unlockCost} Altın`}>
-            <T weight="bold" color={TextMuted} size={13}>
-              {`${slotIndex + 1}. Sandık Alanı (Kilitli)`}
-            </T>
-            <T size={11} color={AmberGold}>
-              {`Açma Bedeli: ${unlockCost} Altın`}
-            </T>
-          </Column>
+          <Row gap={10} style={{ flex: 1 }} label={`${a11y} Açma Bedeli: ${unlockCost} Altın`}>
+            <GorselRozet ad="kilit" boyut={34} kare renk={TextMuted} zemin={DarkSurfaceCard} kenar={DarkBorder} oran={0.5} />
+            <Column style={{ flex: 1 }}>
+              <T weight="bold" color={TextMuted} size={13}>
+                {`${slotIndex + 1}. Sandık Alanı (Kilitli)`}
+              </T>
+              <Row gap={4}>
+                <Gorsel ad={nitelikGorseli('altin')} boyut={14} renk={AmberGold} />
+                <T size={11} color={AmberGold} style={{ flexShrink: 1 }}>
+                  {`Açma Bedeli: ${unlockCost} Altın`}
+                </T>
+              </Row>
+            </Column>
+          </Row>
           <Btn
             onPress={() => viewModel.unlockChestSlot()}
             disabled={!(player.gold >= unlockCost)}
             color={AmberGold}
             contentColor={DarkBg}
             pad={8}
+            gorsel="acik-kilit"
+            textSize={10}
             label={`${slotIndex + 1}. Sandık Alanının Kilidini Aç, ${unlockCost} Altın`}
           >
             <T size={11} weight="bold" color={player.gold >= unlockCost ? DarkBg : TextMuted}>
@@ -1060,9 +1182,7 @@ export function StorageVaultDialog({ player, viewModel, onDismiss }) {
         <>
           <Row justify="between" gap={6} style={{ alignSelf: 'stretch' }}>
             <Row gap={6} style={{ flex: 1 }} onPress={() => setViewingChest(chest)} label={`${a11y} Stok: ${contentSummary}`}>
-              <T size={20} hidden>
-                {chest.type.icon}
-              </T>
+              <GorselRozet ad={sandikGorseli(chest.type)} boyut={34} kare renk={AmberGold} kenar={alpha(AmberGold, 0.5)} />
               <Column style={{ flex: 1 }}>
                 <T weight="bold" color={TextGold} size={13}>
                   {chest.type.displayName}
@@ -1073,7 +1193,7 @@ export function StorageVaultDialog({ player, viewModel, onDismiss }) {
               </Column>
             </Row>
             <Row gap={4}>
-              <OutlinedBtn onPress={() => setViewingChest(chest)} pad={6} label={`${chest.type.displayName} Aç`}>
+              <OutlinedBtn onPress={() => setViewingChest(chest)} pad={6} label={`${chest.type.displayName} Aç`} gorsel="acik-kilit" textSize={10}>
                 <T size={10} color={AmberGold} weight="bold">
                   Aç
                 </T>
@@ -1084,6 +1204,8 @@ export function StorageVaultDialog({ player, viewModel, onDismiss }) {
                 color={AmberGold}
                 contentColor={DarkBg}
                 pad={6}
+                gorsel="yukselt"
+                textSize={10}
                 label={`${chest.type.displayName} Geliştir, ${chest.upgradeCostGold} Altın`}
               >
                 <T size={10} weight="bold" color={player.gold >= chest.upgradeCostGold ? DarkBg : TextMuted}>
@@ -1104,10 +1226,14 @@ export function StorageVaultDialog({ player, viewModel, onDismiss }) {
       govde = (
         <Column>
           <Row justify="between" gap={6} style={{ alignSelf: 'stretch' }}>
-            <T weight="bold" color={TextLight} size={13} label={a11y} style={{ flexShrink: 1 }}>
-              {`${slotIndex + 1}. Sandık Alanı (Boş)`}
-            </T>
+            <Row gap={10} style={{ flexShrink: 1 }}>
+              <GorselRozet ad="sandik" boyut={34} kare renk={alpha(TextLight, 0.4)} zemin={DarkBg} kenar={DarkBorder} oran={0.5} />
+              <T weight="bold" color={TextLight} size={13} label={a11y} style={{ flexShrink: 1 }}>
+                {`${slotIndex + 1}. Sandık Alanı (Boş)`}
+              </T>
+            </Row>
             <TextBtn
+              gorsel={selectedBuildSlot === slotIndex ? 'kapi' : 'cekic'}
               onPress={() => setSelectedBuildSlot(selectedBuildSlot === slotIndex ? null : slotIndex)}
               label={selectedBuildSlot === slotIndex ? 'İptal' : `${slotIndex + 1}. alana Sandık İnşa Et`}
             >
@@ -1138,10 +1264,16 @@ export function StorageVaultDialog({ player, viewModel, onDismiss }) {
                     label={`${cType.displayName} inşa et, 60 Altın`}
                   >
                     <Row justify="between" style={{ alignSelf: 'stretch', flex: 1 }}>
-                      <T size={11} color={player.gold >= 60 ? AmberGold : TextMuted}>{`${cType.displayName}`}</T>
-                      <T size={11} color={AmberGold}>
-                        60 Altın
-                      </T>
+                      <Row gap={6} style={{ flexShrink: 1 }}>
+                        <Gorsel ad={sandikGorseli(cType)} boyut={20} renk={player.gold >= 60 ? AmberGold : TextMuted} />
+                        <T size={11} color={player.gold >= 60 ? AmberGold : TextMuted}>{`${cType.displayName}`}</T>
+                      </Row>
+                      <Row gap={4}>
+                        <Gorsel ad={nitelikGorseli('altin')} boyut={14} renk={AmberGold} />
+                        <T size={11} color={AmberGold}>
+                          60 Altın
+                        </T>
+                      </Row>
                     </Row>
                   </OutlinedBtn>
                 ))}
@@ -1171,8 +1303,8 @@ export function StorageVaultDialog({ player, viewModel, onDismiss }) {
       onDismiss={onDismiss}
       containerColor={DarkSurface}
       title={
-        <Row gap={8} heading label={`Depo Mahzeni & Kutu Odası, 4 Yuvalı Kasa Izgarası, ${player.unlockedChestSlots} / 4 Açık`}>
-          
+        <Row gap={10} heading label={`Depo Mahzeni & Kutu Odası, 4 Yuvalı Kasa Izgarası, ${player.unlockedChestSlots} / 4 Açık`}>
+          <GorselRozet ad="sandik" boyut={44} renk={AmberGold} />
           <Column style={{ flex: 1 }}>
             <T weight="bold" color={TextGold} size={16}>
               Depo Mahzeni & Kutu Odası
@@ -1195,7 +1327,7 @@ export function StorageVaultDialog({ player, viewModel, onDismiss }) {
         </Column>
       }
       confirm={
-        <TextBtn onPress={onDismiss}>
+        <TextBtn onPress={onDismiss} gorsel="kapi">
           <T color={AmberGold} weight="bold">
             Kapat
           </T>
@@ -1238,12 +1370,16 @@ export function ChestContentsDialog({ chest, player, viewModel, onDismiss }) {
         <Surface radius={8} color={DarkSurfaceCard} borderColor={alpha(AmberGold, 0.5)} borderWidth={1} style={{ alignSelf: 'stretch' }}>
           <Column pad={10}>
             <Row justify="between" style={{ alignSelf: 'stretch' }} label={`Taşlar: ${player.gemsInventory.length} Adet, Kırıklar: ${shardSum} Adet`}>
-              <T size={12} weight="bold" color={TextGold}>
-                {`Taşlar: ${player.gemsInventory.length} Adet`}
-              </T>
-              <T size={12} weight="bold" color={AmberGoldLight}>
-                {`Kırıklar: ${shardSum} Adet`}
-              </T>
+              <SimgeliSatir gorsel="elmas" renk={TextGold} boyut={16} style={{ gap: 4 }}>
+                <T size={12} weight="bold" color={TextGold}>
+                  {`Taşlar: ${player.gemsInventory.length} Adet`}
+                </T>
+              </SimgeliSatir>
+              <SimgeliSatir gorsel="pariltilar" renk={AmberGoldLight} boyut={16} style={{ gap: 4 }}>
+                <T size={12} weight="bold" color={AmberGoldLight}>
+                  {`Kırıklar: ${shardSum} Adet`}
+                </T>
+              </SimgeliSatir>
             </Row>
             <Spacer h={8} />
             <Row gap={6} style={{ alignSelf: 'stretch' }}>
@@ -1254,6 +1390,8 @@ export function ChestContentsDialog({ chest, player, viewModel, onDismiss }) {
                 contentColor={DarkBg}
                 pad={4}
                 style={{ flex: 1 }}
+                gorsel="kazan"
+                textSize={10}
                 label="Tüm Kırıkları Sentezle"
               >
                 <T size={10} weight="bold" color={sentezOlur ? DarkBg : TextMuted} align="center">
@@ -1267,6 +1405,8 @@ export function ChestContentsDialog({ chest, player, viewModel, onDismiss }) {
                 contentColor={Color.White}
                 pad={4}
                 style={{ flex: 1 }}
+                gorsel="yukselt"
+                textSize={10}
                 label="Tümünü Yükselt"
               >
                 <T size={10} weight="bold" color={hasAnyUpgradable ? Color.White : TextMuted} align="center">
@@ -1278,29 +1418,36 @@ export function ChestContentsDialog({ chest, player, viewModel, onDismiss }) {
         </Surface>
 
         {/* 2. KIRIK PARÇALAR LİSTESİ */}
-        <T heading size={12} weight="bold" color={TextLight} label="Hasat Edilen Kırık Parçalar, 3 Kırık artı 15 Altın, 1 Taş eder">
-          Hasat Edilen Kırık Parçalar (3 Kırık + 15 Altın = 1 Taş):
-        </T>
+        <SimgeliSatir gorsel="kazma" renk={TextLight} boyut={18} style={{ alignSelf: 'stretch' }}>
+          <T heading size={12} weight="bold" color={TextLight} label="Hasat Edilen Kırık Parçalar, 3 Kırık artı 15 Altın, 1 Taş eder" style={{ flex: 1 }}>
+            Hasat Edilen Kırık Parçalar (3 Kırık + 15 Altın = 1 Taş):
+          </T>
+        </SimgeliSatir>
         {GemType.values().map((gType) => {
           const count = player.getShardCount(gType);
           const olur = count >= 3 && player.gold >= GemCraftingRules.SHARD_SYNTHESIS_COST_GOLD;
           return (
             <Card key={gType.name} color={DarkSurfaceCard} radius={6} style={{ alignSelf: 'stretch' }}>
               <Row pad={8} justify="between" gap={6} style={{ alignSelf: 'stretch' }}>
-                <Column style={{ flex: 1 }} label={`${gType.displayName} Kırığı, Miktar: ${count} / 3`}>
-                  <T weight="bold" size={12} color={TextGold}>
-                    {`${gType.displayName} Kırığı`}
-                  </T>
-                  <T size={11} color={count >= 3 ? HealthGreen : TextMuted}>
-                    {`Miktar: ${count} / 3`}
-                  </T>
-                </Column>
+                <Row gap={8} style={{ flex: 1 }} label={`${gType.displayName} Kırığı, Miktar: ${count} / 3`}>
+                  <GorselRozet ad={tasGorseli(gType)} boyut={36} renk={tasRengi(gType)} zemin={alpha(tasRengi(gType), 0.12)} kenar={alpha(tasRengi(gType), 0.5)} oran={0.55} />
+                  <Column style={{ flex: 1 }}>
+                    <T weight="bold" size={12} color={TextGold}>
+                      {`${gType.displayName} Kırığı`}
+                    </T>
+                    <T size={11} color={count >= 3 ? HealthGreen : TextMuted}>
+                      {`Miktar: ${count} / 3`}
+                    </T>
+                  </Column>
+                </Row>
                 <Btn
                   onPress={() => viewModel.combineGemShards(gType)}
                   disabled={!olur}
                   color={AmberGold}
                   contentColor={DarkBg}
                   pad={6}
+                  gorsel="kazan"
+                  textSize={10}
                   label={`${gType.displayName} Sentezle, ${GemCraftingRules.SHARD_SYNTHESIS_COST_GOLD} Altın`}
                 >
                   <T size={10} weight="bold" color={olur ? DarkBg : TextMuted}>
@@ -1314,9 +1461,11 @@ export function ChestContentsDialog({ chest, player, viewModel, onDismiss }) {
 
         {/* 3. İŞLENMİŞ TAŞLAR */}
         <Spacer h={4} />
-        <T heading size={12} weight="bold" color={TextLight}>
-          Sandıktaki Kesilmiş Taşlar:
-        </T>
+        <SimgeliSatir gorsel="elmas" renk={TextLight} boyut={18}>
+          <T heading size={12} weight="bold" color={TextLight}>
+            Sandıktaki Kesilmiş Taşlar:
+          </T>
+        </SimgeliSatir>
         {grouped.length === 0 ? (
           <T size={11} color={TextMuted}>
             Henüz işlenmiş taşınız yok. Kırıkları sentezleyerek elde edebilirsiniz.
@@ -1340,6 +1489,7 @@ export function ChestContentsDialog({ chest, player, viewModel, onDismiss }) {
                     style={{ alignSelf: 'stretch' }}
                     label={`${gType.displayName} Seviye ${level}, ${sample.effectSummary}, Adet: ${count}${level < GemCraftingRules.MAX_GEM_LEVEL ? `. Seviye ${targetLevel} Şansı: yüzde ${effectiveRate}${currentPity > 0 ? `, artı yüzde ${currentPity} Telafi` : ''}` : ''}`}
                   >
+                    <GorselRozet ad={tasGorseli(gType)} boyut={36} renk={tasRengi(gType)} zemin={alpha(tasRengi(gType), 0.12)} kenar={alpha(tasRengi(gType), 0.5)} oran={0.55} />
                     <T weight="bold" size={12} color={TextGold} style={{ flex: 1 }}>
                       {`${sample.displayName} (${sample.effectSummary})`}
                     </T>
@@ -1360,6 +1510,8 @@ export function ChestContentsDialog({ chest, player, viewModel, onDismiss }) {
                           color={AmberGold}
                           contentColor={DarkBg}
                           pad={6}
+                          gorsel="yukselt"
+                          textSize={10}
                           label={`3 ${gType.displayName} Taşını Seviye ${targetLevel}'e Yükselt, ${cost} Altın`}
                         >
                           <T size={10} weight="bold" color={olur ? DarkBg : TextMuted}>
@@ -1378,15 +1530,19 @@ export function ChestContentsDialog({ chest, player, viewModel, onDismiss }) {
         {activePities.length > 0 ? (
           <>
             <Spacer h={4} />
-            <T heading size={12} weight="bold" color={AmberGold}>
-              Aktif Şans Koruma & Telafi (Pity) Durumları:
-            </T>
+            <SimgeliSatir gorsel="kalkan" boyut={18} style={{ alignSelf: 'stretch' }}>
+              <T heading size={12} weight="bold" color={AmberGold} style={{ flex: 1 }}>
+                Aktif Şans Koruma & Telafi (Pity) Durumları:
+              </T>
+            </SimgeliSatir>
             {activePities.map(([lvl, bonus]) => (
               <Surface key={lvl} radius={4} color={DarkSurfaceCard} borderColor={alpha(AmberGold, 0.3)} borderWidth={1} style={{ alignSelf: 'stretch' }}>
                 <Row justify="between" style={{ paddingHorizontal: 8, paddingVertical: 4 }} label={`Seviye ${lvl} Yükseltme Güvencesi, artı yüzde ${bonus} Başarı Bonusu`}>
-                  <T size={11} color={TextLight}>
-                    {`Sv. ${lvl} Yükseltme Güvencesi`}
-                  </T>
+                  <SimgeliSatir gorsel="kalkan" renk={TextLight} boyut={14} style={{ gap: 4 }}>
+                    <T size={11} color={TextLight}>
+                      {`Sv. ${lvl} Yükseltme Güvencesi`}
+                    </T>
+                  </SimgeliSatir>
                   <T size={11} color={AmberGold} weight="bold">
                     {`+%${bonus} Başarı Bonusu`}
                   </T>
@@ -1425,10 +1581,13 @@ export function ChestContentsDialog({ chest, player, viewModel, onDismiss }) {
     icerik = (
       <Card color={DarkSurfaceCard} radius={8} style={{ alignSelf: 'stretch' }}>
         <Column pad={12}>
-          <Row justify="between" style={{ alignSelf: 'stretch' }} label={`${matName}: ${count} / ${chest.capacity}`}>
-            <T size={14} weight="bold" color={TextGold}>
-              {matName}
-            </T>
+          <Row justify="between" gap={8} style={{ alignSelf: 'stretch' }} label={`${matName}: ${count} / ${chest.capacity}`}>
+            <Row gap={8} style={{ flexShrink: 1 }}>
+              <GorselRozet ad={malzemeGorseli(matKey)} boyut={40} kare renk={AmberGold} kenar={alpha(AmberGold, 0.4)} />
+              <T size={14} weight="bold" color={TextGold} style={{ flexShrink: 1 }}>
+                {matName}
+              </T>
+            </Row>
             <T size={13} weight="bold" color={HealthGreen}>
               {`${count} / ${chest.capacity}`}
             </T>
@@ -1440,9 +1599,12 @@ export function ChestContentsDialog({ chest, player, viewModel, onDismiss }) {
             {desc}
           </T>
           <Spacer h={6} />
-          <T size={10} color={TextMuted}>
-            Sandık dolduğunda yeni toplanan materyaller ziyan olur. Sandığı genişleterek kapasiteyi artırabilirsin.
-          </T>
+          <Row gap={6} align="start" style={{ alignSelf: 'stretch' }}>
+            <Gorsel ad="bilgi" boyut={14} renk={TextMuted} />
+            <T size={10} color={TextMuted} style={{ flex: 1 }}>
+              Sandık dolduğunda yeni toplanan materyaller ziyan olur. Sandığı genişleterek kapasiteyi artırabilirsin.
+            </T>
+          </Row>
         </Column>
       </Card>
     );
@@ -1453,7 +1615,7 @@ export function ChestContentsDialog({ chest, player, viewModel, onDismiss }) {
       onDismiss={onDismiss}
       containerColor={DarkSurface}
       confirm={
-        <TextBtn onPress={onDismiss}>
+        <TextBtn onPress={onDismiss} gorsel="kapi">
           <T color={AmberGold} weight="bold">
             Kapat
           </T>
@@ -1461,9 +1623,7 @@ export function ChestContentsDialog({ chest, player, viewModel, onDismiss }) {
       }
       title={
         <Row gap={8} heading label={`${chest.type.displayName}, Kademe ${chest.level}, Kapasite: ${chest.capacity}, Canlı Takip`}>
-          <T size={24} hidden>
-            {chest.type.icon}
-          </T>
+          <GorselRozet ad={sandikGorseli(chest.type)} boyut={44} renk={AmberGold} />
           <Column style={{ flex: 1 }}>
             <T weight="bold" color={TextGold} size={17}>
               {chest.type.displayName}

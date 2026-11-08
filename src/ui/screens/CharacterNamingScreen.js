@@ -3,10 +3,12 @@ import React, { useState } from 'react';
 import { Keyboard, KeyboardAvoidingView, Platform } from 'react-native';
 import * as kt from '../../kt.js';
 import { SoundManager } from '../../audio/SoundManager.js';
-import { Screen, Column, Row, Box, Surface, Card, Spacer, T, Btn, Chip, Field, Scroll } from '../kit.js';
+import { Screen, Column, Row, Box, Surface, Card, Spacer, T, Btn, Chip, Field, Scroll, Gorsel } from '../kit.js';
 import { AmberGold, AmberGoldDark, DarkBg, DarkBorder, DarkSurface, DarkSurfaceCard, TextGold, TextLight, TextMuted, HealthGreen, alpha } from '../theme.js';
 
 const suggestions = ['Alaz', 'Bora', 'Demir', 'Poyraz', 'Gölge', 'Kuzgun', 'Tarkan', 'Volkan'];
+// Öneri çiplerinin simgeleri (adın anlamına göre; yalnız görsel)
+const ONERI_GORSELLERI = { Alaz: 'alev', Bora: 'uclu-simsek', Demir: 'ors', Poyraz: 'kar-tanesi', Gölge: 'kukuletali', Kuzgun: 'kuzgun', Tarkan: 'kartal', Volkan: 'ates-kasesi' };
 
 export function CharacterNamingScreen({ currentName, onConfirmName, modifier }) {
   const [enteredName, setEnteredName] = useState(currentName !== 'Sürgün Silahşör' ? currentName || '' : '');
@@ -32,6 +34,7 @@ export function CharacterNamingScreen({ currentName, onConfirmName, modifier }) 
         selectedColor={AmberGold}
         color={DarkSurfaceCard}
         style={{ flex: 1, justifyContent: 'center', paddingHorizontal: 4, minHeight: 40 }}
+        leading={<Gorsel ad={ONERI_GORSELLERI[sug] || 'kisi'} boyut={16} renk={secili ? DarkBg : AmberGold} />}
       >
         <T size={11} weight="bold" color={secili ? DarkBg : TextLight} align="center">
           {sug}
@@ -48,7 +51,7 @@ export function CharacterNamingScreen({ currentName, onConfirmName, modifier }) 
 
           {/* Üst İkon & Başlık Alanı */}
           <Surface hidden radius={16} color={alpha(AmberGoldDark, 0.2)} borderColor={AmberGold} borderWidth={2} align="center" justify="center" style={{ width: 76, height: 76 }}>
-            
+            <Gorsel ad="kilicli-adam" boyut={48} renk={AmberGold} />
           </Surface>
 
           <Spacer h={18} />
@@ -65,9 +68,12 @@ export function CharacterNamingScreen({ currentName, onConfirmName, modifier }) 
           {/* Parşömen Temalı Arka Plan Hikayesi */}
           <Card color={DarkSurface} radius={12} borderColor={DarkBorder} borderWidth={1.5} style={{ alignSelf: 'stretch' }}>
             <Column pad={16}>
-              <T size={15} weight="bold" color={TextGold}>
-                Sürgünün Yeni Kimliği
-              </T>
+              <Row gap={8}>
+                <Gorsel ad="tomar" boyut={22} renk={AmberGold} />
+                <T size={15} weight="bold" color={TextGold} style={{ flexShrink: 1 }}>
+                  Sürgünün Yeni Kimliği
+                </T>
+              </Row>
               <Spacer h={8} />
               <T size={13} color={TextLight} lineHeight={19}>
                 Güneyden sürülüp Kırlangıç Kasabası'nın nemli zindan çukuruna atıldın. Burada ne eski sülalelerin hükmü var ne de kaybettiğin altınların... Arenanın kızgın kumlarında tellalların haykıracağı, demircinin kılıcına nakşedeceği ve rakiplerinin korkuyla anacağı adın nedir?
@@ -79,9 +85,12 @@ export function CharacterNamingScreen({ currentName, onConfirmName, modifier }) 
 
           {/* İsim Yazma Alanı */}
           <Column style={{ alignSelf: 'stretch' }} gap={4}>
-            <T size={12} color={AmberGold} hidden>
-              Savaşçı Adın
-            </T>
+            <Row gap={6}>
+              <Gorsel ad="tuy-kalem" boyut={16} renk={AmberGold} />
+              <T size={12} color={AmberGold} hidden>
+                Savaşçı Adın
+              </T>
+            </Row>
             <Field
               value={enteredName}
               onChange={(it) => {
@@ -108,9 +117,12 @@ export function CharacterNamingScreen({ currentName, onConfirmName, modifier }) 
           <Spacer h={18} />
 
           {/* Hızlı İsim Önerileri */}
-          <T heading size={12} weight="semibold" color={TextLight} style={{ alignSelf: 'flex-start' }}>
-            Hızlı İsim Önerileri
-          </T>
+          <Row gap={6} style={{ alignSelf: 'flex-start' }}>
+            <Gorsel ad="zar" boyut={16} renk={AmberGold} />
+            <T heading size={12} weight="semibold" color={TextLight}>
+              Hızlı İsim Önerileri
+            </T>
+          </Row>
           <Spacer h={8} />
 
           <Row gap={6} style={{ alignSelf: 'stretch' }}>
@@ -131,6 +143,9 @@ export function CharacterNamingScreen({ currentName, onConfirmName, modifier }) 
             contentColor={DarkBg}
             radius={12}
             style={{ alignSelf: 'stretch', minHeight: 52 }}
+            gorsel="kalkan"
+            gorselRenk={DarkBg}
+            textSize={15}
           >
             <T size={15} weight="bold" color={DarkBg} align="center">
               Bu Adla Kumları Titret (Oyuna Başla)

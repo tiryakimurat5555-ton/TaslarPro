@@ -17,6 +17,7 @@ NODE_PATH=/opt/npm-tools/node_modules /opt/npm-tools/node_modules/.bin/esbuild "
   --alias:react-native-safe-area-context="$T/expo-taklit.js" \
   --alias:@react-native-async-storage/async-storage="$T/expo-taklit.js" \
   --alias:expo-gl="$T/expo-taklit.js" \
+  --alias:react-native-svg="$T/svg-taklit.js" \
   --loader:.js=jsx --loader:.m4a=file --loader:.jpg=file --asset-names=[name] --loader:.png=empty --log-level=warning
 cat > "$CIKIS/index.html" <<'H'
 <!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=390">

@@ -5,8 +5,9 @@ import { StyleSheet } from 'react-native';
 import * as kt from '../../kt.js';
 import { R } from '../../R.js';
 import { SoundManager } from '../../audio/SoundManager.js';
-import { Screen, Column, Row, Box, Surface, Spacer, T, IconBtn, Ikon, Tabs, Spinner, SnackHost, showSnack, announce, useFlow } from '../kit.js';
-import { AmberGold, AmberGoldDark, DarkBg, DarkBorder, DarkSurface, TextGold, TextLight, TextMuted, HealthGreen, FamePurple, Typography, alpha, color } from '../theme.js';
+import { Screen, Column, Row, Box, Surface, Spacer, T, IconBtn, Tabs, Spinner, SnackHost, showSnack, announce, useFlow, Gorsel, GorselRozet } from '../kit.js';
+import { bolgeGorseli, nitelikGorseli } from '../gorsel-esleme.js';
+import { AmberGold, AmberGoldDark, DarkBg, DarkBorder, DarkSurface, TextGold, TextLight, HealthGreen, FamePurple, Typography, alpha, color } from '../theme.js';
 import { InventoryScreen } from './InventoryScreen.js';
 import { HomeScreen } from './HomeScreen.js';
 import { ArenaScreen } from './ArenaScreen.js';
@@ -16,11 +17,11 @@ import { LevelUpDialog } from './LevelUpDialog.js';
 import { InvitationLetterDialog } from './InvitationLetterDialog.js';
 
 export const NavigationTab = kt.defineEnum('NavigationTab', {
-  INVENTORY: { title: 'Çanta', icon: 'Shield' },
-  HOME: { title: 'Ev', icon: 'Home' },
-  ARENA: { title: 'Arena', icon: 'SportsKabaddi' },
-  REGION: { title: 'Bölge', icon: 'Explore' },
-  QUESTS: { title: 'Görevler', icon: 'Assignment' },
+  INVENTORY: { title: 'Çanta', icon: 'Shield', gorsel: 'canta' },
+  HOME: { title: 'Ev', icon: 'Home', gorsel: 'ev' },
+  ARENA: { title: 'Arena', icon: 'SportsKabaddi', gorsel: 'arena' },
+  REGION: { title: 'Bölge', icon: 'Explore', gorsel: 'pusula' },
+  QUESTS: { title: 'Görevler', icon: 'Assignment', gorsel: 'tomar' },
 });
 
 const GUN_GECISI_ETIKETI = 'Yeni güne geçiliyor. Gece çöküyor ve şafak söküyor, lütfen bekleyiniz.';
@@ -108,19 +109,22 @@ export function MainScreen({ gameViewModel, onReturnToMainMenu = () => {} }) {
           <Row justify="between" style={{ alignSelf: 'stretch' }}>
             <Row gap={8}>
               <IconBtn label="Ana Menüye Dön" onPress={onReturnToMainMenu}>
-                <Ikon name="Menu" color={AmberGold} size={22} />
+                <Gorsel ad="menu" boyut={22} renk={AmberGold} />
               </IconBtn>
+              <Gorsel ad="capraz-kilic" boyut={20} renk={AmberGold} />
               <T heading style={Typography.titleMedium} color={TextGold} weight="bold">
                 Silahşör
               </T>
             </Row>
             <Row gap={6}>
-              <Surface radius={6} color={DarkBg} borderColor={AmberGold} borderWidth={1} style={{ paddingHorizontal: 6, paddingVertical: 2 }}>
+              <Surface radius={6} color={DarkBg} borderColor={AmberGold} borderWidth={1} style={{ paddingHorizontal: 6, paddingVertical: 2, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                <Gorsel ad={nitelikGorseli('gun')} boyut={14} renk={AmberGold} />
                 <T size={11} weight="bold" color={AmberGold}>
                   {`${dayState.currentDay}. Gün`}
                 </T>
               </Surface>
-              <Surface radius={6} color={alpha(AmberGoldDark, 0.25)} borderColor={AmberGold} borderWidth={1} style={{ paddingHorizontal: 6, paddingVertical: 2 }}>
+              <Surface radius={6} color={alpha(AmberGoldDark, 0.25)} borderColor={AmberGold} borderWidth={1} style={{ paddingHorizontal: 6, paddingVertical: 2, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                <Gorsel ad={nitelikGorseli('seviye')} boyut={14} renk={TextGold} />
                 <T size={11} weight="bold" color={TextGold}>
                   {`Sv. ${player.level}`}
                 </T>
@@ -132,15 +136,24 @@ export function MainScreen({ gameViewModel, onReturnToMainMenu = () => {} }) {
 
           {/* Üst Durum Çubuğu: Can, Altın, Şöhret (her yerde görünür) */}
           <Row justify="between" wrap gap={6} style={{ alignSelf: 'stretch' }}>
-            <T size={12} weight="semibold" color={HealthGreen}>
-              {`${player.currentHealth}/${player.totalStats.maxHealth} Can`}
-            </T>
-            <T size={12} weight="semibold" color={AmberGold}>
-              {`${player.gold} Altın`}
-            </T>
-            <T size={12} weight="semibold" color={FamePurple}>
-              {`${regionPrefix}: ${player.currentRegionFame}/100 (${player.currentRegionTitle})`}
-            </T>
+            <Row gap={4}>
+              <Gorsel ad={nitelikGorseli('can')} boyut={16} renk={HealthGreen} />
+              <T size={12} weight="semibold" color={HealthGreen}>
+                {`${player.currentHealth}/${player.totalStats.maxHealth} Can`}
+              </T>
+            </Row>
+            <Row gap={4}>
+              <Gorsel ad={nitelikGorseli('altin')} boyut={16} renk={AmberGold} />
+              <T size={12} weight="semibold" color={AmberGold}>
+                {`${player.gold} Altın`}
+              </T>
+            </Row>
+            <Row gap={4} style={{ flexShrink: 1 }}>
+              <Gorsel ad={bolgeGorseli(player.currentRegionId)} boyut={16} renk={FamePurple} />
+              <T size={12} weight="semibold" color={FamePurple} style={{ flexShrink: 1 }}>
+                {`${regionPrefix}: ${player.currentRegionFame}/100 (${player.currentRegionTitle})`}
+              </T>
+            </Row>
           </Row>
         </Surface>
 
@@ -149,17 +162,7 @@ export function MainScreen({ gameViewModel, onReturnToMainMenu = () => {} }) {
 
         {/* Alt sekme çubuğu (NavigationBar) */}
         <Tabs
-          titles={sekmeler.map((tab) => {
-            const isSelected = tab === currentTab;
-            return (
-              <Column align="center" gap={2}>
-                <Ikon name={tab.icon} size={22} color={isSelected ? AmberGold : TextMuted} />
-                <T size={12} weight={isSelected ? 'bold' : 'medium'} color={isSelected ? TextGold : TextMuted}>
-                  {tab.title}
-                </T>
-              </Column>
-            );
-          })}
+          titles={sekmeler.map((tab) => ({ baslik: tab.title, gorsel: tab.gorsel }))}
           selected={seciliSira}
           onSelect={(i) => setCurrentTab(sekmeler[i])}
           color={DarkSurface}
@@ -183,6 +186,7 @@ export function MainScreen({ gameViewModel, onReturnToMainMenu = () => {} }) {
           style={[StyleSheet.absoluteFill, { backgroundColor: color(0xf0080608) }]}
         >
           <Column align="center" gap={16} pad={32}>
+            <GorselRozet ad="kamp-atesi" boyut={72} renk={AmberGold} />
             <Spinner color={AmberGold} size={48} />
             <T size={20} weight="bold" color={TextGold}>
               Gece Çöküyor...

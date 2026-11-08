@@ -5,7 +5,7 @@ import { View, Text, AccessibilityInfo, findNodeHandle, Platform } from 'react-n
 import { Data } from '../../kt.js';
 import { R } from '../../R.js';
 import { SoundManager } from '../../audio/SoundManager.js';
-import { Screen, Column, Row, Box, Surface, Card, Spacer, T, Btn, OutlinedBtn, TextBtn, Divider, Scroll, announce } from '../kit.js';
+import { Screen, Column, Row, Box, Surface, Card, Spacer, T, Btn, OutlinedBtn, TextBtn, Divider, Scroll, announce, Gorsel } from '../kit.js';
 import { AmberGold, AmberGoldDark, DarkBg, DarkBorder, DarkSurface, DarkSurfaceCard, TextGold, TextLight, TextMuted, HealthRed, Color, Typography, alpha } from '../theme.js';
 
 export class StoryPage extends Data {
@@ -79,6 +79,47 @@ export const PROLOGUE_PAGES = [
   }),
 ];
 
+// Bölüm resimleri (yalnız görsel; VoiceOver'dan gizli): ortada ana simge, iki yanda küçük yardımcılar.
+const BOLUM_RESIMLERI = [
+  { ana: 'gunes-isini', sol: 'saksi', sag: 'kadeh' }, // portakal bahçeleri, güney güneşi, limon şerbeti
+  { ana: 'eskrimci', sol: 'kale', sag: 'hedef-kuklasi' }, // dövüş akademisi, tahta kılıç talimleri
+  { ana: 'kirik-kalkan', sol: 'sarap', sag: 'kapi' }, // skandal, devrilen zırhlar, kapanan kapılar
+  { ana: 'kilit', sol: 'patika', sag: 'sarap' }, // zincirler, yollar, ilaçlı şarap
+  { ana: 'zindan-kapisi', sol: 'merdiven', sag: 'su-damlasi' }, // zindan çukuru, taş merdiven, nemli taş
+  { ana: 'alev', sol: 'kilicli-adam', sag: 'arena' }, // külden doğan savaşçı, arena
+];
+
+function BolumResmi({ sira }) {
+  const r = BOLUM_RESIMLERI[sira] || BOLUM_RESIMLERI[0];
+  return (
+    <View
+      accessible={false}
+      accessibilityElementsHidden
+      importantForAccessibility="no-hide-descendants"
+      pointerEvents="none"
+      style={{
+        alignSelf: 'stretch',
+        height: 132,
+        borderRadius: 10,
+        backgroundColor: DarkSurfaceCard,
+        borderWidth: 1,
+        borderColor: alpha(AmberGold, 0.25),
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 18,
+        overflow: 'hidden',
+      }}
+    >
+      <Gorsel ad={r.sol} boyut={44} renk={alpha(AmberGold, 0.55)} />
+      <View style={{ width: 104, height: 104, borderRadius: 52, backgroundColor: alpha(AmberGoldDark, 0.22), borderWidth: 1.5, borderColor: alpha(AmberGold, 0.6), alignItems: 'center', justifyContent: 'center' }}>
+        <Gorsel ad={r.ana} boyut={72} renk={TextGold} />
+      </View>
+      <Gorsel ad={r.sag} boyut={44} renk={alpha(AmberGold, 0.55)} />
+    </View>
+  );
+}
+
 export function StoryIntroScreen({ onFinishStory, modifier }) {
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const currentPage = PROLOGUE_PAGES[currentPageIndex];
@@ -143,15 +184,18 @@ export function StoryIntroScreen({ onFinishStory, modifier }) {
         {/* Üst Bar: Başlık, Sayfa Sayacı ve Hikayeyi Geç Butonu */}
         <Row justify="between" style={{ alignSelf: 'stretch' }}>
           <Column>
-            <T size={11} weight="bold" color={AmberGold} letterSpacing={1.5}>
-              KADERİN BAŞLANGICI
-            </T>
+            <Row gap={6}>
+              <Gorsel ad="bagli-tomar" boyut={16} renk={AmberGold} />
+              <T size={11} weight="bold" color={AmberGold} letterSpacing={1.5}>
+                KADERİN BAŞLANGICI
+              </T>
+            </Row>
             <T size={13} weight="semibold" color={TextGold}>
               {`Sayfa ${currentPageIndex + 1} / ${PROLOGUE_PAGES.length}`}
             </T>
           </Column>
 
-          <TextBtn label="Hikayeyi doğrudan geç ve oyuna başla" onPress={skipStory}>
+          <TextBtn label="Hikayeyi doğrudan geç ve oyuna başla" onPress={skipStory} gorsel="kosu" gorselRenk={TextMuted} textSize={12}>
             <T size={12} weight="bold" color={TextMuted}>
               Hikayeyi Geç
             </T>
@@ -180,6 +224,8 @@ export function StoryIntroScreen({ onFinishStory, modifier }) {
         {/* Ana Hikaye Parşömen Kartı */}
         <Card color={DarkSurface} radius={12} borderColor={AmberGoldDark} borderWidth={1.5} style={{ flex: 1, alignSelf: 'stretch' }}>
           <Scroll ref={scrollRef} gap={14} pad={20}>
+            <BolumResmi sira={currentPageIndex} />
+
             {/* Bölüm Numarası ve Başlığı (VoiceOver odağı sayfa değişince buraya gelir) */}
             <View ref={baslikRef} accessible accessibilityRole="header" accessibilityLabel={baslikEtiketi}>
               <T size={12} weight="bold" color={AmberGold} letterSpacing={2}>
@@ -223,7 +269,7 @@ export function StoryIntroScreen({ onFinishStory, modifier }) {
         {/* Alt Butonlar (Geri / Sayfayı Çevir / Oyuna Başla) */}
         <Row gap={10} style={{ alignSelf: 'stretch' }}>
           {currentPageIndex > 0 ? (
-            <OutlinedBtn label="Önceki sayfaya dön" onPress={prevPage} borderColor={DarkBorder} contentColor={TextLight} radius={8} style={{ flex: 0.8, height: 46 }}>
+            <OutlinedBtn label="Önceki sayfaya dön" onPress={prevPage} borderColor={DarkBorder} contentColor={TextLight} radius={8} style={{ flex: 0.8, height: 46 }} gorsel="acik-kitap" gorselRenk={TextLight} textSize={13}>
               <T weight="semibold" size={13} color={TextLight}>
                 ← Önceki
               </T>
@@ -237,6 +283,9 @@ export function StoryIntroScreen({ onFinishStory, modifier }) {
             contentColor={sonSayfa ? Color.White : DarkBg}
             radius={8}
             style={{ flex: currentPageIndex > 0 ? 1.2 : 1, height: 46 }}
+            gorsel={sonSayfa ? 'capraz-kilic' : 'acik-kitap'}
+            gorselRenk={sonSayfa ? Color.White : DarkBg}
+            textSize={14}
           >
             <T weight="bold" size={14} color={sonSayfa ? Color.White : DarkBg} align="center">
               {sonSayfa ? 'Kırlangıç Arenasına Adım At' : 'Sayfayı Çevir →'}
