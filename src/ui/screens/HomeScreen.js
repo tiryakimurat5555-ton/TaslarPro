@@ -472,7 +472,7 @@ function CharacterRegistryCard({ unlockedCount, totalCount, isHouse, onOpenCodex
             </T>
           </Column>
         </Row>
-        <Btn onPress={onOpenCodex} color={AmberGoldDark} contentColor={TextLight} radius={8} pad={8} label="Sicili Aç" gorsel="acik-kitap">
+        <Btn onPress={onOpenCodex} color={AmberGoldDark} contentColor={TextLight} radius={8} pad={8} label="Sicili Aç" gorsel="acik-kitap" textSize={12}>
           <T size={11} weight="bold" color={TextLight}>
             Sicili Aç
           </T>
@@ -1125,7 +1125,7 @@ export function StorageVaultDialog({ player, viewModel, onDismiss }) {
       govde = (
         <Row justify="between" gap={8} style={{ alignSelf: 'stretch' }}>
           <Row gap={10} style={{ flex: 1 }} label={`${a11y} Açma Bedeli: ${unlockCost} Altın`}>
-            <GorselRozet ad="kilit" boyut={40} kare renk={TextMuted} zemin={DarkSurfaceCard} kenar={DarkBorder} oran={0.5} />
+            <GorselRozet ad="kilit" boyut={34} kare renk={TextMuted} zemin={DarkSurfaceCard} kenar={DarkBorder} oran={0.5} />
             <Column style={{ flex: 1 }}>
               <T weight="bold" color={TextMuted} size={13}>
                 {`${slotIndex + 1}. Sandık Alanı (Kilitli)`}
@@ -1145,6 +1145,7 @@ export function StorageVaultDialog({ player, viewModel, onDismiss }) {
             contentColor={DarkBg}
             pad={8}
             gorsel="acik-kilit"
+            textSize={10}
             label={`${slotIndex + 1}. Sandık Alanının Kilidini Aç, ${unlockCost} Altın`}
           >
             <T size={11} weight="bold" color={player.gold >= unlockCost ? DarkBg : TextMuted}>
@@ -1181,7 +1182,7 @@ export function StorageVaultDialog({ player, viewModel, onDismiss }) {
         <>
           <Row justify="between" gap={6} style={{ alignSelf: 'stretch' }}>
             <Row gap={6} style={{ flex: 1 }} onPress={() => setViewingChest(chest)} label={`${a11y} Stok: ${contentSummary}`}>
-              <GorselRozet ad={sandikGorseli(chest.type)} boyut={40} kare renk={AmberGold} kenar={alpha(AmberGold, 0.5)} />
+              <GorselRozet ad={sandikGorseli(chest.type)} boyut={34} kare renk={AmberGold} kenar={alpha(AmberGold, 0.5)} />
               <Column style={{ flex: 1 }}>
                 <T weight="bold" color={TextGold} size={13}>
                   {chest.type.displayName}
@@ -1192,7 +1193,7 @@ export function StorageVaultDialog({ player, viewModel, onDismiss }) {
               </Column>
             </Row>
             <Row gap={4}>
-              <OutlinedBtn onPress={() => setViewingChest(chest)} pad={6} label={`${chest.type.displayName} Aç`} gorsel="acik-kilit">
+              <OutlinedBtn onPress={() => setViewingChest(chest)} pad={6} label={`${chest.type.displayName} Aç`} gorsel="acik-kilit" textSize={10}>
                 <T size={10} color={AmberGold} weight="bold">
                   Aç
                 </T>
@@ -1204,6 +1205,7 @@ export function StorageVaultDialog({ player, viewModel, onDismiss }) {
                 contentColor={DarkBg}
                 pad={6}
                 gorsel="yukselt"
+                textSize={10}
                 label={`${chest.type.displayName} Geliştir, ${chest.upgradeCostGold} Altın`}
               >
                 <T size={10} weight="bold" color={player.gold >= chest.upgradeCostGold ? DarkBg : TextMuted}>
@@ -1225,7 +1227,7 @@ export function StorageVaultDialog({ player, viewModel, onDismiss }) {
         <Column>
           <Row justify="between" gap={6} style={{ alignSelf: 'stretch' }}>
             <Row gap={10} style={{ flexShrink: 1 }}>
-              <GorselRozet ad="sandik" boyut={40} kare renk={alpha(TextLight, 0.4)} zemin={DarkBg} kenar={DarkBorder} oran={0.5} />
+              <GorselRozet ad="sandik" boyut={34} kare renk={alpha(TextLight, 0.4)} zemin={DarkBg} kenar={DarkBorder} oran={0.5} />
               <T weight="bold" color={TextLight} size={13} label={a11y} style={{ flexShrink: 1 }}>
                 {`${slotIndex + 1}. Sandık Alanı (Boş)`}
               </T>
@@ -1389,6 +1391,7 @@ export function ChestContentsDialog({ chest, player, viewModel, onDismiss }) {
                 pad={4}
                 style={{ flex: 1 }}
                 gorsel="kazan"
+                textSize={10}
                 label="Tüm Kırıkları Sentezle"
               >
                 <T size={10} weight="bold" color={sentezOlur ? DarkBg : TextMuted} align="center">
@@ -1403,6 +1406,7 @@ export function ChestContentsDialog({ chest, player, viewModel, onDismiss }) {
                 pad={4}
                 style={{ flex: 1 }}
                 gorsel="yukselt"
+                textSize={10}
                 label="Tümünü Yükselt"
               >
                 <T size={10} weight="bold" color={hasAnyUpgradable ? Color.White : TextMuted} align="center">
@@ -1443,6 +1447,7 @@ export function ChestContentsDialog({ chest, player, viewModel, onDismiss }) {
                   contentColor={DarkBg}
                   pad={6}
                   gorsel="kazan"
+                  textSize={10}
                   label={`${gType.displayName} Sentezle, ${GemCraftingRules.SHARD_SYNTHESIS_COST_GOLD} Altın`}
                 >
                   <T size={10} weight="bold" color={olur ? DarkBg : TextMuted}>
@@ -1506,6 +1511,7 @@ export function ChestContentsDialog({ chest, player, viewModel, onDismiss }) {
                           contentColor={DarkBg}
                           pad={6}
                           gorsel="yukselt"
+                          textSize={10}
                           label={`3 ${gType.displayName} Taşını Seviye ${targetLevel}'e Yükselt, ${cost} Altın`}
                         >
                           <T size={10} weight="bold" color={olur ? DarkBg : TextMuted}>

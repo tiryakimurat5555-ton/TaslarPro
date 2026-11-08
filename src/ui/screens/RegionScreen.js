@@ -1816,7 +1816,7 @@ function RegionHeaderCard({ region }) {
         </Row>
         <Spacer h={6} />
         <Row gap={12}>
-          <GorselRozet ad={bolgeGorseli(region.id)} boyut={52} kenar={AmberGoldDark} />
+          <GorselRozet ad={bolgeGorseli(String(region.id).includes('tashisar') ? 'tashisar' : 'kirlangic')} boyut={52} kenar={AmberGoldDark} />
           <T style={[Typography.titleLarge, { flex: 1 }]} color={TextGold} weight="bold" heading>
             {region.name}
           </T>
@@ -2277,10 +2277,12 @@ function TavernEavesdropCard({ currentTale, canEavesdrop, remainingCount, maxCou
         <Row justify="between" style={{ alignSelf: 'stretch' }}>
           <Column style={{ flex: 1 }}>
             <Row gap={6} wrap>
-              <Gorsel ad="fisilti" boyut={22} />
-              <T style={Typography.titleMedium} weight="bold" color={TextGold} heading>
-                Masalara Kulak Kabart
-              </T>
+              <Row gap={6} style={{ flexShrink: 1 }}>
+                <Gorsel ad="fisilti" boyut={22} />
+                <T style={[Typography.titleMedium, { flexShrink: 1 }]} weight="bold" color={TextGold} heading>
+                  Masalara Kulak Kabart
+                </T>
+              </Row>
               <Badge
                 text={`${remainingCount}/${maxCount} Hak`}
                 textColor={canEavesdrop ? AmberGold : HealthRed}

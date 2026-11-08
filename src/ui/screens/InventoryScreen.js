@@ -902,6 +902,7 @@ function SlotQuickEquipDialog({ slot, matchingItems, playerLevel, onDismiss, onE
                           contentColor={DarkBg}
                           pad={8}
                           gorsel={esyaGorseli(item)}
+                          textSize={11}
                           label={canEquip ? `${item.name} Kuşan` : `Kuşan, Seviye ${item.requiredLevel} gerekli`}
                         >
                           <T size={11} weight="bold" color={canEquip ? DarkBg : TextMuted}>
