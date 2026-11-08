@@ -1,6 +1,7 @@
 // KT/ui/screens/InventoryScreen.kt — karakter sayfası, donanım yuvaları, çanta, iksirler, taş yuvaları, yetenek yuvaları.
 import React, { useState } from 'react';
-import { AlertDialog, Box, Btn, Card, Column, Divider, Grid, IconBtn, OutlinedBtn, Progress, Row, Scroll, Spacer, Surface, T, Tabs, TextBtn, useFlow } from '../kit.js';
+import { AlertDialog, Box, Btn, Card, Column, Divider, Gorsel, GorselRozet, Grid, IconBtn, OutlinedBtn, Progress, Row, Scroll, Spacer, Surface, T, Tabs, TextBtn, useFlow } from '../kit.js';
+import { esyaGorseli, nitelikGorseli, sarfGorseli, tasGorseli, tasRengi, yuvaGorseli } from '../gorsel-esleme.js';
 import {
   AmberGold,
   AmberGoldDark,
@@ -37,6 +38,37 @@ function rarityColor(item) {
   return color(item.rarity.colorHex);
 }
 
+// Görseller VoiceOver'dan gizlidir (kit Gorsel/GorselRozet); okunan metinler ve etiketler aynen korunur.
+const YETENEK_KURESI_GORSELI = {
+  skill_iron_will: 'kalkan',
+  skill_crushing_impact: 'cekic',
+  skill_counter_flurry: 'simsek',
+  skill_east_dragon: 'ejder',
+  skill_east_crane: 'tuy',
+  skill_east_storm: 'buyu-girdap',
+  skill_east_night: 'kukuletali',
+  skill_east_tiger: 'aslan',
+  skill_east_mountain: 'dag',
+};
+/** Dövüş tekniği (SkillOrb) simgesi. */
+function yetenekKuresiGorseli(skill) {
+  return (skill && YETENEK_KURESI_GORSELI[skill.id]) || 'buyu-girdap';
+}
+
+/** Etkin merhem/iksir etkisinin simgesi: en belirgin bonusuna göre. */
+function etkiGorseli(buff) {
+  if (!buff) return 'iksir';
+  if (buff.bonusDamage > 0) return nitelikGorseli('hasar');
+  if (buff.bonusArmor > 0) return nitelikGorseli('zirh');
+  if (buff.bonusSpeed > 0) return nitelikGorseli('hiz');
+  if (buff.bonusCritChance > 0) return nitelikGorseli('kritik');
+  if (buff.bonusBlockChance > 0) return nitelikGorseli('blok');
+  return 'iksir';
+}
+
+/** Kuşanılmış nitelik kutusundaki başlık → nitelik simgesi. */
+const NITELIK_ANAHTARI = { Hasar: 'hasar', Zırh: 'zirh', Hız: 'hiz', Sıyrılma: 'siyrilma', Kritik: 'kritik', Blok: 'blok' };
+
 export function InventoryScreen({ viewModel, modifier }) {
   const player = useFlow(viewModel.player);
   const [selectedTab, setSelectedTab] = useState(0); // 0: Karakter & Donanım, 1: Çanta Izgarası, 2: Tüketim & İksir, 3: Yetenekler
@@ -47,10 +79,15 @@ export function InventoryScreen({ viewModel, modifier }) {
   const [selectedConsumableForDetail, setSelectedConsumableForDetail] = useState(null);
   const [slotForQuickEquip, setSlotForQuickEquip] = useState(null);
 
+  // Sekme başlığı: simge + metin. VoiceOver etiketi değişmez (T'nin label'ı; Tabs onu okur, simge gizli).
+  const SEKME_GORSELLERI = ['sparta-migferi', 'canta', 'iksir', 'yumruk'];
   const sekmeBasligi = (metin, etiket, i) => (
-    <T label={etiket} size={13} weight={selectedTab === i ? 'bold' : 'medium'} color={selectedTab === i ? TextGold : TextMuted} align="center" lines={2}>
-      {metin}
-    </T>
+    <Column align="center" gap={3}>
+      <Gorsel ad={SEKME_GORSELLERI[i]} boyut={22} renk={selectedTab === i ? AmberGold : TextMuted} />
+      <T label={etiket} size={13} weight={selectedTab === i ? 'bold' : 'medium'} color={selectedTab === i ? TextGold : TextMuted} align="center" lines={2}>
+        {metin}
+      </T>
+    </Column>
   );
 
   // 1. Eşya Detay Modalı
@@ -216,9 +253,12 @@ function PaperdollCharacterView({ player, onSlotClick, onUnequipSlot, onChangeSl
       {/* Kağıt Bebek & Yuvalar Bölümü */}
       <Card color={DarkSurface} radius={12} borderColor={alpha(AmberGoldDark, 0.5)} borderWidth={1} style={{ alignSelf: 'stretch' }}>
         <Column pad={10} style={{ alignSelf: 'stretch' }}>
-          <T heading size={14} weight="bold" color={TextGold} style={{ paddingBottom: 8 }}>
-            Donanım Yuvaları & Karakter
-          </T>
+          <Row gap={6} style={{ paddingBottom: 8 }}>
+            <Gorsel ad="agir-zirh" boyut={20} renk={TextGold} />
+            <T heading size={14} weight="bold" color={TextGold} style={{ flexShrink: 1 }}>
+              Donanım Yuvaları & Karakter
+            </T>
+          </Row>
 
           <Row justify="between" style={{ alignSelf: 'stretch' }}>
             {/* Sol Yuvalar (Zırh / Koruma) */}
@@ -231,9 +271,7 @@ function PaperdollCharacterView({ player, onSlotClick, onUnequipSlot, onChangeSl
               <Column pad={8} align="center" style={{ alignSelf: 'stretch' }}>
                 <Column align="center" style={{ alignSelf: 'stretch' }} label={`Karakter: ${player.name}, ${player.title}, Seviye ${player.level}`}>
                   {/* Karakter İkonu / Silueti */}
-                  <Surface radius={27} color={alpha(AmberGoldDark, 0.2)} borderColor={AmberGold} borderWidth={2} align="center" justify="center" style={{ width: 54, height: 54 }}>
-                    
-                  </Surface>
+                  <GorselRozet ad="eskrimci" boyut={54} zemin={alpha(AmberGoldDark, 0.2)} kenar={AmberGold} renk={AmberGold} oran={0.62} style={{ borderWidth: 2 }} />
 
                   <Spacer h={6} />
 
@@ -245,9 +283,12 @@ function PaperdollCharacterView({ player, onSlotClick, onUnequipSlot, onChangeSl
                   </T>
 
                   <Surface radius={4} color={alpha(AmberGoldDark, 0.35)} style={{ marginTop: 4 }}>
-                    <T size={11} weight="bold" color={TextGold} style={{ paddingHorizontal: 6, paddingVertical: 2 }}>
-                      {`Sv. ${player.level} / 100`}
-                    </T>
+                    <Row gap={3} style={{ paddingHorizontal: 6, paddingVertical: 2 }}>
+                      <Gorsel ad={nitelikGorseli('seviye')} boyut={13} renk={TextGold} />
+                      <T size={11} weight="bold" color={TextGold}>
+                        {`Sv. ${player.level} / 100`}
+                      </T>
+                    </Row>
                   </Surface>
                 </Column>
 
@@ -256,9 +297,12 @@ function PaperdollCharacterView({ player, onSlotClick, onUnequipSlot, onChangeSl
                 {/* HP Bar */}
                 <Column style={{ alignSelf: 'stretch' }} label={`Sağlık ${player.currentHealth} / ${maxHp}`}>
                   <Row justify="between" style={{ alignSelf: 'stretch' }}>
-                    <T size={10} color={TextMuted}>
-                      Sağlık
-                    </T>
+                    <Row gap={3}>
+                      <Gorsel ad={nitelikGorseli('can')} boyut={12} renk={HealthGreen} />
+                      <T size={10} color={TextMuted}>
+                        Sağlık
+                      </T>
+                    </Row>
                     <T size={10} color={HealthGreen} weight="bold">
                       {`${player.currentHealth}/${maxHp}`}
                     </T>
@@ -271,9 +315,12 @@ function PaperdollCharacterView({ player, onSlotClick, onUnequipSlot, onChangeSl
                 {/* Exp Bar */}
                 <Column style={{ alignSelf: 'stretch' }} label={`Tecrübe ${player.currentExp} / ${player.maxExp}`}>
                   <Row justify="between" style={{ alignSelf: 'stretch' }}>
-                    <T size={10} color={TextMuted}>
-                      EXP
-                    </T>
+                    <Row gap={3}>
+                      <Gorsel ad={nitelikGorseli('tecrube')} boyut={12} renk={ExpBlue} />
+                      <T size={10} color={TextMuted}>
+                        EXP
+                      </T>
+                    </Row>
                     <T size={10} color={ExpBlue} weight="bold">
                       {`${player.currentExp}/${player.maxExp}`}
                     </T>
@@ -285,13 +332,19 @@ function PaperdollCharacterView({ player, onSlotClick, onUnequipSlot, onChangeSl
                   <>
                     <Spacer h={6} />
                     <Column radius={4} color={DarkSurfaceCard} borderColor={alpha(AmberGold, 0.5)} borderWidth={1} pad={6} style={{ alignSelf: 'stretch' }}>
-                      <T size={10} weight="bold" color={AmberGold}>
-                        Aktif Merhem & İksirler:
-                      </T>
-                      {player.activeBuffs.map((buff, i) => (
-                        <T key={i} size={9} color={TextLight} lines={1} label={`${buff.name}, ${buff.remainingBattles} dövüş kaldı`}>
-                          {`${buff.name} (${buff.remainingBattles} dövüş)`}
+                      <Row gap={3}>
+                        <Gorsel ad="merhem" boyut={13} renk={AmberGold} />
+                        <T size={10} weight="bold" color={AmberGold} style={{ flexShrink: 1 }}>
+                          Aktif Merhem & İksirler:
                         </T>
+                      </Row>
+                      {player.activeBuffs.map((buff, i) => (
+                        <Row key={i} gap={3} style={{ alignSelf: 'stretch' }}>
+                          <Gorsel ad={etkiGorseli(buff)} boyut={12} renk={AmberGold} />
+                          <T size={9} color={TextLight} lines={1} label={`${buff.name}, ${buff.remainingBattles} dövüş kaldı`} style={{ flex: 1 }}>
+                            {`${buff.name} (${buff.remainingBattles} dövüş)`}
+                          </T>
+                        </Row>
                       ))}
                     </Column>
                   </>
@@ -301,12 +354,18 @@ function PaperdollCharacterView({ player, onSlotClick, onUnequipSlot, onChangeSl
 
                 {/* Altın & Şöhret Mini Rozetler */}
                 <Row justify="between" style={{ alignSelf: 'stretch' }} label={`Altın: ${player.gold}, Şöhret: ${player.globalFame}`}>
-                  <T size={11} weight="bold" color={AmberGold}>
-                    {`${player.gold} Altın`}
-                  </T>
-                  <T size={11} weight="bold" color={FamePurple}>
-                    {`${player.globalFame} Şöhret`}
-                  </T>
+                  <Row gap={2}>
+                    <Gorsel ad={nitelikGorseli('altin')} boyut={13} renk={AmberGold} />
+                    <T size={11} weight="bold" color={AmberGold}>
+                      {`${player.gold} Altın`}
+                    </T>
+                  </Row>
+                  <Row gap={2}>
+                    <Gorsel ad={nitelikGorseli('sohret')} boyut={13} renk={FamePurple} />
+                    <T size={11} weight="bold" color={FamePurple}>
+                      {`${player.globalFame} Şöhret`}
+                    </T>
+                  </Row>
                 </Row>
               </Column>
             </Card>
@@ -325,7 +384,7 @@ function PaperdollCharacterView({ player, onSlotClick, onUnequipSlot, onChangeSl
                 style={{ width: 62, height: 62 }}
                 label="Kilitli Yan Yuva"
               >
-                
+                <Gorsel ad="kilit" boyut={22} renk={alpha(TextMuted, 0.4)} />
               </Surface>
             </Column>
           </Row>
@@ -342,9 +401,12 @@ function PaperdollCharacterView({ player, onSlotClick, onUnequipSlot, onChangeSl
         label={`Savaş Nitelikleri: Hasar ${stats.damage}, Zırh ${stats.armor}, Hız ${stats.speed}, Sıyrılma yüzde ${stats.dodgeChancePercent}, Kritik yüzde ${stats.critChancePercent}, Blok yüzde ${stats.blockChancePercent}`}
       >
         <Column pad={12}>
-          <T style={Typography.titleMedium} color={TextGold} weight="bold">
-            Kuşanılmış Nitelikler (Toplam)
-          </T>
+          <Row gap={6}>
+            <Gorsel ad="kalkan-darbe" boyut={20} renk={TextGold} />
+            <T style={[Typography.titleMedium, { flexShrink: 1 }]} color={TextGold} weight="bold">
+              Kuşanılmış Nitelikler (Toplam)
+            </T>
+          </Row>
           <Spacer h={8} />
           <Row justify="between" style={{ alignSelf: 'stretch' }}>
             <StatLabel title="Hasar" value={`${stats.damage}`} />
@@ -396,9 +458,15 @@ function EquipmentSlotBox({ slot, equippedItem, onClick, onUnequip, onChange, st
       actions={actions.length > 0 ? actions : undefined}
     >
       {/* Yuva veya eşya ikonu */}
-      <T size={20} align="center">
-        {equippedItem?.categoryIcon ?? slot.icon}
-      </T>
+      <GorselRozet
+        ad={isEquipped ? esyaGorseli(equippedItem) : yuvaGorseli(slot)}
+        boyut={34}
+        kare
+        oran={0.7}
+        zemin="transparent"
+        renk={isEquipped ? rarityColor(equippedItem) : alpha(TextMuted, 0.45)}
+        style={{ marginTop: 2 }}
+      />
 
       {/* İsim veya durum */}
       <T size={9} weight={isEquipped ? 'semibold' : 'normal'} color={isEquipped ? rarityColor(equippedItem) : TextMuted} lines={1} align="center">
@@ -415,7 +483,8 @@ function EquipmentSlotBox({ slot, equippedItem, onClick, onUnequip, onChange, st
 function InventoryGridView({ inventory, playerLevel, onItemClick, onEquip, onSell }) {
   if (inventory.length === 0) {
     return (
-      <Box style={{ flex: 1 }} align="center" justify="center">
+      <Box style={{ flex: 1 }} align="center" justify="center" gap={12}>
+        <GorselRozet ad="canta" boyut={72} renk={alpha(TextMuted, 0.7)} zemin={DarkSurfaceCard} />
         <T color={TextMuted} align="center" size={14}>
           {'Çantanızda boşta duran ekipman yok.\nDemirci veya haritada yeni ganimetler bulun!'}
         </T>
@@ -478,9 +547,9 @@ function InventoryGridSlotItem({ item, playerLevel, onClick, onEquip, onSell }) 
       label={`${item.name}, ${item.rarity.displayName}, ${item.categoryDisplayName}, Seviye ${item.requiredLevel}${canEquip ? '' : ', seviyen yetersiz'}, ${formatStats(item.stats)}. İncelemek için dokunun.`}
       actions={actions.length > 0 ? actions : undefined}
     >
-      <Row justify="between" style={{ alignSelf: 'stretch' }}>
-        <T size={14}>{item.categoryIcon}</T>
-        <T size={9} color={TextMuted}>
+      <Row justify="between" align="start" style={{ alignSelf: 'stretch' }}>
+        <Gorsel ad={esyaGorseli(item)} boyut={26} renk={rc} />
+        <T size={9} color={canEquip ? TextMuted : HealthRed}>
           {`Sv.${item.requiredLevel}`}
         </T>
       </Row>
@@ -511,9 +580,7 @@ function EmptyInventorySlotBox({ index }) {
       style={{ aspectRatio: 1 }}
       hidden
     >
-      <T color={DarkBorder} size={14}>
-        —
-      </T>
+      <Gorsel ad="canta" boyut={20} renk={DarkBorder} opaklik={0.5} />
     </Surface>
   );
 }
@@ -544,7 +611,8 @@ function iksirDurumu(item, player) {
 function ConsumablesGridView({ consumables, player, onConsumableClick, onUse }) {
   if (consumables.length === 0) {
     return (
-      <Box style={{ flex: 1 }} align="center" justify="center">
+      <Box style={{ flex: 1 }} align="center" justify="center" gap={12}>
+        <GorselRozet ad="iksir" boyut={72} renk={alpha(TextMuted, 0.7)} zemin={DarkSurfaceCard} />
         <T color={TextMuted} align="center" size={14}>
           {'Hiç şifa merhemi veya iksiriniz kalmadı.\nAktardan veya hekimden temin edebilirsiniz.'}
         </T>
@@ -574,7 +642,7 @@ function ConsumablesGridView({ consumables, player, onConsumableClick, onUse }) 
               label={`${conItem.name}, ${conItem.count} adet. İncelemek veya kullanmak için dokunun.`}
               actions={actions}
             >
-              <T size={24}>{conItem.categoryIcon}</T>
+              <GorselRozet ad={sarfGorseli(conItem)} boyut={40} renk={HealthGreen} zemin={alpha(HealthGreen, 0.12)} oran={0.62} />
               <T size={11} weight="bold" color={HealthGreen} lines={2} align="center">
                 {conItem.name}
               </T>
@@ -606,16 +674,18 @@ function ItemDetailDialog({ item, isEquipped, playerLevel, onDismiss, onEquip, o
       containerColor={DarkSurface}
       title={
         <Column heading label={`${item.name}, ${item.categoryDisplayName}, ${item.rarity.displayName}, Seviye ${item.requiredLevel}`}>
-          <Row gap={6}>
-            <T size={20}>{item.categoryIcon}</T>
-            <T size={18} weight="bold" color={rc} style={{ flexShrink: 1 }}>
-              {item.name}
-            </T>
+          <Row gap={12} style={{ alignSelf: 'stretch' }}>
+            <GorselRozet ad={esyaGorseli(item)} boyut={52} kare renk={rc} zemin={DarkBg} kenar={rc} oran={0.66} />
+            <Column style={{ flex: 1 }}>
+              <T size={18} weight="bold" color={rc} style={{ flexShrink: 1 }}>
+                {item.name}
+              </T>
+              <Spacer h={4} />
+              <T size={12} color={TextMuted}>
+                {`${item.categoryDisplayName} • ${item.rarity.displayName} • Sv. ${item.requiredLevel}`}
+              </T>
+            </Column>
           </Row>
-          <Spacer h={4} />
-          <T size={12} color={TextMuted}>
-            {`${item.categoryDisplayName} • ${item.rarity.displayName} • Sv. ${item.requiredLevel}`}
-          </T>
         </Column>
       }
       text={
@@ -629,9 +699,12 @@ function ItemDetailDialog({ item, isEquipped, playerLevel, onDismiss, onEquip, o
 
           {/* Nitelikler */}
           <Column label={`Nitelik Bonusları: ${formatStats(item.stats)}`}>
-            <T size={12} weight="bold" color={TextGold}>
-              Nitelik Bonusları:
-            </T>
+            <Row gap={5}>
+              <Gorsel ad="kalkan-darbe" boyut={16} renk={TextGold} />
+              <T size={12} weight="bold" color={TextGold}>
+                Nitelik Bonusları:
+              </T>
+            </Row>
             <T size={13} weight="semibold" color={AmberGold}>
               {formatStats(item.stats)}
             </T>
@@ -640,9 +713,12 @@ function ItemDetailDialog({ item, isEquipped, playerLevel, onDismiss, onEquip, o
           {item.specialTrait != null ? (
             <Surface radius={6} color={color(0xff2b1b36)} borderColor={FamePurple} borderWidth={1} style={{ alignSelf: 'stretch' }}>
               <Column pad={8}>
-                <T size={12} weight="bold" color={FamePurple}>
-                  {`2. Özel Nitelik: ${item.specialTrait.name}`}
-                </T>
+                <Row gap={5}>
+                  <Gorsel ad="pariltilar" boyut={16} renk={FamePurple} />
+                  <T size={12} weight="bold" color={FamePurple} style={{ flexShrink: 1 }}>
+                    {`2. Özel Nitelik: ${item.specialTrait.name}`}
+                  </T>
+                </Row>
                 <Spacer h={2} />
                 <T size={11} color={alpha(TextLight, 0.95)}>
                   {item.specialTrait.description}
@@ -655,9 +731,12 @@ function ItemDetailDialog({ item, isEquipped, playerLevel, onDismiss, onEquip, o
           {item.hasSockets ? (
             <Surface radius={6} color={DarkSurfaceCard} borderColor={alpha(AmberGold, 0.5)} borderWidth={1} style={{ alignSelf: 'stretch' }}>
               <Column pad={8}>
-                <T size={12} weight="bold" color={AmberGold} label={`Mücevher Yuvaları, ${item.sockets.length} / ${item.maxSockets} dolu`}>
-                  {`Mücevher Yuvaları (${item.sockets.length}/${item.maxSockets}):`}
-                </T>
+                <Row gap={5}>
+                  <Gorsel ad="elmas" boyut={16} renk={AmberGold} />
+                  <T size={12} weight="bold" color={AmberGold} label={`Mücevher Yuvaları, ${item.sockets.length} / ${item.maxSockets} dolu`} style={{ flexShrink: 1 }}>
+                    {`Mücevher Yuvaları (${item.sockets.length}/${item.maxSockets}):`}
+                  </T>
+                </Row>
                 <Spacer h={4} />
                 {item.sockets.length === 0 ? (
                   <T size={11} color={TextMuted}>
@@ -666,9 +745,12 @@ function ItemDetailDialog({ item, isEquipped, playerLevel, onDismiss, onEquip, o
                 ) : (
                   <>
                     {item.sockets.map((gem, idx) => (
-                      <T key={idx} size={11} color={TextLight} label={`${idx + 1}. yuva: ${gem.type.displayName} Seviye ${gem.level}, ${gem.effectSummary}`}>
-                        {`${idx + 1}. ${gem.displayName} -> ${gem.effectSummary}`}
-                      </T>
+                      <Row key={idx} gap={5} style={{ alignSelf: 'stretch' }}>
+                        <Gorsel ad={tasGorseli(gem.type)} boyut={15} renk={tasRengi(gem.type)} />
+                        <T size={11} color={TextLight} label={`${idx + 1}. yuva: ${gem.type.displayName} Seviye ${gem.level}, ${gem.effectSummary}`} style={{ flex: 1 }}>
+                          {`${idx + 1}. ${gem.displayName} -> ${gem.effectSummary}`}
+                        </T>
+                      </Row>
                     ))}
                     {item.freeSockets > 0 ? (
                       <T size={11} color={TextMuted}>
@@ -683,46 +765,62 @@ function ItemDetailDialog({ item, isEquipped, playerLevel, onDismiss, onEquip, o
 
           {/* Yuva ve Değer */}
           <Row justify="between" wrap gap={4} style={{ alignSelf: 'stretch' }}>
-            <T size={11} color={TextMuted}>
-              {`Yuva: ${item.slot.displayName}`}
-            </T>
-            <T size={11} color={AmberGold} label={`Değer: ${item.valueInGold} Altın, Satış: ${item.sellPrice} Altın`}>
-              {`Değer: ${item.valueInGold} Altın (Satış: ${item.sellPrice} Altın)`}
-            </T>
+            <Row gap={4}>
+              <Gorsel ad={yuvaGorseli(item.slot)} boyut={15} renk={TextMuted} />
+              <T size={11} color={TextMuted}>
+                {`Yuva: ${item.slot.displayName}`}
+              </T>
+            </Row>
+            <Row gap={4} style={{ flexShrink: 1 }}>
+              <Gorsel ad={nitelikGorseli('altin')} boyut={15} renk={AmberGold} />
+              <T size={11} color={AmberGold} label={`Değer: ${item.valueInGold} Altın, Satış: ${item.sellPrice} Altın`} style={{ flexShrink: 1 }}>
+                {`Değer: ${item.valueInGold} Altın (Satış: ${item.sellPrice} Altın)`}
+              </T>
+            </Row>
           </Row>
 
           {!canEquip && !isEquipped ? (
-            <T size={12} color={HealthRed} weight="semibold">
-              {`Bu eşyayı kuşanabilmek için Seviye ${item.requiredLevel} olmalısınız!`}
-            </T>
+            <Row gap={6} style={{ alignSelf: 'stretch' }}>
+              <Gorsel ad="kilit" boyut={16} renk={HealthRed} />
+              <T size={12} color={HealthRed} weight="semibold" style={{ flex: 1 }}>
+                {`Bu eşyayı kuşanabilmek için Seviye ${item.requiredLevel} olmalısınız!`}
+              </T>
+            </Row>
           ) : null}
         </Column>
       }
       confirm={
         isEquipped ? (
           <Row gap={6}>
-            <OutlinedBtn onPress={onUnequip} color={HealthRed} label={`${item.name} Çıkar`}>
+            <OutlinedBtn onPress={onUnequip} color={HealthRed} label={`${item.name} Çıkar`} gorsel="takas">
               Çıkar
             </OutlinedBtn>
-            <Btn onPress={onChangeEquip} color={AmberGold} contentColor={DarkBg} label={`${item.slot.displayName} Değiştir`}>
+            <Btn onPress={onChangeEquip} color={AmberGold} contentColor={DarkBg} label={`${item.slot.displayName} Değiştir`} gorsel="canta">
               Değiştir
             </Btn>
           </Row>
         ) : (
           <Row gap={6} wrap>
             {onSell != null ? (
-              <OutlinedBtn onPress={onSell} color={AmberGold} label={`Sat, artı ${item.sellPrice} Altın`}>
+              <OutlinedBtn onPress={onSell} color={AmberGold} label={`Sat, artı ${item.sellPrice} Altın`} gorsel="para-kesesi">
                 {`Sat (+${item.sellPrice} Altın)`}
               </OutlinedBtn>
             ) : null}
-            <Btn onPress={onEquip} disabled={!canEquip} color={AmberGold} contentColor={DarkBg} label={canEquip ? `${item.name} Kuşan` : `Kuşan, Seviye ${item.requiredLevel} gerekli`}>
+            <Btn
+              onPress={onEquip}
+              disabled={!canEquip}
+              color={AmberGold}
+              contentColor={DarkBg}
+              label={canEquip ? `${item.name} Kuşan` : `Kuşan, Seviye ${item.requiredLevel} gerekli`}
+              gorsel={esyaGorseli(item)}
+            >
               Kuşan
             </Btn>
           </Row>
         )
       }
       dismiss={
-        <TextBtn onPress={onDismiss} contentColor={TextLight}>
+        <TextBtn onPress={onDismiss} contentColor={TextLight} gorsel="kapi">
           Kapat
         </TextBtn>
       }
@@ -741,8 +839,8 @@ function SlotQuickEquipDialog({ slot, matchingItems, playerLevel, onDismiss, onE
       onDismiss={onDismiss}
       containerColor={DarkSurface}
       title={
-        <Row heading label={`${slot.displayName} Kuşan`}>
-          <T size={20}>{``}</T>
+        <Row heading gap={10} label={`${slot.displayName} Kuşan`}>
+          <GorselRozet ad={yuvaGorseli(slot)} boyut={44} kare renk={AmberGold} />
           <T size={17} weight="bold" color={TextGold} style={{ flexShrink: 1 }}>
             {`${slot.displayName} Kuşan`}
           </T>
@@ -752,6 +850,7 @@ function SlotQuickEquipDialog({ slot, matchingItems, playerLevel, onDismiss, onE
         <Column style={{ alignSelf: 'stretch' }}>
           {matchingItems.length === 0 ? (
             <Column style={{ paddingVertical: 12 }}>
+              <GorselRozet ad="canta" boyut={52} renk={alpha(TextMuted, 0.7)} zemin={DarkSurfaceCard} style={{ alignSelf: 'center', marginBottom: 10 }} />
               <T color={TextMuted} size={13}>
                 Çantanızda bu yuvaya takabileceğiniz bir eşya bulunmuyor.
               </T>
@@ -762,32 +861,39 @@ function SlotQuickEquipDialog({ slot, matchingItems, playerLevel, onDismiss, onE
             </Column>
           ) : (
             <Column gap={8} style={{ alignSelf: 'stretch' }}>
-              <T size={12} color={TextMuted}>
-                {`Çantanızdaki Uygun Donanımlar (${matchingItems.length}):`}
-              </T>
+              <Row gap={5}>
+                <Gorsel ad="canta" boyut={16} renk={TextMuted} />
+                <T size={12} color={TextMuted} style={{ flexShrink: 1 }}>
+                  {`Çantanızdaki Uygun Donanımlar (${matchingItems.length}):`}
+                </T>
+              </Row>
               {matchingItems.map((item, i) => {
                 const canEquip = playerLevel >= item.requiredLevel;
                 const rc = rarityColor(item);
                 return (
                   <Card key={item.id ?? i} color={DarkSurfaceCard} radius={8} borderColor={alpha(rc, 0.5)} borderWidth={1} style={{ alignSelf: 'stretch' }}>
                     <Row pad={8} justify="between" gap={4} style={{ alignSelf: 'stretch' }}>
-                      <Column
+                      <Row
+                        gap={8}
                         style={{ flex: 1 }}
                         label={`${item.name}, ${item.rarity.displayName}, ${formatStats(item.stats)}, ${item.categoryDisplayName}, Seviye ${item.requiredLevel}`}
                       >
-                        <T size={13} weight="bold" color={rc}>
-                          {item.name}
-                        </T>
-                        <T size={10} color={TextMuted}>
-                          {`${item.categoryDisplayName} • Sv. ${item.requiredLevel}`}
-                        </T>
-                        <T size={11} color={AmberGold}>
-                          {formatStats(item.stats)}
-                        </T>
-                      </Column>
+                        <GorselRozet ad={esyaGorseli(item)} boyut={40} kare renk={rc} zemin={DarkBg} kenar={alpha(rc, 0.7)} oran={0.66} />
+                        <Column style={{ flex: 1 }}>
+                          <T size={13} weight="bold" color={rc}>
+                            {item.name}
+                          </T>
+                          <T size={10} color={TextMuted}>
+                            {`${item.categoryDisplayName} • Sv. ${item.requiredLevel}`}
+                          </T>
+                          <T size={11} color={AmberGold}>
+                            {formatStats(item.stats)}
+                          </T>
+                        </Column>
+                      </Row>
                       <Row gap={4}>
                         <IconBtn onPress={() => onInspect(item)} label={`${item.name} İncele`}>
-                          
+                          <Gorsel ad="bilgi" boyut={22} renk={AmberGold} />
                         </IconBtn>
                         <Btn
                           onPress={() => onEquip(item)}
@@ -795,6 +901,7 @@ function SlotQuickEquipDialog({ slot, matchingItems, playerLevel, onDismiss, onE
                           color={AmberGold}
                           contentColor={DarkBg}
                           pad={8}
+                          gorsel={esyaGorseli(item)}
                           label={canEquip ? `${item.name} Kuşan` : `Kuşan, Seviye ${item.requiredLevel} gerekli`}
                         >
                           <T size={11} weight="bold" color={canEquip ? DarkBg : TextMuted}>
@@ -812,7 +919,7 @@ function SlotQuickEquipDialog({ slot, matchingItems, playerLevel, onDismiss, onE
         </Column>
       }
       dismiss={
-        <TextBtn onPress={onDismiss} contentColor={TextLight}>
+        <TextBtn onPress={onDismiss} contentColor={TextLight} gorsel="kapi">
           Kapat
         </TextBtn>
       }
@@ -832,8 +939,8 @@ function ConsumableDetailDialog({ item, player, onDismiss, onUse }) {
       onDismiss={onDismiss}
       containerColor={DarkSurface}
       title={
-        <Row heading label={`${item.name}, ${item.count} adet`}>
-          <T size={20}>{``}</T>
+        <Row heading gap={10} label={`${item.name}, ${item.count} adet`}>
+          <GorselRozet ad={sarfGorseli(item)} boyut={48} renk={HealthGreen} zemin={alpha(HealthGreen, 0.12)} kenar={alpha(HealthGreen, 0.6)} />
           <T size={17} weight="bold" color={HealthGreen} style={{ flexShrink: 1 }}>
             {`${item.name} (x${item.count})`}
           </T>
@@ -850,9 +957,12 @@ function ConsumableDetailDialog({ item, player, onDismiss, onUse }) {
 
           {item.requiredLevel > 1 ? (
             <Row justify="between" style={{ alignSelf: 'stretch' }} label={`Gereken Seviye: Seviye ${item.requiredLevel}${isLevelMet ? '' : ', yetersiz'}`}>
-              <T size={12} color={TextMuted}>
-                Gereken Seviye:
-              </T>
+              <Row gap={4}>
+                <Gorsel ad={nitelikGorseli('seviye')} boyut={15} renk={TextMuted} />
+                <T size={12} color={TextMuted}>
+                  Gereken Seviye:
+                </T>
+              </Row>
               <T size={12} weight="bold" color={isLevelMet ? HealthGreen : color(0xffff6b6b)}>
                 {`Seviye ${item.requiredLevel}`}
               </T>
@@ -861,18 +971,24 @@ function ConsumableDetailDialog({ item, player, onDismiss, onUse }) {
 
           {item.healAmount > 0 ? (
             <Surface radius={4} color={alpha(HealthGreen, 0.2)} borderColor={HealthGreen} borderWidth={1} style={{ alignSelf: 'flex-start' }}>
-              <T size={12} weight="bold" color={HealthGreen} style={{ paddingHorizontal: 8, paddingVertical: 4 }}>
-                {`+${item.healAmount} Can Sağaltır`}
-              </T>
+              <Row gap={5} style={{ paddingHorizontal: 8, paddingVertical: 4 }}>
+                <Gorsel ad="can-arti" boyut={16} renk={HealthGreen} />
+                <T size={12} weight="bold" color={HealthGreen}>
+                  {`+${item.healAmount} Can Sağaltır`}
+                </T>
+              </Row>
             </Surface>
           ) : null}
 
           {item.buffEffect != null ? (
             <Surface radius={6} color={alpha(AmberGold, 0.15)} borderColor={AmberGold} borderWidth={1} style={{ alignSelf: 'stretch' }}>
               <Column pad={8}>
-                <T size={12} weight="bold" color={AmberGold}>
-                  {`${item.buffEffect.name} (Süre: ${item.buffEffect.remainingBattles} Dövüş)`}
-                </T>
+                <Row gap={5}>
+                  <Gorsel ad={etkiGorseli(item.buffEffect)} boyut={16} renk={AmberGold} />
+                  <T size={12} weight="bold" color={AmberGold} style={{ flexShrink: 1 }}>
+                    {`${item.buffEffect.name} (Süre: ${item.buffEffect.remainingBattles} Dövüş)`}
+                  </T>
+                </Row>
                 <Spacer h={2} />
                 <T size={11} color={alpha(TextLight, 0.9)}>
                   {item.buffEffect.description}
@@ -883,14 +999,22 @@ function ConsumableDetailDialog({ item, player, onDismiss, onUse }) {
         </Column>
       }
       confirm={
-        <Btn onPress={onUse} disabled={!canUse} color={HealthGreen} contentColor={Color.White} disabledColor={DarkSurfaceCard} disabledContentColor={TextMuted}>
+        <Btn
+          onPress={onUse}
+          disabled={!canUse}
+          color={HealthGreen}
+          contentColor={Color.White}
+          disabledColor={DarkSurfaceCard}
+          disabledContentColor={TextMuted}
+          gorsel={!isLevelMet ? 'kilit' : sarfGorseli(item)}
+        >
           <T weight="bold" color={canUse ? Color.White : TextMuted}>
             {buttonLabel}
           </T>
         </Btn>
       }
       dismiss={
-        <TextBtn onPress={onDismiss} contentColor={TextLight}>
+        <TextBtn onPress={onDismiss} contentColor={TextLight} gorsel="kapi">
           Kapat
         </TextBtn>
       }
@@ -900,14 +1024,17 @@ function ConsumableDetailDialog({ item, player, onDismiss, onUse }) {
 
 function StatLabel({ title, value }) {
   return (
-    <Column>
-      <T size={11} color={TextMuted}>
-        {title}
-      </T>
-      <T size={14} weight="bold" color={TextLight}>
-        {value}
-      </T>
-    </Column>
+    <Row gap={6} style={{ flex: 1 }}>
+      <GorselRozet ad={nitelikGorseli(NITELIK_ANAHTARI[title])} boyut={30} oran={0.6} renk={AmberGold} />
+      <Column style={{ flexShrink: 1 }}>
+        <T size={11} color={TextMuted}>
+          {title}
+        </T>
+        <T size={14} weight="bold" color={TextLight}>
+          {value}
+        </T>
+      </Column>
+    </Row>
   );
 }
 
@@ -955,7 +1082,7 @@ export function SkillOrbsView({ player, viewModel }) {
 
         {equippedSkill != null ? (
           <>
-            <T size={20}>{equippedSkill.icon}</T>
+            <Gorsel ad={yetenekKuresiGorseli(equippedSkill)} boyut={24} renk={AmberGold} />
             <T size={9} weight="bold" color={Color.White} lines={1}>
               {equippedSkill.name}
             </T>
@@ -967,7 +1094,7 @@ export function SkillOrbsView({ player, viewModel }) {
           </>
         ) : (
           <>
-            
+            <Gorsel ad="buyu-girdap" boyut={22} renk={alpha(TextMuted, 0.4)} />
             <T size={9} color={TextMuted}>
               Boş Yuva
             </T>
@@ -999,6 +1126,7 @@ export function SkillOrbsView({ player, viewModel }) {
             color={isEquipped ? color(0xff6b1d1d) : AmberGold}
             contentColor={isEquipped ? Color.White : DarkBg}
             radius={8}
+            gorsel={isEquipped ? 'takas' : 'kilic-cekme'}
             label={isEquipped ? 'Yuvadan Çıkar, Yedeğe Al' : 'Savaş Yuvasına Yerleştir'}
           >
             <T weight="bold" color={isEquipped ? Color.White : DarkBg}>
@@ -1007,13 +1135,13 @@ export function SkillOrbsView({ player, viewModel }) {
           </Btn>
         }
         dismiss={
-          <TextBtn onPress={() => setSelectedSkillDetail(null)} contentColor={TextMuted}>
+          <TextBtn onPress={() => setSelectedSkillDetail(null)} contentColor={TextMuted} gorsel="kapi">
             Kapat
           </TextBtn>
         }
         title={
           <Row gap={10} heading label={`${skill.name}, ${isEquipped ? `Savaş Yuvası ${slotNumber}'de Kuşanıldı` : 'Yedek Kulübesinde'}`}>
-            <T size={28}>{skill.icon}</T>
+            <GorselRozet ad={yetenekKuresiGorseli(skill)} boyut={50} zemin={DarkBg} kenar={AmberGold} renk={AmberGold} oran={0.58} />
             <Column style={{ flex: 1 }}>
               <T size={16} weight="bold" color={AmberGold}>
                 {skill.name}
@@ -1037,16 +1165,22 @@ export function SkillOrbsView({ player, viewModel }) {
             </T>
             <Surface radius={8} color={DarkSurfaceCard} borderColor={alpha(AmberGoldDark, 0.5)} borderWidth={1} style={{ alignSelf: 'stretch' }}>
               <Column pad={10}>
-                <T size={11} weight="bold" color={TextGold}>
-                  Tetiklenme Koşulu:
-                </T>
+                <Row gap={5}>
+                  <Gorsel ad="hedef-tahtasi" boyut={15} renk={TextGold} />
+                  <T size={11} weight="bold" color={TextGold}>
+                    Tetiklenme Koşulu:
+                  </T>
+                </Row>
                 <T size={11} color={alpha(TextLight, 0.9)}>
                   {skill.triggerConditionText}
                 </T>
                 <Spacer h={6} />
-                <T size={11} weight="bold" color={HealthGreen}>
-                  Muharebe Etkisi:
-                </T>
+                <Row gap={5}>
+                  <Gorsel ad="kilic-carpisma" boyut={15} renk={HealthGreen} />
+                  <T size={11} weight="bold" color={HealthGreen}>
+                    Muharebe Etkisi:
+                  </T>
+                </Row>
                 <T size={11} weight="semibold" color={Color.White}>
                   {skill.effectSummary}
                 </T>
@@ -1065,7 +1199,7 @@ export function SkillOrbsView({ player, viewModel }) {
         <Surface radius={12} color={DarkSurfaceCard} borderColor={alpha(AmberGold, 0.7)} borderWidth={1.5} style={{ alignSelf: 'stretch' }}>
           <Column pad={14}>
             <Row gap={10}>
-              
+              <GorselRozet ad="yumruk" boyut={44} renk={AmberGold} kenar={alpha(AmberGold, 0.5)} />
               <Column style={{ flex: 1 }}>
                 <T heading size={16} weight="bold" color={AmberGold}>
                   Dövüş Yetenekleri & 4 Savaş Yuvası
@@ -1084,9 +1218,12 @@ export function SkillOrbsView({ player, viewModel }) {
             <Spacer h={14} />
 
             {/* 4 AKTİF SAVAŞ YUVASI (1, 2, 3, 4) */}
-            <T heading size={12} weight="bold" color={AmberGoldDark}>
-              {`Aktif Savaş Yuvaları (${equippedIds.length} / 4 Dolu):`}
-            </T>
+            <Row gap={5}>
+              <Gorsel ad="kilic-cekme" boyut={16} renk={AmberGoldDark} />
+              <T heading size={12} weight="bold" color={AmberGoldDark} style={{ flexShrink: 1 }}>
+                {`Aktif Savaş Yuvaları (${equippedIds.length} / 4 Dolu):`}
+              </T>
+            </Row>
             <Spacer h={6} />
 
             <Row gap={6} style={{ alignSelf: 'stretch' }}>
@@ -1096,9 +1233,12 @@ export function SkillOrbsView({ player, viewModel }) {
         </Surface>
 
         {/* 2. Yetenek Izgarası (3 Kolonlu Kompakt Menü) */}
-        <T heading size={13} weight="bold" color={AmberGold} style={{ paddingTop: 4 }}>
-          {`Dövüş Sanatları Kitaplığı (${kumeBoyu(player.unlockedSkillIds)} / ${allSkills.length} Açık):`}
-        </T>
+        <Row gap={6} style={{ paddingTop: 4 }}>
+          <Gorsel ad="kitaplik" boyut={18} renk={AmberGold} />
+          <T heading size={13} weight="bold" color={AmberGold} style={{ flexShrink: 1 }}>
+            {`Dövüş Sanatları Kitaplığı (${kumeBoyu(player.unlockedSkillIds)} / ${allSkills.length} Açık):`}
+          </T>
+        </Row>
 
         {chunkedSkills.map((rowSkills, chunkIdx) => (
           <Row key={chunkIdx} gap={8} align="stretch" style={{ alignSelf: 'stretch' }}>
@@ -1163,7 +1303,11 @@ export function SkillOrbsView({ player, viewModel }) {
                     borderWidth={1.5}
                     style={{ width: 38, height: 38 }}
                   >
-                    <T size={18}>{isUnlocked ? skill.icon : ''}</T>
+                    <Gorsel
+                      ad={isUnlocked ? yetenekKuresiGorseli(skill) : 'kilit'}
+                      boyut={isUnlocked ? 22 : 16}
+                      renk={isEquipped ? AmberGold : isUnlocked ? color(0xff81c784) : Color.DarkGray}
+                    />
                   </Box>
 
                   {/* İsim & İpucu */}

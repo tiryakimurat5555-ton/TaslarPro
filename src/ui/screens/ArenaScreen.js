@@ -6,7 +6,8 @@
 // anlatım sonradan baştan sona gezilebilir, can durumu kartları tek parça okunur, sonuç kartları açılınca duyurulur.
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
-import { Box, Btn, Card, Chip, Column, OutlinedBtn, Progress, Row, Scroll, Spacer, Surface, T, Tabs, announce, useFlow } from '../kit.js';
+import { Box, Btn, Card, Chip, Column, Gorsel, GorselRozet, OutlinedBtn, Progress, Row, Scroll, Spacer, Surface, T, Tabs, announce, useFlow } from '../kit.js';
+import { arenaGorseli, bolgeGorseli, canavarGorseli, esyaGorseli, gosteriGorseli, mizacGorseli, nadirlikRengi, taktikGorseli, tasRengi, yetenekGorseli } from '../gorsel-esleme.js';
 import {
   AmberGold,
   AmberGoldDark,
@@ -57,6 +58,77 @@ function ozet(...parcalar) {
 
 const MaviAcik = color(0xff64b5f6);
 const Mavi = color(0xff4a90e2);
+
+// ---------------------------------------------------------------------------
+// Görseller (hepsi VoiceOver'dan gizli; anlamı yanındaki metin ya da kartın etiketi taşır)
+// ---------------------------------------------------------------------------
+/** Simge + metin satırı. Metin T'si aynen korunur; simge yalnız göz için. */
+function IkonluMetin({ gorsel, gorselRenk, boyut = 16, gap = 5, children, style, align = 'center' }) {
+  return (
+    <Row gap={gap} align={align} style={style}>
+      <Gorsel ad={gorsel} boyut={boyut} renk={gorselRenk} />
+      {children}
+    </Row>
+  );
+}
+
+/** Hamle olayının simgesi ve rengi (CombatEvent). */
+function hamleGorseli(ev) {
+  if (ev === CombatEvent.CRITICAL) return 'simsek';
+  if (ev === CombatEvent.DODGED) return 'kosu';
+  if (ev === CombatEvent.BLOCKED) return 'kalkan';
+  if (ev === CombatEvent.DEFEAT) return 'olum';
+  if (ev === CombatEvent.DRAW) return 'el-sikisma';
+  return 'kilic-yarasi';
+}
+
+/** Rakibin silah türü (düz metin) için simge. */
+function silahGorseli(tur) {
+  const t = String(tur || '').toLocaleLowerCase('tr-TR');
+  if (t.includes('arbalet')) return 'arbalet';
+  if (t.includes('yay')) return 'yay';
+  if (t.includes('mızrak') || t.includes('kargı') || t.includes('cirit')) return 'mizrak';
+  if (t.includes('hançer') || t.includes('kama')) return 'hancer';
+  if (t.includes('balta')) return 'balta';
+  if (t.includes('gürz') || t.includes('topuz')) return 'gurz';
+  if (t.includes('tokmak') || t.includes('çekiç')) return 'cekic';
+  if (t.includes('asa')) return 'asa';
+  if (t.includes('kırbaç')) return 'kirbac';
+  if (t.includes('olta') || t.includes('yaba')) return 'yaba';
+  if (t.includes('tırpan')) return 'tirpan';
+  if (t.includes('orak')) return 'orak';
+  if (t.includes('yumruk') || t.includes('boynuz') || t.includes('pençe')) return 'yumruk';
+  return 'kilic';
+}
+
+/** 2v2 meydan zemini (BattlefieldCondition.id) simgesi. */
+const ZEMIN_GORSELI = { loose_sand: 'ayak-izi', narrow_pass: 'dag', wind_tempest: 'kar-tanesi', blood_pit: 'damla' };
+function zeminGorseli(kosul) {
+  return (kosul && ZEMIN_GORSELI[kosul.id]) || 'arena';
+}
+
+/** Labirent kat tuzağı (LabyrinthTrapCondition.id) simgesi. */
+const TUZAK_GORSELI = { poison_darts: 'zehir', rising_water: 'bogulma', falling_rubble: 'tas-tablet' };
+function tuzakGorseli(tuzak) {
+  return (tuzak && TUZAK_GORSELI[tuzak.id]) || 'kurt-kapani';
+}
+
+/** Silahsız gösteri rakibinin simgesi: hayvan adı ya da gösteri türü. */
+function gosteriRakibiGorseli(opp) {
+  if (!opp) return 'yumruk';
+  return canavarGorseli(opp.name) || canavarGorseli(opp.title) || gosteriGorseli(opp.showType);
+}
+
+/** Gladyatör (Enemy) simgesi: mizacına göre. */
+function gladyatorGorseli(enemy) {
+  const a = enemy && enemy.personality && enemy.personality.archetype;
+  return a ? mizacGorseli(a) : 'sparta-migferi';
+}
+
+/** Sonuç kartı rozetinin simgesi. */
+function sonucGorseli(berabere, kazandi) {
+  return berabere ? 'el-sikisma' : kazandi ? 'kupa' : 'olum';
+}
 
 /** Bir hamlenin VoiceOver metni (Kotlin contentDescription: "Hamle N: anlatım"). */
 export function combatLogLabel(log) {
@@ -166,11 +238,19 @@ export function ArenaScreen({ viewModel, style }) {
   useCombatLogAnnouncer(spectatorLogList, seyirciGorunumu);
 
   const liste = { pad: undefined, gap: 12, contentStyle: { paddingHorizontal: 16, paddingVertical: 8 } };
-  const baslik = (metin, stil = Typography.titleMedium) => (
-    <T heading style={stil} color={TextGold} weight="bold">
-      {metin}
-    </T>
-  );
+  const baslik = (metin, stil = Typography.titleMedium, gorsel) =>
+    gorsel ? (
+      <Row gap={8} style={{ alignSelf: 'stretch' }}>
+        <Gorsel ad={gorsel} boyut={22} renk={AmberGold} />
+        <T heading style={[stil, { flexShrink: 1 }]} color={TextGold} weight="bold">
+          {metin}
+        </T>
+      </Row>
+    ) : (
+      <T heading style={stil} color={TextGold} weight="bold">
+        {metin}
+      </T>
+    );
 
   let govde;
   if (seyirciGorunumu) {
@@ -188,7 +268,7 @@ export function ArenaScreen({ viewModel, style }) {
             selectedFighterName={spectatorResult?.selectedFighterName ?? dayState.activeSpectatorBet?.selectedFighterName ?? ''}
           />
         ) : null}
-        {baslik('Tribün Canlı Anlatımı (Kıyasıya Çarpışma)')}
+        {baslik('Tribün Canlı Anlatımı (Kıyasıya Çarpışma)', undefined, 'arena')}
         {spectatorLogList.map((log, i) => (
           <CombatLogBubble key={i} log={log} />
         ))}
@@ -218,7 +298,7 @@ export function ArenaScreen({ viewModel, style }) {
             condition={duoState.condition}
           />
         ) : null}
-        {baslik('2v2 İttifak Meydanı (Canlı Çarpışma)')}
+        {baslik('2v2 İttifak Meydanı (Canlı Çarpışma)', undefined, 'capraz-kilic')}
         {logList.map((log, i) => (
           <CombatLogBubble key={i} log={log} />
         ))}
@@ -245,7 +325,9 @@ export function ArenaScreen({ viewModel, style }) {
           >
             <Column pad={14} gap={10}>
               <Row justify="between">
-                <T size={12} weight="bold" color={AmberGold}>{`${unarmedMatchState.selectedShowType.title}`}</T>
+                <IkonluMetin gorsel={gosteriGorseli(unarmedMatchState.selectedShowType)} gorselRenk={AmberGold} boyut={18} style={{ flexShrink: 1 }}>
+                  <T size={12} weight="bold" color={AmberGold} style={{ flexShrink: 1 }}>{`${unarmedMatchState.selectedShowType.title}`}</T>
+                </IkonluMetin>
                 <Surface color={DarkBg} radius={4} borderColor={AmberGoldDark} borderWidth={1}>
                   <T size={10} color={TextGold} style={{ paddingHorizontal: 6, paddingVertical: 2 }}>
                     Kansız & Estetik
@@ -256,7 +338,9 @@ export function ArenaScreen({ viewModel, style }) {
               {/* Oyuncu Canı */}
               <Column gap={4}>
                 <Row justify="between">
-                  <T size={12} weight="bold" color={TextLight}>{`${player.name}`}</T>
+                  <IkonluMetin gorsel="yumruk" gorselRenk={HealthGreen}>
+                    <T size={12} weight="bold" color={TextLight}>{`${player.name}`}</T>
+                  </IkonluMetin>
                   <T size={11} color={HealthGreen} weight="bold">{`${currentHp[0]} Can`}</T>
                 </Row>
                 <Progress value={kt.coerceIn(currentHp[0] / 250, 0, 1)} height={6} color={HealthGreen} track={DarkBg} />
@@ -265,7 +349,9 @@ export function ArenaScreen({ viewModel, style }) {
               {/* Rakip Canı */}
               <Column gap={4}>
                 <Row justify="between">
-                  <T size={12} weight="bold" color={TextGold}>{`${unarmedOpponent.name}`}</T>
+                  <IkonluMetin gorsel={gosteriRakibiGorseli(unarmedOpponent)} gorselRenk={AmberGold}>
+                    <T size={12} weight="bold" color={TextGold}>{`${unarmedOpponent.name}`}</T>
+                  </IkonluMetin>
                   <T size={11} color={AmberGold} weight="bold">{`${currentHp[1]} Can`}</T>
                 </Row>
                 <Progress value={oran(currentHp[1], unarmedOpponent.health)} height={6} color={AmberGold} track={DarkBg} />
@@ -273,7 +359,7 @@ export function ArenaScreen({ viewModel, style }) {
             </Column>
           </Card>
         ) : null}
-        {baslik('Canlı Gösteri Anlatımı', Typography.titleSmall)}
+        {baslik('Canlı Gösteri Anlatımı', Typography.titleSmall, 'tomar')}
         {logList.map((log, i) => (
           <CombatLogBubble key={i} log={log} />
         ))}
@@ -294,7 +380,7 @@ export function ArenaScreen({ viewModel, style }) {
             enemyMaxHp={selectedEnemy.stats.maxHealth}
           />
         ) : null}
-        {baslik('Savaş Anlatımı (Son Nefese Kadar)')}
+        {baslik('Savaş Anlatımı (Son Nefese Kadar)', undefined, 'tomar')}
         {logList.map((log, i) => (
           <CombatLogBubble key={i} log={log} />
         ))}
@@ -305,9 +391,13 @@ export function ArenaScreen({ viewModel, style }) {
   } else {
     // 7 Arena Disiplinleri ve Bilgi Sekmeleri (Yatay Kaydırılabilir)
     const disiplinler = ArenaDiscipline.entries;
+    // Sekme başlıkları { baslik, gorsel }: VoiceOver yalnız başlık metnini okur (önceki dizeyle aynı).
     const sekmeAdlari = disiplinler.map((discipline) => {
       const isLocked = discipline.tabIndex >= 1 && discipline.tabIndex <= 3 && !isRegion2Unlocked;
-      return isLocked ? `${discipline.shortTitle} (Kilitli)` : discipline.shortTitle;
+      return {
+        baslik: isLocked ? `${discipline.shortTitle} (Kilitli)` : discipline.shortTitle,
+        gorsel: isLocked ? 'kilit' : arenaGorseli(discipline),
+      };
     });
     const sekmeSec = (i) => {
       const discipline = disiplinler[i];
@@ -339,15 +429,17 @@ export function ArenaScreen({ viewModel, style }) {
 
           {drawnEnemy != null ? (
             <>
-              {baslik(`Tellalın Kura Eşleşmesi (${dayState.currentDay}. Gün Karşılaşması)`)}
+              {baslik(`Tellalın Kura Eşleşmesi (${dayState.currentDay}. Gün Karşılaşması)`, undefined, 'zar')}
               <DrawnOpponentCard enemy={drawnEnemy} playerName={player.name} roundNumber={leagueState.roundNumber} />
               {dayState.canFightArenaToday ? (
-                <Btn onPress={() => viewModel.startCombat()} style={{ alignSelf: 'stretch', minHeight: 54 }} color={AmberGold} contentColor={DarkBg} radius={10} textSize={15}>
+                <Btn onPress={() => viewModel.startCombat()} style={{ alignSelf: 'stretch', minHeight: 54 }} color={AmberGold} contentColor={DarkBg} radius={10} textSize={15} gorsel="capraz-kilic">
                   {`KURADAKİ RAKİPLE DÖVÜŞE GİR (${drawnEnemy.name})`}
                 </Btn>
               ) : (
                 <Card color={DarkSurfaceCard} radius={10} borderColor={AmberGoldDark} style={{ alignSelf: 'stretch' }}>
                   <Column pad={14} align="center">
+                    <GorselRozet ad="kontrol-listesi" boyut={48} renk={TextGold} />
+                    <Spacer h={6} />
                     <T weight="bold" color={TextGold} size={15} heading>
                       Günün Arena Karşılaşması Tamamlandı!
                     </T>
@@ -356,7 +448,7 @@ export function ArenaScreen({ viewModel, style }) {
                       Tellal Aldus kumlardaki kanın süpürülmesi için kapıları kapattı. Seyirciler dağıldı. Yeni kura çekilişi ve sıradaki maç için meskenine (Ev) dönüp istirahat etmeli ve yeni günü başlatmalısın.
                     </T>
                     <Spacer h={10} />
-                    <Btn onPress={() => viewModel.advanceDay(0)} color={HealthGreen} radius={8} textSize={13}>
+                    <Btn onPress={() => viewModel.advanceDay(0)} color={HealthGreen} radius={8} textSize={13} gorsel="yatak">
                       İstirahat Et & Yeni Günü Başlat
                     </Btn>
                   </Column>
@@ -367,9 +459,11 @@ export function ArenaScreen({ viewModel, style }) {
 
           {otherMatches.length > 0 ? (
             <>
-              <T heading style={Typography.titleMedium} color={allDone ? AmberGold : TextLight} weight="bold">
-                {allDone ? 'Günün Tamamlanan Karşılaşmaları (Sonuçlar)' : 'Günün Diğer Kura Karşılaşmaları (5 Eşleşme)'}
-              </T>
+              <IkonluMetin gorsel={allDone ? 'tomar' : 'capraz-kilic'} gorselRenk={allDone ? AmberGold : TextLight} boyut={22} gap={8} style={{ alignSelf: 'stretch' }}>
+                <T heading style={[Typography.titleMedium, { flexShrink: 1 }]} color={allDone ? AmberGold : TextLight} weight="bold">
+                  {allDone ? 'Günün Tamamlanan Karşılaşmaları (Sonuçlar)' : 'Günün Diğer Kura Karşılaşmaları (5 Eşleşme)'}
+                </T>
+              </IkonluMetin>
               <Card color={DarkSurface} radius={10} borderColor={allDone ? AmberGoldDark : DarkBorder} style={{ alignSelf: 'stretch' }}>
                 <Column pad={12} gap={8}>
                   <T size={12} color={TextMuted}>
@@ -390,13 +484,16 @@ export function ArenaScreen({ viewModel, style }) {
                         match.isCompleted && match.resultSummary != null ? match.resultSummary : null
                       )}
                     >
+                      <Gorsel ad="duello" boyut={20} renk={match.isCompleted ? HealthGreen : TextMuted} style={{ marginRight: 8 }} />
                       <Column style={{ flex: 1 }}>
                         <Row gap={6} wrap>
                           <T size={11} color={AmberGold} weight="bold">{`${idx + 1}.`}</T>
                           <T size={13} color={TextLight} weight="semibold">{`${match.fighter1Name}  VS  ${match.fighter2Name}`}</T>
                         </Row>
                         {match.isCompleted && match.resultSummary != null ? (
-                          <T size={11} color={HealthGreen} weight="bold">{`${match.resultSummary}`}</T>
+                          <IkonluMetin gorsel="kupa" gorselRenk={HealthGreen} boyut={14} gap={4}>
+                            <T size={11} color={HealthGreen} weight="bold" style={{ flexShrink: 1 }}>{`${match.resultSummary}`}</T>
+                          </IkonluMetin>
                         ) : null}
                       </Column>
                       <Surface radius={4} color={match.isCompleted ? alpha(HealthGreen, 0.2) : DarkBg} borderColor={match.isCompleted ? HealthGreen : DarkBorder} borderWidth={1}>
@@ -495,9 +592,11 @@ function ArenaIntroCard({ roundNumber }) {
   return (
     <Card color={DarkSurface} radius={12} borderColor={AmberGoldDark} style={{ alignSelf: 'stretch' }}>
       <Column pad={14}>
-        <T style={Typography.labelSmall} color={AmberGold}>
-          KIRLANGIÇ KASABASI ÇUKUR ARENASI
-        </T>
+        <IkonluMetin gorsel="arena" gorselRenk={AmberGold} boyut={18} gap={6}>
+          <T style={Typography.labelSmall} color={AmberGold}>
+            KIRLANGIÇ KASABASI ÇUKUR ARENASI
+          </T>
+        </IkonluMetin>
         <Spacer h={2} />
         <T heading style={Typography.titleLarge} color={TextGold} weight="bold">
           {`12 Gladyatörlü Kura Ligi • Hafta ${roundNumber}`}
@@ -521,8 +620,9 @@ function DrawnOpponentCard({ enemy, playerName, roundNumber }) {
     taslar ? `Mıhlanmış Taşlar: ${kt.joinToString(enemy.socketedGems, ', ', (it) => it.displayName)}` : null,
     enemy.description
   );
-  const stat = (ad, deger, renk) => (
+  const stat = (ad, deger, renk, gorsel) => (
     <Column align="center">
+      <Gorsel ad={gorsel} boyut={20} renk={renk} />
       <T size={11} color={TextMuted}>
         {ad}
       </T>
@@ -545,34 +645,43 @@ function DrawnOpponentCard({ enemy, playerName, roundNumber }) {
             <T size={12} color={TextMuted} weight="semibold">{`Seviye ${enemy.level}`}</T>
           </Row>
           <Surface radius={6} color={DarkSurface}>
-            <T size={12} color={AmberGold} style={{ paddingHorizontal: 8, paddingVertical: 4 }}>
-              {`${enemy.rewardGold} Altın • +${enemy.rewardFame} Şöhret`}
-            </T>
+            <IkonluMetin gorsel="sikkeler" gorselRenk={AmberGold} style={{ paddingHorizontal: 8, paddingVertical: 4 }}>
+              <T size={12} color={AmberGold}>
+                {`${enemy.rewardGold} Altın • +${enemy.rewardFame} Şöhret`}
+              </T>
+            </IkonluMetin>
           </Surface>
         </Row>
 
         <Spacer h={10} />
-        <T style={Typography.titleMedium} weight="bold" color={TextGold}>
-          {`${playerName}  VS  ${enemy.name} "${enemy.title}"`}
-        </T>
+        <Row gap={10} style={{ alignSelf: 'stretch' }}>
+          <GorselRozet ad={gladyatorGorseli(enemy)} boyut={48} renk={TextGold} kenar={AmberGold} />
+          <T style={[Typography.titleMedium, { flex: 1 }]} weight="bold" color={TextGold}>
+            {`${playerName}  VS  ${enemy.name} "${enemy.title}"`}
+          </T>
+        </Row>
         <Spacer h={6} />
 
         <Row justify="around" color={DarkSurface} radius={6} pad={8} style={{ alignSelf: 'stretch' }}>
-          {stat('Sağlık', `${enemy.stats.maxHealth} HP`, HealthGreen)}
-          {stat('Hasar', `${enemy.stats.damage}`, HealthRed)}
-          {stat('Zırh', `${enemy.stats.armor}`, ExpBlue)}
-          {stat('Hız', `${enemy.stats.speed}`, TextGold)}
+          {stat('Sağlık', `${enemy.stats.maxHealth} HP`, HealthGreen, 'can')}
+          {stat('Hasar', `${enemy.stats.damage}`, HealthRed, 'kilic')}
+          {stat('Zırh', `${enemy.stats.armor}`, ExpBlue, 'kalkan')}
+          {stat('Hız', `${enemy.stats.speed}`, TextGold, 'hiz')}
         </Row>
 
         <Spacer h={8} />
-        <T size={12} weight="semibold" color={AmberGoldDark}>{`Kuşandığı Silah: ${enemy.weaponName} (${enemy.weaponType})`}</T>
+        <IkonluMetin gorsel={silahGorseli(enemy.weaponType)} gorselRenk={AmberGoldDark} boyut={18}>
+          <T size={12} weight="semibold" color={AmberGoldDark} style={{ flexShrink: 1 }}>{`Kuşandığı Silah: ${enemy.weaponName} (${enemy.weaponType})`}</T>
+        </IkonluMetin>
 
         {taslar ? (
           <>
             <Spacer h={4} />
-            <T size={11} color={AmberGold} weight="semibold">
-              {taslar}
-            </T>
+            <IkonluMetin gorsel="elmas" gorselRenk={tasRengi(enemy.socketedGems[0] && enemy.socketedGems[0].type)} boyut={16}>
+              <T size={11} color={AmberGold} weight="semibold" style={{ flexShrink: 1 }}>
+                {taslar}
+              </T>
+            </IkonluMetin>
           </>
         ) : null}
 
@@ -626,7 +735,7 @@ function ArenaDailyObligationStatusCard({ dayState }) {
       : 'Günlük arena durumu: Arenaya katılım bekleniyor. Maça çıkmalı veya seyirci bahsi yatırmalısın.';
   const zemin = dayState.isArenaMatchDoneToday ? alpha(HealthGreen, 0.15) : dayState.isDailySpectatorBetPlaced ? alpha(AmberGoldDark, 0.2) : alpha(HealthRed, 0.15);
   const kenar = dayState.isArenaMatchDoneToday ? HealthGreen : dayState.isDailySpectatorBetPlaced ? AmberGold : alpha(HealthRed, 0.6);
-  const ikon = dayState.isArenaMatchDoneToday ? '' : dayState.isDailySpectatorBetPlaced ? '' : '';
+  const ikon = dayState.isArenaMatchDoneToday ? 'kontrol-listesi' : dayState.isDailySpectatorBetPlaced ? 'sikkeler' : 'kum-saati';
   const baslikMetni = dayState.isArenaMatchDoneToday
     ? 'Günün Arena Dövüşü Tamamlandı'
     : dayState.isDailySpectatorBetPlaced
@@ -641,9 +750,7 @@ function ArenaDailyObligationStatusCard({ dayState }) {
   return (
     <Card color={zemin} radius={10} borderColor={kenar} style={{ alignSelf: 'stretch' }} label={ozet(etiket, aciklama)}>
       <Row pad={12}>
-        <T size={24} hidden>
-          {ikon}
-        </T>
+        <GorselRozet ad={ikon} boyut={42} renk={baslikRengi} zemin={alpha(DarkBg, 0.4)} />
         <Spacer w={10} />
         <Column style={{ flex: 1 }}>
           <T weight="bold" size={13} color={baslikRengi}>
@@ -678,9 +785,11 @@ function BettingTabContent({ dayState, otherMatches, playerGold, isHandicapOpen,
     seyirciIcerik = (
       <Surface color={DarkSurfaceCard} radius={8} borderColor={HealthGreen} borderWidth={1} style={{ alignSelf: 'stretch' }}>
         <Column pad={12}>
-          <T color={HealthGreen} weight="bold" size={13}>
-            Bugünkü Seyirci Bahsin Yatırıldı!
-          </T>
+          <IkonluMetin gorsel="kontrol-listesi" gorselRenk={HealthGreen} boyut={18}>
+            <T color={HealthGreen} weight="bold" size={13}>
+              Bugünkü Seyirci Bahsin Yatırıldı!
+            </T>
+          </IkonluMetin>
           <Spacer h={4} />
           <T size={12} color={TextMuted}>{`Karşılaşma: ${bet?.fighter1Name} vs ${bet?.fighter2Name}`}</T>
           <T size={12} weight="semibold" color={TextGold}>
@@ -722,6 +831,7 @@ function BettingTabContent({ dayState, otherMatches, playerGold, isHandicapOpen,
                   selected={secili}
                   textSize={11}
                   style={{ flex: 1, minHeight: 36 }}
+                  gorsel="sparta-migferi"
                 >
                   {ad}
                 </Btn>
@@ -746,7 +856,9 @@ function BettingTabContent({ dayState, otherMatches, playerGold, isHandicapOpen,
                     label={`${match.fighter1Name} karşı ${match.fighter2Name}`}
                     style={{ minHeight: 32, justifyContent: 'center' }}
                   >
-                    <T weight="bold" size={13} color={isMatchSelected ? TextGold : TextLight}>{`${match.fighter1Name}  VS  ${match.fighter2Name}`}</T>
+                    <IkonluMetin gorsel="duello" gorselRenk={isMatchSelected ? AmberGold : TextMuted} boyut={20} gap={8}>
+                      <T weight="bold" size={13} color={isMatchSelected ? TextGold : TextLight} style={{ flexShrink: 1 }}>{`${match.fighter1Name}  VS  ${match.fighter2Name}`}</T>
+                    </IkonluMetin>
                   </Box>
 
                   {isMatchSelected ? (
@@ -776,7 +888,8 @@ function BettingTabContent({ dayState, otherMatches, playerGold, isHandicapOpen,
                             selected={chosenAmount === amt}
                             label={`${amt} Altın`}
                             textSize={11}
-                            style={{ flex: 1, minHeight: 34 }}
+                            style={{ flex: 1, minHeight: 34, paddingHorizontal: 6 }}
+                            gorsel="sikke"
                           >
                             {`${amt} Altın`}
                           </OutlinedBtn>
@@ -794,6 +907,7 @@ function BettingTabContent({ dayState, otherMatches, playerGold, isHandicapOpen,
                         color={HealthGreen}
                         textSize={12}
                         style={{ alignSelf: 'stretch', minHeight: 42 }}
+                        gorsel="sikkeler"
                       >
                         {`${chosenFighterName ?? ''} İçin Canlı İzle & ${chosenAmount} Altın Yatır (x2.0)`}
                       </Btn>
@@ -812,11 +926,9 @@ function BettingTabContent({ dayState, otherMatches, playerGold, isHandicapOpen,
       {/* 1. SEYİRCİ BAHİSLERİ (GÜNÜ TAMAMLAMA ŞARTI) */}
       <Card color={DarkSurface} radius={12} borderColor={AmberGoldDark} style={{ alignSelf: 'stretch' }}>
         <Column pad={14}>
-          <Row>
-            <T size={20} hidden>
-             {' '}
-            </T>
-            <T heading style={Typography.titleMedium} color={TextGold} weight="bold">
+          <Row gap={8}>
+            <Gorsel ad="sikkeler" boyut={22} renk={AmberGold} />
+            <T heading style={[Typography.titleMedium, { flexShrink: 1 }]} color={TextGold} weight="bold">
               Günün Karşılaşmalarına Seyirci Bahsi
             </T>
           </Row>
@@ -832,16 +944,20 @@ function BettingTabContent({ dayState, otherMatches, playerGold, isHandicapOpen,
       {/* 2. KENDİ DÖVÜŞÜN İÇİN HANDİKAP BAHİSLERİ */}
       <Card color={DarkSurface} radius={12} borderColor={DarkBorder} style={{ alignSelf: 'stretch' }}>
         <Column pad={14}>
-          <T heading style={Typography.titleMedium} color={TextGold} weight="bold">
-            Kendi Dövüşün İçin Handikap Bahisleri
-          </T>
+          <IkonluMetin gorsel="zar" gorselRenk={AmberGold} boyut={22} gap={8}>
+            <T heading style={[Typography.titleMedium, { flexShrink: 1 }]} color={TextGold} weight="bold">
+              Kendi Dövüşün İçin Handikap Bahisleri
+            </T>
+          </IkonluMetin>
           <Spacer h={6} />
           {!isHandicapOpen ? (
             <Surface color={DarkSurfaceCard} radius={8} style={{ alignSelf: 'stretch' }}>
               <Column pad={12}>
-                <T color={HealthRed} weight="bold" size={13}>
-                  HANDİKAP MASASI HENÜZ KAPALI
-                </T>
+                <IkonluMetin gorsel="kilit" gorselRenk={HealthRed} boyut={18}>
+                  <T color={HealthRed} weight="bold" size={13}>
+                    HANDİKAP MASASI HENÜZ KAPALI
+                  </T>
+                </IkonluMetin>
                 <Spacer h={4} />
                 <T size={12} color={TextLight}>{`Kendi dövüşlerine handikap koyabilmek için şöhretin en az 10 puana ulaşmalıdır. (Mevcut: ${playerFame} / 10)`}</T>
               </Column>
@@ -857,7 +973,8 @@ function BettingTabContent({ dayState, otherMatches, playerGold, isHandicapOpen,
                 return (
                   <Row key={i} onPress={() => onSelectBet(bet)} role="radio" selected={isChosen} label={label} style={{ paddingVertical: 4, alignSelf: 'stretch', minHeight: 44 }}>
                     <RadioDaire selected={isChosen} />
-                    <T size={13} color={isChosen ? TextGold : TextLight}>
+                    <Gorsel ad={bet == null ? 'kapi' : bet.id === 'fast_win' ? 'hiz' : 'can'} boyut={20} renk={isChosen ? AmberGold : TextMuted} style={{ marginRight: 8 }} />
+                    <T size={13} color={isChosen ? TextGold : TextLight} style={{ flexShrink: 1 }}>
                       {label}
                     </T>
                   </Row>
@@ -899,9 +1016,11 @@ function FighterDiariesTabContent({ enemies, unlockedRegions = [] }) {
     <Column gap={12}>
       <Card color={DarkSurface} radius={10} borderColor={AmberGoldDark} style={{ alignSelf: 'stretch' }}>
         <Column pad={14}>
-          <T heading style={Typography.titleMedium} color={TextGold} weight="bold">
-            Gladyatör Günlükleri & Yapay Zeka Bilinci
-          </T>
+          <IkonluMetin gorsel="acik-kitap" gorselRenk={AmberGold} boyut={22} gap={8}>
+            <T heading style={[Typography.titleMedium, { flexShrink: 1 }]} color={TextGold} weight="bold">
+              Gladyatör Günlükleri & Yapay Zeka Bilinci
+            </T>
+          </IkonluMetin>
           <Spacer h={4} />
           <T size={12} color={TextLight} lineHeight={16}>
             Arenadaki rakiplerin sadece kumda dövüşmez; her gün kendi kişilik arketiplerine göre karar alır, para harcar ve gelişirler. Hırslılar demirciye koşar, tembeller handa sabahlar, kurnazlar bahis ve zehir depolar.
@@ -912,16 +1031,16 @@ function FighterDiariesTabContent({ enemies, unlockedRegions = [] }) {
       {/* Eğer birden fazla bölge açılmışsa bölge filtreleme butonları göster */}
       {kumeBoyu(unlockedRegions) > 1 ? (
         <Row gap={8} wrap style={{ alignSelf: 'stretch' }}>
-          <Chip selected={selectedRegionFilter === 'all'} onPress={() => setSelectedRegionFilter('all')} selectedColor={AmberGoldDark}>
+          <Chip selected={selectedRegionFilter === 'all'} onPress={() => setSelectedRegionFilter('all')} selectedColor={AmberGoldDark} gorsel="dunya">
             {`Tüm Bölgeler (${enemies.length})`}
           </Chip>
           {kumeIcerir(unlockedRegions, 'kirlangic') ? (
-            <Chip selected={selectedRegionFilter === 'kirlangic'} onPress={() => setSelectedRegionFilter('kirlangic')} selectedColor={AmberGoldDark}>
+            <Chip selected={selectedRegionFilter === 'kirlangic'} onPress={() => setSelectedRegionFilter('kirlangic')} selectedColor={AmberGoldDark} gorsel={bolgeGorseli('kirlangic')}>
               {`Kırlangıç (${kt.count(enemies, (it) => it.regionId === 'kirlangic')})`}
             </Chip>
           ) : null}
           {kumeIcerir(unlockedRegions, 'tashisar') ? (
-            <Chip selected={selectedRegionFilter === 'tashisar'} onPress={() => setSelectedRegionFilter('tashisar')} selectedColor={AmberGoldDark}>
+            <Chip selected={selectedRegionFilter === 'tashisar'} onPress={() => setSelectedRegionFilter('tashisar')} selectedColor={AmberGoldDark} gorsel={bolgeGorseli('tashisar')}>
               {`Taş Hisar (${kt.count(enemies, (it) => it.regionId === 'tashisar')})`}
             </Chip>
           ) : null}
@@ -951,13 +1070,14 @@ function FighterDiariesTabContent({ enemies, unlockedRegions = [] }) {
           <Card key={enemy.id ?? i} color={DarkSurfaceCard} radius={10} borderColor={DarkBorder} style={{ alignSelf: 'stretch' }} label={etiket}>
             <Column pad={12}>
               <Row justify="between">
+                <GorselRozet ad={gladyatorGorseli(enemy)} boyut={44} renk={TextGold} kenar={alpha(AmberGold, 0.6)} style={{ marginRight: 10 }} />
                 <Column style={{ flex: 1 }}>
                   <T weight="bold" color={TextGold} size={15}>{`${enemy.name} "${enemy.title}"`}</T>
                   <T size={11} color={TextMuted}>{`Seviye ${enemy.level} • Silah: ${enemy.weaponName}`}</T>
                 </Column>
                 <Surface radius={6} color={alpha(AmberGoldDark, 0.3)} borderColor={AmberGold} borderWidth={1}>
-                  <Row style={{ paddingHorizontal: 8, paddingVertical: 4 }}>
-                    <T size={12}>{``}</T>
+                  <Row gap={4} style={{ paddingHorizontal: 8, paddingVertical: 4 }}>
+                    <Gorsel ad={mizacGorseli(p.archetype)} boyut={14} renk={TextGold} />
                     <T size={11} weight="bold" color={TextGold}>
                       {p.archetype.title}
                     </T>
@@ -969,7 +1089,9 @@ function FighterDiariesTabContent({ enemies, unlockedRegions = [] }) {
 
               {/* Cüzdan & Durum */}
               <Row justify="between">
-                <T size={12} weight="semibold" color={AmberGold}>{`Cüzdan: ${p.gold} Altın`}</T>
+                <IkonluMetin gorsel="para-kesesi" gorselRenk={AmberGold}>
+                  <T size={12} weight="semibold" color={AmberGold}>{`Cüzdan: ${p.gold} Altın`}</T>
+                </IkonluMetin>
                 {cond != null ? (
                   <Surface radius={4} color={eksi ? alpha(HealthRed, 0.2) : alpha(HealthGreen, 0.2)} borderColor={eksi ? HealthRed : HealthGreen} borderWidth={1}>
                     <T size={10} weight="bold" color={eksi ? HealthRed : HealthGreen} style={{ paddingHorizontal: 6, paddingVertical: 2 }}>
@@ -983,19 +1105,25 @@ function FighterDiariesTabContent({ enemies, unlockedRegions = [] }) {
 
               {/* Dünkü Günlük */}
               <Surface radius={6} color={DarkSurface} style={{ alignSelf: 'stretch' }}>
-                <T size={12} color={alpha(TextLight, 0.9)} lineHeight={16} style={{ padding: 8 }}>{`${p.latestDiary}`}</T>
+                <IkonluMetin gorsel="tuy-kalem" gorselRenk={alpha(AmberGold, 0.8)} align="start" gap={8} style={{ padding: 8 }}>
+                  <T size={12} color={alpha(TextLight, 0.9)} lineHeight={16} style={{ flex: 1 }}>{`${p.latestDiary}`}</T>
+                </IkonluMetin>
               </Surface>
 
               <Spacer h={6} />
 
               {/* Canlı Nitelikler */}
-              <Row justify="between" wrap>
-                <T size={11} color={HealthGreen}>{`${enemy.stats.maxHealth} Can`}</T>
-                <T size={11} color={HealthRed}>{`${enemy.stats.damage} Hasar`}</T>
-                <T size={11} color={ExpBlue}>{`${enemy.stats.armor} Zırh`}</T>
-                <T size={11} color={TextGold}>{`${enemy.stats.speed} Hız`}</T>
-                {enemy.stats.blockChancePercent > 0 ? <T size={11} color={TextMuted}>{`%${enemy.stats.blockChancePercent} Blok`}</T> : null}
-                {enemy.stats.critChancePercent > 0 ? <T size={11} color={AmberGold}>{`%${enemy.stats.critChancePercent} Kritik`}</T> : null}
+              <Row justify="between" wrap gap={6}>
+                <IkonluMetin gorsel="can" gorselRenk={HealthGreen} boyut={14} gap={3}><T size={11} color={HealthGreen}>{`${enemy.stats.maxHealth} Can`}</T></IkonluMetin>
+                <IkonluMetin gorsel="kilic" gorselRenk={HealthRed} boyut={14} gap={3}><T size={11} color={HealthRed}>{`${enemy.stats.damage} Hasar`}</T></IkonluMetin>
+                <IkonluMetin gorsel="kalkan" gorselRenk={ExpBlue} boyut={14} gap={3}><T size={11} color={ExpBlue}>{`${enemy.stats.armor} Zırh`}</T></IkonluMetin>
+                <IkonluMetin gorsel="hiz" gorselRenk={TextGold} boyut={14} gap={3}><T size={11} color={TextGold}>{`${enemy.stats.speed} Hız`}</T></IkonluMetin>
+                {enemy.stats.blockChancePercent > 0 ? (
+                  <IkonluMetin gorsel="kalkan-darbe" gorselRenk={TextMuted} boyut={14} gap={3}><T size={11} color={TextMuted}>{`%${enemy.stats.blockChancePercent} Blok`}</T></IkonluMetin>
+                ) : null}
+                {enemy.stats.critChancePercent > 0 ? (
+                  <IkonluMetin gorsel="simsek" gorselRenk={AmberGold} boyut={14} gap={3}><T size={11} color={AmberGold}>{`%${enemy.stats.critChancePercent} Kritik`}</T></IkonluMetin>
+                ) : null}
               </Row>
             </Column>
           </Card>
@@ -1019,21 +1147,28 @@ function LeagueTabContent({ leagueState }) {
       <Card color={DarkSurface} radius={10} borderColor={AmberGoldDark} style={{ alignSelf: 'stretch' }}>
         <Column pad={14}>
           <Row justify="between" wrap>
-            <T heading weight="bold" color={TextGold} size={15}>
-              {leagueState.seasonName}
-            </T>
-            <T size={12} color={TextMuted}>{`Hafta / Tur: ${leagueState.roundNumber}`}</T>
+            <IkonluMetin gorsel="kursu" gorselRenk={AmberGold} boyut={22} gap={8} style={{ flexShrink: 1 }}>
+              <T heading weight="bold" color={TextGold} size={15} style={{ flexShrink: 1 }}>
+                {leagueState.seasonName}
+              </T>
+            </IkonluMetin>
+            <IkonluMetin gorsel="gunes-saati" gorselRenk={TextMuted} boyut={14} gap={4}>
+              <T size={12} color={TextMuted}>{`Hafta / Tur: ${leagueState.roundNumber}`}</T>
+            </IkonluMetin>
           </Row>
           <Spacer h={4} />
-          <T size={11} color={AmberGoldDark} lineHeight={15}>
+          <IkonluMetin gorsel="bilgi" gorselRenk={AmberGoldDark} align="start" gap={6}>
+          <T size={11} color={AmberGoldDark} lineHeight={15} style={{ flex: 1 }}>
             {'Kural: Galibiyet 3P • Beraberlik 1P • Mağlubiyet 0P\nDikkat: Üst üste kayıplarda lig cezası (2. ve 3. kayıpta -1P, 4. ve üzeri kayıplarda sabit -2P) uygulanır.'}
           </T>
+          </IkonluMetin>
 
           <Spacer h={10} />
 
           {/* League Table Header (VoiceOver'da her satır kendi etiketiyle okunduğu için gizli) */}
           <Row justify="between" color={DarkSurfaceCard} radius={4} hidden style={{ paddingHorizontal: 6, paddingVertical: 6, alignSelf: 'stretch' }}>
             {hucre('#', TextMuted, 20)}
+            <View style={{ width: 24 }} />
             <T size={11} weight="bold" color={TextLight} style={{ flex: 1 }}>
               Dövüşçü
             </T>
@@ -1059,12 +1194,20 @@ function LeagueTabContent({ leagueState }) {
             return (
               <Row key={index} justify="between" color={rowBg} radius={4} style={{ paddingHorizontal: 6, paddingVertical: 6, alignSelf: 'stretch' }} label={etiket}>
                 <T size={12} weight="bold" color={index === 0 ? AmberGold : TextMuted} style={{ width: 20 }}>{`${index + 1}`}</T>
+                <Gorsel
+                  ad={index < 3 ? 'madalya' : isPlayer ? 'kilicli-adam' : 'sparta-migferi'}
+                  boyut={18}
+                  renk={index === 0 ? '#F2C14E' : index === 1 ? '#C9CED6' : index === 2 ? '#C77D45' : isPlayer ? AmberGold : alpha(TextMuted, 0.7)}
+                  style={{ marginRight: 6 }}
+                />
                 <Column style={{ flex: 1 }}>
                   <T size={13} weight={isPlayer ? 'bold' : 'normal'} color={isPlayer ? TextGold : TextLight}>{`${standing.name} ${isPlayer ? '(SEN)' : ''}`}</T>
                   {ceza ? (
-                    <T size={10} color={HealthRed}>
-                      {ceza}
-                    </T>
+                    <IkonluMetin gorsel="alev" gorselRenk={HealthRed} boyut={12} gap={3}>
+                      <T size={10} color={HealthRed} style={{ flexShrink: 1 }}>
+                        {ceza}
+                      </T>
+                    </IkonluMetin>
                   ) : null}
                 </Column>
                 <T size={12} color={TextLight} style={{ width: 22 }}>{`${standing.matchesPlayed}`}</T>
@@ -1081,14 +1224,18 @@ function LeagueTabContent({ leagueState }) {
       {/* Recent Matches Section */}
       {leagueState.recentMatches.length > 0 ? (
         <>
-          <T heading style={Typography.titleMedium} color={TextLight} weight="bold">
-            Son Lig Karşılaşmaları (Yaşayan Simülasyon)
-          </T>
+          <IkonluMetin gorsel="tomar" gorselRenk={AmberGold} boyut={22} gap={8} style={{ alignSelf: 'stretch' }}>
+            <T heading style={[Typography.titleMedium, { flexShrink: 1 }]} color={TextLight} weight="bold">
+              Son Lig Karşılaşmaları (Yaşayan Simülasyon)
+            </T>
+          </IkonluMetin>
           {leagueState.recentMatches.map((match, i) => (
             <Card key={i} color={DarkSurface} radius={8} borderColor={DarkBorder} style={{ alignSelf: 'stretch' }}>
               <Column pad={10}>
                 <Row justify="between" wrap>
-                  <T weight="bold" color={TextGold} size={13}>{`${match.fighter1Name} vs ${match.fighter2Name}`}</T>
+                  <IkonluMetin gorsel="duello" gorselRenk={AmberGold} boyut={18} style={{ flexShrink: 1 }}>
+                    <T weight="bold" color={TextGold} size={13} style={{ flexShrink: 1 }}>{`${match.fighter1Name} vs ${match.fighter2Name}`}</T>
+                  </IkonluMetin>
                   <T size={11} color={AmberGoldDark}>
                     {match.scoreSummary}
                   </T>
@@ -1122,10 +1269,14 @@ export function CombatLiveStatusCard({ playerName, playerHp, playerMaxHp, enemyN
     >
       <Column pad={12}>
         <Row justify="between">
-          <T weight="bold" color={TextGold} size={13} style={{ flexShrink: 1 }}>
-            {playerName}
-          </T>
-          <T color={HealthGreen} size={13} weight="bold">{`${playerHp} / ${playerMaxHp} HP`}</T>
+          <IkonluMetin gorsel="kilicli-adam" gorselRenk={TextGold} boyut={20} gap={6} style={{ flexShrink: 1 }}>
+            <T weight="bold" color={TextGold} size={13} style={{ flexShrink: 1 }}>
+              {playerName}
+            </T>
+          </IkonluMetin>
+          <IkonluMetin gorsel="can" gorselRenk={HealthGreen} boyut={14} gap={4}>
+            <T color={HealthGreen} size={13} weight="bold">{`${playerHp} / ${playerMaxHp} HP`}</T>
+          </IkonluMetin>
         </Row>
         <Spacer h={4} />
         <Progress value={playerFrac} height={8} radius={4} color={HealthGreen} track={DarkSurfaceCard} />
@@ -1133,10 +1284,14 @@ export function CombatLiveStatusCard({ playerName, playerHp, playerMaxHp, enemyN
         <Spacer h={12} />
 
         <Row justify="between">
-          <T weight="bold" color={HealthRed} size={13} style={{ flexShrink: 1 }}>
-            {enemyName}
-          </T>
-          <T color={HealthRed} size={13} weight="bold">{`${enemyHp} / ${enemyMaxHp} HP`}</T>
+          <IkonluMetin gorsel="sparta-migferi" gorselRenk={HealthRed} boyut={20} gap={6} style={{ flexShrink: 1 }}>
+            <T weight="bold" color={HealthRed} size={13} style={{ flexShrink: 1 }}>
+              {enemyName}
+            </T>
+          </IkonluMetin>
+          <IkonluMetin gorsel="can" gorselRenk={HealthRed} boyut={14} gap={4}>
+            <T color={HealthRed} size={13} weight="bold">{`${enemyHp} / ${enemyMaxHp} HP`}</T>
+          </IkonluMetin>
         </Row>
         <Spacer h={4} />
         <Progress value={enemyFrac} height={8} radius={4} color={HealthRed} track={DarkSurfaceCard} />
@@ -1172,21 +1327,30 @@ export function CombatLogBubble({ log }) {
             : ev === CombatEvent.DRAW
               ? 'ÇİFTE NAKAVT'
               : 'VURUŞ';
+  // Sıradan vuruşta kenar rengi koyu; simge yine de seçilsin diye açık renk.
+  const simgeRengi = borderColor === DarkBorder ? TextLight : borderColor;
 
   // Kotlin: liveRegion Polite + contentDescription "Hamle N: anlatım". Yeni hamle duyurusu
   // ekran düzeyindeki useCombatLogAnnouncer ile yapılır (aynı metin iki kez okunmasın diye burada live yok).
   return (
     <Card color={DarkSurface} radius={8} borderColor={borderColor} style={{ alignSelf: 'stretch' }} label={combatLogLabel(log)}>
-      <Column pad={10}>
-        <Row justify="between">
-          <T size={11} weight="bold" color={borderColor}>{`Hamle ${log.round} • ${badgeText}`}</T>
-          {log.damage > 0 ? <T size={11} weight="bold" color={HealthRed}>{`-${log.damage} Can`}</T> : null}
-        </Row>
-        <Spacer h={4} />
-        <T size={13} lineHeight={18} color={TextLight}>
-          {log.narrativeText}
-        </T>
-      </Column>
+      <Row pad={10} gap={10} align="start">
+        <GorselRozet ad={hamleGorseli(ev)} boyut={34} renk={simgeRengi} zemin={alpha(simgeRengi, 0.14)} />
+        <Column style={{ flex: 1 }}>
+          <Row justify="between">
+            <T size={11} weight="bold" color={borderColor} style={{ flexShrink: 1 }}>{`Hamle ${log.round} • ${badgeText}`}</T>
+            {log.damage > 0 ? (
+              <IkonluMetin gorsel="damla" gorselRenk={HealthRed} boyut={12} gap={3}>
+                <T size={11} weight="bold" color={HealthRed}>{`-${log.damage} Can`}</T>
+              </IkonluMetin>
+            ) : null}
+          </Row>
+          <Spacer h={4} />
+          <T size={13} lineHeight={18} color={TextLight}>
+            {log.narrativeText}
+          </T>
+        </Column>
+      </Row>
     </Card>
   );
 }
@@ -1216,6 +1380,8 @@ function CombatResultCard({ result, onDismiss }) {
   return (
     <Card color={containerBg} radius={12} borderColor={borderColor} borderWidth={2} style={{ alignSelf: 'stretch' }}>
       <Column pad={16} align="center">
+        <GorselRozet ad={sonucGorseli(result.isDraw, result.isPlayerWinner)} boyut={60} renk={borderColor} kenar={borderColor} zemin={alpha(DarkBg, 0.45)} />
+        <Spacer h={8} />
         <T heading size={20} weight="bold" color={borderColor} label={titleText} align="center">
           {titleText}
         </T>
@@ -1226,31 +1392,35 @@ function CombatResultCard({ result, onDismiss }) {
 
         <Spacer h={10} />
         <Row justify="around" wrap style={{ alignSelf: 'stretch' }} label={`+${result.earnedGold} Altın, +${result.earnedExp} EXP, +${result.earnedFame} Şöhret`}>
-          <T color={AmberGold} weight="bold">{`+${result.earnedGold} Altın`}</T>
-          <T color={ExpBlue} weight="bold">{`+${result.earnedExp} EXP`}</T>
-          <T color={FamePurple} weight="bold">{`+${result.earnedFame} Şöhret`}</T>
+          <IkonluMetin gorsel="sikke" gorselRenk={AmberGold} boyut={18}><T color={AmberGold} weight="bold">{`+${result.earnedGold} Altın`}</T></IkonluMetin>
+          <IkonluMetin gorsel="yildiz-madalya" gorselRenk={ExpBlue} boyut={18}><T color={ExpBlue} weight="bold">{`+${result.earnedExp} EXP`}</T></IkonluMetin>
+          <IkonluMetin gorsel="defne" gorselRenk={FamePurple} boyut={18}><T color={FamePurple} weight="bold">{`+${result.earnedFame} Şöhret`}</T></IkonluMetin>
         </Row>
 
         {betText ? (
           <>
             <Spacer h={6} />
-            <T color={AmberGold} weight="bold" size={13}>
-              {betText}
-            </T>
+            <IkonluMetin gorsel="zar" gorselRenk={AmberGold} boyut={18} style={{ alignSelf: 'stretch' }}>
+              <T color={AmberGold} weight="bold" size={13} style={{ flexShrink: 1 }}>
+                {betText}
+              </T>
+            </IkonluMetin>
           </>
         ) : null}
 
         {dropText ? (
           <>
             <Spacer h={8} />
-            <T color={TextGold} weight="bold">
-              {dropText}
-            </T>
+            <IkonluMetin gorsel={esyaGorseli(result.droppedItem)} gorselRenk={nadirlikRengi(result.droppedItem.rarity)} boyut={22} gap={6} style={{ alignSelf: 'stretch' }}>
+              <T color={TextGold} weight="bold" style={{ flexShrink: 1 }}>
+                {dropText}
+              </T>
+            </IkonluMetin>
           </>
         ) : null}
 
         <Spacer h={14} />
-        <Btn onPress={onDismiss} color={AmberGold} contentColor={DarkBg} radius={8}>
+        <Btn onPress={onDismiss} color={AmberGold} contentColor={DarkBg} radius={8} gorsel="kapi">
           Arenadan Ayrıl & Lige Dön
         </Btn>
       </Column>
@@ -1264,7 +1434,9 @@ function SpectatorLiveStatusCard({ fighter1, fighter1Hp, fighter2, fighter2Hp, s
   const satir = (f, hp, frac) => (
     <>
       <Row justify="between">
-        <T weight="bold" color={f.name === selectedFighterName ? TextGold : TextLight} size={13} style={{ flexShrink: 1 }}>{`${f.name} "${f.title}"`}</T>
+        <IkonluMetin gorsel={gladyatorGorseli(f)} gorselRenk={f.name === selectedFighterName ? AmberGold : TextMuted} boyut={20} gap={6} style={{ flexShrink: 1 }}>
+          <T weight="bold" color={f.name === selectedFighterName ? TextGold : TextLight} size={13} style={{ flexShrink: 1 }}>{`${f.name} "${f.title}"`}</T>
+        </IkonluMetin>
         <T color={HealthRed} size={13} weight="bold">{`${hp} / ${f.stats.maxHealth} HP`}</T>
       </Row>
       <Spacer h={4} />
@@ -1282,12 +1454,16 @@ function SpectatorLiveStatusCard({ fighter1, fighter1Hp, fighter2, fighter2Hp, s
     >
       <Column pad={14}>
         <Row justify="between" wrap>
-          <T size={11} weight="bold" color={AmberGold}>
-            SEYİRCİ TRİBÜNÜ CANLI İZLEME
-          </T>
+          <IkonluMetin gorsel="gozlemci" gorselRenk={AmberGold} boyut={18}>
+            <T size={11} weight="bold" color={AmberGold}>
+              SEYİRCİ TRİBÜNÜ CANLI İZLEME
+            </T>
+          </IkonluMetin>
           {selectedFighterName.length > 0 ? (
             <Surface radius={4} color={alpha(AmberGoldDark, 0.3)} borderColor={AmberGold} borderWidth={1}>
-              <T size={11} weight="bold" color={TextGold} style={{ paddingHorizontal: 6, paddingVertical: 2 }}>{`Bahsin: ${selectedFighterName}`}</T>
+              <IkonluMetin gorsel="sikkeler" gorselRenk={TextGold} boyut={14} gap={4} style={{ paddingHorizontal: 6, paddingVertical: 2 }}>
+                <T size={11} weight="bold" color={TextGold}>{`Bahsin: ${selectedFighterName}`}</T>
+              </IkonluMetin>
             </Surface>
           ) : null}
         </Row>
@@ -1322,6 +1498,8 @@ function SpectatorResultCard({ result, onDismiss }) {
   return (
     <Card color={containerBg} radius={12} borderColor={borderColor} borderWidth={2} style={{ alignSelf: 'stretch' }}>
       <Column pad={16} align="center">
+        <GorselRozet ad={result.isDraw ? 'el-sikisma' : result.betWon ? 'kupa' : 'zar-tek'} boyut={60} renk={borderColor} kenar={borderColor} zemin={alpha(DarkBg, 0.45)} />
+        <Spacer h={8} />
         <Column style={{ alignSelf: 'stretch' }} align="center" label={`${titleText}: ${matchOutcomeText}`} heading>
           <T size={20} weight="bold" color={borderColor} align="center">
             {titleText}
@@ -1334,26 +1512,32 @@ function SpectatorResultCard({ result, onDismiss }) {
 
         <Spacer h={10} />
         {result.betWon ? (
-          <T color={AmberGold} weight="bold" size={16}>
-            {paraMetni}
-          </T>
+          <IkonluMetin gorsel="sikkeler" gorselRenk={AmberGold} boyut={22} gap={6}>
+            <T color={AmberGold} weight="bold" size={16}>
+              {paraMetni}
+            </T>
+          </IkonluMetin>
         ) : result.isDraw ? (
           <T color={TextMuted} size={12}>
             {paraMetni}
           </T>
         ) : (
-          <T color={HealthRed} size={13}>
-            {paraMetni}
-          </T>
+          <IkonluMetin gorsel="para-kesesi" gorselRenk={HealthRed} boyut={18} style={{ alignSelf: 'stretch', justifyContent: 'center' }}>
+            <T color={HealthRed} size={13} style={{ flexShrink: 1 }}>
+              {paraMetni}
+            </T>
+          </IkonluMetin>
         )}
 
         <Spacer h={6} />
-        <T size={11} color={HealthGreen} weight="semibold" align="center">
-          {katilim}
-        </T>
+        <IkonluMetin gorsel="kontrol-listesi" gorselRenk={HealthGreen} boyut={16} style={{ alignSelf: 'stretch', justifyContent: 'center' }}>
+          <T size={11} color={HealthGreen} weight="semibold" align="center" style={{ flexShrink: 1 }}>
+            {katilim}
+          </T>
+        </IkonluMetin>
 
         <Spacer h={14} />
-        <Btn onPress={onDismiss} color={AmberGold} contentColor={DarkBg} radius={8}>
+        <Btn onPress={onDismiss} color={AmberGold} contentColor={DarkBg} radius={8} gorsel="kapi">
           Tribünden Ayrıl & Arenaya Dön
         </Btn>
       </Column>
@@ -1370,16 +1554,16 @@ function OdulSeridi({ entryFee, rewardGold, rewardExp, rewardFame, odulAdi = 'Ö
   return (
     <Card color={DarkSurfaceCard} radius={8} borderWidth={0} borderColor={null} style={{ alignSelf: 'stretch' }} label={`Giriş: ${entryFee} Altın. ${odulAdi}: ${rewardGold} Altın. +${rewardExp} EXP. +${rewardFame} Şöhret.`}>
       <Row justify="around" wrap pad={10} gap={6}>
-        <T size={11} color={TextLight}>{`Giriş: ${entryFee} Altın`}</T>
-        <T size={11} color={AmberGold} weight="bold">{`${odulAdi}: ${rewardGold} Altın`}</T>
-        <T size={11} color={TextGold}>{`+${rewardExp} EXP`}</T>
-        <T size={11} color={HealthGreen} weight="bold">{`+${rewardFame} Şöhret`}</T>
+        <IkonluMetin gorsel="sikke" gorselRenk={TextLight} boyut={15} gap={4}><T size={11} color={TextLight}>{`Giriş: ${entryFee} Altın`}</T></IkonluMetin>
+        <IkonluMetin gorsel="sikkeler" gorselRenk={AmberGold} boyut={15} gap={4}><T size={11} color={AmberGold} weight="bold">{`${odulAdi}: ${rewardGold} Altın`}</T></IkonluMetin>
+        <IkonluMetin gorsel="yildiz-madalya" gorselRenk={TextGold} boyut={15} gap={4}><T size={11} color={TextGold}>{`+${rewardExp} EXP`}</T></IkonluMetin>
+        <IkonluMetin gorsel="defne" gorselRenk={HealthGreen} boyut={15} gap={4}><T size={11} color={HealthGreen} weight="bold">{`+${rewardFame} Şöhret`}</T></IkonluMetin>
       </Row>
     </Card>
   );
 }
 
-function TanitimKarti({ ust, rozet, rozetRenk, rozetZemin, rozetKenar, baslikMetni, aciklama }) {
+function TanitimKarti({ ust, rozet, rozetRenk, rozetZemin, rozetKenar, baslikMetni, aciklama, gorsel, rozetGorsel }) {
   return (
     <Card color={DarkSurface} radius={12} borderColor={AmberGoldDark} style={{ alignSelf: 'stretch' }}>
       <Column pad={14}>
@@ -1388,15 +1572,21 @@ function TanitimKarti({ ust, rozet, rozetRenk, rozetZemin, rozetKenar, baslikMet
             {ust}
           </T>
           <Surface color={rozetZemin} radius={4} borderColor={rozetKenar} borderWidth={1}>
-            <T size={10} weight="bold" color={rozetRenk} style={{ paddingHorizontal: 6, paddingVertical: 2 }}>
-              {rozet}
-            </T>
+            <Row gap={4} style={{ paddingHorizontal: 6, paddingVertical: 2 }}>
+              {rozetGorsel ? <Gorsel ad={rozetGorsel} boyut={13} renk={rozetRenk} /> : null}
+              <T size={10} weight="bold" color={rozetRenk}>
+                {rozet}
+              </T>
+            </Row>
           </Surface>
         </Row>
-        <Spacer h={4} />
-        <T style={Typography.titleMedium} color={TextGold} weight="bold">
-          {baslikMetni}
-        </T>
+        <Spacer h={8} />
+        <Row gap={10} style={{ alignSelf: 'stretch' }}>
+          {gorsel ? <GorselRozet ad={gorsel} boyut={48} renk={TextGold} kenar={AmberGoldDark} /> : null}
+          <T style={[Typography.titleMedium, { flex: 1 }]} color={TextGold} weight="bold">
+            {baslikMetni}
+          </T>
+        </Row>
         <Spacer h={6} />
         <T style={Typography.bodySmall} color={alpha(TextLight, 0.85)} lineHeight={17}>
           {aciklama}
@@ -1406,18 +1596,9 @@ function TanitimKarti({ ust, rozet, rozetRenk, rozetZemin, rozetKenar, baslikMet
   );
 }
 
-function YuvarlakIkon({ ikon, zemin, boyut = 46, yazi = 22 }) {
-  return (
-    <View
-      accessibilityElementsHidden
-      importantForAccessibility="no-hide-descendants"
-      style={{ width: boyut, height: boyut, borderRadius: boyut / 2, backgroundColor: zemin, alignItems: 'center', justifyContent: 'center' }}
-    >
-      <T size={yazi} hidden>
-        {ikon}
-      </T>
-    </View>
-  );
+/** Yuvarlak zeminli simge (eskiden emoji taşıyordu). ikon = gorseller.js adı. Gizlidir. */
+function YuvarlakIkon({ ikon, zemin, boyut = 46, renk = AmberGold }) {
+  return <GorselRozet ad={ikon} boyut={boyut} zemin={zemin} renk={renk} />;
 }
 
 export function DuoLotteryContent({ player, duoState, onSpinLottery, onStartFight }) {
@@ -1438,6 +1619,8 @@ export function DuoLotteryContent({ player, duoState, onSpinLottery, onStartFigh
       <TanitimKarti
         ust="2'YE 2 İTTİFAK ARENASI"
         rozet="KURA ÇARKI"
+        gorsel="capraz-kilic"
+        rozetGorsel="zar"
         rozetRenk={AmberGold}
         rozetZemin={alpha(AmberGold, 0.15)}
         rozetKenar={AmberGold}
@@ -1454,7 +1637,7 @@ export function DuoLotteryContent({ player, duoState, onSpinLottery, onStartFigh
         label={ozet(`Meydan zemini: ${duoState.condition.name}`, `Odak: ${duoState.condition.focusStatName}`, duoState.condition.description, `İpucu: ${duoState.condition.tacticalHint}`)}
       >
         <Row pad={12} gap={10}>
-          <YuvarlakIkon ikon={duoState.condition.icon} zemin={alpha(Mavi, 0.2)} />
+          <YuvarlakIkon ikon={zeminGorseli(duoState.condition)} zemin={alpha(Mavi, 0.2)} renk={MaviAcik} />
           <Column style={{ flex: 1 }}>
             <Row gap={6} wrap>
               <T weight="bold" color={MaviAcik} size={14}>
@@ -1469,13 +1652,15 @@ export function DuoLotteryContent({ player, duoState, onSpinLottery, onStartFigh
               {duoState.condition.description}
             </T>
             <Spacer h={2} />
-            <T size={10} color={HealthGreen} weight="medium">{`İpucu: ${duoState.condition.tacticalHint}`}</T>
+            <IkonluMetin gorsel="bilgi" gorselRenk={HealthGreen} boyut={14} gap={4} align="start">
+              <T size={10} color={HealthGreen} weight="medium" style={{ flex: 1 }}>{`İpucu: ${duoState.condition.tacticalHint}`}</T>
+            </IkonluMetin>
           </Column>
         </Row>
       </Card>
 
       {/* Çarkı Çevir & Kura Çek Butonu */}
-      <OutlinedBtn onPress={onSpinLottery} containerColor={DarkSurfaceCard} contentColor={AmberGold} borderColor={AmberGold} radius={10} textSize={13} style={{ alignSelf: 'stretch', minHeight: 48 }}>
+      <OutlinedBtn onPress={onSpinLottery} containerColor={DarkSurfaceCard} contentColor={AmberGold} borderColor={AmberGold} radius={10} textSize={13} style={{ alignSelf: 'stretch', minHeight: 48 }} gorsel="zar">
         Çarkı Çevir & İttifak Kur'asını Çek
       </OutlinedBtn>
 
@@ -1483,15 +1668,19 @@ export function DuoLotteryContent({ player, duoState, onSpinLottery, onStartFigh
       <Card color={DarkSurface} radius={10} borderColor={DarkBorder} style={{ alignSelf: 'stretch' }}>
         <Column pad={12} gap={10}>
           {/* Mavi Köşe (Siz + Yoldaş) */}
-          <T size={12} weight="bold" color={MaviAcik} heading>
-            MAVİ KÖŞE (SİZİN İTTİFAKINIZ)
-          </T>
+          <IkonluMetin gorsel="kalkan" gorselRenk={MaviAcik} boyut={18}>
+            <T size={12} weight="bold" color={MaviAcik} heading>
+              MAVİ KÖŞE (SİZİN İTTİFAKINIZ)
+            </T>
+          </IkonluMetin>
           <Row gap={8} align="stretch" style={{ alignSelf: 'stretch' }}>
             {/* Oyuncu Kartı */}
             {kart(
               MaviAcik,
               <>
-                <T weight="bold" color={TextGold} size={12} lines={1}>{`${player.name}`}</T>
+                <IkonluMetin gorsel="kilicli-adam" gorselRenk={TextGold} boyut={16} gap={4}>
+                  <T weight="bold" color={TextGold} size={12} lines={1} style={{ flexShrink: 1 }}>{`${player.name}`}</T>
+                </IkonluMetin>
                 <T size={10} color={TextLight} lines={1}>{`Seviye ${player.level} • ${player.title}`}</T>
                 <T size={10} color={TextMuted}>{`${player.totalStats.maxHealth} Can • ${player.totalStats.damage} Hasar`}</T>
               </>,
@@ -1502,7 +1691,9 @@ export function DuoLotteryContent({ player, duoState, onSpinLottery, onStartFigh
             {kart(
               MaviAcik,
               <>
-                <T weight="bold" color={MaviAcik} size={12} lines={1}>{`${ally?.name ?? 'Yoldaş Bekleniyor'}`}</T>
+                <IkonluMetin gorsel={ally != null ? gladyatorGorseli(ally) : 'kum-saati'} gorselRenk={MaviAcik} boyut={16} gap={4}>
+                  <T weight="bold" color={MaviAcik} size={12} lines={1} style={{ flexShrink: 1 }}>{`${ally?.name ?? 'Yoldaş Bekleniyor'}`}</T>
+                </IkonluMetin>
                 <T size={10} color={TextLight} lines={1}>{`Seviye ${ally?.level ?? 1} • ${ally?.title ?? 'Gladyatör'}`}</T>
                 <T size={10} color={TextMuted}>{`${ally?.stats?.maxHealth ?? 0} Can • ${ally?.stats?.damage ?? 0} Hasar`}</T>
               </>,
@@ -1515,7 +1706,7 @@ export function DuoLotteryContent({ player, duoState, onSpinLottery, onStartFigh
                   <Spacer h={4} />
                   <Row gap={3}>
                     {kt.take(ally.skills, 4).map((skill, i) => (
-                      <YuvarlakIkon key={i} ikon={skill.icon} zemin={alpha(AmberGold, 0.2)} boyut={20} yazi={10} />
+                      <YuvarlakIkon key={i} ikon={yetenekGorseli(skill.type)} zemin={alpha(AmberGold, 0.2)} boyut={24} />
                     ))}
                   </Row>
                 </>
@@ -1526,16 +1717,20 @@ export function DuoLotteryContent({ player, duoState, onSpinLottery, onStartFigh
           {/* VS Ayırıcı */}
           <Box align="center" style={{ alignSelf: 'stretch' }}>
             <Surface color={alpha(HealthRed, 0.2)} radius={6} borderColor={HealthRed} borderWidth={1}>
-              <T size={11} weight="bold" color={HealthRed} style={{ paddingHorizontal: 8, paddingVertical: 2 }}>
-                2v2 MEYDAN ÇARPIŞMASI
-              </T>
+              <IkonluMetin gorsel="capraz-kilic" gorselRenk={HealthRed} boyut={14} gap={4} style={{ paddingHorizontal: 8, paddingVertical: 2 }}>
+                <T size={11} weight="bold" color={HealthRed}>
+                  2v2 MEYDAN ÇARPIŞMASI
+                </T>
+              </IkonluMetin>
             </Surface>
           </Box>
 
           {/* Kırmızı Köşe (Rakipler) */}
-          <T size={12} weight="bold" color={HealthRed} heading>
-            KIRMIZI KÖŞE (RAKİP İTTİFAK)
-          </T>
+          <IkonluMetin gorsel="capraz-kilic" gorselRenk={HealthRed} boyut={18}>
+            <T size={12} weight="bold" color={HealthRed} heading>
+              KIRMIZI KÖŞE (RAKİP İTTİFAK)
+            </T>
+          </IkonluMetin>
           <Row gap={8} align="stretch" style={{ alignSelf: 'stretch' }}>
             {[
               [enemy1, 'Rakip 1'],
@@ -1545,7 +1740,9 @@ export function DuoLotteryContent({ player, duoState, onSpinLottery, onStartFigh
                 {kart(
                   HealthRed,
                   <>
-                    <T weight="bold" color={HealthRed} size={12} lines={1}>{`${e?.name ?? yedek}`}</T>
+                    <IkonluMetin gorsel={e != null ? gladyatorGorseli(e) : 'sparta-migferi'} gorselRenk={HealthRed} boyut={16} gap={4}>
+                      <T weight="bold" color={HealthRed} size={12} lines={1} style={{ flexShrink: 1 }}>{`${e?.name ?? yedek}`}</T>
+                    </IkonluMetin>
                     <T size={10} color={TextLight} lines={1}>{`Seviye ${e?.level ?? 1} • ${e?.title ?? 'Gladyatör'}`}</T>
                     <T size={10} color={TextMuted}>{`${e?.stats?.maxHealth ?? 0} Can • ${e?.stats?.armor ?? 0} Zırh`}</T>
                   </>,
@@ -1561,7 +1758,7 @@ export function DuoLotteryContent({ player, duoState, onSpinLottery, onStartFigh
       <OdulSeridi entryFee={duoState.entryFee} rewardGold={duoState.rewardGold} rewardExp={duoState.rewardExp} rewardFame={duoState.rewardFame} />
 
       {/* Başla Butonu */}
-      <Btn onPress={onStartFight} color={AmberGold} contentColor={DarkBg} radius={10} textSize={13} style={{ alignSelf: 'stretch', minHeight: 52 }}>
+      <Btn onPress={onStartFight} color={AmberGold} contentColor={DarkBg} radius={10} textSize={13} style={{ alignSelf: 'stretch', minHeight: 52 }} gorsel="capraz-kilic">
         2v2 İTTİFAK ÇARPIŞMASINA BAŞLA (HAZIRLIK)
       </Btn>
     </Column>
@@ -1577,6 +1774,8 @@ export function UnarmedShowContent({ player, unarmedState, currentDay = 1, onSel
       <TanitimKarti
         ust="SİLAHSIZ GÖSTERİ (PANKRATION)"
         rozet="ER MEYDANI"
+        gorsel="yumruk"
+        rozetGorsel="arena"
         rozetRenk={HealthGreen}
         rozetZemin={alpha(HealthGreen, 0.15)}
         rozetKenar={HealthGreen}
@@ -1588,9 +1787,11 @@ export function UnarmedShowContent({ player, unarmedState, currentDay = 1, onSel
       <Card color={DarkSurfaceCard} radius={10} borderColor={AmberGoldDark} style={{ alignSelf: 'stretch' }}>
         <Column pad={12} gap={8}>
           <Row justify="between" wrap>
-            <T size={12} weight="bold" color={AmberGold} heading>
-              SİLAHSIZ ARENA TAKVİMİ
-            </T>
+            <IkonluMetin gorsel="gunes-saati" gorselRenk={AmberGold} boyut={18}>
+              <T size={12} weight="bold" color={AmberGold} heading>
+                SİLAHSIZ ARENA TAKVİMİ
+              </T>
+            </IkonluMetin>
             <T size={11} color={TextMuted}>{`Bugün: ${currentDay}. Gün`}</T>
           </Row>
           <Row gap={6} align="stretch" style={{ alignSelf: 'stretch' }}>
@@ -1613,9 +1814,7 @@ export function UnarmedShowContent({ player, unarmedState, currentDay = 1, onSel
                       {scheduleDay.isToday ? 'BUGÜN' : `${scheduleDay.dayNumber}. Gün`}
                     </T>
                     <Spacer h={2} />
-                    <T size={16} hidden>
-                      {scheduleDay.icon}
-                    </T>
+                    <Gorsel ad={gosteriGorseli(scheduleDay.showType)} boyut={24} renk={scheduleDay.isToday ? AmberGold : isCurrentSelected ? TextGold : TextLight} />
                     <Spacer h={2} />
                     <T size={9} color={TextLight} lines={1}>
                       {scheduleDay.showType.categoryName}
@@ -1645,9 +1844,7 @@ export function UnarmedShowContent({ player, unarmedState, currentDay = 1, onSel
               style={{ flex: 1 }}
             >
               <Column align="center" style={{ paddingVertical: 10, paddingHorizontal: 4 }}>
-                <T size={20} hidden>
-                  {type.icon}
-                </T>
+                <Gorsel ad={gosteriGorseli(type)} boyut={26} renk={isSelected ? DarkBg : AmberGold} />
                 <Spacer h={2} />
                 <T size={11} weight={isSelected ? 'bold' : 'medium'} color={isSelected ? DarkBg : TextLight} lines={1}>
                   {type.categoryName}
@@ -1674,7 +1871,7 @@ export function UnarmedShowContent({ player, unarmedState, currentDay = 1, onSel
         >
           <Column pad={14} gap={8}>
             <Row gap={10}>
-              <YuvarlakIkon ikon={opp.icon} zemin={DarkBg} boyut={48} yazi={24} />
+              <YuvarlakIkon ikon={gosteriRakibiGorseli(opp)} zemin={DarkBg} boyut={52} renk={TextGold} />
               <Column style={{ flex: 1 }}>
                 <T weight="bold" color={TextGold} size={15}>
                   {opp.name}
@@ -1691,19 +1888,21 @@ export function UnarmedShowContent({ player, unarmedState, currentDay = 1, onSel
 
             {/* Yalın Statlar */}
             <Row justify="around" wrap color={DarkBg} radius={6} pad={8} gap={6} style={{ alignSelf: 'stretch' }}>
-              <T size={11} color={HealthGreen} weight="bold">{`Can: ${opp.health}`}</T>
-              <T size={11} color={TextGold}>{`Güç: ${opp.rawStrength}`}</T>
-              <T size={11} color={MaviAcik}>{`Çeviklik: ${opp.agility}`}</T>
-              <T size={11} color={TextLight}>{`Dayanıklılık: ${opp.endurance}`}</T>
+              <IkonluMetin gorsel="can" gorselRenk={HealthGreen} boyut={14} gap={3}><T size={11} color={HealthGreen} weight="bold">{`Can: ${opp.health}`}</T></IkonluMetin>
+              <IkonluMetin gorsel="kas" gorselRenk={TextGold} boyut={14} gap={3}><T size={11} color={TextGold}>{`Güç: ${opp.rawStrength}`}</T></IkonluMetin>
+              <IkonluMetin gorsel="kosu" gorselRenk={MaviAcik} boyut={14} gap={3}><T size={11} color={MaviAcik}>{`Çeviklik: ${opp.agility}`}</T></IkonluMetin>
+              <IkonluMetin gorsel="kalkan" gorselRenk={TextLight} boyut={14} gap={3}><T size={11} color={TextLight}>{`Dayanıklılık: ${opp.endurance}`}</T></IkonluMetin>
             </Row>
 
-            <T size={11} color={AmberGold} weight="medium">{`Dövüş Stili: ${opp.combatStyle}`}</T>
+            <IkonluMetin gorsel="yumruk" gorselRenk={AmberGold} boyut={16}>
+              <T size={11} color={AmberGold} weight="medium" style={{ flexShrink: 1 }}>{`Dövüş Stili: ${opp.combatStyle}`}</T>
+            </IkonluMetin>
           </Column>
         </Card>
       ) : null}
 
       {/* Yenile Butonu */}
-      <OutlinedBtn onPress={onReroll} contentColor={AmberGold} borderColor={AmberGold} radius={8} style={{ alignSelf: 'stretch' }}>
+      <OutlinedBtn onPress={onReroll} contentColor={AmberGold} borderColor={AmberGold} radius={8} style={{ alignSelf: 'stretch' }} gorsel="zar">
         Başka Bir Gösteri Karşılaşması Belirle
       </OutlinedBtn>
 
@@ -1711,7 +1910,7 @@ export function UnarmedShowContent({ player, unarmedState, currentDay = 1, onSel
       <OdulSeridi entryFee={unarmedState.entryFee} rewardGold={unarmedState.rewardGold} rewardExp={unarmedState.rewardExp} rewardFame={unarmedState.rewardFame} odulAdi="Bahşiş" />
 
       {/* Er Meydanına Çık Butonu */}
-      <Btn onPress={onStartFight} color={AmberGold} contentColor={DarkBg} radius={10} textSize={13} style={{ alignSelf: 'stretch', minHeight: 52 }}>
+      <Btn onPress={onStartFight} color={AmberGold} contentColor={DarkBg} radius={10} textSize={13} style={{ alignSelf: 'stretch', minHeight: 52 }} gorsel="yumruk">
         ER MEYDANINA ÇIK & BOĞUŞMAYA BAŞLA (HAZIRLIK)
       </Btn>
     </Column>
@@ -1728,6 +1927,8 @@ export function LabyrinthContent({ player, labyrinthState, onSelectTactic, onRer
       {/* Tanıtım Kartı */}
       <TanitimKarti
         ust="KATAKOMP LABİRENTİ (3v3)"
+        gorsel="labirent"
+        rozetGorsel="merdiven"
         rozet={`KAT ${labyrinthState.floorNumber} • SARNIÇ`}
         rozetRenk={color(0xffce93d8)}
         rozetZemin={alpha(color(0xff9c27b0), 0.2)}
@@ -1745,7 +1946,7 @@ export function LabyrinthContent({ player, labyrinthState, onSelectTactic, onRer
         label={ozet(`Kat tuzağı: ${trap.name}`, `Sınanan: ${trap.testStat}`, trap.description, `Kat Etkisi: ${trap.floorEffect}`)}
       >
         <Row pad={12} gap={10}>
-          <YuvarlakIkon ikon={trap.icon} zemin={alpha(HealthRed, 0.2)} />
+          <YuvarlakIkon ikon={tuzakGorseli(trap)} zemin={alpha(HealthRed, 0.2)} renk={HealthRed} />
           <Column style={{ flex: 1 }}>
             <Row gap={6} wrap>
               <T weight="bold" color={HealthRed} size={13}>
@@ -1760,7 +1961,9 @@ export function LabyrinthContent({ player, labyrinthState, onSelectTactic, onRer
               {trap.description}
             </T>
             <Spacer h={2} />
-            <T size={10} color={color(0xffffb74d)} weight="semibold">{`Kat Etkisi: ${trap.floorEffect}`}</T>
+            <IkonluMetin gorsel="kurt-kapani" gorselRenk={color(0xffffb74d)} boyut={14} gap={4} align="start">
+              <T size={10} color={color(0xffffb74d)} weight="semibold" style={{ flex: 1 }}>{`Kat Etkisi: ${trap.floorEffect}`}</T>
+            </IkonluMetin>
           </Column>
         </Row>
       </Card>
@@ -1768,16 +1971,20 @@ export function LabyrinthContent({ player, labyrinthState, onSelectTactic, onRer
       {/* 3v3 Takımlar Görünümü */}
       <Card color={DarkSurface} radius={10} borderColor={DarkBorder} style={{ alignSelf: 'stretch' }}>
         <Column pad={12} gap={8}>
-          <T size={12} weight="bold" color={MaviAcik} heading>
-            MAVİ TAKIM (SİZ + 2 YOLDAŞ):
-          </T>
+          <IkonluMetin gorsel="kalkan" gorselRenk={MaviAcik} boyut={18}>
+            <T size={12} weight="bold" color={MaviAcik} heading>
+              MAVİ TAKIM (SİZ + 2 YOLDAŞ):
+            </T>
+          </IkonluMetin>
           <T size={12} color={TextLight} lineHeight={18}>
             {maviTakim}
           </T>
           <Spacer h={4} />
-          <T size={12} weight="bold" color={HealthRed} heading>
-            KIRMIZI TAKIM (3 RAKİP):
-          </T>
+          <IkonluMetin gorsel="capraz-kilic" gorselRenk={HealthRed} boyut={18}>
+            <T size={12} weight="bold" color={HealthRed} heading>
+              KIRMIZI TAKIM (3 RAKİP):
+            </T>
+          </IkonluMetin>
           <T size={12} color={TextLight} lineHeight={18}>
             {kirmiziTakim}
           </T>
@@ -1785,9 +1992,11 @@ export function LabyrinthContent({ player, labyrinthState, onSelectTactic, onRer
       </Card>
 
       {/* Takım Taktiği Seçici */}
-      <T size={13} weight="bold" color={TextGold} heading>
-        Takım Dehliz Taktiğini Belirle:
-      </T>
+      <IkonluMetin gorsel="pusula" gorselRenk={AmberGold} boyut={20} gap={6}>
+        <T size={13} weight="bold" color={TextGold} heading>
+          Takım Dehliz Taktiğini Belirle:
+        </T>
+      </IkonluMetin>
       <Row gap={6} align="stretch" style={{ alignSelf: 'stretch' }}>
         {LabyrinthTactic.entries.map((tactic, i) => {
           const isSelected = labyrinthState.selectedTactic === tactic;
@@ -1804,9 +2013,7 @@ export function LabyrinthContent({ player, labyrinthState, onSelectTactic, onRer
               style={{ flex: 1 }}
             >
               <Column align="center" style={{ paddingVertical: 8, paddingHorizontal: 2 }}>
-                <T size={16} hidden>
-                  {tactic.icon}
-                </T>
+                <Gorsel ad={taktikGorseli(tactic)} boyut={22} renk={isSelected ? DarkBg : AmberGold} />
                 <T size={10} weight={isSelected ? 'bold' : 'medium'} color={isSelected ? DarkBg : TextLight} lines={1}>
                   {tactic.title}
                 </T>
@@ -1815,10 +2022,12 @@ export function LabyrinthContent({ player, labyrinthState, onSelectTactic, onRer
           );
         })}
       </Row>
-      <T size={11} color={HealthGreen} style={{ paddingHorizontal: 4 }}>{`${labyrinthState.selectedTactic.bonusDesc}`}</T>
+      <IkonluMetin gorsel="bilgi" gorselRenk={HealthGreen} boyut={14} gap={4} align="start" style={{ paddingHorizontal: 4 }}>
+        <T size={11} color={HealthGreen} style={{ flex: 1 }}>{`${labyrinthState.selectedTactic.bonusDesc}`}</T>
+      </IkonluMetin>
 
       {/* Dehlizi Yenile Butonu */}
-      <OutlinedBtn onPress={onReroll} contentColor={AmberGold} borderColor={AmberGold} radius={8} style={{ alignSelf: 'stretch' }}>
+      <OutlinedBtn onPress={onReroll} contentColor={AmberGold} borderColor={AmberGold} radius={8} style={{ alignSelf: 'stretch' }} gorsel="zar">
         Dehliz Tuzağını & Takımları Yeniden Çek
       </OutlinedBtn>
 
@@ -1826,7 +2035,7 @@ export function LabyrinthContent({ player, labyrinthState, onSelectTactic, onRer
       <OdulSeridi entryFee={labyrinthState.entryFee} rewardGold={labyrinthState.rewardGold} rewardExp={labyrinthState.rewardExp} rewardFame={labyrinthState.rewardFame} />
 
       {/* Başla Butonu */}
-      <Btn onPress={onStartFight} color={AmberGold} contentColor={DarkBg} radius={10} textSize={13} style={{ alignSelf: 'stretch', minHeight: 52 }}>
+      <Btn onPress={onStartFight} color={AmberGold} contentColor={DarkBg} radius={10} textSize={13} style={{ alignSelf: 'stretch', minHeight: 52 }} gorsel="zindan-kapisi">
         LABİRENT DEHLİZİNE İN (HAZIRLIK)
       </Btn>
     </Column>
@@ -1837,13 +2046,15 @@ function ArenaDisciplineLockedCard({ title, description, onBackToSolo }) {
   return (
     <Card color={DarkSurfaceCard} radius={12} borderColor={AmberGoldDark} style={{ alignSelf: 'stretch', marginVertical: 16 }}>
       <Column pad={20} align="center">
+        <GorselRozet ad="kilit" boyut={56} renk={AmberGold} kenar={AmberGoldDark} />
+        <Spacer h={10} />
         <T heading weight="bold" color={AmberGold} size={16} align="center">{`${title} Kilitli`}</T>
         <Spacer h={8} />
         <T color={TextLight} size={13} align="center" lineHeight={18}>
           {description}
         </T>
         <Spacer h={14} />
-        <Btn onPress={onBackToSolo} color={AmberGold} contentColor={DarkBg} radius={8}>
+        <Btn onPress={onBackToSolo} color={AmberGold} contentColor={DarkBg} radius={8} gorsel="duello">
           1v1 Arena Ligine Dön
         </Btn>
       </Column>
@@ -1861,11 +2072,13 @@ function DuoCombatLiveStatusCard({ playerName, playerHp, playerMaxHp, ally, ally
     `Mavi köşe: ${playerName} ${playerHp} / ${playerMaxHp} HP, ${ally.name} ${allyHp} / ${ally.stats.maxHealth} HP`,
     `Kırmızı köşe: ${enemy1.name} ${enemy1Hp} / ${enemy1.stats.maxHealth} HP, ${enemy2.name} ${enemy2Hp} / ${enemy2.stats.maxHealth} HP`
   );
-  const satir = (sol, solRenk, solAgirlik, sag, sagRenk) => (
+  const satir = (sol, solRenk, solAgirlik, sag, sagRenk, gorsel) => (
     <Row justify="between">
-      <T size={12} color={solRenk} weight={solAgirlik} style={{ flexShrink: 1 }}>
-        {sol}
-      </T>
+      <IkonluMetin gorsel={gorsel} gorselRenk={solRenk} boyut={16} style={{ flexShrink: 1 }}>
+        <T size={12} color={solRenk} weight={solAgirlik} style={{ flexShrink: 1 }}>
+          {sol}
+        </T>
+      </IkonluMetin>
       <T size={11} color={sagRenk} weight="bold">
         {sag}
       </T>
@@ -1876,48 +2089,56 @@ function DuoCombatLiveStatusCard({ playerName, playerHp, playerMaxHp, ally, ally
       <Column pad={14}>
         {/* Header: Title & Condition */}
         <Row justify="between" wrap>
-          <T size={11} weight="bold" color={AmberGold}>
-            2v2 İTTİFAK CANLI MEYDANI
-          </T>
+          <IkonluMetin gorsel="capraz-kilic" gorselRenk={AmberGold} boyut={16}>
+            <T size={11} weight="bold" color={AmberGold}>
+              2v2 İTTİFAK CANLI MEYDANI
+            </T>
+          </IkonluMetin>
           <Surface radius={4} color={alpha(Mavi, 0.2)} borderColor={Mavi} borderWidth={1}>
-            <T size={10} weight="bold" color={MaviAcik} style={{ paddingHorizontal: 6, paddingVertical: 2 }}>{`${condition.name}`}</T>
+            <IkonluMetin gorsel={zeminGorseli(condition)} gorselRenk={MaviAcik} boyut={13} gap={4} style={{ paddingHorizontal: 6, paddingVertical: 2 }}>
+              <T size={10} weight="bold" color={MaviAcik}>{`${condition.name}`}</T>
+            </IkonluMetin>
           </Surface>
         </Row>
 
         <Spacer h={10} />
 
         {/* Mavi Köşe (Takımınız) */}
-        <T size={11} weight="bold" color={MaviAcik}>
-          MAVİ KÖŞE (TAKIMINIZ)
-        </T>
+        <IkonluMetin gorsel="kalkan" gorselRenk={MaviAcik} boyut={15}>
+          <T size={11} weight="bold" color={MaviAcik}>
+            MAVİ KÖŞE (TAKIMINIZ)
+          </T>
+        </IkonluMetin>
         <Spacer h={4} />
 
         {/* Player HP Bar */}
-        {satir(`${playerName}`, TextGold, 'bold', `${playerHp} / ${playerMaxHp} HP`, HealthGreen)}
+        {satir(`${playerName}`, TextGold, 'bold', `${playerHp} / ${playerMaxHp} HP`, HealthGreen, 'kilicli-adam')}
         <Progress value={pFrac} height={6} radius={3} color={playerHp > 0 ? HealthGreen : HealthRed} track={DarkSurfaceCard} />
 
         <Spacer h={6} />
 
         {/* Ally HP Bar */}
-        {satir(`${ally.name} (${ally.title})`, MaviAcik, 'bold', `${allyHp} / ${ally.stats.maxHealth} HP`, HealthGreen)}
+        {satir(`${ally.name} (${ally.title})`, MaviAcik, 'bold', `${allyHp} / ${ally.stats.maxHealth} HP`, HealthGreen, gladyatorGorseli(ally))}
         <Progress value={aFrac} height={6} radius={3} color={allyHp > 0 ? Mavi : HealthRed} track={DarkSurfaceCard} />
 
         <Spacer h={12} />
 
         {/* Kırmızı Köşe (Rakipler) */}
-        <T size={11} weight="bold" color={HealthRed}>
-          KIRMIZI KÖŞE (RAKİP İTTİFAK)
-        </T>
+        <IkonluMetin gorsel="capraz-kilic" gorselRenk={HealthRed} boyut={15}>
+          <T size={11} weight="bold" color={HealthRed}>
+            KIRMIZI KÖŞE (RAKİP İTTİFAK)
+          </T>
+        </IkonluMetin>
         <Spacer h={4} />
 
         {/* Enemy 1 HP Bar */}
-        {satir(`${enemy1.name} (${enemy1.title})`, HealthRed, 'bold', `${enemy1Hp} / ${enemy1.stats.maxHealth} HP`, HealthRed)}
+        {satir(`${enemy1.name} (${enemy1.title})`, HealthRed, 'bold', `${enemy1Hp} / ${enemy1.stats.maxHealth} HP`, HealthRed, gladyatorGorseli(enemy1))}
         <Progress value={e1Frac} height={6} radius={3} color={HealthRed} track={DarkSurfaceCard} />
 
         <Spacer h={6} />
 
         {/* Enemy 2 HP Bar */}
-        {satir(`${enemy2.name} (${enemy2.title})`, HealthRed, 'bold', `${enemy2Hp} / ${enemy2.stats.maxHealth} HP`, HealthRed)}
+        {satir(`${enemy2.name} (${enemy2.title})`, HealthRed, 'bold', `${enemy2Hp} / ${enemy2.stats.maxHealth} HP`, HealthRed, gladyatorGorseli(enemy2))}
         <Progress value={e2Frac} height={6} radius={3} color={HealthRed} track={DarkSurfaceCard} />
       </Column>
     </Card>
@@ -1934,8 +2155,9 @@ function DuoCombatResultCard({ result, onDismiss }) {
 
   useAcilisDuyurusu(ozet(baslikMetni, aciklama, istatistik, kazanc));
 
-  const sutun = (ad, deger, renk) => (
+  const sutun = (ad, deger, renk, gorsel) => (
     <Column align="center">
+      <Gorsel ad={gorsel} boyut={18} renk={renk} />
       <T size={10} color={TextMuted}>
         {ad}
       </T>
@@ -1948,6 +2170,8 @@ function DuoCombatResultCard({ result, onDismiss }) {
   return (
     <Card color={DarkSurfaceCard} radius={12} borderColor={result.isPlayerWinner ? AmberGold : HealthRed} borderWidth={1.5} style={{ alignSelf: 'stretch' }}>
       <Column pad={16} align="center">
+        <GorselRozet ad={sonucGorseli(false, result.isPlayerWinner)} boyut={60} renk={result.isPlayerWinner ? TextGold : HealthRed} kenar={result.isPlayerWinner ? AmberGold : HealthRed} zemin={alpha(DarkBg, 0.45)} />
+        <Spacer h={8} />
         <T heading weight="bold" color={result.isPlayerWinner ? TextGold : HealthRed} size={18} align="center">
           {baslikMetni}
         </T>
@@ -1961,9 +2185,9 @@ function DuoCombatResultCard({ result, onDismiss }) {
         {/* İstatistikler */}
         <Surface color={DarkBg} radius={8} style={{ alignSelf: 'stretch' }} label={istatistik}>
           <Row justify="around" pad={10}>
-            {sutun('Süre', `${result.totalRounds} Tur`, TextGold)}
-            {sutun('Takım Hasarı', `${result.totalTeamDamage}`, HealthGreen)}
-            {sutun('Rakip Hasarı', `${result.totalOpponentDamage}`, HealthRed)}
+            {sutun('Süre', `${result.totalRounds} Tur`, TextGold, 'kum-saati')}
+            {sutun('Takım Hasarı', `${result.totalTeamDamage}`, HealthGreen, 'kilic')}
+            {sutun('Rakip Hasarı', `${result.totalOpponentDamage}`, HealthRed, 'kilic-yarasi')}
           </Row>
         </Surface>
 
@@ -1971,9 +2195,11 @@ function DuoCombatResultCard({ result, onDismiss }) {
 
         {/* Kazançlar */}
         <Row justify="evenly" wrap style={{ alignSelf: 'stretch' }} label={kazanc}>
-          <T color={AmberGold} weight="bold" size={12}>{`+${result.earnedGold} Altın`}</T>
-          <T color={TextGold} weight="bold" size={12}>{`+${result.earnedExp} EXP`}</T>
-          {result.earnedFame > 0 ? <T color={HealthGreen} weight="bold" size={12}>{`+${result.earnedFame} Şöhret`}</T> : null}
+          <IkonluMetin gorsel="sikke" gorselRenk={AmberGold}><T color={AmberGold} weight="bold" size={12}>{`+${result.earnedGold} Altın`}</T></IkonluMetin>
+          <IkonluMetin gorsel="yildiz-madalya" gorselRenk={TextGold}><T color={TextGold} weight="bold" size={12}>{`+${result.earnedExp} EXP`}</T></IkonluMetin>
+          {result.earnedFame > 0 ? (
+            <IkonluMetin gorsel="defne" gorselRenk={HealthGreen}><T color={HealthGreen} weight="bold" size={12}>{`+${result.earnedFame} Şöhret`}</T></IkonluMetin>
+          ) : null}
         </Row>
 
         {result.synergyHighlights.length > 0 ? (
@@ -1981,9 +2207,11 @@ function DuoCombatResultCard({ result, onDismiss }) {
             <Spacer h={10} />
             <Surface color={DarkBg} radius={6} style={{ alignSelf: 'stretch' }}>
               <Column pad={8}>
-                <T size={11} weight="bold" color={AmberGold}>
-                  Takım Uyum Analizi:
-                </T>
+                <IkonluMetin gorsel="el-sikisma" gorselRenk={AmberGold} boyut={16}>
+                  <T size={11} weight="bold" color={AmberGold}>
+                    Takım Uyum Analizi:
+                  </T>
+                </IkonluMetin>
                 {result.synergyHighlights.map((highlight, i) => (
                   <T key={i} size={10} color={alpha(TextLight, 0.9)}>{`• ${highlight}`}</T>
                 ))}
@@ -1994,7 +2222,7 @@ function DuoCombatResultCard({ result, onDismiss }) {
 
         <Spacer h={16} />
 
-        <Btn onPress={onDismiss} color={AmberGold} contentColor={DarkBg} radius={8} style={{ alignSelf: 'stretch', minHeight: 42 }}>
+        <Btn onPress={onDismiss} color={AmberGold} contentColor={DarkBg} radius={8} style={{ alignSelf: 'stretch', minHeight: 42 }} gorsel="arena">
           Arenaya Dön (Yeni Kura Çevir)
         </Btn>
       </Column>
@@ -2020,6 +2248,7 @@ function UnarmedCombatResultCard({ result, onDismiss }) {
   return (
     <Card color={DarkSurfaceCard} radius={12} borderColor={result.playerWon ? AmberGold : MaviAcik} borderWidth={1.5} style={{ alignSelf: 'stretch' }}>
       <Column pad={16} align="center" gap={10}>
+        <GorselRozet ad={result.playerWon ? 'defne' : 'el-sikisma'} boyut={60} renk={result.playerWon ? TextGold : color(0xff90caf9)} kenar={result.playerWon ? AmberGold : MaviAcik} zemin={alpha(DarkBg, 0.45)} />
         <T heading weight="bold" color={result.playerWon ? TextGold : color(0xff90caf9)} size={17} align="center">
           {baslikMetni}
         </T>
@@ -2031,9 +2260,11 @@ function UnarmedCombatResultCard({ result, onDismiss }) {
         {/* Kıyafet Deformasyon / Durum Kartı */}
         <Surface color={DarkBg} radius={8} style={{ alignSelf: 'stretch' }}>
           <Column pad={10} gap={6}>
-            <T size={11} weight="bold" color={AmberGold}>
-              Kuşam & Ten Durumu:
-            </T>
+            <IkonluMetin gorsel="roma-togasi" gorselRenk={AmberGold} boyut={16}>
+              <T size={11} weight="bold" color={AmberGold}>
+                Kuşam & Ten Durumu:
+              </T>
+            </IkonluMetin>
             <Row justify="between" label={`Senin Durumun: ${result.playerClothingCondition.label}`}>
               <T size={11} color={TextMuted}>
                 Senin Durumun:
@@ -2055,14 +2286,14 @@ function UnarmedCombatResultCard({ result, onDismiss }) {
         {result.playerWon ? (
           <Surface color={alpha(AmberGoldDark, 0.2)} radius={8} borderColor={AmberGoldDark} borderWidth={1} style={{ alignSelf: 'stretch' }} label={kazanc}>
             <Row justify="around" wrap pad={10}>
-              <T size={12} weight="bold" color={AmberGold}>{`+${result.goldEarned} Altın`}</T>
-              <T size={12} weight="bold" color={TextGold}>{`+${result.expEarned} EXP`}</T>
-              <T size={12} weight="bold" color={HealthGreen}>{`+${result.fameEarned} Şöhret`}</T>
+              <IkonluMetin gorsel="sikke" gorselRenk={AmberGold}><T size={12} weight="bold" color={AmberGold}>{`+${result.goldEarned} Altın`}</T></IkonluMetin>
+              <IkonluMetin gorsel="yildiz-madalya" gorselRenk={TextGold}><T size={12} weight="bold" color={TextGold}>{`+${result.expEarned} EXP`}</T></IkonluMetin>
+              <IkonluMetin gorsel="defne" gorselRenk={HealthGreen}><T size={12} weight="bold" color={HealthGreen}>{`+${result.fameEarned} Şöhret`}</T></IkonluMetin>
             </Row>
           </Surface>
         ) : null}
 
-        <Btn onPress={onDismiss} color={AmberGold} contentColor={DarkBg} radius={8} style={{ alignSelf: 'stretch', minHeight: 42 }}>
+        <Btn onPress={onDismiss} color={AmberGold} contentColor={DarkBg} radius={8} style={{ alignSelf: 'stretch', minHeight: 42 }} gorsel="kapi">
           Meydandan Ayrıl
         </Btn>
       </Column>

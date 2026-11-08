@@ -4,7 +4,7 @@
  */
 import React from 'react';
 import { View } from 'react-native';
-import { Column, Row, Spacer, Surface, T } from '../kit.js';
+import { Column, Gorsel, GorselRozet, Row, Spacer, Surface, T } from '../kit.js';
 import * as kt from '../../kt.js';
 import { AmberGold, AmberGoldDark, AmberGoldLight, DarkBg, DarkBorder, DarkSurfaceCard, TextGold, TextLight, TextMuted, alpha, color } from '../theme.js';
 
@@ -25,7 +25,9 @@ export function GladiatorPsychologyCard({ psychology, style }) {
         label={`Zihin ve Psikolojik Mizaç: ${psychology.behavioralBadge}. Kaos Payı: yüzde ${kaos}`}
       >
         <Row justify="between" style={{ paddingHorizontal: 12, paddingVertical: 8 }}>
-          <Column>
+          <GorselRozet ad="ucuncu-goz" boyut={38} renk={AmberGoldLight} />
+          <Spacer w={10} />
+          <Column style={{ flex: 1 }}>
             <T size={11} weight="bold" color={AmberGoldLight}>
               Zihin & Psikolojik Mizaç
             </T>
@@ -44,25 +46,37 @@ export function GladiatorPsychologyCard({ psychology, style }) {
       {/* 7 Temel Karakteristik Seviye Barı */}
       <Surface radius={8} color={DarkSurfaceCard} borderColor={DarkBorder} borderWidth={1} style={{ alignSelf: 'stretch' }}>
         <Column pad={10} gap={8}>
-          <PsychologyStatBar title="Sadakat & Dostluk" value={psychology.loyalty} icon="" barColor={color(0xff2ecc71)} description={getLoyaltySummary(psychology.loyalty)} />
-          <PsychologyStatBar title="İhanet & Kalleşlik Riski" value={psychology.treachery} icon="" barColor={color(0xffe74c3c)} description={getTreacherySummary(psychology.treachery)} />
-          <PsychologyStatBar title="Çıkar & Bencillik" value={psychology.pragmatism} icon="" barColor={color(0xfff1c40f)} description={getPragmatismSummary(psychology.pragmatism)} />
-          <PsychologyStatBar title="Hırs & İhtiras" value={psychology.ambition} icon="" barColor={color(0xffab47bc)} description={getAmbitionSummary(psychology.ambition)} />
-          <PsychologyStatBar title="Onur & Gurur" value={psychology.pride} icon="" barColor={color(0xff42a5f5)} description={getPrideSummary(psychology.pride)} />
-          <PsychologyStatBar title="Boşvermişlik & Kayıtsızlık" value={psychology.apathy} icon="" barColor={color(0xff90a4ae)} description={getApathySummary(psychology.apathy)} />
-          <PsychologyStatBar title="Vahşi İçgüdü (Kaotik Dürtü)" value={psychology.wildInstinct} icon="" barColor={color(0xffff7043)} description={getInstinctSummary(psychology.wildInstinct)} />
+          <PsychologyStatBar title="Sadakat & Dostluk" value={psychology.loyalty} icon="kalkan" barColor={color(0xff2ecc71)} description={getLoyaltySummary(psychology.loyalty)} />
+          <PsychologyStatBar title="İhanet & Kalleşlik Riski" value={psychology.treachery} icon="hancer" barColor={color(0xffe74c3c)} description={getTreacherySummary(psychology.treachery)} />
+          <PsychologyStatBar title="Çıkar & Bencillik" value={psychology.pragmatism} icon="para-kesesi" barColor={color(0xfff1c40f)} description={getPragmatismSummary(psychology.pragmatism)} />
+          <PsychologyStatBar title="Hırs & İhtiras" value={psychology.ambition} icon="simsek" barColor={color(0xffab47bc)} description={getAmbitionSummary(psychology.ambition)} />
+          <PsychologyStatBar title="Onur & Gurur" value={psychology.pride} icon="defne" barColor={color(0xff42a5f5)} description={getPrideSummary(psychology.pride)} />
+          <PsychologyStatBar title="Boşvermişlik & Kayıtsızlık" value={psychology.apathy} icon="uykulu" barColor={color(0xff90a4ae)} description={getApathySummary(psychology.apathy)} />
+          <PsychologyStatBar title="Vahşi İçgüdü (Kaotik Dürtü)" value={psychology.wildInstinct} icon="ayak-izi" barColor={color(0xffff7043)} description={getInstinctSummary(psychology.wildInstinct)} />
         </Column>
       </Surface>
 
       {/* Alt Kart: Labirent Karar Eğilimleri Özeti */}
       <Surface radius={8} color={color(0xff171513)} borderColor={alpha(AmberGoldDark, 0.4)} borderWidth={1} style={{ alignSelf: 'stretch' }}>
         <Column pad={10} gap={4}>
-          <T size={11} weight="bold" color={AmberGold} heading>
-            Labirent & Saha Karar Eğilimi
-          </T>
-          <T size={10} color={TextLight}>{`• İttifak Tutumu: ${ittifak}`}</T>
-          <T size={10} color={TextLight}>{`• Sandık Açıldığında: ${sandik}`}</T>
-          <T size={10} color={TextLight}>{`• Müttefik Canı Düşünce: ${kriz}`}</T>
+          <Row gap={6}>
+            <Gorsel ad="labirent" boyut={16} renk={AmberGold} />
+            <T size={11} weight="bold" color={AmberGold} heading>
+              Labirent & Saha Karar Eğilimi
+            </T>
+          </Row>
+          <Row gap={6} align="start">
+            <Gorsel ad="el-sikisma" boyut={14} renk={AmberGoldLight} />
+            <T size={10} color={TextLight} style={{ flex: 1 }}>{`• İttifak Tutumu: ${ittifak}`}</T>
+          </Row>
+          <Row gap={6} align="start">
+            <Gorsel ad="sandik" boyut={14} renk={AmberGoldLight} />
+            <T size={10} color={TextLight} style={{ flex: 1 }}>{`• Sandık Açıldığında: ${sandik}`}</T>
+          </Row>
+          <Row gap={6} align="start">
+            <Gorsel ad="can-arti" boyut={14} renk={AmberGoldLight} />
+            <T size={10} color={TextLight} style={{ flex: 1 }}>{`• Müttefik Canı Düşünce: ${kriz}`}</T>
+          </Row>
         </Column>
       </Surface>
     </Column>
@@ -76,9 +90,7 @@ function PsychologyStatBar({ title, value, icon, barColor, description }) {
     <Column style={{ alignSelf: 'stretch' }} label={`${title}: yüzde ${clampedValue}. ${description}`}>
       <Row justify="between">
         <Row gap={4}>
-          <T size={11} hidden>
-            {icon}
-          </T>
+          <Gorsel ad={icon} boyut={16} renk={barColor} />
           <T size={11} weight="semibold" color={TextLight}>
             {title}
           </T>

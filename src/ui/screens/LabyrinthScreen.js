@@ -5,18 +5,40 @@ import * as kt from '../../kt.js';
 import { LabyrinthBiomeType, AllianceDecision } from '../../domain/model.js';
 import { GladiatorPsychologyCard } from '../components/GladiatorPsychologyView.js';
 import { CombatLiveStatusCard, CombatLogBubble, useCombatLogAnnouncer } from './ArenaScreen.js';
-import { Column, Row, Surface, Card, Spacer, T, Btn, TextBtn, AlertDialog, useFlow, announce } from '../kit.js';
+import { Column, Row, Surface, Card, Spacer, T, Btn, TextBtn, AlertDialog, useFlow, announce, Gorsel, GorselRozet, GorselDeger } from '../kit.js';
+import { biyomGorseli, bulmacaGorseli, esyaGorseli, mizacGorseli, nadirlikRengi, tehlikeGorseli } from '../gorsel-esleme.js';
 import { AmberGold, AmberGoldDark, AmberGoldLight, DarkBg, DarkBorder, DarkSurface, DarkSurfaceCard, TextGold, TextLight, TextMuted, HealthGreen, HealthRed, Color, Typography, alpha, color } from '../theme.js';
 
-/** Düz renkli küçük eylem düğmesi (Kotlin'de Button(colors = containerColor) + 10.sp kalın yazı). */
-function EylemDugmesi({ onPress, zemin, children, style, yazi = 10 }) {
+/** Düz renkli küçük eylem düğmesi (Kotlin'de Button(colors = containerColor) + 10.sp kalın yazı). Görsel yazının üstünde. */
+function EylemDugmesi({ onPress, zemin, children, style, yazi = 10, gorsel }) {
   return (
     <Btn onPress={onPress} color={zemin} contentColor={Color.White} radius={6} pad={6} style={[{ flex: 1 }, style]}>
-      <T size={yazi} weight="bold" color={Color.White} align="center">
-        {children}
-      </T>
+      <Column align="center" gap={4}>
+        {gorsel ? <Gorsel ad={gorsel} boyut={22} renk={Color.White} /> : null}
+        <T size={yazi} weight="bold" color={Color.White} align="center">
+          {children}
+        </T>
+      </Column>
     </Btn>
   );
+}
+
+// Labirent yankısı ve sandık kademesi için simgeler (görseller VoiceOver'dan gizli).
+const YANKI_GORSELI = {
+  BETRAYAL: 'hancer',
+  ALLIANCE: 'el-sikisma',
+  TRAP_TRIGGER: 'kurt-kapani',
+  LOOT_FIGHT: 'sandik',
+  BEAST_ENCOUNTER: 'kurt',
+  DEATH_ELIMINATION: 'olum',
+};
+const LAB_SANDIK = {
+  SIRADAN: { ad: 'tahta-sandik', renk: '#B08A5A' },
+  NADIR: { ad: 'kilitli-sandik', renk: '#9FB3C8' },
+  EFSANEVI: { ad: 'sandik', renk: '#F2B33D' },
+};
+function labSandik(chest) {
+  return LAB_SANDIK[chest && chest.name] || { ad: 'sandik', renk: AmberGold };
 }
 
 export function LabyrinthScreen({ viewModel, modifier }) {
@@ -80,7 +102,7 @@ export function LabyrinthScreen({ viewModel, modifier }) {
 
         <Surface radius={8} color={DarkSurfaceCard} borderColor={AmberGold} borderWidth={1} style={{ alignSelf: 'stretch' }}>
           <Row pad={10} gap={8}>
-            
+            <Gorsel ad="capraz-kilic" boyut={22} renk={AmberGold} />
             <T heading weight="bold" color={TextGold} size={13} style={{ flexShrink: 1 }}>
               Labirent Dehliz Çatışması (Otomatik Savaş Akışı)
             </T>
@@ -112,13 +134,19 @@ export function LabyrinthScreen({ viewModel, modifier }) {
         <Card color={DarkSurfaceCard} radius={12} borderColor={AmberGold} borderWidth={1} style={{ alignSelf: 'stretch' }}>
           <Column pad={14}>
             <Row justify="between" gap={8} style={{ alignSelf: 'stretch' }}>
-              <T heading style={Typography.titleMedium} color={TextGold} weight="bold">
-                KATAKOMP LABİRENTİ
-              </T>
-              <Surface radius={6} color={DarkBg} borderColor={color(0xffce93d8)} borderWidth={1} label="Giriş: 35 altın" style={{ paddingHorizontal: 8, paddingVertical: 3 }}>
-                <T size={11} weight="bold" color={color(0xffce93d8)}>
-                  GİRİŞ: 35 Altın
+              <Row gap={8} style={{ flexShrink: 1 }}>
+                <Gorsel ad="labirent" boyut={26} renk={AmberGold} />
+                <T heading style={[Typography.titleMedium, { flexShrink: 1 }]} color={TextGold} weight="bold">
+                  KATAKOMP LABİRENTİ
                 </T>
+              </Row>
+              <Surface radius={6} color={DarkBg} borderColor={color(0xffce93d8)} borderWidth={1} label="Giriş: 35 altın" style={{ paddingHorizontal: 8, paddingVertical: 3 }}>
+                <Row gap={4}>
+                  <Gorsel ad="sikke" boyut={14} renk={color(0xffce93d8)} />
+                  <T size={11} weight="bold" color={color(0xffce93d8)}>
+                    GİRİŞ: 35 Altın
+                  </T>
+                </Row>
               </Surface>
             </Row>
 
@@ -131,9 +159,12 @@ export function LabyrinthScreen({ viewModel, modifier }) {
         </Card>
 
         {/* Biyom Seçim Kartları */}
-        <T heading size={12} weight="bold" color={AmberGoldLight}>
-          Keşfedilecek Biyom & Ekosistem Seçimi:
-        </T>
+        <Row gap={6}>
+          <Gorsel ad="dunya" boyut={18} renk={AmberGoldLight} />
+          <T heading size={12} weight="bold" color={AmberGoldLight} style={{ flexShrink: 1 }}>
+            Keşfedilecek Biyom & Ekosistem Seçimi:
+          </T>
+        </Row>
 
         <Column gap={8} style={{ alignSelf: 'stretch' }}>
           {/* Rastgele Biyom */}
@@ -148,7 +179,7 @@ export function LabyrinthScreen({ viewModel, modifier }) {
             style={{ alignSelf: 'stretch' }}
           >
             <Row pad={12} gap={10}>
-              
+              <GorselRozet ad="zar" boyut={40} renk={isRandomSelected ? TextGold : AmberGold} kenar={isRandomSelected ? AmberGold : null} />
               <Column style={{ flex: 1 }}>
                 <T size={12} weight="bold" color={isRandomSelected ? TextGold : TextLight}>
                   Rastgele Biyom (Zindan Muhafızlarının Tercihi)
@@ -176,7 +207,7 @@ export function LabyrinthScreen({ viewModel, modifier }) {
                 style={{ alignSelf: 'stretch' }}
               >
                 <Row pad={10} gap={10}>
-                  <T size={22}>{biome.icon}</T>
+                  <GorselRozet ad={biyomGorseli(biome)} boyut={40} renk={isSelected ? TextGold : AmberGold} kenar={isSelected ? AmberGold : null} />
                   <Column style={{ flex: 1 }}>
                     <T size={12} weight="bold" color={isSelected ? TextGold : TextLight}>
                       {biome.title}
@@ -192,7 +223,7 @@ export function LabyrinthScreen({ viewModel, modifier }) {
         </Column>
 
         {/* Başlatma Butonu */}
-        <Btn onPress={() => viewModel.startLabyrinthRun(selectedBiomeForRun)} color={AmberGoldDark} contentColor={TextLight} radius={8} style={{ alignSelf: 'stretch', minHeight: 50 }}>
+        <Btn onPress={() => viewModel.startLabyrinthRun(selectedBiomeForRun)} color={AmberGoldDark} contentColor={TextLight} radius={8} style={{ alignSelf: 'stretch', minHeight: 50 }} gorsel="zindan-kapisi">
           <T weight="bold" size={14} color={TextLight} align="center">
             LABİRENTE GİRİŞ YAP (35 Altın)
           </T>
@@ -216,7 +247,7 @@ export function LabyrinthScreen({ viewModel, modifier }) {
           <Column pad={12}>
             <Row justify="between" gap={8} style={{ alignSelf: 'stretch' }}>
               <Row gap={8} heading label={`${run.themeTitle}, Oda ${run.currentChamberIndex + 1} / ${run.chambers.length}`} style={{ flexShrink: 1 }}>
-                <T size={24}>{run.biome.icon}</T>
+                <GorselRozet ad={biyomGorseli(run.biome)} boyut={44} renk={TextGold} kenar={AmberGoldDark} />
                 <Column style={{ flexShrink: 1 }}>
                   <T size={14} weight="bold" color={TextGold}>
                     {run.themeTitle}
@@ -227,7 +258,7 @@ export function LabyrinthScreen({ viewModel, modifier }) {
                 </Column>
               </Row>
 
-              <Btn onPress={() => viewModel.abandonLabyrinthRun()} color={color(0xff4a1a1a)} contentColor={HealthRed} radius={6} style={{ paddingHorizontal: 8, paddingVertical: 4 }}>
+              <Btn onPress={() => viewModel.abandonLabyrinthRun()} color={color(0xff4a1a1a)} contentColor={HealthRed} radius={6} style={{ paddingHorizontal: 8, paddingVertical: 4 }} gorsel="kapi" textSize={11}>
                 <T size={11} color={HealthRed}>
                   Kaçış
                 </T>
@@ -255,9 +286,12 @@ export function LabyrinthScreen({ viewModel, modifier }) {
         {/* Canlı Bildirim / Sonuç Mesajı */}
         {labMessage != null ? (
           <Surface radius={8} color={color(0xff1e281f)} borderColor={alpha(HealthGreen, 0.7)} borderWidth={1} style={{ alignSelf: 'stretch' }}>
-            <T size={11} weight="semibold" color={TextLight} style={{ padding: 10 }}>
-              {labMessage}
-            </T>
+            <Row gap={8} align="start" style={{ padding: 10 }}>
+              <Gorsel ad="bilgi" boyut={18} renk={HealthGreen} />
+              <T size={11} weight="semibold" color={TextLight} style={{ flex: 1 }}>
+                {labMessage}
+              </T>
+            </Row>
           </Surface>
         ) : null}
 
@@ -265,7 +299,7 @@ export function LabyrinthScreen({ viewModel, modifier }) {
         {echo != null ? (
           <Surface radius={8} color={color(0xff1a1320)} borderColor={alpha(color(0xff9c27b0), 0.5)} borderWidth={1} style={{ alignSelf: 'stretch' }}>
             <Row pad={10} gap={8} label={`Uzak Dehliz Yankısı (${echo.echoType.title}): ${echo.narrative}`}>
-              <T size={18}>{echo.echoType.icon}</T>
+              <GorselRozet ad={YANKI_GORSELI[echo.echoType.name] || 'fisilti'} boyut={36} renk={color(0xffce93d8)} zemin={alpha(color(0xff9c27b0), 0.18)} />
               <Column style={{ flexShrink: 1 }}>
                 <T size={10} weight="bold" color={color(0xffce93d8)}>
                   {`Uzak Dehliz Yankısı (${echo.echoType.title}):`}
@@ -283,9 +317,12 @@ export function LabyrinthScreen({ viewModel, modifier }) {
           <>
             <Surface radius={10} color={DarkSurfaceCard} borderColor={DarkBorder} borderWidth={1} style={{ alignSelf: 'stretch' }}>
               <Column pad={12}>
-                <T heading size={14} weight="bold" color={TextGold}>
-                  {currentChamber.title}
-                </T>
+                <Row gap={8}>
+                  <Gorsel ad={currentChamber.isExitChamber ? 'kupa' : 'zindan-kapisi'} boyut={22} renk={AmberGold} />
+                  <T heading size={14} weight="bold" color={TextGold} style={{ flexShrink: 1 }}>
+                    {currentChamber.title}
+                  </T>
+                </Row>
                 <Spacer h={4} />
                 <T size={11} color={TextLight} lineHeight={16}>
                   {currentChamber.description}
@@ -298,7 +335,7 @@ export function LabyrinthScreen({ viewModel, modifier }) {
               <Surface radius={10} color={color(0xff261818)} borderColor={HealthRed} borderWidth={1} style={{ alignSelf: 'stretch' }}>
                 <Column pad={12}>
                   <Row gap={6} heading label={`TEHLİKE: ${hz.name}`}>
-                    <T size={16}>{hz.category.icon}</T>
+                    <Gorsel ad={tehlikeGorseli(hz.category)} boyut={24} renk={HealthRed} />
                     <T size={12} weight="bold" color={HealthRed} style={{ flexShrink: 1 }}>
                       {`TEHLİKE: ${hz.name}`}
                     </T>
@@ -311,13 +348,13 @@ export function LabyrinthScreen({ viewModel, modifier }) {
 
                   {/* Savuşturma Seçenekleri */}
                   <Row gap={6} align="stretch" style={{ alignSelf: 'stretch' }}>
-                    <EylemDugmesi onPress={() => viewModel.resolveCurrentHazard('AGILITY')} zemin={color(0xff1e3a2f)}>
+                    <EylemDugmesi onPress={() => viewModel.resolveCurrentHazard('AGILITY')} zemin={color(0xff1e3a2f)} gorsel="kosu">
                       Çevik Sıyrılış
                     </EylemDugmesi>
-                    <EylemDugmesi onPress={() => viewModel.resolveCurrentHazard('SHIELD')} zemin={color(0xff233142)}>
+                    <EylemDugmesi onPress={() => viewModel.resolveCurrentHazard('SHIELD')} zemin={color(0xff233142)} gorsel="kalkan">
                       Kalkan Siperi
                     </EylemDugmesi>
-                    <EylemDugmesi onPress={() => viewModel.resolveCurrentHazard('STRENGTH')} zemin={color(0xff422b1e)}>
+                    <EylemDugmesi onPress={() => viewModel.resolveCurrentHazard('STRENGTH')} zemin={color(0xff422b1e)} gorsel="cekic">
                       Yarıp Geç
                     </EylemDugmesi>
                   </Row>
@@ -330,7 +367,7 @@ export function LabyrinthScreen({ viewModel, modifier }) {
               <Surface radius={10} color={color(0xff1e242b)} borderColor={color(0xff64b5f6)} borderWidth={1} style={{ alignSelf: 'stretch' }}>
                 <Column pad={12}>
                   <Row gap={6} heading label={`BULMACA: ${pz.title}`}>
-                    <T size={16}>{pz.type.icon}</T>
+                    <Gorsel ad={bulmacaGorseli(pz.type)} boyut={24} renk={color(0xff64b5f6)} />
                     <T size={12} weight="bold" color={color(0xff64b5f6)} style={{ flexShrink: 1 }}>
                       {`BULMACA: ${pz.title}`}
                     </T>
@@ -340,16 +377,19 @@ export function LabyrinthScreen({ viewModel, modifier }) {
                     {pz.description}
                   </T>
                   <Spacer h={4} />
-                  <T size={10} color={AmberGoldLight} italic>
-                    {`İpucu: ${pz.clueText}`}
-                  </T>
+                  <Row gap={6} align="start">
+                    <Gorsel ad="bilgi" boyut={16} renk={AmberGoldLight} />
+                    <T size={10} color={AmberGoldLight} italic style={{ flex: 1 }}>
+                      {`İpucu: ${pz.clueText}`}
+                    </T>
+                  </Row>
                   <Spacer h={10} />
 
                   <Row gap={8} align="stretch" style={{ alignSelf: 'stretch' }}>
-                    <EylemDugmesi onPress={() => viewModel.solveCurrentPuzzle(0)} zemin={AmberGoldDark}>
+                    <EylemDugmesi onPress={() => viewModel.solveCurrentPuzzle(0)} zemin={AmberGoldDark} gorsel="pariltilar">
                       Mantıkla Çöz
                     </EylemDugmesi>
-                    <EylemDugmesi onPress={() => viewModel.solveCurrentPuzzle(1)} zemin={color(0xff37474f)}>
+                    <EylemDugmesi onPress={() => viewModel.solveCurrentPuzzle(1)} zemin={color(0xff37474f)} gorsel="zar">
                       Şansına Kolu Çek
                     </EylemDugmesi>
                   </Row>
@@ -363,7 +403,7 @@ export function LabyrinthScreen({ viewModel, modifier }) {
                 <Column pad={12}>
                   <Row justify="between" gap={8} style={{ alignSelf: 'stretch' }}>
                     <Row gap={8} heading label={`Karşılaşma: ${enemy.name} (${enemy.title}). Mizaç: ${enemy.personality.psychology.behavioralBadge}`} style={{ flexShrink: 1 }}>
-                      
+                      <GorselRozet ad={mizacGorseli(enemy.personality.archetype)} boyut={44} renk={TextGold} kenar={AmberGoldLight} />
                       <Column style={{ flexShrink: 1 }}>
                         <T size={12} weight="bold" color={TextGold}>
                           {`Karşılaşma: ${enemy.name} (${enemy.title})`}
@@ -374,7 +414,7 @@ export function LabyrinthScreen({ viewModel, modifier }) {
                       </Column>
                     </Row>
 
-                    <TextBtn onPress={() => setInspectedGladiator(enemy)} label={`Zihin, ${enemy.name}`}>
+                    <TextBtn onPress={() => setInspectedGladiator(enemy)} label={`Zihin, ${enemy.name}`} gorsel="ucuncu-goz">
                       <T size={11} color={AmberGold}>
                         Zihin
                       </T>
@@ -396,13 +436,14 @@ export function LabyrinthScreen({ viewModel, modifier }) {
                         }
                       }}
                       zemin={color(0xff1e3a2f)}
+                      gorsel="el-sikisma"
                     >
                       İttifak Kur
                     </EylemDugmesi>
-                    <EylemDugmesi onPress={() => viewModel.startLabyrinthCombat(enemy)} zemin={color(0xff5a1e1e)}>
+                    <EylemDugmesi onPress={() => viewModel.startLabyrinthCombat(enemy)} zemin={color(0xff5a1e1e)} gorsel="capraz-kilic">
                       Dövüşe Tutuş
                     </EylemDugmesi>
-                    <EylemDugmesi onPress={() => viewModel.interactChamberGladiator('IGNORE')} zemin={color(0xff2a2a2a)}>
+                    <EylemDugmesi onPress={() => viewModel.interactChamberGladiator('IGNORE')} zemin={color(0xff2a2a2a)} gorsel="ayak-izi">
                       Temkinli Geç
                     </EylemDugmesi>
                   </Row>
@@ -415,18 +456,18 @@ export function LabyrinthScreen({ viewModel, modifier }) {
               <Surface radius={10} color={color(0xff2c2413)} borderColor={AmberGold} borderWidth={1} style={{ alignSelf: 'stretch' }}>
                 <Row pad={12} justify="between" gap={8}>
                   <Row gap={8} label={`${chest.title}. Ganimet Değeri: ${chest.minGold}-${chest.maxGold} altın`} style={{ flexShrink: 1 }}>
-                    <T size={24}>{chest.icon}</T>
+                    <GorselRozet ad={labSandik(chest).ad} boyut={44} renk={labSandik(chest).renk} kenar={labSandik(chest).renk} kare />
                     <Column style={{ flexShrink: 1 }}>
                       <T size={12} weight="bold" color={TextGold}>
                         {chest.title}
                       </T>
-                      <T size={10} color={AmberGoldLight}>
+                      <GorselDeger gorsel="sikkeler" boyut={10} renk={AmberGoldLight}>
                         {`Ganimet Değeri: ${chest.minGold}-${chest.maxGold} Altın`}
-                      </T>
+                      </GorselDeger>
                     </Column>
                   </Row>
 
-                  <Btn onPress={() => viewModel.openChamberChest()} color={AmberGoldDark} contentColor={Color.White} radius={6} label={`Aç, ${chest.title}`}>
+                  <Btn onPress={() => viewModel.openChamberChest()} color={AmberGoldDark} contentColor={Color.White} radius={6} label={`Aç, ${chest.title}`} gorsel="acik-kilit" gorselRenk={Color.White}>
                     <T size={11} weight="bold" color={Color.White}>
                       Aç
                     </T>
@@ -443,6 +484,7 @@ export function LabyrinthScreen({ viewModel, modifier }) {
               contentColor={TextLight}
               radius={8}
               style={{ alignSelf: 'stretch', minHeight: 48 }}
+              gorsel={currentChamber.isExitChamber ? 'kupa' : 'merdiven'}
             >
               <T weight="bold" size={13} color={TextLight} align="center">
                 {currentChamber.isExitChamber ? 'BÜYÜK ÇIKIŞ KEMERİNDEN ÇIK (ZAFER)' : 'Sonraki Odaya İlerle'}
@@ -467,13 +509,16 @@ export function LabyrinthScreen({ viewModel, modifier }) {
           containerColor={DarkSurface}
           style={{ borderRadius: 12 }}
           title={
-            <T heading size={14} weight="bold" color={TextGold}>
-              {`${inspectedGladiator.name} - Zihin Çizelgesi`}
-            </T>
+            <Row gap={8}>
+              <Gorsel ad="ucuncu-goz" boyut={22} renk={AmberGold} />
+              <T heading size={14} weight="bold" color={TextGold} style={{ flexShrink: 1 }}>
+                {`${inspectedGladiator.name} - Zihin Çizelgesi`}
+              </T>
+            </Row>
           }
           text={<GladiatorPsychologyCard psychology={inspectedGladiator.personality.psychology} />}
           confirm={
-            <Btn onPress={() => setInspectedGladiator(null)}>
+            <Btn onPress={() => setInspectedGladiator(null)} gorsel="kapi">
               Kapat
             </Btn>
           }
@@ -504,6 +549,7 @@ function LabyrinthCombatResultCard({ result, enemyName, onDismiss }) {
   return (
     <Card color={cardBg} radius={12} borderColor={borderColor} borderWidth={1.5} style={{ alignSelf: 'stretch' }}>
       <Column pad={14} align="center" gap={8}>
+        <GorselRozet ad={isWin ? 'kupa' : 'olum'} boyut={56} renk={isWin ? AmberGold : color(0xffff8a80)} kenar={borderColor} />
         <T heading size={15} weight="bold" color={isWin ? AmberGold : color(0xffff8a80)} align="center">
           {title}
         </T>
@@ -514,14 +560,16 @@ function LabyrinthCombatResultCard({ result, enemyName, onDismiss }) {
         {isWin ? (
           <Surface radius={8} color={DarkSurface} style={{ alignSelf: 'stretch' }}>
             <Row pad={10} justify="around" wrap gap={6}>
-              <T size={12} weight="bold" color={AmberGold}>{`+${result.earnedGold} Altın`}</T>
-              <T size={12} weight="bold" color={TextGold}>{`+${result.earnedExp} EXP`}</T>
-              {result.droppedItem != null ? <T size={12} weight="bold" color={HealthGreen}>{`${result.droppedItem.name}`}</T> : null}
+              <GorselDeger gorsel="sikke" boyut={12} renk={AmberGold}>{`+${result.earnedGold} Altın`}</GorselDeger>
+              <GorselDeger gorsel="yildiz-madalya" boyut={12} renk={TextGold}>{`+${result.earnedExp} EXP`}</GorselDeger>
+              {result.droppedItem != null ? (
+                <GorselDeger gorsel={esyaGorseli(result.droppedItem)} boyut={12} renk={HealthGreen} gorselRenk={nadirlikRengi(result.droppedItem.rarity)}>{`${result.droppedItem.name}`}</GorselDeger>
+              ) : null}
             </Row>
           </Surface>
         ) : null}
 
-        <Btn onPress={onDismiss} color={isWin ? AmberGold : HealthRed} contentColor={isWin ? DarkBg : Color.White} radius={8} style={{ alignSelf: 'stretch', minHeight: 42 }}>
+        <Btn onPress={onDismiss} color={isWin ? AmberGold : HealthRed} contentColor={isWin ? DarkBg : Color.White} radius={8} style={{ alignSelf: 'stretch', minHeight: 42 }} gorsel={isWin ? 'zindan-kapisi' : 'arena'}>
           <T weight="bold" size={12} color={isWin ? DarkBg : Color.White} align="center">
             {isWin ? 'Dehliz Keşfine Devam Et' : 'Arenaya Geri Dön'}
           </T>
