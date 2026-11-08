@@ -68,7 +68,13 @@ export default function App() {
     });
     const abone = AppState.addEventListener('change', (durum) => {
       if (durum === 'active') SoundManager.resumeBgm();
-      else if (durum === 'background' || durum === 'inactive') SoundManager.pauseBgm();
+      else if (durum === 'background' || durum === 'inactive') {
+        SoundManager.pauseBgm();
+        // Uygulama arka plana geçerken bekleyen kayıt hemen yazılır (ilerleme kaybolmasın)
+        try {
+          getGameViewModel().repository.kaydiHemenYaz();
+        } catch (e) {}
+      }
     });
     return () => {
       iptal = true;

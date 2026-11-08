@@ -202,6 +202,55 @@ export class GameRepository {
     this.spinDuoLottery();
     this.drawLabyrinthMatch();
 
+    this._otomatikKayitKur();
+  }
+
+  // ---------------------------------------------------------------------------
+  // Otomatik kayıt (8 Kasım, Murat: her ilerleme kaydedilsin). Kotlin sürümü yalnız belli anlarda
+  // kaydediyordu; burada kayıtlı her durum değiştiğinde 1,5 sn sonra kaydedilir (bu süre içindeki
+  // değişiklikler tek kayıtta birleşir). Oyun başlamadan (yeni oyun / devam seçilmeden) hiçbir şey yazılmaz, böylece
+  // açılıştaki varsayılan durum eski kaydın üzerine yazılamaz.
+  // ---------------------------------------------------------------------------
+  _otomatikKayitKur() {
+    this._kayitEtkin = false;
+    this._kayitZamanlayici = null;
+    const akislar = [this._player, this._dayState, this._leagueState, this._rooms, this._enemies];
+    for (const a of akislar) a.subscribe(() => this._kayitPlanla());
+    // Görev ve macera listeleri saniyede bir (geçen süre için) yenilenir; yalnız durumları değişince
+    // (başladı, bitti, ödül alındı, liste değişti) kaydedilir. Geçen süre arka plana geçerken yazılır.
+    const imza = (liste) => (liste || []).map((x) => `${x.id}:${x.isRunning ? 1 : 0}${x.isFinished ? 1 : 0}${x.isClaimed ? 1 : 0}`).join('|');
+    for (const a of [this._quests, this._adventures]) {
+      let son = imza(a.value);
+      a.subscribe((v) => {
+        const yeni = imza(v);
+        if (yeni === son) return;
+        son = yeni;
+        this._kayitPlanla();
+      });
+    }
+  }
+
+  _kayitPlanla() {
+    if (!this._kayitEtkin) return;
+    // Zamanlayıcı zaten kuruluysa yeniden kurulmaz: görev sayacı gibi saniyede bir değişen durumlar
+    // kaydı sonsuza dek ertelemesin (en geç 1,5 sn içinde yazılır).
+    if (this._kayitZamanlayici) return;
+    this._kayitZamanlayici = setTimeout(() => {
+      this._kayitZamanlayici = null;
+      this.autoSave();
+    }, 1500);
+    if (this._kayitZamanlayici && typeof this._kayitZamanlayici.unref === 'function') this._kayitZamanlayici.unref();
+  }
+
+  /** Bekleyen kaydı hemen yazar (uygulama arka plana geçerken). */
+  kaydiHemenYaz() {
+    if (!this._kayitEtkin) return Promise.resolve();
+    if (this._kayitZamanlayici) {
+      clearTimeout(this._kayitZamanlayici);
+      this._kayitZamanlayici = null;
+    }
+    this.autoSave();
+    return SaveManager.flush ? SaveManager.flush() : Promise.resolve();
   }
 
   get _chapter2ExoticPool() {
@@ -3679,6 +3728,7 @@ export class GameRepository {
   }
 
   autoSave() {
+    this._kayitEtkin = true;
     const data = new SaveGameData({
       player: this._player.value,
       dayState: this._dayState.value,
@@ -3701,6 +3751,7 @@ export class GameRepository {
     this._adventures.value = data.adventures;
     this._rooms.value = data.rooms;
     this._enemies.value = data.enemies;
+    this._kayitEtkin = true;
     return true;
   }
 
@@ -3719,6 +3770,8 @@ export class GameRepository {
     this._dayState.value = new DayState({ currentDay: 1 });
     this._levelUpEvent.value = null;
     this._invitationLetterEvent.value = false;
+    this._kayitEtkin = true;
+    this.autoSave();
   }
 
   setPlayerForTesting(player) {

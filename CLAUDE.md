@@ -48,6 +48,10 @@ sahneleri "olduğu gibi taşı". Görünen ad "Diyarın Kaderi", slug/EAS projes
   Eşleme: `src/ui/gorsel-esleme.js` (esyaGorseli+nadirlikRengi, tasGorseli+tasRengi, npcGorseli, odaGorseli, arenaGorseli...).
   Ortak eylem simgeleri: kapat/ayrıl 'kapi', satın al 'sikkeler', sat 'para-kesesi', yükselt 'yukselt', dinlen 'yatak',
   dövüş 'capraz-kilic', yola çık 'patika', ödül 'hediye', kilitli 'kilit', incele 'bilgi'/'gozlemci'.
+- Otomatik kayıt (8 Kasım, Murat "yap"): Kotlin yalnız ad/gün/ev/altın-eşya anlarında kaydediyordu. Artık GameRepository
+  `_otomatikKayitKur`: player/dayState/leagueState/rooms/enemies değişince en geç 1,5 sn içinde kaydeder (zamanlayıcı kuruluyken
+  yeniden kurulmaz); quests/adventures saniyede bir yenilendiği için yalnız durum imzası (id + başladı/bitti/alındı) değişince.
+  Oyun başlamadan (startNewGame / loadGame / ilk autoSave öncesi) yazmaz. App arka plana geçince `kaydiHemenYaz()`.
   Tarayıcı taklidi CSS ile çizdiği için bu tür Yoga yükseklik hatalarını göstermez; pencerelerde Scroll kullanırken dikkat.
 
 ## İki Sancak (arşivde: yollar artık arsiv/iki-sancak/ altında)
