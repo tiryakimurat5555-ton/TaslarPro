@@ -41,7 +41,7 @@
 //   hidden           VoiceOver'dan gizle (dekoratif öğe).
 //   modal            Dialog dışı tam ekran örtüler için: altındakiler VoiceOver'dan gizlenir.
 //   announce('metin') doğrudan duyuru.
-import React, { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import React, { useContext, useEffect, useReducer, useRef, useState, useSyncExternalStore } from 'react';
 import {
   View,
   Text,
@@ -376,7 +376,7 @@ export const Scroll = React.forwardRef(function Scroll({ children, style, conten
     <ScrollView
       ref={ref}
       horizontal={!!horizontal}
-      style={[horizontal ? null : { flex: 1 }, style]}
+      style={[horizontal ? null : { flexGrow: 1, flexShrink: 1 }, style]}
       contentContainerStyle={ic}
       keyboardShouldPersistTaps="handled"
       showsHorizontalScrollIndicator={false}
@@ -399,7 +399,7 @@ export function LazyList({ data, renderItem, keyOf, style, contentStyle, header,
       ListHeaderComponent={header || null}
       ListFooterComponent={footer || null}
       ListEmptyComponent={empty || null}
-      style={[horizontal ? null : { flex: 1 }, style]}
+      style={[horizontal ? null : { flexGrow: 1, flexShrink: 1 }, style]}
       contentContainerStyle={contentStyle}
       initialNumToRender={20}
       windowSize={15}
@@ -431,33 +431,68 @@ export function Grid({ columns = 2, data, renderItem, gap = 8, style }) {
 // ---------------------------------------------------------------------------
 // Pencereler
 // ---------------------------------------------------------------------------
+// Aynı anda yalnız bir üst düzey pencere gösterilir (iOS iki Modal'ı yan yana sunamaz; ikincisi
+// görünmez kalıp VoiceOver'ı kilitliyordu). Pencere içinde açılan pencereler (iç içe) her zaman gösterilir.
+const PencereIci = React.createContext(false);
+let pencereSayac = 0;
+const pencereSirasi = [];
+const pencereDinleyicileri = new Set();
+function pencereSirasiniYay() {
+  for (const f of Array.from(pencereDinleyicileri)) f();
+}
+function useUstPencereSirasi(aktif) {
+  const kimlik = useRef(0);
+  if (!kimlik.current) kimlik.current = ++pencereSayac;
+  const [, yenile] = useReducer((x) => x + 1, 0);
+  useEffect(() => {
+    if (!aktif) return undefined;
+    const k = kimlik.current;
+    pencereSirasi.push(k);
+    pencereDinleyicileri.add(yenile);
+    pencereSirasiniYay();
+    return () => {
+      const i = pencereSirasi.indexOf(k);
+      if (i >= 0) pencereSirasi.splice(i, 1);
+      pencereDinleyicileri.delete(yenile);
+      pencereSirasiniYay();
+    };
+  }, [aktif]);
+  return aktif && pencereSirasi[0] === kimlik.current;
+}
+
 export function Dialog({ visible = true, onDismiss, children, style, full, dismissOnBackdrop = true, label }) {
+  const icIce = useContext(PencereIci);
+  const sirasiGeldi = useUstPencereSirasi(!icIce && !!visible);
+  const goster = !!visible && (icIce || sirasiGeldi);
+  if (!goster) return null;
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onDismiss} statusBarTranslucent>
-      <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.72)', justifyContent: 'center', alignItems: 'center', padding: full ? 0 : 16 }}>
-        <Pressable
-          style={StyleSheet.absoluteFill}
-          onPress={dismissOnBackdrop && onDismiss ? onDismiss : undefined}
-          accessible={false}
-          importantForAccessibility="no"
-          accessibilityElementsHidden
-        />
-        <SafeAreaView style={full ? { flex: 1, alignSelf: 'stretch' } : { maxHeight: '100%', width: '100%', maxWidth: 560 }} edges={full ? undefined : []}>
-          <View
-            accessibilityViewIsModal
-            accessibilityLabel={label}
-            onAccessibilityEscape={onDismiss}
-            style={[
-              full
-                ? { flex: 1, backgroundColor: DarkBg }
-                : { backgroundColor: DarkSurface, borderRadius: 18, borderWidth: 1, borderColor: DarkBorder, padding: 18, maxHeight: '100%' },
-              style,
-            ]}
-          >
-            {children}
-          </View>
-        </SafeAreaView>
-      </View>
+    <Modal visible transparent animationType="fade" onRequestClose={onDismiss} statusBarTranslucent>
+      <PencereIci.Provider value>
+        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.72)', justifyContent: 'center', alignItems: 'center', padding: full ? 0 : 16 }}>
+          <Pressable
+            style={StyleSheet.absoluteFill}
+            onPress={dismissOnBackdrop && onDismiss ? onDismiss : undefined}
+            accessible={false}
+            importantForAccessibility="no"
+            accessibilityElementsHidden
+          />
+          <SafeAreaView style={full ? { flex: 1, alignSelf: 'stretch' } : { maxHeight: '100%', width: '100%', maxWidth: 560 }} edges={full ? undefined : []}>
+            <View
+              accessibilityViewIsModal
+              accessibilityLabel={label}
+              onAccessibilityEscape={onDismiss}
+              style={[
+                full
+                  ? { flex: 1, backgroundColor: DarkBg }
+                  : { backgroundColor: DarkSurface, borderRadius: 18, borderWidth: 1, borderColor: DarkBorder, padding: 18, maxHeight: '100%', flexShrink: 1 },
+                style,
+              ]}
+            >
+              {children}
+            </View>
+          </SafeAreaView>
+        </View>
+      </PencereIci.Provider>
     </Modal>
   );
 }

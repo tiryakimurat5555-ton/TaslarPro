@@ -27,6 +27,8 @@ const O = process.argv[3] || '/tmp/claude-0/ekran'; fs.mkdirSync(O, { recursive:
   await tik('Ayrıl'); await tik('İsli Kandil Hanı'); await yaz('7-han');
   const zar = (await et()).find(x => /^Zar at/.test(x)); if (zar) { await tik(zar); await yaz('7b-zar'); }
   await tik('Görevler'); await tik('Sözleşmeyi Başlat'); await yaz('8-gorev');
+  await s.waitForTimeout(22000); await tik('Görevler'); await tik('Ödülleri Al'); await s.waitForTimeout(800); await yaz('8b-odul');
+  await tik('Ödülleri Çantaya Al'); await s.waitForTimeout(500); await yaz('8c-odul-kapandi');
   await tik('Ev'); await tik('İstirahat'); await s.waitForTimeout(6000); await yaz('9-gun');
   await s.reload(); await s.waitForTimeout(1500); await yaz('10-yeniden');
   await tik('Kayıtlı oyuna'); await s.waitForTimeout(800); await yaz('11-devam');

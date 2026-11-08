@@ -32,7 +32,10 @@ sahneleri "olduğu gibi taşı". Görünen ad "Diyarın Kaderi", slug/EAS projes
   Tarayıcı: `bash araclar/web-deneme/yap.sh /tmp/claude-0/web && NODE_PATH=/opt/npm-tools/node_modules node araclar/web-deneme/dene.cjs /tmp/claude-0/web /tmp/claude-0/ekran`
   (yeni oyun → hikaye → isim → 5 sekme → dövüş → demirci → han → görev → gün → kayıttan devam).
 - Paket denetimi: `bun build index.js --outdir <geçici> --target=browser -e react -e react-native -e expo -e 'expo-*' -e '@react-native-async-storage/*' -e react-native-safe-area-context -e '*.m4a' -e '*.jpg' -e '*.png'`
-- Telefonda henüz denenmedi (7 Kasım).
+- 8 Kasım, Murat: "Görev ödülünü alınca VoiceOver hiç okumuyor". Sebep (Yoga): kit Scroll/LazyList `flex: 1` (taban 0) idi;
+  yüksekliği belirsiz pencere içinde 0 yüksekliğe iniyor, pencere boş ama modal kalıyordu. Artık flexGrow 1 + flexShrink 1 (taban auto).
+  Ayrıca kit Dialog: aynı anda tek üst düzey pencere (sıra; iOS iki Modal'ı birden sunamaz), pencere içindeki pencereler her zaman açılır.
+  Tarayıcı taklidi CSS ile çizdiği için bu tür Yoga yükseklik hatalarını göstermez; pencerelerde Scroll kullanırken dikkat.
 
 ## İki Sancak (arşivde: yollar artık arsiv/iki-sancak/ altında)
 - Tasarım kararları (6 Kasım, Murat): fantastik dünya, 4 sınıf (Savaşçı, Okçu, Büyücü, Rahip), deneme için seviye sınırı 30,
