@@ -35,6 +35,11 @@ sahneleri "olduğu gibi taşı". Görünen ad "Diyarın Kaderi", slug/EAS projes
 - 8 Kasım, Murat: "Görev ödülünü alınca VoiceOver hiç okumuyor". Sebep (Yoga): kit Scroll/LazyList `flex: 1` (taban 0) idi;
   yüksekliği belirsiz pencere içinde 0 yüksekliğe iniyor, pencere boş ama modal kalıyordu. Artık flexGrow 1 + flexShrink 1 (taban auto).
   Ayrıca kit Dialog: aynı anda tek üst düzey pencere (sıra; iOS iki Modal'ı birden sunamaz), pencere içindeki pencereler her zaman açılır.
+  8 Kasım, Murat: "emojileri kaldır". Tüm src/ ve test/ metinlerinden emojiler betikle silindi (Extended_Pictographic +
+  yanındaki tek boşluk; sayı/`}` ardındaki 🪙 → "Altın"; birim olarak kullanılan 🪙/👑 elle "Altın"/"Şöhret" yapıldı). İkon alanları
+  (icon, avatarIcon) artık boş dize; `${x.icon} ` kalıpları silindi; kit Ikon hiçbir şey çizmez. Silahsız gösteride kritik atış
+  artık '⚡' ile değil anlatım parçasıyla tanınır (GameViewModel KRITIK_ATIS_IPUCLARI). Kilitli arena sekmeleri "(Kilitli)" der.
+  Yeni metin yazarken emoji KULLANMA.
   Tarayıcı taklidi CSS ile çizdiği için bu tür Yoga yükseklik hatalarını göstermez; pencerelerde Scroll kullanırken dikkat.
 
 ## İki Sancak (arşivde: yollar artık arsiv/iki-sancak/ altında)

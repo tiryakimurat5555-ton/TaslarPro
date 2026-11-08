@@ -27,7 +27,7 @@ test('testBardSongsPoolHasExpandedQuatrainsAndEpicBallads', () => {
   // 3. Her sekizliğin en az 8 dizesi olmalı
   epicBallads.forEach((ballad, index) => {
     const lines = kt
-      .lines(ballad.split('🎶').join('').split('"').join(''))
+      .lines(ballad.split('').join('').split('"').join(''))
       .filter((it) => it.trim().length > 0);
     // Destan ${index} en az 8 dize içermeli
     expect(lines.length >= 8).toBe(true);

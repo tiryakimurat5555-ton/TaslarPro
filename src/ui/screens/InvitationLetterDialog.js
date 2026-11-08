@@ -31,14 +31,14 @@ export function InvitationLetterDialog({ onDismiss }) {
           label="Fermanı koynuna yerleştir ve kabul et"
         >
           <T weight="bold" size={13} color={DarkBg} align="center">
-            📜 Fermanı Kabul Et ve Maceraya Devam Et
+            Fermanı Kabul Et ve Maceraya Devam Et
           </T>
         </Btn>
       }
       title={
         <Column align="center" style={{ alignSelf: 'stretch' }} label={letterTalkBackDescription} heading>
           <T style={Typography.titleMedium} weight="black" color={AmberGold} letterSpacing={1.5}>
-            📜 RESMİ GEÇİŞ FERMANI
+            RESMİ GEÇİŞ FERMANI
           </T>
           <Spacer h={2} />
           <T size={12} color={TextMuted} italic>
@@ -59,7 +59,7 @@ export function InvitationLetterDialog({ onDismiss }) {
               </T>
               <Divider color={alpha(AmberGoldDark, 0.5)} thickness={1} />
               <T size={12} color={AmberGoldLight} weight="medium">
-                💡 İpucu: Artık Bölge ekranındaki '🗺️ Diyar Haritası' sekmesinden Taş Hisar Garnizonu'nu ve mekanlarını dinleyip inceleyebilirsin.
+                İpucu: Artık Bölge ekranındaki 'Diyar Haritası' sekmesinden Taş Hisar Garnizonu'nu ve mekanlarını dinleyip inceleyebilirsin.
               </T>
             </Column>
           </Surface>

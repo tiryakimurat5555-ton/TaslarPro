@@ -166,15 +166,15 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
 
         const playerSkills = kt.mapNotNull(player.equippedSkillIds.slice(0, 4), (id) => {
             switch (id) {
-                case 'skill_crushing_impact': return gs('p_crush', 'Ezici Balyoz', '💥', SkillType.ATTACK, 1, 3, 'Ezici vuruş', '+%35 Hasar & Sersemletme')
-                case 'skill_iron_will': return gs('p_iron', 'Çelik İrade', '🛡️', SkillType.DEFENSE, 1, 4, 'Sarsılmaz direnç', '+6 Zırh & Hasar Kırma')
-                case 'skill_counter_flurry': return gs('p_counter', 'Akrobatik Karşı Hamle', '⚡', SkillType.TACTICAL, 1, 3, 'Karşı hamle', '+%40 Karşı Hamle')
-                case 'skill_east_dragon': return gs('p_dragon', 'Ejder Nefesi Hamlesi', '🐉', SkillType.ATTACK, 1, 3, 'Gard kırma', '+%40 Hasar & Gard Kırma')
-                case 'skill_east_crane': return gs('p_crane', 'Turna Zarafeti', '🕊️', SkillType.TACTICAL, 1, 3, 'Çevik süzülüş', '+%20 Kaçınma')
-                case 'skill_east_mountain': return gs('p_mount', 'Kadim Dağ Duruşu', '🏔️', SkillType.DEFENSE, 1, 4, 'Dağ gibi direnç', '+8 Geçici Zırh')
-                case 'skill_east_storm': return gs('p_storm', 'Fırtına Kesisi', '🌪️', SkillType.ATTACK, 1, 2, 'Seri kılıç darbeleri', '+%30 Hasar')
-                case 'skill_east_night': return gs('p_night', 'Gölge Adımı', '🌑', SkillType.TACTICAL, 1, 4, 'Gölgeye sızma', '+%50 Kritik & Sersemletme')
-                case 'skill_east_tiger': return gs('p_tiger', 'Kaplan Pençesi', '🐅', SkillType.ATTACK, 1, 3, 'Vahşi pençe', '+%35 Hasar & Kanama')
+                case 'skill_crushing_impact': return gs('p_crush', 'Ezici Balyoz', '', SkillType.ATTACK, 1, 3, 'Ezici vuruş', '+%35 Hasar & Sersemletme')
+                case 'skill_iron_will': return gs('p_iron', 'Çelik İrade', '', SkillType.DEFENSE, 1, 4, 'Sarsılmaz direnç', '+6 Zırh & Hasar Kırma')
+                case 'skill_counter_flurry': return gs('p_counter', 'Akrobatik Karşı Hamle', '', SkillType.TACTICAL, 1, 3, 'Karşı hamle', '+%40 Karşı Hamle')
+                case 'skill_east_dragon': return gs('p_dragon', 'Ejder Nefesi Hamlesi', '', SkillType.ATTACK, 1, 3, 'Gard kırma', '+%40 Hasar & Gard Kırma')
+                case 'skill_east_crane': return gs('p_crane', 'Turna Zarafeti', '', SkillType.TACTICAL, 1, 3, 'Çevik süzülüş', '+%20 Kaçınma')
+                case 'skill_east_mountain': return gs('p_mount', 'Kadim Dağ Duruşu', '', SkillType.DEFENSE, 1, 4, 'Dağ gibi direnç', '+8 Geçici Zırh')
+                case 'skill_east_storm': return gs('p_storm', 'Fırtına Kesisi', '', SkillType.ATTACK, 1, 2, 'Seri kılıç darbeleri', '+%30 Hasar')
+                case 'skill_east_night': return gs('p_night', 'Gölge Adımı', '', SkillType.TACTICAL, 1, 4, 'Gölgeye sızma', '+%50 Kritik & Sersemletme')
+                case 'skill_east_tiger': return gs('p_tiger', 'Kaplan Pençesi', '', SkillType.ATTACK, 1, 3, 'Vahşi pençe', '+%35 Hasar & Kanama')
                 default: return null
             }
         })
@@ -314,7 +314,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                     logs.push(
                         new CombatLog({
                             round: round,
-                            narrativeText: `🩸 [KANAMA!] ${f.name} önceki yaralarının kanamasıyla kan kaybetti (-${bleedDmg} Can, Kalan: ${f.currentHp}/${f.maxHp})!`,
+                            narrativeText: `[KANAMA!] ${f.name} önceki yaralarının kanamasıyla kan kaybetti (-${bleedDmg} Can, Kalan: ${f.currentHp}/${f.maxHp})!`,
                             attackerName: 'Kanama',
                             defenderName: f.name,
                             event: CombatEvent.HIT,
@@ -333,7 +333,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                     logs.push(
                         new CombatLog({
                             round: round,
-                            narrativeText: `🌿 [YAŞAM YENİLENMESİ] ${f.name}'in mühürleri yaralarını onardı (+${regen} Can)!`,
+                            narrativeText: `[YAŞAM YENİLENMESİ] ${f.name}'in mühürleri yaralarını onardı (+${regen} Can)!`,
                             attackerName: f.name,
                             defenderName: f.name,
                             event: CombatEvent.HIT,
@@ -419,7 +419,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                     logs.push(
                         new CombatLog({
                             round: round,
-                            narrativeText: `💫 [SERSEMLEDİ!] ${attacker.name} başını toparlayamadı ve bu tur hamle yapamadı!`,
+                            narrativeText: `[SERSEMLEDİ!] ${attacker.name} başını toparlayamadı ve bu tur hamle yapamadı!`,
                             attackerName: attacker.name,
                             defenderName: attacker.name,
                             event: CombatEvent.BLOCKED,
@@ -601,7 +601,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                     logs.push(
                         new CombatLog({
                             round: round,
-                            narrativeText: `💨 [ÇEVİK SIYRILIŞ!] ${target.name}, ${attacker.name}'in savurduğu ${attacker.weaponName} darbesinden akrobatik bir hamleyle sıyrıldı!`,
+                            narrativeText: `[ÇEVİK SIYRILIŞ!] ${target.name}, ${attacker.name}'in savurduğu ${attacker.weaponName} darbesinden akrobatik bir hamleyle sıyrıldı!`,
                             attackerName: attacker.name,
                             defenderName: target.name,
                             event: CombatEvent.DODGED,
@@ -630,22 +630,22 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
 
                 const hitNarrative = isBlocked
                     ? kt.random([
-                        `🧱 [BLOK!] ${target.name}, ${attacker.name}'in darbesini kalkanıyla karşıladı! Zırh çınladı ancak hasar hafifletildi (${damageDealt} Hasar, Kalan: ${target.currentHp}/${target.maxHp}).`,
-                        `🧱 [AĞIR SİPER BLOKAJI!] ${target.name} dengesini bozmadan kalkanını öne sürdü; ${attacker.weaponName} kalkanın perçinlerine çarpıp sekti (${damageDealt} Hasar, Kalan: ${target.currentHp}/${target.maxHp}).`,
-                        `🧱 [GARD SAVUNMASI!] ${attacker.name}'in savuruşu ${target.name}'ın sağlam gardında sönümlendi, kumlar ayaklarının altında dağıldı (${damageDealt} Hasar, Kalan: ${target.currentHp}/${target.maxHp}).`
+                        `[BLOK!] ${target.name}, ${attacker.name}'in darbesini kalkanıyla karşıladı! Zırh çınladı ancak hasar hafifletildi (${damageDealt} Hasar, Kalan: ${target.currentHp}/${target.maxHp}).`,
+                        `[AĞIR SİPER BLOKAJI!] ${target.name} dengesini bozmadan kalkanını öne sürdü; ${attacker.weaponName} kalkanın perçinlerine çarpıp sekti (${damageDealt} Hasar, Kalan: ${target.currentHp}/${target.maxHp}).`,
+                        `[GARD SAVUNMASI!] ${attacker.name}'in savuruşu ${target.name}'ın sağlam gardında sönümlendi, kumlar ayaklarının altında dağıldı (${damageDealt} Hasar, Kalan: ${target.currentHp}/${target.maxHp}).`
                     ])
 
                     : isCrit
                     ? kt.random([
-                        `💥 [KRİTİK DARBE!] ${attacker.name}'in ${attacker.weaponName} vuruşu ${target.name}'ın en zayıf noktasına indi! Kemik çatırtısı tribünlerden duyuldu (${damageDealt} Hasar, Kalan: ${target.currentHp}/${target.maxHp})!`,
-                        `💥 [ZIRH DELEN KRİTİK!] ${attacker.name} kusursuz bir kavisle ${target.name}'ın zırh eklemini yardı; fışkıran kan kumlara saçıldı (${damageDealt} Hasar, Kalan: ${target.currentHp}/${target.maxHp})!`,
-                        `💥 [YIKICI İSABET!] ${target.name}'ın dengesini yitirdiği o anda inen ${attacker.weaponName} darbesi tüm arenayı inletti (${damageDealt} Hasar, Kalan: ${target.currentHp}/${target.maxHp})!`
+                        `[KRİTİK DARBE!] ${attacker.name}'in ${attacker.weaponName} vuruşu ${target.name}'ın en zayıf noktasına indi! Kemik çatırtısı tribünlerden duyuldu (${damageDealt} Hasar, Kalan: ${target.currentHp}/${target.maxHp})!`,
+                        `[ZIRH DELEN KRİTİK!] ${attacker.name} kusursuz bir kavisle ${target.name}'ın zırh eklemini yardı; fışkıran kan kumlara saçıldı (${damageDealt} Hasar, Kalan: ${target.currentHp}/${target.maxHp})!`,
+                        `[YIKICI İSABET!] ${target.name}'ın dengesini yitirdiği o anda inen ${attacker.weaponName} darbesi tüm arenayı inletti (${damageDealt} Hasar, Kalan: ${target.currentHp}/${target.maxHp})!`
                     ])
 
                     : kt.random([
-                        `⚔️ [İSABETLİ VURUŞ] ${attacker.name}, ${target.name}'a ${attacker.weaponName} ile sert bir kesi attı (${damageDealt} Hasar, Kalan: ${target.currentHp}/${target.maxHp}).`,
-                        `⚔️ [HÜCUM TEMASI] ${attacker.name} kumun akışını adımlarına uydurarak ${target.name}'ın böğrüne keskin bir darbe indirdi (${damageDealt} Hasar, Kalan: ${target.currentHp}/${target.maxHp}).`,
-                        `⚔️ [ÇELİK ÇARPIŞMASI] ${attacker.name}'in ${attacker.weaponName} hamlesi ${target.name}'ın zırhını sıyırıp derin bir bere bıraktı (${damageDealt} Hasar, Kalan: ${target.currentHp}/${target.maxHp}).`
+                        `[İSABETLİ VURUŞ] ${attacker.name}, ${target.name}'a ${attacker.weaponName} ile sert bir kesi attı (${damageDealt} Hasar, Kalan: ${target.currentHp}/${target.maxHp}).`,
+                        `[HÜCUM TEMASI] ${attacker.name} kumun akışını adımlarına uydurarak ${target.name}'ın böğrüne keskin bir darbe indirdi (${damageDealt} Hasar, Kalan: ${target.currentHp}/${target.maxHp}).`,
+                        `[ÇELİK ÇARPIŞMASI] ${attacker.name}'in ${attacker.weaponName} hamlesi ${target.name}'ın zırhını sıyırıp derin bir bere bıraktı (${damageDealt} Hasar, Kalan: ${target.currentHp}/${target.maxHp}).`
                     ])
 
                 logs.push(

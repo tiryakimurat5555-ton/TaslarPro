@@ -814,10 +814,10 @@ function createInitialEnemies() {
                 latestDiary: 'Tuz çölünden getirdiği koku keselerini koklayıp arenanın rüzgarını dinledi.'
             }),
             skills: [
-                new GladiatorSkill({id: 'skill_khorvash_1', name: 'Tuz İğnesi Saplaması', icon: '🪡', type: SkillType.ATTACK, tier: 1, cooldownTurns: 2, description: 'Kör iğneli kancayı hasmın boğazına doğru savurur.', combatEffect: '+%25 Hasar ve derin kesik'}),
-                new GladiatorSkill({id: 'skill_khorvash_2', name: 'Tuz Çölü Sezgisi', icon: '👂', type: SkillType.DEFENSE, tier: 1, cooldownTurns: 3, description: 'Gözleri görmese de kumdaki titreşimleri dinleyerek darbenin altından kayar.', combatEffect: '%35 Kaçınma ve +2 Hız'}),
-                new GladiatorSkill({id: 'skill_khorvash_3', name: 'Kör Eden Tuz Dumanı', icon: '🧂', type: SkillType.TACTICAL, tier: 1, cooldownTurns: 3, description: 'Avucundaki yakıcı çöl tuzunu rakibin gözüne savurur.', combatEffect: 'Rakip 1 tur ıskalar'}),
-                new GladiatorSkill({id: 'skill_khorvash_4', name: 'Tuz Çölü Kıskacı', icon: '☠️', type: SkillType.ULTIMATE, tier: 1, cooldownTurns: 4, description: 'Oltayı rakibin boynuna dolayarak kumlara çalar ve acımasızca çeker.', combatEffect: '+%60 Hasar ve Kanama'})
+                new GladiatorSkill({id: 'skill_khorvash_1', name: 'Tuz İğnesi Saplaması', icon: '', type: SkillType.ATTACK, tier: 1, cooldownTurns: 2, description: 'Kör iğneli kancayı hasmın boğazına doğru savurur.', combatEffect: '+%25 Hasar ve derin kesik'}),
+                new GladiatorSkill({id: 'skill_khorvash_2', name: 'Tuz Çölü Sezgisi', icon: '', type: SkillType.DEFENSE, tier: 1, cooldownTurns: 3, description: 'Gözleri görmese de kumdaki titreşimleri dinleyerek darbenin altından kayar.', combatEffect: '%35 Kaçınma ve +2 Hız'}),
+                new GladiatorSkill({id: 'skill_khorvash_3', name: 'Kör Eden Tuz Dumanı', icon: '', type: SkillType.TACTICAL, tier: 1, cooldownTurns: 3, description: 'Avucundaki yakıcı çöl tuzunu rakibin gözüne savurur.', combatEffect: 'Rakip 1 tur ıskalar'}),
+                new GladiatorSkill({id: 'skill_khorvash_4', name: 'Tuz Çölü Kıskacı', icon: '', type: SkillType.ULTIMATE, tier: 1, cooldownTurns: 4, description: 'Oltayı rakibin boynuna dolayarak kumlara çalar ve acımasızca çeker.', combatEffect: '+%60 Hasar ve Kanama'})
             ]
         }),
         new Enemy({
@@ -850,10 +850,10 @@ function createInitialEnemies() {
                 latestDiary: 'Boynuz hançerinin ucunu kumtaşına sürterek kanatıcı dişler açtı.'
             }),
             skills: [
-                new GladiatorSkill({id: 'skill_zalmora_1', name: 'Kül Dağlayan Boynuz', icon: '🪓', type: SkillType.ATTACK, tier: 1, cooldownTurns: 2, description: 'Bilenmiş boynuz hançeriyle rakibin böğrüne vahşi bir darbe indirir.', combatEffect: '+%30 Hasar ve kanama'}),
-                new GladiatorSkill({id: 'skill_zalmora_2', name: 'Acı Tanımaz Dirayet', icon: '🩸', type: SkillType.DEFENSE, tier: 1, cooldownTurns: 3, description: 'Acıyı gülerek karşılar, kaslarını sıkıp darbenin etkisini kırar.', combatEffect: '%45 Hasar Azaltma'}),
-                new GladiatorSkill({id: 'skill_zalmora_3', name: 'Köz Tükürüşü', icon: '🔥', type: SkillType.TACTICAL, tier: 1, cooldownTurns: 3, description: 'Ağzında gevelediği kor külleri hasmın yüzüne püskürtür.', combatEffect: 'Rakibin Zırhı -%25'}),
-                new GladiatorSkill({id: 'skill_zalmora_4', name: 'Kudurmuş Köle Gazabı', icon: '💥', type: SkillType.ULTIMATE, tier: 1, cooldownTurns: 4, description: 'Vahşi bir böğürtüyle öne atılıp boynuz hançeriyle rakibi art arda deşer.', combatEffect: '+%70 Hasar ve Zırh Delme'})
+                new GladiatorSkill({id: 'skill_zalmora_1', name: 'Kül Dağlayan Boynuz', icon: '', type: SkillType.ATTACK, tier: 1, cooldownTurns: 2, description: 'Bilenmiş boynuz hançeriyle rakibin böğrüne vahşi bir darbe indirir.', combatEffect: '+%30 Hasar ve kanama'}),
+                new GladiatorSkill({id: 'skill_zalmora_2', name: 'Acı Tanımaz Dirayet', icon: '', type: SkillType.DEFENSE, tier: 1, cooldownTurns: 3, description: 'Acıyı gülerek karşılar, kaslarını sıkıp darbenin etkisini kırar.', combatEffect: '%45 Hasar Azaltma'}),
+                new GladiatorSkill({id: 'skill_zalmora_3', name: 'Köz Tükürüşü', icon: '', type: SkillType.TACTICAL, tier: 1, cooldownTurns: 3, description: 'Ağzında gevelediği kor külleri hasmın yüzüne püskürtür.', combatEffect: 'Rakibin Zırhı -%25'}),
+                new GladiatorSkill({id: 'skill_zalmora_4', name: 'Kudurmuş Köle Gazabı', icon: '', type: SkillType.ULTIMATE, tier: 1, cooldownTurns: 4, description: 'Vahşi bir böğürtüyle öne atılıp boynuz hançeriyle rakibi art arda deşer.', combatEffect: '+%70 Hasar ve Zırh Delme'})
             ]
         }),
         new Enemy({
@@ -875,10 +875,10 @@ function createInitialEnemies() {
                 latestDiary: 'Dün gece handa barbut oynayıp kazandığıyla fıçı dibini gördü; sabah arenaya esneyerek geldi.'
             }),
             skills: [
-                new GladiatorSkill({id: 'skill_xylar_1', name: 'Çivili Kütük İndirişi', icon: '🔨', type: SkillType.ATTACK, tier: 1, cooldownTurns: 2, description: 'Ağır çivili tokmağı havaya kaldırıp rakibin omzuna indirir.', combatEffect: '+%30 Hasar ve sarsıntı'}),
-                new GladiatorSkill({id: 'skill_xylar_2', name: 'Demir Çene Tebessümü', icon: '😁', type: SkillType.DEFENSE, tier: 1, cooldownTurns: 3, description: 'Demir perçinli dişlerini göstererek darbeyi göğüsler.', combatEffect: '%50 Hasar Azaltma ve +5 Zırh'}),
-                new GladiatorSkill({id: 'skill_xylar_3', name: 'Perçinli Kafa Darbesi', icon: '💥', type: SkillType.TACTICAL, tier: 1, cooldownTurns: 3, description: 'Yakın mesafeden demir perçinli alnını rakibin burnuna çakar.', combatEffect: 'Rakibi Sersemletir'}),
-                new GladiatorSkill({id: 'skill_xylar_4', name: 'Kemik Kıran Tokmak Ezmesi', icon: '⚡', type: SkillType.ULTIMATE, tier: 1, cooldownTurns: 4, description: 'Tüm vücut ağırlığıyla tokmağı göğüs kafesine geçirip kumlara serer.', combatEffect: '+%65 Hasar ve Zırh Kırma'})
+                new GladiatorSkill({id: 'skill_xylar_1', name: 'Çivili Kütük İndirişi', icon: '', type: SkillType.ATTACK, tier: 1, cooldownTurns: 2, description: 'Ağır çivili tokmağı havaya kaldırıp rakibin omzuna indirir.', combatEffect: '+%30 Hasar ve sarsıntı'}),
+                new GladiatorSkill({id: 'skill_xylar_2', name: 'Demir Çene Tebessümü', icon: '', type: SkillType.DEFENSE, tier: 1, cooldownTurns: 3, description: 'Demir perçinli dişlerini göstererek darbeyi göğüsler.', combatEffect: '%50 Hasar Azaltma ve +5 Zırh'}),
+                new GladiatorSkill({id: 'skill_xylar_3', name: 'Perçinli Kafa Darbesi', icon: '', type: SkillType.TACTICAL, tier: 1, cooldownTurns: 3, description: 'Yakın mesafeden demir perçinli alnını rakibin burnuna çakar.', combatEffect: 'Rakibi Sersemletir'}),
+                new GladiatorSkill({id: 'skill_xylar_4', name: 'Kemik Kıran Tokmak Ezmesi', icon: '', type: SkillType.ULTIMATE, tier: 1, cooldownTurns: 4, description: 'Tüm vücut ağırlığıyla tokmağı göğüs kafesine geçirip kumlara serer.', combatEffect: '+%65 Hasar ve Zırh Kırma'})
             ]
         }),
         new Enemy({
@@ -900,10 +900,10 @@ function createInitialEnemies() {
                 latestDiary: 'Arenadaki kura maçlarına gizlice bahis yatırıp 20 altın vurdu.'
             }),
             skills: [
-                new GladiatorSkill({id: 'skill_vaelen_1', name: 'Gölge Kancası Çentmesi', icon: '🪝', type: SkillType.ATTACK, tier: 1, cooldownTurns: 2, description: 'Kavisli kancasını rakibin zırh bağlantılarına takıp etini deşer.', combatEffect: '+%25 Hasar ve kanama'}),
-                new GladiatorSkill({id: 'skill_vaelen_2', name: 'Akbaba Kanadı Sıyrılışı', icon: '💨', type: SkillType.DEFENSE, tier: 1, cooldownTurns: 3, description: 'Pelerinin arkasına gizlenerek rakibin hamlesini boşa düşürür.', combatEffect: '%40 Kaçınma'}),
-                new GladiatorSkill({id: 'skill_vaelen_3', name: 'Kiriş Kesen Çelme', icon: '🎯', type: SkillType.TACTICAL, tier: 1, cooldownTurns: 3, description: 'Kancayı rakibin diz kapağı arkasına takıp yere kapaklatır.', combatEffect: 'Rakibin Hızı -4 ve Gard Kırma'}),
-                new GladiatorSkill({id: 'skill_vaelen_4', name: 'Akbaba Pençesi İnfazı', icon: '☠️', type: SkillType.ULTIMATE, tier: 1, cooldownTurns: 4, description: 'Soğukkanlılıkla rakibin açık verdiği ana odaklanıp şah damarına kanca saplar.', combatEffect: '+%80 Kritik Hasar'})
+                new GladiatorSkill({id: 'skill_vaelen_1', name: 'Gölge Kancası Çentmesi', icon: '', type: SkillType.ATTACK, tier: 1, cooldownTurns: 2, description: 'Kavisli kancasını rakibin zırh bağlantılarına takıp etini deşer.', combatEffect: '+%25 Hasar ve kanama'}),
+                new GladiatorSkill({id: 'skill_vaelen_2', name: 'Akbaba Kanadı Sıyrılışı', icon: '', type: SkillType.DEFENSE, tier: 1, cooldownTurns: 3, description: 'Pelerinin arkasına gizlenerek rakibin hamlesini boşa düşürür.', combatEffect: '%40 Kaçınma'}),
+                new GladiatorSkill({id: 'skill_vaelen_3', name: 'Kiriş Kesen Çelme', icon: '', type: SkillType.TACTICAL, tier: 1, cooldownTurns: 3, description: 'Kancayı rakibin diz kapağı arkasına takıp yere kapaklatır.', combatEffect: 'Rakibin Hızı -4 ve Gard Kırma'}),
+                new GladiatorSkill({id: 'skill_vaelen_4', name: 'Akbaba Pençesi İnfazı', icon: '', type: SkillType.ULTIMATE, tier: 1, cooldownTurns: 4, description: 'Soğukkanlılıkla rakibin açık verdiği ana odaklanıp şah damarına kanca saplar.', combatEffect: '+%80 Kritik Hasar'})
             ]
         }),
         new Enemy({
@@ -936,10 +936,10 @@ function createInitialEnemies() {
                 latestDiary: 'Üç ağızlı kargısının sapını balmumuyla parlattı ve şampiyonluk unvanını koruma yemini etti.'
             }),
             skills: [
-                new GladiatorSkill({id: 'skill_morvath_1', name: 'Çatal Kargı Dürtüşü', icon: '🔱', type: SkillType.ATTACK, tier: 1, cooldownTurns: 2, description: 'Üç dilli kargıyı iki elle öne sürerek zırhı yarar.', combatEffect: '+%35 Hasar ve Zırh Delme'}),
-                new GladiatorSkill({id: 'skill_morvath_2', name: 'Süvari Nizamı Siperi', icon: '🛡️', type: SkillType.DEFENSE, tier: 1, cooldownTurns: 3, description: 'Kargıyı yatay tutarak gelen saldırıyı kusursuzca yana saptırır.', combatEffect: '%55 Blok ve Karşı Duruş'}),
-                new GladiatorSkill({id: 'skill_morvath_3', name: 'Isırgan Otu Tuzağı', icon: '🕸️', type: SkillType.TACTICAL, tier: 1, cooldownTurns: 3, description: 'Kargının çatalı arasına rakibin silahını kıstırıp burkarak dengesini bozar.', combatEffect: 'Rakibin Saldırısı -%30 ve Sersemletme'}),
-                new GladiatorSkill({id: 'skill_morvath_4', name: 'Kırlangıç Şampiyonu Hükmü', icon: '👑', type: SkillType.ULTIMATE, tier: 1, cooldownTurns: 4, description: 'On dört haftalık namağlup şampiyonluk kudretiyle kargıyı göğse mıhlar.', combatEffect: '+%85 Hasar ve Ağır Kanama'})
+                new GladiatorSkill({id: 'skill_morvath_1', name: 'Çatal Kargı Dürtüşü', icon: '', type: SkillType.ATTACK, tier: 1, cooldownTurns: 2, description: 'Üç dilli kargıyı iki elle öne sürerek zırhı yarar.', combatEffect: '+%35 Hasar ve Zırh Delme'}),
+                new GladiatorSkill({id: 'skill_morvath_2', name: 'Süvari Nizamı Siperi', icon: '', type: SkillType.DEFENSE, tier: 1, cooldownTurns: 3, description: 'Kargıyı yatay tutarak gelen saldırıyı kusursuzca yana saptırır.', combatEffect: '%55 Blok ve Karşı Duruş'}),
+                new GladiatorSkill({id: 'skill_morvath_3', name: 'Isırgan Otu Tuzağı', icon: '', type: SkillType.TACTICAL, tier: 1, cooldownTurns: 3, description: 'Kargının çatalı arasına rakibin silahını kıstırıp burkarak dengesini bozar.', combatEffect: 'Rakibin Saldırısı -%30 ve Sersemletme'}),
+                new GladiatorSkill({id: 'skill_morvath_4', name: 'Kırlangıç Şampiyonu Hükmü', icon: '', type: SkillType.ULTIMATE, tier: 1, cooldownTurns: 4, description: 'On dört haftalık namağlup şampiyonluk kudretiyle kargıyı göğse mıhlar.', combatEffect: '+%85 Hasar ve Ağır Kanama'})
             ]
         }),
         new Enemy({
@@ -961,10 +961,10 @@ function createInitialEnemies() {
                 latestDiary: 'Kasap palasını domuz yağıyla ovup kurbanının eklemlerini hedefleme talimi yaptı.'
             }),
             skills: [
-                new GladiatorSkill({id: 'skill_bregash_1', name: 'Ters Kasap Kesişi', icon: '🗡️', type: SkillType.ATTACK, tier: 1, cooldownTurns: 2, description: 'Palasını aşağıdan yukarıya ters savurarak kaburgaları biçer.', combatEffect: '+%30 Hasar ve kanama'}),
-                new GladiatorSkill({id: 'skill_bregash_2', name: 'Meşin Önlük Siperi', icon: '🛡️', type: SkillType.DEFENSE, tier: 1, cooldownTurns: 3, description: 'Kurumuş kanla sertleşmiş kalın kasap önlüğünü siper yapar.', combatEffect: '%40 Hasar Azaltma'}),
-                new GladiatorSkill({id: 'skill_bregash_3', name: 'Kiriş Biçen Hamle', icon: '🦵', type: SkillType.TACTICAL, tier: 1, cooldownTurns: 3, description: 'Ters pala ucuyla rakibin aşil tendonunu hedef alır.', combatEffect: 'Rakibin Kaçınması Sıfırlanır ve Hız -5'}),
-                new GladiatorSkill({id: 'skill_bregash_4', name: 'Mezbaha Kıyımı', icon: '🩸', type: SkillType.ULTIMATE, tier: 1, cooldownTurns: 4, description: 'Gözü dönmüş bir vahşetle palayı art arda savurarak rakibi karkas gibi doğrar.', combatEffect: '+%75 Hasar ve İnfaz'})
+                new GladiatorSkill({id: 'skill_bregash_1', name: 'Ters Kasap Kesişi', icon: '', type: SkillType.ATTACK, tier: 1, cooldownTurns: 2, description: 'Palasını aşağıdan yukarıya ters savurarak kaburgaları biçer.', combatEffect: '+%30 Hasar ve kanama'}),
+                new GladiatorSkill({id: 'skill_bregash_2', name: 'Meşin Önlük Siperi', icon: '', type: SkillType.DEFENSE, tier: 1, cooldownTurns: 3, description: 'Kurumuş kanla sertleşmiş kalın kasap önlüğünü siper yapar.', combatEffect: '%40 Hasar Azaltma'}),
+                new GladiatorSkill({id: 'skill_bregash_3', name: 'Kiriş Biçen Hamle', icon: '', type: SkillType.TACTICAL, tier: 1, cooldownTurns: 3, description: 'Ters pala ucuyla rakibin aşil tendonunu hedef alır.', combatEffect: 'Rakibin Kaçınması Sıfırlanır ve Hız -5'}),
+                new GladiatorSkill({id: 'skill_bregash_4', name: 'Mezbaha Kıyımı', icon: '', type: SkillType.ULTIMATE, tier: 1, cooldownTurns: 4, description: 'Gözü dönmüş bir vahşetle palayı art arda savurarak rakibi karkas gibi doğrar.', combatEffect: '+%75 Hasar ve İnfaz'})
             ]
         }),
         new Enemy({
@@ -986,10 +986,10 @@ function createInitialEnemies() {
                 latestDiary: 'Mekanik kundak yayının dişlilerini demircide yağlatıp çelik gerginliğini artırdı.'
             }),
             skills: [
-                new GladiatorSkill({id: 'skill_kaelen_1', name: 'Çelik Temren Cıvası', icon: '🏹', type: SkillType.ATTACK, tier: 1, cooldownTurns: 2, description: 'Kör gözlerine rağmen kulağıyla hedef alıp ağır oku fırlatır.', combatEffect: '+%35 Hasar ve Zırh Delme'}),
-                new GladiatorSkill({id: 'skill_kaelen_2', name: 'Yankı Refleksi', icon: '💨', type: SkillType.DEFENSE, tier: 1, cooldownTurns: 3, description: 'Havayı yaran kılıç ıslığını duyduğu anda yana takla atar.', combatEffect: '%45 Kaçınma'}),
-                new GladiatorSkill({id: 'skill_kaelen_3', name: 'Kundak Dumanı Bombası', icon: '💨', type: SkillType.TACTICAL, tier: 1, cooldownTurns: 3, description: 'Ayağının dibine duman kapsülü kırarak rakibin görüşünü tamamen kapatır.', combatEffect: 'Rakip 1 tur ıska geçer'}),
-                new GladiatorSkill({id: 'skill_kaelen_4', name: 'Kör Nokta Salvosu', icon: '🎯', type: SkillType.ULTIMATE, tier: 1, cooldownTurns: 4, description: 'Mekanik mandalı çekerek üç çelik oku peş peşe hedefin göğsüne boşaltır.', combatEffect: '+%80 Hasar ve Çoklu İsabet'})
+                new GladiatorSkill({id: 'skill_kaelen_1', name: 'Çelik Temren Cıvası', icon: '', type: SkillType.ATTACK, tier: 1, cooldownTurns: 2, description: 'Kör gözlerine rağmen kulağıyla hedef alıp ağır oku fırlatır.', combatEffect: '+%35 Hasar ve Zırh Delme'}),
+                new GladiatorSkill({id: 'skill_kaelen_2', name: 'Yankı Refleksi', icon: '', type: SkillType.DEFENSE, tier: 1, cooldownTurns: 3, description: 'Havayı yaran kılıç ıslığını duyduğu anda yana takla atar.', combatEffect: '%45 Kaçınma'}),
+                new GladiatorSkill({id: 'skill_kaelen_3', name: 'Kundak Dumanı Bombası', icon: '', type: SkillType.TACTICAL, tier: 1, cooldownTurns: 3, description: 'Ayağının dibine duman kapsülü kırarak rakibin görüşünü tamamen kapatır.', combatEffect: 'Rakip 1 tur ıska geçer'}),
+                new GladiatorSkill({id: 'skill_kaelen_4', name: 'Kör Nokta Salvosu', icon: '', type: SkillType.ULTIMATE, tier: 1, cooldownTurns: 4, description: 'Mekanik mandalı çekerek üç çelik oku peş peşe hedefin göğsüne boşaltır.', combatEffect: '+%80 Hasar ve Çoklu İsabet'})
             ]
         }),
         new Enemy({
@@ -1011,10 +1011,10 @@ function createInitialEnemies() {
                 latestDiary: 'Prangasının halkalarını sağlam çelikle lehimletip göğüs zırhını perçinledi.'
             }),
             skills: [
-                new GladiatorSkill({id: 'skill_ghorak_1', name: 'Zincir Kırbaçlaması', icon: '⛓️', type: SkillType.ATTACK, tier: 1, cooldownTurns: 2, description: 'Dikenli gülleyi kalkanın üzerinden kavisle rakibin arkasına çarpar.', combatEffect: '+%30 Hasar ve Kalkan Aşma'}),
-                new GladiatorSkill({id: 'skill_ghorak_2', name: 'Demir Pranga Bağı', icon: '🛡️', type: SkillType.DEFENSE, tier: 1, cooldownTurns: 3, description: 'Bileğindeki kalın halkaları kaldırıp gelen kılıcı zincirde kilitler.', combatEffect: '%60 Hasar Azaltma'}),
-                new GladiatorSkill({id: 'skill_ghorak_3', name: 'Bilek Dolanması', icon: '🎯', type: SkillType.TACTICAL, tier: 1, cooldownTurns: 3, description: 'Zinciri hasmın ayak bileklerine dolayıp kumlara kapaklatır.', combatEffect: 'Rakip Yere Serilir (-4 Hız, Açık Verir)'}),
-                new GladiatorSkill({id: 'skill_ghorak_4', name: 'Forsa İntikamı Gazabı', icon: '💥', type: SkillType.ULTIMATE, tier: 1, cooldownTurns: 4, description: '15 kiloluk gülle zincirini kükreyerek savurur ve kafatasına çarpar.', combatEffect: '+%85 Ezici Hasar ve Sersemletme'})
+                new GladiatorSkill({id: 'skill_ghorak_1', name: 'Zincir Kırbaçlaması', icon: '', type: SkillType.ATTACK, tier: 1, cooldownTurns: 2, description: 'Dikenli gülleyi kalkanın üzerinden kavisle rakibin arkasına çarpar.', combatEffect: '+%30 Hasar ve Kalkan Aşma'}),
+                new GladiatorSkill({id: 'skill_ghorak_2', name: 'Demir Pranga Bağı', icon: '', type: SkillType.DEFENSE, tier: 1, cooldownTurns: 3, description: 'Bileğindeki kalın halkaları kaldırıp gelen kılıcı zincirde kilitler.', combatEffect: '%60 Hasar Azaltma'}),
+                new GladiatorSkill({id: 'skill_ghorak_3', name: 'Bilek Dolanması', icon: '', type: SkillType.TACTICAL, tier: 1, cooldownTurns: 3, description: 'Zinciri hasmın ayak bileklerine dolayıp kumlara kapaklatır.', combatEffect: 'Rakip Yere Serilir (-4 Hız, Açık Verir)'}),
+                new GladiatorSkill({id: 'skill_ghorak_4', name: 'Forsa İntikamı Gazabı', icon: '', type: SkillType.ULTIMATE, tier: 1, cooldownTurns: 4, description: '15 kiloluk gülle zincirini kükreyerek savurur ve kafatasına çarpar.', combatEffect: '+%85 Ezici Hasar ve Sersemletme'})
             ]
         }),
         new Enemy({
@@ -1036,10 +1036,10 @@ function createInitialEnemies() {
                 latestDiary: 'Dağ klanı geleneklerine göre nacağını bileme taşına yatırıp kütük yardı.'
             }),
             skills: [
-                new GladiatorSkill({id: 'skill_thyra_1', name: 'Çift Ağızlı Balta Yırtışı', icon: '🪓', type: SkillType.ATTACK, tier: 1, cooldownTurns: 2, description: 'Nacağını iki elle kavrayıp zırh perçinlerini parçalar.', combatEffect: '+%35 Hasar ve Zırh Yarma'}),
-                new GladiatorSkill({id: 'skill_thyra_2', name: 'Kuzey Kurdu Postu', icon: '🐺', type: SkillType.DEFENSE, tier: 1, cooldownTurns: 3, description: 'Omuzlarındaki kutup kurdu postuna bürünerek darbenin şokunu emer.', combatEffect: '%45 Hasar Azaltma'}),
-                new GladiatorSkill({id: 'skill_thyra_3', name: 'Dağ Klanı Narası', icon: '📢', type: SkillType.TACTICAL, tier: 1, cooldownTurns: 3, description: 'Yırtıcı bir kurt çığlığı atarak hasmın yüreğine korku salar.', combatEffect: 'Rakibin Zırhı ve Saldırısı -%20'}),
-                new GladiatorSkill({id: 'skill_thyra_4', name: 'Kutup Çığı Yıkımı', icon: '❄️', type: SkillType.ULTIMATE, tier: 1, cooldownTurns: 4, description: 'Havaya sıçrayarak nacağını tüm gücüyle yere çakar, kumu ve kemikleri yarar.', combatEffect: '+%90 Yıkıcı Kritik Hasar'})
+                new GladiatorSkill({id: 'skill_thyra_1', name: 'Çift Ağızlı Balta Yırtışı', icon: '', type: SkillType.ATTACK, tier: 1, cooldownTurns: 2, description: 'Nacağını iki elle kavrayıp zırh perçinlerini parçalar.', combatEffect: '+%35 Hasar ve Zırh Yarma'}),
+                new GladiatorSkill({id: 'skill_thyra_2', name: 'Kuzey Kurdu Postu', icon: '', type: SkillType.DEFENSE, tier: 1, cooldownTurns: 3, description: 'Omuzlarındaki kutup kurdu postuna bürünerek darbenin şokunu emer.', combatEffect: '%45 Hasar Azaltma'}),
+                new GladiatorSkill({id: 'skill_thyra_3', name: 'Dağ Klanı Narası', icon: '', type: SkillType.TACTICAL, tier: 1, cooldownTurns: 3, description: 'Yırtıcı bir kurt çığlığı atarak hasmın yüreğine korku salar.', combatEffect: 'Rakibin Zırhı ve Saldırısı -%20'}),
+                new GladiatorSkill({id: 'skill_thyra_4', name: 'Kutup Çığı Yıkımı', icon: '', type: SkillType.ULTIMATE, tier: 1, cooldownTurns: 4, description: 'Havaya sıçrayarak nacağını tüm gücüyle yere çakar, kumu ve kemikleri yarar.', combatEffect: '+%90 Yıkıcı Kritik Hasar'})
             ]
         }),
         new Enemy({
@@ -1061,10 +1061,10 @@ function createInitialEnemies() {
                 latestDiary: 'Zıpkınının çengeline sazlık bataklığından topladığı uyuşturucu reçineyi sürdü.'
             }),
             skills: [
-                new GladiatorSkill({id: 'skill_orn_1', name: 'Zıpkın Saplaması', icon: '🔱', type: SkillType.ATTACK, tier: 1, cooldownTurns: 2, description: 'Çengelli zıpkını rakibin bacağına saplar.', combatEffect: '+%25 Hasar ve kanama'}),
-                new GladiatorSkill({id: 'skill_orn_2', name: 'Balçık Kayışı', icon: '🐍', type: SkillType.DEFENSE, tier: 1, cooldownTurns: 3, description: 'Bataklık yılanı gibi kumlarda kayarak darbeden sıyrılır.', combatEffect: '%40 Kaçınma'}),
-                new GladiatorSkill({id: 'skill_orn_3', name: 'Uyuşturan Bataklık Reçinesi', icon: '🧪', type: SkillType.TACTICAL, tier: 1, cooldownTurns: 3, description: 'Zıpkından sızan zehirle hasmın eklemlerini kilitler.', combatEffect: 'Rakibin Hızı -5 ve Gard Kırma'}),
-                new GladiatorSkill({id: 'skill_orn_4', name: 'Bataklık Çengeli Boğması', icon: '☠️', type: SkillType.ULTIMATE, tier: 1, cooldownTurns: 4, description: 'Çengeli göğse geçirip ipiyle rakibin boynunu sarar ve kumlara gömer.', combatEffect: '+%75 Hasar ve Boğma'})
+                new GladiatorSkill({id: 'skill_orn_1', name: 'Zıpkın Saplaması', icon: '', type: SkillType.ATTACK, tier: 1, cooldownTurns: 2, description: 'Çengelli zıpkını rakibin bacağına saplar.', combatEffect: '+%25 Hasar ve kanama'}),
+                new GladiatorSkill({id: 'skill_orn_2', name: 'Balçık Kayışı', icon: '', type: SkillType.DEFENSE, tier: 1, cooldownTurns: 3, description: 'Bataklık yılanı gibi kumlarda kayarak darbeden sıyrılır.', combatEffect: '%40 Kaçınma'}),
+                new GladiatorSkill({id: 'skill_orn_3', name: 'Uyuşturan Bataklık Reçinesi', icon: '', type: SkillType.TACTICAL, tier: 1, cooldownTurns: 3, description: 'Zıpkından sızan zehirle hasmın eklemlerini kilitler.', combatEffect: 'Rakibin Hızı -5 ve Gard Kırma'}),
+                new GladiatorSkill({id: 'skill_orn_4', name: 'Bataklık Çengeli Boğması', icon: '', type: SkillType.ULTIMATE, tier: 1, cooldownTurns: 4, description: 'Çengeli göğse geçirip ipiyle rakibin boynunu sarar ve kumlara gömer.', combatEffect: '+%75 Hasar ve Boğma'})
             ]
         }),
         new Enemy({
@@ -1086,10 +1086,10 @@ function createInitialEnemies() {
                 latestDiary: 'Çift kamasının kınını akrep yağıyla ovup sıyrılma adımlarını prova etti.'
             }),
             skills: [
-                new GladiatorSkill({id: 'skill_sarkoth_1', name: 'Çift Kama Kıskacı', icon: '🗡️', type: SkillType.ATTACK, tier: 1, cooldownTurns: 2, description: 'İki kemik kamasını rakibin böğrüne aynı anda saplar.', combatEffect: '+%30 Hasar ve Çifte Delme'}),
-                new GladiatorSkill({id: 'skill_sarkoth_2', name: 'Kum Altı Pususu', icon: '🦂', type: SkillType.DEFENSE, tier: 1, cooldownTurns: 3, description: 'Kum fırtınası kaldırarak gözden kaybolur.', combatEffect: '%50 Kaçınma'}),
-                new GladiatorSkill({id: 'skill_sarkoth_3', name: 'Akrep Zehri Salgısı', icon: '🧪', type: SkillType.TACTICAL, tier: 1, cooldownTurns: 3, description: 'Kamalardaki koyu sarı akrep zehrini açık yaraya akıtır.', combatEffect: '3 Tur Boyunca Ağır Zehir DoT'}),
-                new GladiatorSkill({id: 'skill_sarkoth_4', name: 'Ölümcül Akrep Kıskacı', icon: '💥', type: SkillType.ULTIMATE, tier: 1, cooldownTurns: 4, description: 'İki kamayı makas gibi açıp hasmın şah damarına kilitler.', combatEffect: '+%85 Kritik Hasar ve İnfaz'})
+                new GladiatorSkill({id: 'skill_sarkoth_1', name: 'Çift Kama Kıskacı', icon: '', type: SkillType.ATTACK, tier: 1, cooldownTurns: 2, description: 'İki kemik kamasını rakibin böğrüne aynı anda saplar.', combatEffect: '+%30 Hasar ve Çifte Delme'}),
+                new GladiatorSkill({id: 'skill_sarkoth_2', name: 'Kum Altı Pususu', icon: '', type: SkillType.DEFENSE, tier: 1, cooldownTurns: 3, description: 'Kum fırtınası kaldırarak gözden kaybolur.', combatEffect: '%50 Kaçınma'}),
+                new GladiatorSkill({id: 'skill_sarkoth_3', name: 'Akrep Zehri Salgısı', icon: '', type: SkillType.TACTICAL, tier: 1, cooldownTurns: 3, description: 'Kamalardaki koyu sarı akrep zehrini açık yaraya akıtır.', combatEffect: '3 Tur Boyunca Ağır Zehir DoT'}),
+                new GladiatorSkill({id: 'skill_sarkoth_4', name: 'Ölümcül Akrep Kıskacı', icon: '', type: SkillType.ULTIMATE, tier: 1, cooldownTurns: 4, description: 'İki kamayı makas gibi açıp hasmın şah damarına kilitler.', combatEffect: '+%85 Kritik Hasar ve İnfaz'})
             ]
         })
     ]
@@ -1729,7 +1729,7 @@ function createAllQuests() {
             rewardFame: 1,
             requiredMinArmor: 2,
             scrollDropChancePercent: 25,
-            progressText: '🛡️ Tozlu bataklık patikasında tuz kervanının yanında kılıç elde tetikte ilerliyorsun...',
+            progressText: 'Tozlu bataklık patikasında tuz kervanının yanında kılıç elde tetikte ilerliyorsun...',
             completionNarratives: [
                 'Kervan dar boğazdan geçerken çalıların arasına pusu kurmuş iki çapulcunun yay gerdiğini fark ettin. Kılıcını çekip tekerleklerin önünü kestiğin anda haydutlar kaçıştı; tüccarlar sana minnettar kaldı.',
                 'Bataklık suyunun yükseldiği çamurlu köprü geçişinde dingili kırılan tuz arabasını omzunla kaldırıp kurtardın. Kervan başı minnetle keseni doldurdu.',
@@ -1751,7 +1751,7 @@ function createAllQuests() {
             rewardFame: 2,
             requiredMinHpPercent: 30,
             scrollDropChancePercent: 30,
-            progressText: '⚓ İskele boyunda gece ayazında pusudaki su korsanlarını kolluyorsun...',
+            progressText: 'İskele boyunda gece ayazında pusudaki su korsanlarını kolluyorsun...',
             completionNarratives: [
                 'Gece yarısı ahşap iskelenin altına yanaşan zifiri bir kayığı fark ettin; sessizce yaklaşıp palanı güverteye çaldığında korsanlar suya atlayıp kaçtı.',
                 'Balıkçı ağlarının arkasına gizlenmiş hançerli bir yağmacıyla göğüs göğüse çarpıştın; bir tekmeyle onu buz gibi göle fırlattın.',
@@ -1773,7 +1773,7 @@ function createAllQuests() {
             rewardFame: 1,
             requiredSupplyGold: 5,
             scrollDropChancePercent: 25,
-            progressText: '⛏️ Tuz çölü mağaralarında fener ışığında kazmayla demir ve tuz filizi çıkarıyorsun...',
+            progressText: 'Tuz çölü mağaralarında fener ışığında kazmayla demir ve tuz filizi çıkarıyorsun...',
             completionNarratives: [
                 'Karanlık tuz mağarasının derinliklerinde tavan çökme tehlikesine rağmen kazmanı taşa vurdun ve pırıl pırıl parlayan damara ulaştın.',
                 'Yeraltındaki dar bir yarıktan sızan kükürt dumanlarına göğüs gererek en kaliteli kızıl demir yumrularını heybene doldurdun.',
@@ -1795,7 +1795,7 @@ function createAllQuests() {
             rewardFame: 1,
             requiredMinHpPercent: 35,
             scrollDropChancePercent: 25,
-            progressText: '🌿 Zehirli sazlıkların balçığına batarak acı pelin otu ve kökleri topluyorsun...',
+            progressText: 'Zehirli sazlıkların balçığına batarak acı pelin otu ve kökleri topluyorsun...',
             completionNarratives: [
                 'Dizlerine kadar balçığa batarak sazlıkların en karanlık kuytusundaki mor çiçekli yılan köklerini kökünden söktün.',
                 'Zehirli bataklık buharları genzini yakarken ağzını ıslak bezle kapatıp şifacının aradığı taze pelin otu demetlerini topladın.',
@@ -1819,7 +1819,7 @@ function createAllQuests() {
             requiredMinDamage: 6,
             requiredMinHpPercent: 45,
             scrollDropChancePercent: 35,
-            progressText: '⚔️ Kargı Boğazı kayalıklarında kılıcın kınında hazır, eşkıya artıklarını dağıtıyorsun...',
+            progressText: 'Kargı Boğazı kayalıklarında kılıcın kınında hazır, eşkıya artıklarını dağıtıyorsun...',
             completionNarratives: [
                 'Boğazın tepesindeki kayalıklardan üzerinize kaya yuvarlamaya çalışan iki haydudu tırmanıp kılıçtan geçirdin; çete panikle dağıldı.',
                 'Yolu kesen devrilmiş kütüğün ardında pusuya yatan eşkıya reisini sert bir omuz darbesiyle yere serdin.',
@@ -1842,9 +1842,9 @@ function createAllQuests() {
             requiredLevel: 2,
             requiredSupplyGold: 10,
             successChancePercent: 70,
-            failureNarrative: '⚠️ Nöbetçilere yakalandın! Tahta çatılardan sazlıklara atlarken dizini burktun ve arkana bakmadan kaçmak zorunda kaldın. İstihbarat elde edilemedi!',
+            failureNarrative: 'Nöbetçilere yakalandın! Tahta çatılardan sazlıklara atlarken dizini burktun ve arkana bakmadan kaçmak zorunda kaldın. İstihbarat elde edilemedi!',
             scrollDropChancePercent: 35,
-            progressText: '🔍 Çatı kirişlerinde nefesini tutup gizli talimhanedeki gladyatörlerin gard hareketlerini inceliyorsun...',
+            progressText: 'Çatı kirişlerinde nefesini tutup gizli talimhanedeki gladyatörlerin gard hareketlerini inceliyorsun...',
             completionNarratives: [
                 'Kirişlerin gölgesine gizlenerek rakip şampiyonun sol adımı atarken gardını düşürdüğünü saniye saniye not aldın.',
                 'Kum torbasına vuran gladyatörün ağır savuruş sonrası dengesini kaybettiği anı tespit ettin; bu açık arenada hayat kurtaracak.',
@@ -1866,7 +1866,7 @@ function createAllQuests() {
             rewardFame: 1,
             requiredMinDamage: 4,
             scrollDropChancePercent: 25,
-            progressText: '🐗 Kiremit ocağındaki çamur çukurlarında yaban domuzlarını kovalayıp işçileri koruyorsun...',
+            progressText: 'Kiremit ocağındaki çamur çukurlarında yaban domuzlarını kovalayıp işçileri koruyorsun...',
             completionNarratives: [
                 'Çamur çukurlarını eşeleyen azılı yaban domuzunu kalkanınla durdurup mızrak darbesiyle ormana kaçırdın.',
                 'İşçilerin fırınlarını basan domuz sürüsünü meşale ve gürültüyle çamur bentlerinden uzaklaştırdın.',
@@ -1888,7 +1888,7 @@ function createAllQuests() {
             rewardFame: 1,
             requiredMinArmor: 2,
             scrollDropChancePercent: 20,
-            progressText: '🌾 Tahıl ambarının çatısında ve kapısında erzak çuvallarını koruyorsun...',
+            progressText: 'Tahıl ambarının çatısında ve kapısında erzak çuvallarını koruyorsun...',
             completionNarratives: [
                 'Gece karanlığında ambarın ahşap havalandırmasından içeri sızmaya çalışan hırsızları kıskıvrak yakaladın.',
                 'Tahıl çuvallarını kemiren yaban sıçanı yuvalarını meşale dumanıyla ambardan dışarı püskürttün.',
@@ -1910,7 +1910,7 @@ function createAllQuests() {
             rewardFame: 1,
             requiredMinHpPercent: 30,
             scrollDropChancePercent: 25,
-            progressText: '⚙️ Su değirmeninin dev çarkına dolanan balçık ve kütükleri soğuk suda söküp temizliyorsun...',
+            progressText: 'Su değirmeninin dev çarkına dolanan balçık ve kütükleri soğuk suda söküp temizliyorsun...',
             completionNarratives: [
                 'Buz gibi değirmen bendine girip çarka dolanmış devasa söğüt kütüğünü baltayla parçalayarak çıkardın.',
                 'Su bendini tıkayan taş ve balçık yığınını kürekle açtığında değirmen çarkı gıcırdayarak yeniden dönmeye başladı.',
@@ -1933,7 +1933,7 @@ function createAllQuests() {
             requiredMinArmor: 3,
             requiredMinDamage: 5,
             scrollDropChancePercent: 30,
-            progressText: '🌉 Kırık taş köprünün başında nöbet tutup haraç kesen nehir serserilerini püskürtüyorsun...',
+            progressText: 'Kırık taş köprünün başında nöbet tutup haraç kesen nehir serserilerini püskürtüyorsun...',
             completionNarratives: [
                 'Köprü girişine barikat kurup geçenlerden zorla para isteyen üç serseriyi kılıcının kabzasıyla dağıttın.',
                 'Köprünün kırık kemerinden nehre doğru hamle yapan korsan başını kalkan darbesiyle suya yuvarladın.',
@@ -1954,7 +1954,7 @@ function createAllQuests() {
             rewardExp: 32,
             rewardFame: 1,
             scrollDropChancePercent: 20,
-            progressText: '🔥 Sazlık direklerine tırmanarak sis fenerlerini balık yağıyla doldurup ateşliyorsun...',
+            progressText: 'Sazlık direklerine tırmanarak sis fenerlerini balık yağıyla doldurup ateşliyorsun...',
             completionNarratives: [
                 'Bataklık sisinin koyulaştığı alacakaranlıkta direklere tırmanıp her bir feneri parlak alevle tutuşturdun.',
                 'Yağı tükenmiş fener haznesini balık yağıyla doldurup çakmaktaşıyla çaktın; fener sarı bir ışık hüzmesi saçtı.',
@@ -1976,7 +1976,7 @@ function createAllQuests() {
             rewardFame: 1,
             requiredMinDamage: 6,
             scrollDropChancePercent: 30,
-            progressText: '🪓 Dağdan akıtılan ağır kütük ve kereste sallarına nehir boyu muhafızlık ediyorsun...',
+            progressText: 'Dağdan akıtılan ağır kütük ve kereste sallarına nehir boyu muhafızlık ediyorsun...',
             completionNarratives: [
                 'Hızlı akıntıda kayalara çarpmak üzere olan baş kütüğü uzun sırıkla yönlendirip salı parçalanmaktan son anda kurtardın.',
                 'Kıyıdaki sazlıklardan sallara atlamaya çalışan iki nehir korsanını palanın tersiyle suya düşürdün; marangoz çırakları arkandan alkış tuttu.',
@@ -1997,7 +1997,7 @@ function createAllQuests() {
             rewardExp: 36,
             rewardFame: 1,
             scrollDropChancePercent: 20,
-            progressText: '🏜️ Arena çukurunun kanlı zeminine dökülecek kızıl çöl kumunu el arabasıyla taşıyorsun...',
+            progressText: 'Arena çukurunun kanlı zeminine dökülecek kızıl çöl kumunu el arabasıyla taşıyorsun...',
             completionNarratives: [
                 'Kızıl çöl tepelerinden küreklediğin taze kumu arabaya doldurup kasaba arenasına kan kokusunu bastırmak için serptin.',
                 'Kum arabasının tekerleği çamura battığında kas gücünle tek başına arabayı kaldırıp arenanın kapısına ulaştırdın.',
@@ -2020,7 +2020,7 @@ function createAllQuests() {
             requiredMinDamage: 5,
             requiredMinHpPercent: 35,
             scrollDropChancePercent: 25,
-            progressText: '🐺 Tabakhanelerin dericilik havuzlarına dadanan leş çakallarını kılıçla kovalıyorsun...',
+            progressText: 'Tabakhanelerin dericilik havuzlarına dadanan leş çakallarını kılıçla kovalıyorsun...',
             completionNarratives: [
                 'Deri kurutma askılarına yaklaşan iki aç sırtlanı kılıcının şakırtısıyla tabakhanenin sınırından ormana sürdün.',
                 'Tabak havuzunun kokusuna gelen yaban çakallarını kalkanını birbirine vurarak çıkardığın sesle korkutup kaçırdın.',
@@ -2041,7 +2041,7 @@ function createAllQuests() {
             rewardExp: 40,
             rewardFame: 1,
             scrollDropChancePercent: 20,
-            progressText: '🚣 Nehir salında yolcuların ve tüccarların güvenliğini kılıç omzunda sağlıyorsun...',
+            progressText: 'Nehir salında yolcuların ve tüccarların güvenliğini kılıç omzunda sağlıyorsun...',
             completionNarratives: [
                 'Sal karşı kıyıya geçerken sudan tırmanmaya yeltenen nehir korsanını sırık darbesiyle akıntıya savurdun.',
                 'Hızlı akıntıda salın dengesini bozan dev nehir balığını kargıyla uzaklaştırıp yolcuları sakinleştirdin.',
@@ -2063,7 +2063,7 @@ function createAllQuests() {
             rewardFame: 2,
             requiredMinArmor: 4,
             scrollDropChancePercent: 30,
-            progressText: '🍻 Han kapısında sarhoş gladyatörlerin taşkınlıklarını sert yumruklarla yatıştırıyorsun...',
+            progressText: 'Han kapısında sarhoş gladyatörlerin taşkınlıklarını sert yumruklarla yatıştırıyorsun...',
             completionNarratives: [
                 'Han kapısını kırmaya çalışan iri yarı bir gladyatör artığını sert bir kafa darbesiyle basamaklardan aşağı yuvarladın.',
                 'Kırık testiyle hancıya saldıran sarhoş dövüşçünün bileğini büküp silahını elinden aldın.',
@@ -2084,7 +2084,7 @@ function createAllQuests() {
             rewardExp: 34,
             rewardFame: 1,
             scrollDropChancePercent: 20,
-            progressText: '🔥 Demirci ocağı için kömür ve ağır körükleri sırtlayıp atölyeye taşıyorsun...',
+            progressText: 'Demirci ocağı için kömür ve ağır körükleri sırtlayıp atölyeye taşıyorsun...',
             completionNarratives: [
                 'Ağır kömür çuvallarını sırtlayıp demirci ocağının alev alev yanan fırınına zamanında yetiştirdin.',
                 'Bataklık turbasının kokusuna alışarak fırının korunu iki katına çıkaracak en kuru kömürleri seçtin.',
@@ -2106,7 +2106,7 @@ function createAllQuests() {
             rewardFame: 1,
             requiredMinHpPercent: 30,
             scrollDropChancePercent: 25,
-            progressText: '🐂 Sazlık balçıklarında kayıp sığırın derin toynak izlerini sürüyorsun...',
+            progressText: 'Sazlık balçıklarında kayıp sığırın derin toynak izlerini sürüyorsun...',
             completionNarratives: [
                 'Batak kumuna göğsüne kadar batmış huysuz tosunu boynuzlarına halat bağlayarak çekip çıkardın.',
                 'Sazlıkların arasında tosunu çevrelemiş kurt sürüsünü kılıcını savurarak kaçırdın.',
@@ -2127,7 +2127,7 @@ function createAllQuests() {
             rewardExp: 38,
             rewardFame: 1,
             scrollDropChancePercent: 20,
-            progressText: '🌾 Derin sazlıklarda hasır biçen köylüleri bataklık tehlikelerine karşı koruyorsun...',
+            progressText: 'Derin sazlıklarda hasır biçen köylüleri bataklık tehlikelerine karşı koruyorsun...',
             completionNarratives: [
                 'Hasır biçen yaşlı bir köylüye arkadan yaklaşan iri su yılanını palanın ucuyla ikiye böldün.',
                 'Sazlıkların içinde kuluçkaya yatmış dev bataklık leyleğinin köylüleri gagalamasını kalkanınla engelledin.',
@@ -2148,7 +2148,7 @@ function createAllQuests() {
             rewardExp: 44,
             rewardFame: 1,
             scrollDropChancePercent: 25,
-            progressText: '🔥 Rüzgarlı gözetleme kulesinde ufku gözleyip işaret meşalesini harlıyorsun...',
+            progressText: 'Rüzgarlı gözetleme kulesinde ufku gözleyip işaret meşalesini harlıyorsun...',
             completionNarratives: [
                 'Kuleye tırmanıp fırtınalı rüzgara karşı kuru meşe odunlarını çakmaktaşıyla tutuşturdun; işaret ateşi göğe yükseldi.',
                 'Ufukta toz kaldıran bilinmeyen bir süvari birliğini erkenden fark edip işaret dumanıyla kasabaya haber verdin.',
@@ -2170,7 +2170,7 @@ function createAllQuests() {
             rewardFame: 1,
             requiredMinHpPercent: 25,
             scrollDropChancePercent: 20,
-            progressText: '🩸 Balçıklı gölette şifacının cerrahi işlemleri için tıbbi sülükleri topluyorsun...',
+            progressText: 'Balçıklı gölette şifacının cerrahi işlemleri için tıbbi sülükleri topluyorsun...',
             completionNarratives: [
                 'Bacaklarına yapışan iri tıbbi sülükleri tuzla ayıklayıp Mirana\'nın killi çömleklerine doldurdun.',
                 'Sülük havuzunun durgun suyunda dikkatle bekleyerek en dolgun ve canlı sülükleri seçtin.',
@@ -2193,7 +2193,7 @@ function createAllQuests() {
             requiredLevel: 2,
             requiredMinDamage: 6,
             scrollDropChancePercent: 30,
-            progressText: '🏃 Pazar yeri çatılarında ve dar sokaklarda çevik yankesicinin peşinden koşuyorsun...',
+            progressText: 'Pazar yeri çatılarında ve dar sokaklarda çevik yankesicinin peşinden koşuyorsun...',
             completionNarratives: [
                 'Kiremit çatıların üzerinden atlayan hırsızı dar bir çıkmaz sokakta kalkan darbesiyle kıstırıp yere serdin.',
                 'Seyyar tezgahları devirerek kaçmaya çalışan yankesicinin önüne atlayıp çaldığı altın kesesini elinden aldın.',
@@ -2215,7 +2215,7 @@ function createAllQuests() {
             rewardFame: 1,
             requiredMinArmor: 4,
             scrollDropChancePercent: 30,
-            progressText: '🛡️ Kasaba hendeklerindeki çamurlu siperlerde pusu noktalarını kolaçan ediyorsun...',
+            progressText: 'Kasaba hendeklerindeki çamurlu siperlerde pusu noktalarını kolaçan ediyorsun...',
             completionNarratives: [
                 'Eski siper hendeklerine sığınmış dört çapulcunun kamp ateşini basıp hepsini teslim aldın.',
                 'Çamurlu hendekteki tahta kazıkların arasına yerleştirilmiş gizli yay tuzaklarını kılıcınla imha ettin.',
@@ -2237,7 +2237,7 @@ function createAllQuests() {
             rewardFame: 1,
             requiredMinDamage: 6,
             scrollDropChancePercent: 30,
-            progressText: '💰 Çöl tuzcusunun ağır arabasının yanında haraççıları bastırarak ilerliyorsun...',
+            progressText: 'Çöl tuzcusunun ağır arabasının yanında haraççıları bastırarak ilerliyorsun...',
             completionNarratives: [
                 'Tuz arabasının önünü kesip haksız haraç isteyen yozlaşmış milis çavuşunu kılıç kabzanla geri püskürttün.',
                 'Tuz çuvallarının ıslanmaması için deri tenteleri fırtınada sağlamlaştırıp kervanı kasabaya soktun.',
@@ -2261,7 +2261,7 @@ function createAllQuests() {
             requiredMinHpPercent: 30,
             rewardScrollId: 'item_sealed_scroll_dragon',
             scrollDropChancePercent: 100,
-            progressText: '🐉 Sazlık mabedinin su altındaki mermer basamaklarını temizleyip mühürlü sandığı arıyorsun...',
+            progressText: 'Sazlık mabedinin su altındaki mermer basamaklarını temizleyip mühürlü sandığı arıyorsun...',
             completionNarratives: [
                 'Suların çekildiği tapınak sunağının altındaki taş bloğu manivela ile kaldırdın; kırmızı balmumuyla mühürlenmiş kızıl ejder ideogramlı tomar parıldadı!',
                 'Bataklık sarmaşıklarının sardığı sunak oyuğunda ejderha oymalı bronz bir tüp buldun; mühürlü papirüs bozulmadan duruyordu.',
@@ -2285,7 +2285,7 @@ function createAllQuests() {
             requiredMinArmor: 2,
             rewardScrollId: 'item_sealed_scroll_crane',
             scrollDropChancePercent: 100,
-            progressText: '🕊️ Tuz çölünün fırtınayla açığa çıkardığı deve iskeletleri ve batık sandıkları kazıyorsun...',
+            progressText: 'Tuz çölünün fırtınayla açığa çıkardığı deve iskeletleri ve batık sandıkları kazıyorsun...',
             completionNarratives: [
                 'Kum fırtınasının ortaya çıkardığı kervan arabasının ahşap gövdesini kazıp ipek kılıflı \'Ak Turna\' tomarına ulaştın!',
                 'Kuma gömülü çürümüş sandığın demir kilitlerini kırarak beyaz balmumu mühürlü ipek tomarı kurtardın.',
@@ -2309,7 +2309,7 @@ function createAllQuests() {
             requiredMinDamage: 5,
             rewardScrollId: 'item_sealed_scroll_storm',
             scrollDropChancePercent: 100,
-            progressText: '🌪️ Uçurum kenarındaki rüzgarlı münzevi mağarasında kadim fırtına yazıtlarını arıyorsun...',
+            progressText: 'Uçurum kenarındaki rüzgarlı münzevi mağarasında kadim fırtına yazıtlarını arıyorsun...',
             completionNarratives: [
                 'Mağaranın içindeki taş sedirin altında yeşil rünlerle örülü \'Fırtına Rüzgarı\' mühürlü parşömen kılıfını buldun!',
                 'Münzevinin meditasyon yaptığı kaya kovuğunda rüzgarın uğultusuyla titreyen yeşil mühürlü tomarı çıkardın.',
@@ -2334,7 +2334,7 @@ function createAllQuests() {
             requiredMinHpPercent: 40,
             rewardScrollId: 'item_sealed_scroll_night',
             scrollDropChancePercent: 100,
-            progressText: '🌑 Korsanların sazlık adasındaki gizli zulasına sızıp kilitli sandıkları açıyorsun...',
+            progressText: 'Korsanların sazlık adasındaki gizli zulasına sızıp kilitli sandıkları açıyorsun...',
             completionNarratives: [
                 'Korsanların zula sandığının çift tabanını hançerle kanırtarak kömür karası mühürlü \'Gece Gölgesi\' tomarını ele geçirdin!',
                 'Nöbetçi korsanları uyurken atlatıp kilitli kadife kılıf içindeki gölge adımı el yazmasını aldın.',
@@ -2359,7 +2359,7 @@ function createAllQuests() {
             requiredMinDamage: 6,
             rewardScrollId: 'item_sealed_scroll_tiger',
             scrollDropChancePercent: 100,
-            progressText: '🐅 Kadim taş höyüğün mezar kapısını aralayıp pençe mühürlü papirüsü arıyorsun...',
+            progressText: 'Kadim taş höyüğün mezar kapısını aralayıp pençe mühürlü papirüsü arıyorsun...',
             completionNarratives: [
                 'Ağır mezar taşını araladığında zırhlı iskeletin göğsünde sımsıkı tuttuğu pençe damgalı \'Yırtıcı Kaplan\' tomarını saygıyla aldın!',
                 'Höyüğün taş lahdinden sızan soğuk havada kaplan pençesi motifli bronz tüpü gün yüzüne çıkardın.',
@@ -2384,7 +2384,7 @@ function createAllQuests() {
             requiredMinHpPercent: 40,
             rewardScrollId: 'item_sealed_scroll_mountain',
             scrollDropChancePercent: 100,
-            progressText: '🏔️ Yıkık manastırın taş kilerinde kil mühürlü dev tomarı arıyorsun...',
+            progressText: 'Yıkık manastırın taş kilerinde kil mühürlü dev tomarı arıyorsun...',
             completionNarratives: [
                 'Manastır kilerindeki çökmüş taş tonozun altındaki kil mühürlü ağır \'Ağır Dağ\' tomarını kollarınla çekip çıkardın!',
                 'Kaya tozuyla sıvanmış asırlık parşömeni temizlediğinde dağ gibi sarsılmaz beden mukavemeti formüllerini gördün.',
@@ -2606,7 +2606,7 @@ function createInitialAdventures() {
             title: 'Kuzey Sırtları: Ak Ayaz Kurdu Avı',
             description: 'Kırlangıç Kasabası\'nın kuzeyindeki donmuş kayalıklarda sürüden ayrılmış efsanevi bir Ak Ayaz Kurdu kol geziyor. Kalın gümüşi postu ve hançer boyundaki dişleriyle avcıları paramparça ediyor. Donanım gücün ne kadar yüksekse kurdu alt etme şansın o kadar artar.',
             targetName: 'Efsanevi Ak Ayaz Kurdu',
-            icon: '🐺',
+            icon: '',
             durationSeconds: 35,
             requiredLevel: 2,
             requiredMinHpPercent: 50,
@@ -2617,16 +2617,16 @@ function createInitialAdventures() {
             rewardExp: 65,
             rewardMaterialId: MAT_WHITE_WOLF_PELT,
             rewardMaterialName: 'Ak Ayaz Kurdu Postu & Dişi',
-            rewardMaterialIcon: '🐺',
+            rewardMaterialIcon: '',
             failureDamage: 22,
-            failureNarrative: '⚠️ Ak Ayaz Kurdu karların arasından pusu kurup pençesini göğsüne indirdi! Ayazın keskin soğuğunda güçlükle geri çekilebildin (-22 Can).'
+            failureNarrative: 'Ak Ayaz Kurdu karların arasından pusu kurup pençesini göğsüne indirdi! Ayazın keskin soğuğunda güçlükle geri çekilebildin (-22 Can).'
         }),
         new Adventure({
             id: 'adv_meteorite_crater',
             title: 'Kükürt Krateri: Göktaşı Filizi Keşfi',
             description: 'Bölgenin lav çatlaklarıyla yarılmış kükürt vadisinde, asırlar önce gökten düşmüş bir göktaşı krateri yatıyor. Zehirli buharlar ve çete pusuları arasından kızıl kor damarlarını kazarak kadim göktaşı çeliği çıkartmalısın.',
             targetName: 'Kadim Lav Krateri',
-            icon: '☄️',
+            icon: '',
             durationSeconds: 35,
             requiredLevel: 2,
             requiredMinHpPercent: 50,
@@ -2637,9 +2637,9 @@ function createInitialAdventures() {
             rewardExp: 60,
             rewardMaterialId: MAT_METEORITE_ORE,
             rewardMaterialName: 'Kızıl Göktaşı Çelik Filizi',
-            rewardMaterialIcon: '☄️',
+            rewardMaterialIcon: '',
             failureDamage: 18,
-            failureNarrative: '⚠️ Zehirli kükürt buharı genzini yaktı ve maden çatlağında çapulcuların taşlı pususuna yakalandın! Elin boş dönmek zorunda kaldın (-18 Can).'
+            failureNarrative: 'Zehirli kükürt buharı genzini yaktı ve maden çatlağında çapulcuların taşlı pususuna yakalandın! Elin boş dönmek zorunda kaldın (-18 Can).'
         }),
         // --- 2. BÖLGE MACERALARI ---
         new Adventure({
@@ -2647,7 +2647,7 @@ function createInitialAdventures() {
             title: 'Granit Zirveleri: Dağ Trolü Avı',
             description: 'Taş Hisar dağlarının zirvesinde sığınan, kayaları ufak çakıl gibi fırlatan devasa bir dağ trolü. Kalın derisi zırh dövücüler için paha biçilmezdir.',
             targetName: 'Yarı Kör Dağ Trolü',
-            icon: '🧌',
+            icon: '',
             durationSeconds: 45,
             requiredLevel: 6,
             requiredMinHpPercent: 50,
@@ -2658,16 +2658,16 @@ function createInitialAdventures() {
             rewardExp: 140,
             rewardMaterialId: MAT_TROLL_HIDE,
             rewardMaterialName: 'Taşlaşmış Trol Derisi',
-            rewardMaterialIcon: '🧌',
+            rewardMaterialIcon: '',
             failureDamage: 35,
-            failureNarrative: '⚠️ Dağ trolünün kaya savuruşu zırhını çatlattı! Kayalıklardan yuvarlanarak canını zor kurtardın (-35 Can).'
+            failureNarrative: 'Dağ trolünün kaya savuruşu zırhını çatlattı! Kayalıklardan yuvarlanarak canını zor kurtardın (-35 Can).'
         }),
         new Adventure({
             id: 'adv_obsidian_depths',
             title: 'Hisar Dehlizleri: Obsidyen Damarı Kazısı',
             description: 'Taş Hisar\'ın temellerindeki sönmüş yanardağ çatlaklarında kapkara obsidyen kristalleri parıldıyor. Gaz sızıntıları ve yer altı akrepleri arasında kazı yap.',
             targetName: 'Lav Dehlizleri',
-            icon: '⛏️',
+            icon: '',
             durationSeconds: 40,
             requiredLevel: 6,
             requiredMinHpPercent: 45,
@@ -2678,9 +2678,9 @@ function createInitialAdventures() {
             rewardExp: 125,
             rewardMaterialId: MAT_OBSIDIAN_CORE,
             rewardMaterialName: 'Saf Obsidyen Cevher Özü',
-            rewardMaterialIcon: '💎',
+            rewardMaterialIcon: '',
             failureDamage: 28,
-            failureNarrative: '⚠️ Dehlizde tavan çöktü ve zehirli kükürt dumanı soludun (-28 Can).'
+            failureNarrative: 'Dehlizde tavan çöktü ve zehirli kükürt dumanı soludun (-28 Can).'
         })
     ]
 }
@@ -2701,7 +2701,7 @@ function createCraftingRecipes() {
             id: 'kurt_ofkesi',
             name: 'Ak Ayaz Öfkesi',
             description: 'Can %40\'ın altına indiğinde +%20 saldırı hasarı ve her vuruşta %12 can çalma tetiklenir!',
-            icon: '🐺'
+            icon: ''
         })
     })
 
@@ -2720,7 +2720,7 @@ function createCraftingRecipes() {
             id: 'yakici_darbe',
             name: 'Göktaşı Harı',
             description: 'Saldırılarda %28 şansla rakibin zırhını eriten +5 ek kor alev hasarı verir!',
-            icon: '🔥'
+            icon: ''
         })
     })
 
@@ -2730,7 +2730,7 @@ function createCraftingRecipes() {
             resultItem: wolfArmor,
             requiredMaterialId: MAT_WHITE_WOLF_PELT,
             requiredMaterialName: 'Ak Ayaz Kurdu Postu & Dişi',
-            requiredMaterialIcon: '🐺',
+            requiredMaterialIcon: '',
             requiredMaterialCount: 2,
             requiredGold: 45,
             description: 'Demirci ocağında kurt postunu çelik halkalarla perçinleyerek efsanevi zırhı ortaya çıkar.'
@@ -2740,7 +2740,7 @@ function createCraftingRecipes() {
             resultItem: meteoriteBlade,
             requiredMaterialId: MAT_METEORITE_ORE,
             requiredMaterialName: 'Kızıl Göktaşı Çelik Filizi',
-            requiredMaterialIcon: '☄️',
+            requiredMaterialIcon: '',
             requiredMaterialCount: 2,
             requiredGold: 50,
             description: 'Göktaşı filizini körükte eritip soğuk suyla sulayarak alevli kesici palayı döv.'
@@ -2883,7 +2883,7 @@ function createTavernTales() {
             title: 'Tuzsuz Çorbanın İsyanı',
             narrative: 'Tuz kervanı yine sazlıkta çamura saplanmış! Üç gündür çorbaya bir tutam kaya tuzu atamıyorum. Akşam gladyatör takımı hana doluşunca \'Bu ne biçim su!\' diye tahta masaları yumrukladılar. Sazlık tarafındaki o şüpheli kervan rotasına biri baksa iyi olur!',
             questClueId: 'quest_swamp_1',
-            clueDiscoveryText: '🔍 Gizli İpucu: Aşçıbaşının fısıldadığı şüpheli kervan rotası yarınki görev panosuna eklendi!'
+            clueDiscoveryText: 'Gizli İpucu: Aşçıbaşının fısıldadığı şüpheli kervan rotası yarınki görev panosuna eklendi!'
         }),
         new TavernTale({
             id: 'tale_trouble_apprentice',
@@ -2901,7 +2901,7 @@ function createTavernTales() {
             title: 'Sazlıkta Parlayan Gözler',
             narrative: 'Benim alaca keçi bataklık tarafındaki eski tuz madeni kuyularına kaçtı dün akşamüstü. Peşinden vardım dehlizlerin ağzına, suyun içinden bana bakan sarı gözler gördüm! O kuyulara sağlam bir kılıç ve şifa merhemi olmadan kimse inmesin...',
             questClueId: 'quest_haunted_mine',
-            clueDiscoveryText: '🔍 Gizli İpucu: Çobanın ürktüğü terk edilmiş tuz madeni keşfi panoya işlendi!'
+            clueDiscoveryText: 'Gizli İpucu: Çobanın ürktüğü terk edilmiş tuz madeni keşfi panoya işlendi!'
         }),
         new TavernTale({
             id: 'tale_gossip_gambler',
@@ -2911,7 +2911,7 @@ function createTavernTales() {
             title: 'Kaçak Zarcının Peşindekiler',
             narrative: 'Geçen gece Hancı Beric\'in masasını deviren zarcı Çolak Neco\'yu gördün mü? Hancının 80 altınını cebe indirip bataklık değirmenine doğru topukladı. Beric arkasından hanın baltasını fırlattı da kıl payı kaçtı herif. Onu kıstıranın cebi altın dolarmış!',
             questClueId: 'quest_debt_collection',
-            clueDiscoveryText: '🔍 Gizli İpucu: Hancının kaçak kumarcısını arama sözleşmesi panoya işlendi!'
+            clueDiscoveryText: 'Gizli İpucu: Hancının kaçak kumarcısını arama sözleşmesi panoya işlendi!'
         }),
         new TavernTale({
             id: 'tale_gossip_morvath',
@@ -3086,25 +3086,25 @@ function createTavernTales() {
 
 function createBardSongs() {
     return [
-        '🎶 "Kırlangıç çayı bulanık akar,\nKumların üstüne yiğitler bakar...\nKılıçlar kınından sıyrıldığı an,\nNe derebey kalır, ne tahtı yıkar!"',
-        '🎶 "Sürgün geldin çamurlu sazlığa,\nBoyun eğmedin ne aç ne azlığa...\nBileğinde demir, göğsünde inat,\nAdını kazıdın bu yalnızlığa!"',
-        '🎶 "Kör arbalet çalar ince sazını,\nÖlüm siler her gladyatör yasını...\nKızıl kumlar şahittir kavgamıza,\nToprak içer yiğidin kan tasını!"',
-        '🎶 "Bataklığın ardında saklı diyar,\nZırhı deler, kemiğe işler ayar...\nBir gün diner bu çukurun feryadı,\nKaderini yazan silahşör uyar!"',
-        '🎶 "Demirci körüğü alev saçar,\nKorkak olanlar bu kumdan kaçar...\nÇelik çeliğe çarptığı anda,\nYaradan bile gök kapısını açar!"',
-        '🎶 "Tuz çölünün rüzgarı sert eser,\nKör Khorvash hasmını sessizce keser...\nKulak ver kumdaki her kıpırtıya,\nEcel gelince nefesini keser!"',
-        '🎶 "Zal\'Mora çiğner ocak külünü,\nTanımaz bu diyarın bülbülünü...\nBoynuz hançeri kana doymazsa,\nToprağa gömer kendi gülünü!"',
-        '🎶 "Demir Diş Xylar handa sarhoştur,\nDünya dedikleri bir kuru hoştur...\nKumda tokmakla kemik kırsa da,\nCebinde kalan üç beş kuruştur!"',
-        '🎶 "Gölge Akbaba pusuda bekler,\nHer zaferine bir yenisini ekler...\nKancası boğaza dolandığı an,\nTükenir dualar, biter dilekler!"',
-        '🎶 "Morvath dikilmiş ligin başına,\nAcımaz kimsenin gözün yaşına...\nÜç ağızlı kargı kalktığı anda,\nAdın kazınır mezar taşına!"',
-        '🎶 "Bregash ters tutar paslı palayı,\nBaşına sarar binbir belayı...\nSazlık mezbaha kan kokar her gün,\nOna sorarlar bu dar sılayı!"',
-        '🎶 "Prangalı Ghorak zindandan gelir,\nDemir gülleler kalkanı delir...\nBoynunda bukağı, kolunda zincir,\nYalnızca kaba kuvveti bilir!"',
-        '🎶 "Dağ klanından sürgün bir gelin,\nThyra nacağıyla bükülmez elin...\nKemik yararken çığlığı yankır,\nÖnünde duramaz ne dağ ne selin!"',
-        '🎶 "Sarkoth pusuda bir kum akrebi,\nSinsi kamayla biçer edebi...\nZehirli çelik kana karışır,\nBilinmez bu sonsuz kinin sebebi!"',
-        '🎶 "Han masasında şarap dökülür,\nYiğidin sırtı karda bükülür...\nZarlar dönerken gecenin körü,\nYürekten nice sırlar sökülür!"',
-        '🎶 "Vorn\'un ocağı harlayıp yanar,\nKırılan kılıç ustayı anar...\nSu verilmemiş ham demir ise,\nİlk vuruşta ortadan kırılıp donar!"',
-        '🎶 "Simyacı kaynatır acı otları,\nTitrermiş mecliste tüm kontları...\nBir yudum iksir cana can katar,\nYeniden yazdırır bu hudutları!"',
-        '🎶 "Taş Hisar ufukta kara bir kale,\nDüşürmez yiğidi dilden dille...\nMuhafız Althea elinde kırbaç,\nBoyun eğdirir her türlü leşe!"',
-        '🎶 "Gözleri görmez Ozan Miras\'ın,\nYüreğinde saklı bin yıllık yasın...\nSen dövüş evlat, kumlarda diren,\nDestanın sazımda ebedi kalsın!"'
+        '"Kırlangıç çayı bulanık akar,\nKumların üstüne yiğitler bakar...\nKılıçlar kınından sıyrıldığı an,\nNe derebey kalır, ne tahtı yıkar!"',
+        '"Sürgün geldin çamurlu sazlığa,\nBoyun eğmedin ne aç ne azlığa...\nBileğinde demir, göğsünde inat,\nAdını kazıdın bu yalnızlığa!"',
+        '"Kör arbalet çalar ince sazını,\nÖlüm siler her gladyatör yasını...\nKızıl kumlar şahittir kavgamıza,\nToprak içer yiğidin kan tasını!"',
+        '"Bataklığın ardında saklı diyar,\nZırhı deler, kemiğe işler ayar...\nBir gün diner bu çukurun feryadı,\nKaderini yazan silahşör uyar!"',
+        '"Demirci körüğü alev saçar,\nKorkak olanlar bu kumdan kaçar...\nÇelik çeliğe çarptığı anda,\nYaradan bile gök kapısını açar!"',
+        '"Tuz çölünün rüzgarı sert eser,\nKör Khorvash hasmını sessizce keser...\nKulak ver kumdaki her kıpırtıya,\nEcel gelince nefesini keser!"',
+        '"Zal\'Mora çiğner ocak külünü,\nTanımaz bu diyarın bülbülünü...\nBoynuz hançeri kana doymazsa,\nToprağa gömer kendi gülünü!"',
+        '"Demir Diş Xylar handa sarhoştur,\nDünya dedikleri bir kuru hoştur...\nKumda tokmakla kemik kırsa da,\nCebinde kalan üç beş kuruştur!"',
+        '"Gölge Akbaba pusuda bekler,\nHer zaferine bir yenisini ekler...\nKancası boğaza dolandığı an,\nTükenir dualar, biter dilekler!"',
+        '"Morvath dikilmiş ligin başına,\nAcımaz kimsenin gözün yaşına...\nÜç ağızlı kargı kalktığı anda,\nAdın kazınır mezar taşına!"',
+        '"Bregash ters tutar paslı palayı,\nBaşına sarar binbir belayı...\nSazlık mezbaha kan kokar her gün,\nOna sorarlar bu dar sılayı!"',
+        '"Prangalı Ghorak zindandan gelir,\nDemir gülleler kalkanı delir...\nBoynunda bukağı, kolunda zincir,\nYalnızca kaba kuvveti bilir!"',
+        '"Dağ klanından sürgün bir gelin,\nThyra nacağıyla bükülmez elin...\nKemik yararken çığlığı yankır,\nÖnünde duramaz ne dağ ne selin!"',
+        '"Sarkoth pusuda bir kum akrebi,\nSinsi kamayla biçer edebi...\nZehirli çelik kana karışır,\nBilinmez bu sonsuz kinin sebebi!"',
+        '"Han masasında şarap dökülür,\nYiğidin sırtı karda bükülür...\nZarlar dönerken gecenin körü,\nYürekten nice sırlar sökülür!"',
+        '"Vorn\'un ocağı harlayıp yanar,\nKırılan kılıç ustayı anar...\nSu verilmemiş ham demir ise,\nİlk vuruşta ortadan kırılıp donar!"',
+        '"Simyacı kaynatır acı otları,\nTitrermiş mecliste tüm kontları...\nBir yudum iksir cana can katar,\nYeniden yazdırır bu hudutları!"',
+        '"Taş Hisar ufukta kara bir kale,\nDüşürmez yiğidi dilden dille...\nMuhafız Althea elinde kırbaç,\nBoyun eğdirir her türlü leşe!"',
+        '"Gözleri görmez Ozan Miras\'ın,\nYüreğinde saklı bin yıllık yasın...\nSen dövüş evlat, kumlarda diren,\nDestanın sazımda ebedi kalsın!"'
     ]
 }
 
@@ -3112,64 +3112,64 @@ function createBardSongs() {
 function createEpicBardSongs() {
     return [
         // 1. Destan: Güney Sürgününün İntikamı
-        '🎶 "Güney bağlarından koptun da geldin,\nKaderin ördüğü çemberi deldin...\nAkademi sürgünü bir deli çocuk,\nBu çamurlu çukurda haddini bildin!\n\nŞimdi kumlar yanar senin adınla,\nÇelik su içer her feryadınla...\nKırılsa da kılıcın, bükülmez boynun,\nŞafak söküyor bu son andınla!"',
+        '"Güney bağlarından koptun da geldin,\nKaderin ördüğü çemberi deldin...\nAkademi sürgünü bir deli çocuk,\nBu çamurlu çukurda haddini bildin!\n\nŞimdi kumlar yanar senin adınla,\nÇelik su içer her feryadınla...\nKırılsa da kılıcın, bükülmez boynun,\nŞafak söküyor bu son andınla!"',
 
         // 2. Destan: Morvath ve On Dört Haftalık Taht
-        '🎶 "On dört hafta oldu Morvath tahtında,\nNe bir leke gördü kendi bahtında...\nÜç ağızlı kargı havada döner,\nNice kelleler düştü altından!\n\nAma her fırtınanın bir sonu vardır,\nKibrin sardığı yer daracık dardır...\nBir gün çıkagelir adsız bir nefer,\nO koca şampiyona dünyayı yıkar!"',
+        '"On dört hafta oldu Morvath tahtında,\nNe bir leke gördü kendi bahtında...\nÜç ağızlı kargı havada döner,\nNice kelleler düştü altından!\n\nAma her fırtınanın bir sonu vardır,\nKibrin sardığı yer daracık dardır...\nBir gün çıkagelir adsız bir nefer,\nO koca şampiyona dünyayı yıkar!"',
 
         // 3. Destan: Sazlık Cadısı ve Kara İksir
-        '🎶 "Bataklık sisinde tek bir kulübe,\nYolu düşen döner sanki garibe...\nKazanında kaynar kurbağa zehri,\nŞifa verir amma benzer harabe!\n\nBir yudum içenler canını bulur,\nLakin ömründen bir koca yıl vurur...\nKaderini kılıcına bağlayan yiğit,\nO cadının önünde sessizce durur!"',
+        '"Bataklık sisinde tek bir kulübe,\nYolu düşen döner sanki garibe...\nKazanında kaynar kurbağa zehri,\nŞifa verir amma benzer harabe!\n\nBir yudum içenler canını bulur,\nLakin ömründen bir koca yıl vurur...\nKaderini kılıcına bağlayan yiğit,\nO cadının önünde sessizce durur!"',
 
         // 4. Destan: Kırlangıç Kasabası'nın Kanlı Kumu
-        '🎶 "Kırlangıç çayının suyu kan akar,\nTribünde beyler zevkine bakar...\nKöleler, mahkumlar, sürgün olanlar,\nKızgın kum üstünde canını yakar!\n\nTellalın borusu gökleri yarar,\nHerkes bu arenada şöhret arar...\nBiri yere düşer, biri dikilir,\nAkşama yalnız bir kadeh şarap sarar!"',
+        '"Kırlangıç çayının suyu kan akar,\nTribünde beyler zevkine bakar...\nKöleler, mahkumlar, sürgün olanlar,\nKızgın kum üstünde canını yakar!\n\nTellalın borusu gökleri yarar,\nHerkes bu arenada şöhret arar...\nBiri yere düşer, biri dikilir,\nAkşama yalnız bir kadeh şarap sarar!"',
 
         // 5. Destan: Dağ Klanlarının Nacak Çığlığı
-        '🎶 "Yüksek kayalıktan sürgün bir ana,\nThyra doymadı döktüğü kana...\nÇift ağızlı nacak indiği zaman,\nAcımaz ne ata ne can kardaşa!\n\nKurtlar ulurmuş dağın ardında,\nÖfkesi dinmez kendi yurdunda...\nKemik yaran çelik havaya kalksa,\nEcel diz çöker onun katında!"',
+        '"Yüksek kayalıktan sürgün bir ana,\nThyra doymadı döktüğü kana...\nÇift ağızlı nacak indiği zaman,\nAcımaz ne ata ne can kardaşa!\n\nKurtlar ulurmuş dağın ardında,\nÖfkesi dinmez kendi yurdunda...\nKemik yaran çelik havaya kalksa,\nEcel diz çöker onun katında!"',
 
         // 6. Destan: Taş Hisar Muhafızı Althea
-        '🎶 "Taş Hisar surları göğe uzanır,\nGranit taşları terle sulanır...\nKızıl Muhafız Althea meydanda,\nHer gladyatörü çırak sanır!\n\nKırbacı şaklar, kalkanı vurur,\nTalim etmeyen karşında kurur...\nÜç yetenek topu göğsünde parlar,\nOnunla çalışan dev gibi durur!"',
+        '"Taş Hisar surları göğe uzanır,\nGranit taşları terle sulanır...\nKızıl Muhafız Althea meydanda,\nHer gladyatörü çırak sanır!\n\nKırbacı şaklar, kalkanı vurur,\nTalim etmeyen karşında kurur...\nÜç yetenek topu göğsünde parlar,\nOnunla çalışan dev gibi durur!"',
 
         // 7. Destan: Kadife Sığınağın Tütsülü Odaları
-        '🎶 "Taş Hisar\'ın dibinde gizli bir konak,\nKadife perdeler, sıcak bir yatak...\nMadame Lysandra gülümser sana,\nLavanta suyuyla yarayı yıka!\n\nTütsüler tüterken dinlenir kemik,\nNe darbe kalır ne de bir çentik...\nSabaha çıkınca o kapılardan,\nGöğsünde fırtına, kolunda çelik!"',
+        '"Taş Hisar\'ın dibinde gizli bir konak,\nKadife perdeler, sıcak bir yatak...\nMadame Lysandra gülümser sana,\nLavanta suyuyla yarayı yıka!\n\nTütsüler tüterken dinlenir kemik,\nNe darbe kalır ne de bir çentik...\nSabaha çıkınca o kapılardan,\nGöğsünde fırtına, kolunda çelik!"',
 
         // 8. Destan: Çöl Rüzgarı ve Kör Khorvash
-        '🎶 "Gözleri görmeyen o kör ihtiyar,\nTuz çöllerinden yadigâr rüzgar...\nKumun titreşimi kulağına gelir,\nHasmını görmeden canını alır!\n\nOltanın iğnesi havada döner,\nYıldızlar sönerken ömürler söner...\nKhorvash güler usulca der ki:\n\'Karanlık içinde her ışık söner!\'"',
+        '"Gözleri görmeyen o kör ihtiyar,\nTuz çöllerinden yadigâr rüzgar...\nKumun titreşimi kulağına gelir,\nHasmını görmeden canını alır!\n\nOltanın iğnesi havada döner,\nYıldızlar sönerken ömürler söner...\nKhorvash güler usulca der ki:\n\'Karanlık içinde her ışık söner!\'"',
 
         // 9. Destan: Demirci Vorn'un Kadim Çeliği
-        '🎶 "Gece gündüz vurur çekiç örsüne,\nKader yazılır tersi düzüne...\nKözün alevinden doğar teberler,\nVorn bakmaz kimsenin boyun büküşüne!\n\nSu verir çeliğe yedi pınardan,\nKurtarır yiğidi ölümcül yardan...\nKuşan o kılıcı, zırhını takın,\nŞampiyonluk doğar bu kızıl kordan!"',
+        '"Gece gündüz vurur çekiç örsüne,\nKader yazılır tersi düzüne...\nKözün alevinden doğar teberler,\nVorn bakmaz kimsenin boyun büküşüne!\n\nSu verir çeliğe yedi pınardan,\nKurtarır yiğidi ölümcül yardan...\nKuşan o kılıcı, zırhını takın,\nŞampiyonluk doğar bu kızıl kordan!"',
 
         // 10. Destan: Pranganın Ağırlığı
-        '🎶 "Kürek mahkumuydu küf zindanında,\nÖlüm kol gezerdi her bir anında...\nGhorak kırdı o prangayı bir gün,\nDemir gülle kaldı hemen yanında!\n\nŞimdi savurur o ağır bağı,\nEzilip geçer hasmın dimağı...\nZincir dolanırsa bir kez boynuna,\nKabrini kazar arenanın toprağı!"',
+        '"Kürek mahkumuydu küf zindanında,\nÖlüm kol gezerdi her bir anında...\nGhorak kırdı o prangayı bir gün,\nDemir gülle kaldı hemen yanında!\n\nŞimdi savurur o ağır bağı,\nEzilip geçer hasmın dimağı...\nZincir dolanırsa bir kez boynuna,\nKabrini kazar arenanın toprağı!"',
 
         // 11. Destan: Zarların Laneti ve Han Gecesi
-        '🎶 "Gece yarısı çöker Kırlangıç Hanı,\nMasada yitirir sarhoşlar canı...\nFıçı dibi görmüş körpe çıraklar,\nZarlar yuvarlar döker fermanı!\n\nKimi altın sayar kimi dertlenir,\nKiminin zırhı borca rehinir...\nOzan çalar sazı usul bir dille:\n\'Bu hana giren ecelden dirilir!\'"',
+        '"Gece yarısı çöker Kırlangıç Hanı,\nMasada yitirir sarhoşlar canı...\nFıçı dibi görmüş körpe çıraklar,\nZarlar yuvarlar döker fermanı!\n\nKimi altın sayar kimi dertlenir,\nKiminin zırhı borca rehinir...\nOzan çalar sazı usul bir dille:\n\'Bu hana giren ecelden dirilir!\'"',
 
         // 12. Destan: Kör Nişancı Kaelen'in Kirişi
-        '🎶 "Gözünde kara bez, elinde yay var,\nAdımların sesini nefeste duyar...\nMekanik kundak çıt ettiği an,\nZırhını delerek kalbine koyar!\n\nKaçışın yoktur o kara oktan,\nNasibini alırsın ecelden, yoktan...\nArenanın tozu sustuğu vakit,\nKaelen gülümser ezelden çoktan!"',
+        '"Gözünde kara bez, elinde yay var,\nAdımların sesini nefeste duyar...\nMekanik kundak çıt ettiği an,\nZırhını delerek kalbine koyar!\n\nKaçışın yoktur o kara oktan,\nNasibini alırsın ecelden, yoktan...\nArenanın tozu sustuğu vakit,\nKaelen gülümser ezelden çoktan!"',
 
         // 13. Destan: Yedi Taşın Gizemi
-        '🎶 "Yakut ateş saçar, safir korurmuş,\nZümrüt can verirken canı bulurmuş...\nAmetist çalarken hasmın kanını,\nObsidyen vurup aklı durdururmuş!\n\nOpal deler geçer en ağır zırhı,\nTopaz süratle savurur hırsı...\nYedi taşı yuvasına kakarsan,\nÖnünde diz çöker diyarın kırkı!"',
+        '"Yakut ateş saçar, safir korurmuş,\nZümrüt can verirken canı bulurmuş...\nAmetist çalarken hasmın kanını,\nObsidyen vurup aklı durdururmuş!\n\nOpal deler geçer en ağır zırhı,\nTopaz süratle savurur hırsı...\nYedi taşı yuvasına kakarsan,\nÖnünde diz çöker diyarın kırkı!"',
 
         // 14. Destan: Sazlık Mezbaha Palası
-        '🎶 "Sazlık mezbahadan sürgün bir kasap,\nBregash kimseden sormaz bir hesap...\nTers tutar palayı aşağı bakar,\nEti kemikten ayırır bin bir azap!\n\nGözünde merhamet arama boşa,\nAlışkın kan dökmeye dağa ve taşa...\nArenaya çıkıp palayı çekse,\nAcımaz ne krala ne de bir başa!"',
+        '"Sazlık mezbahadan sürgün bir kasap,\nBregash kimseden sormaz bir hesap...\nTers tutar palayı aşağı bakar,\nEti kemikten ayırır bin bir azap!\n\nGözünde merhamet arama boşa,\nAlışkın kan dökmeye dağa ve taşa...\nArenaya çıkıp palayı çekse,\nAcımaz ne krala ne de bir başa!"',
 
         // 15. Destan: Kum Akrebi Sarkoth'un Zehri
-        '🎶 "Çöl kumunun altında yatar pusuya,\nBenzer zehri en acı suya...\nSarkoth çeker iki kemik kamayı,\nHasmı dalar sonsuz bir uykuya!\n\nSıyrılır hamleden rüzgar misali,\nGörülmedi onun gibisinin hali...\nKıvrımlı çeliğin battığı yerde,\nKalmaz dövüşçünün derman mecali!"',
+        '"Çöl kumunun altında yatar pusuya,\nBenzer zehri en acı suya...\nSarkoth çeker iki kemik kamayı,\nHasmı dalar sonsuz bir uykuya!\n\nSıyrılır hamleden rüzgar misali,\nGörülmedi onun gibisinin hali...\nKıvrımlı çeliğin battığı yerde,\nKalmaz dövüşçünün derman mecali!"',
 
         // 16. Destan: Çifte Nakavtın Sessizliği
-        '🎶 "İki dev vuruştu şafak vaktinde,\nİnat vardı ikisinin de ahtında...\nBiri kargı vurdu, biri balyozu,\nİkisi de devrildi kumun tahtında!\n\nTribünler sustu, tellal bağırdı,\nHakemler arenaya doktor çağırdı...\nNe mağlup kaldı ne de bir galip,\nKader ikisine de toprağı kardı!"',
+        '"İki dev vuruştu şafak vaktinde,\nİnat vardı ikisinin de ahtında...\nBiri kargı vurdu, biri balyozu,\nİkisi de devrildi kumun tahtında!\n\nTribünler sustu, tellal bağırdı,\nHakemler arenaya doktor çağırdı...\nNe mağlup kaldı ne de bir galip,\nKader ikisine de toprağı kardı!"',
 
         // 17. Destan: Kadim Şampiyonların Hayaleti
-        '🎶 "Kırlangıç çukurunda yüz yıllık iz var,\nToprağın altında nice yiğit yatar...\nİlk şampiyonun kırık kılıcı,\nEski surların dibinde batar!\n\nGece çöktüğünde kumlardan sesler,\nKılıç şakırtısı, soluk nefesler...\nOzan Miras dinler o fısıltıyı,\nDestan olur dilden dile hevesler!"',
+        '"Kırlangıç çukurunda yüz yıllık iz var,\nToprağın altında nice yiğit yatar...\nİlk şampiyonun kırık kılıcı,\nEski surların dibinde batar!\n\nGece çöktüğünde kumlardan sesler,\nKılıç şakırtısı, soluk nefesler...\nOzan Miras dinler o fısıltıyı,\nDestan olur dilden dile hevesler!"',
 
         // 18. Destan: Kanatlı Teberin Dansı
-        '🎶 "Uzun saplı teber döner havada,\nNe zırh dayanır ne kalkan ovada...\nKanatlı ucuyla biçer safları,\nKurt gibi avlanır kuytu yuvada!\n\nKancası takılır rakip boynuna,\nÇeker hasmını kara koynuna...\nTeber kuşanmış bir deli yiğit,\nSon verir bu kanlı dünya oyununa!"',
+        '"Uzun saplı teber döner havada,\nNe zırh dayanır ne kalkan ovada...\nKanatlı ucuyla biçer safları,\nKurt gibi avlanır kuytu yuvada!\n\nKancası takılır rakip boynuna,\nÇeker hasmını kara koynuna...\nTeber kuşanmış bir deli yiğit,\nSon verir bu kanlı dünya oyununa!"',
 
         // 19. Destan: Şafak Yıldızının Gazabı
-        '🎶 "Dikenli çelik gürz iner semadan,\nHaber getirir kara beladan...\nŞafak yıldızı çarptığı zaman,\nFeryat yükselir cümle odadan!\n\nMiğferler bükülür, kemikler çatlar,\nYıkılır atlar, dağılır hatlar...\nKaba kuvvetin hükümdarlığı,\nBu demir tokmakla cana can katar!"',
+        '"Dikenli çelik gürz iner semadan,\nHaber getirir kara beladan...\nŞafak yıldızı çarptığı zaman,\nFeryat yükselir cümle odadan!\n\nMiğferler bükülür, kemikler çatlar,\nYıkılır atlar, dağılır hatlar...\nKaba kuvvetin hükümdarlığı,\nBu demir tokmakla cana can katar!"',
 
         // 20. Destan: Silahşörün Yolu ve Diyarın Kaderi
-        '🎶 "Sürgün geldin ama başın eğilmez,\nBu diyarda senin dengin bilinmez...\nKılıcın hakkıyla aldın her canı,\nKumda yazılan adın silinmez!\n\nKırlangıç Kasabası sana dar gelir,\nTaş Hisar ufukta yolu gösterir...\nYürü bre evlat, arkana bakma,\nDiyarın kaderi senin elindedir!"'
+        '"Sürgün geldin ama başın eğilmez,\nBu diyarda senin dengin bilinmez...\nKılıcın hakkıyla aldın her canı,\nKumda yazılan adın silinmez!\n\nKırlangıç Kasabası sana dar gelir,\nTaş Hisar ufukta yolu gösterir...\nYürü bre evlat, arkana bakma,\nDiyarın kaderi senin elindedir!"'
     ]
 }
 

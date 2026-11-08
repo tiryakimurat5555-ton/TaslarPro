@@ -25,7 +25,7 @@ export function SettingsScreen({ onNavigateBack, modifier }) {
           <Ikon name="ArrowBack" color={AmberGold} size={22} />
         </IconBtn>
         <T heading color={TextGold} weight="bold" size={20}>
-          ⚙️ Oyun Ayarları
+          Oyun Ayarları
         </T>
       </Row>
 
@@ -119,7 +119,7 @@ export function SettingsScreen({ onNavigateBack, modifier }) {
             <Spacer h={8} />
 
             <OutlinedBtn onPress={() => SoundManager.playSfx(R.raw.dovusbasla)} disabled={!sfxEnabled} radius={8} style={{ alignSelf: 'stretch' }}>
-              <T color={sfxEnabled ? AmberGold : alpha(AmberGold, 0.4)}>🔊 Efekt Sesini Test Et</T>
+              <T color={sfxEnabled ? AmberGold : alpha(AmberGold, 0.4)}>Efekt Sesini Test Et</T>
             </OutlinedBtn>
           </Column>
         </Card>
@@ -128,7 +128,7 @@ export function SettingsScreen({ onNavigateBack, modifier }) {
         <Card color={DarkSurfaceCard} radius={12} borderColor={DarkBorder} borderWidth={1} style={{ alignSelf: 'stretch' }}>
           <Column pad={16}>
             <T heading weight="bold" size={14} color={TextGold}>
-              ℹ️ Ses & Erişilebilirlik Hakkında
+              Ses & Erişilebilirlik Hakkında
             </T>
             <Spacer h={6} />
             <T size={12} color={alpha(TextLight, 0.85)} lineHeight={18}>

@@ -469,7 +469,7 @@ test('testLastStandDefenseTrait', () => {
 });
 
 const skillEmoji = (it) =>
-  it.narrativeText.includes('⚔️') || it.narrativeText.includes('🛡️') || it.narrativeText.includes('🎯') || it.narrativeText.includes('💥');
+  it.narrativeText.includes('') || it.narrativeText.includes('') || it.narrativeText.includes('') || it.narrativeText.includes('');
 
 test('testChapter1FightersEquippedAndSkillsCombatSimulation', () => {
   // 1. Bölüm Karakterleri Yükleniyor

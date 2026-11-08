@@ -27,7 +27,7 @@ export function GladiatorPsychologyCard({ psychology, style }) {
         <Row justify="between" style={{ paddingHorizontal: 12, paddingVertical: 8 }}>
           <Column>
             <T size={11} weight="bold" color={AmberGoldLight}>
-              🧠 Zihin & Psikolojik Mizaç
+              Zihin & Psikolojik Mizaç
             </T>
             <T size={13} weight="extrabold" color={TextGold}>
               {psychology.behavioralBadge}
@@ -44,13 +44,13 @@ export function GladiatorPsychologyCard({ psychology, style }) {
       {/* 7 Temel Karakteristik Seviye Barı */}
       <Surface radius={8} color={DarkSurfaceCard} borderColor={DarkBorder} borderWidth={1} style={{ alignSelf: 'stretch' }}>
         <Column pad={10} gap={8}>
-          <PsychologyStatBar title="Sadakat & Dostluk" value={psychology.loyalty} icon="🛡️" barColor={color(0xff2ecc71)} description={getLoyaltySummary(psychology.loyalty)} />
-          <PsychologyStatBar title="İhanet & Kalleşlik Riski" value={psychology.treachery} icon="🗡️" barColor={color(0xffe74c3c)} description={getTreacherySummary(psychology.treachery)} />
-          <PsychologyStatBar title="Çıkar & Bencillik" value={psychology.pragmatism} icon="💰" barColor={color(0xfff1c40f)} description={getPragmatismSummary(psychology.pragmatism)} />
-          <PsychologyStatBar title="Hırs & İhtiras" value={psychology.ambition} icon="⚡" barColor={color(0xffab47bc)} description={getAmbitionSummary(psychology.ambition)} />
-          <PsychologyStatBar title="Onur & Gurur" value={psychology.pride} icon="👑" barColor={color(0xff42a5f5)} description={getPrideSummary(psychology.pride)} />
-          <PsychologyStatBar title="Boşvermişlik & Kayıtsızlık" value={psychology.apathy} icon="💤" barColor={color(0xff90a4ae)} description={getApathySummary(psychology.apathy)} />
-          <PsychologyStatBar title="Vahşi İçgüdü (Kaotik Dürtü)" value={psychology.wildInstinct} icon="🐾" barColor={color(0xffff7043)} description={getInstinctSummary(psychology.wildInstinct)} />
+          <PsychologyStatBar title="Sadakat & Dostluk" value={psychology.loyalty} icon="" barColor={color(0xff2ecc71)} description={getLoyaltySummary(psychology.loyalty)} />
+          <PsychologyStatBar title="İhanet & Kalleşlik Riski" value={psychology.treachery} icon="" barColor={color(0xffe74c3c)} description={getTreacherySummary(psychology.treachery)} />
+          <PsychologyStatBar title="Çıkar & Bencillik" value={psychology.pragmatism} icon="" barColor={color(0xfff1c40f)} description={getPragmatismSummary(psychology.pragmatism)} />
+          <PsychologyStatBar title="Hırs & İhtiras" value={psychology.ambition} icon="" barColor={color(0xffab47bc)} description={getAmbitionSummary(psychology.ambition)} />
+          <PsychologyStatBar title="Onur & Gurur" value={psychology.pride} icon="" barColor={color(0xff42a5f5)} description={getPrideSummary(psychology.pride)} />
+          <PsychologyStatBar title="Boşvermişlik & Kayıtsızlık" value={psychology.apathy} icon="" barColor={color(0xff90a4ae)} description={getApathySummary(psychology.apathy)} />
+          <PsychologyStatBar title="Vahşi İçgüdü (Kaotik Dürtü)" value={psychology.wildInstinct} icon="" barColor={color(0xffff7043)} description={getInstinctSummary(psychology.wildInstinct)} />
         </Column>
       </Surface>
 
@@ -58,7 +58,7 @@ export function GladiatorPsychologyCard({ psychology, style }) {
       <Surface radius={8} color={color(0xff171513)} borderColor={alpha(AmberGoldDark, 0.4)} borderWidth={1} style={{ alignSelf: 'stretch' }}>
         <Column pad={10} gap={4}>
           <T size={11} weight="bold" color={AmberGold} heading>
-            🎲 Labirent & Saha Karar Eğilimi
+            Labirent & Saha Karar Eğilimi
           </T>
           <T size={10} color={TextLight}>{`• İttifak Tutumu: ${ittifak}`}</T>
           <T size={10} color={TextLight}>{`• Sandık Açıldığında: ${sandik}`}</T>

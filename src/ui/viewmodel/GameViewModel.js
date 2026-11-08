@@ -16,6 +16,9 @@ export class DecipherModalData extends Data {
 }
 Data.register(DecipherModalData);
 
+// Silahsız gösteride kritik () sayılan atış anlatımlarının ayırt edici parçaları (WrestlingCombatNarratives)
+const KRITIK_ATIS_IPUCLARI = ['tek hamlede omuzlayarak havaya dikti', 'yay gibi geriye büküldü'];
+
 export class GameViewModel {
   constructor(repository = new GameRepository()) {
     this.repository = repository;
@@ -250,7 +253,7 @@ export class GameViewModel {
 
   setArenaSubTab(index) {
     if (index >= 1 && index <= 3 && !this.canTravelToRegion2) {
-      this.showMessage('🔒 2v2 İttifakı, Silahsız Gösteri ve Labirent karşılaşmaları 2. Bölüm (Taş Hisar Garnizonu) fermanı açıldığında kullanılabilir!');
+      this.showMessage('2v2 İttifakı, Silahsız Gösteri ve Labirent karşılaşmaları 2. Bölüm (Taş Hisar Garnizonu) fermanı açıldığında kullanılabilir!');
       return;
     }
     this._arenaSubTab.value = index;
@@ -258,7 +261,7 @@ export class GameViewModel {
 
   spinDuoLottery() {
     this.repository.spinDuoLottery();
-    this.showMessage("🎲 İttifak Kur'ası Çekildi! Yeni yoldaş ve rakipler belirlendi.");
+    this.showMessage("İttifak Kur'ası Çekildi! Yeni yoldaş ve rakipler belirlendi.");
   }
 
   selectUnarmedShowType(type) {
@@ -267,17 +270,17 @@ export class GameViewModel {
 
   drawUnarmedOpponent() {
     this.repository.drawUnarmedOpponent();
-    this.showMessage('🦁 Yeni Gösteri Karşılaşması Belirlendi!');
+    this.showMessage('Yeni Gösteri Karşılaşması Belirlendi!');
   }
 
   selectLabyrinthTactic(tactic) {
     this.repository.selectLabyrinthTactic(tactic);
-    this.showMessage(`🛡️ Labirent Taktiği Seçildi: ${tactic.title}`);
+    this.showMessage(`Labirent Taktiği Seçildi: ${tactic.title}`);
   }
 
   drawLabyrinthMatch() {
     this.repository.drawLabyrinthMatch();
-    this.showMessage('🌀 Katakomp Dehlizi Yenilendi! Yeni tuzaklar ve 3v3 takımlar belirlendi.');
+    this.showMessage('Katakomp Dehlizi Yenilendi! Yeni tuzaklar ve 3v3 takımlar belirlendi.');
   }
 
   startLabyrinthRun(biome = null) {
@@ -314,7 +317,7 @@ export class GameViewModel {
 
   abandonLabyrinthRun() {
     this.repository.abandonLabyrinthRun();
-    this.showMessage('🚪 Labirentten geri çekildin.');
+    this.showMessage('Labirentten geri çekildin.');
   }
 
   startLabyrinthCombat(enemy) {
@@ -419,7 +422,7 @@ export class GameViewModel {
     if (this._isDayTransitioning.value) return;
     const currentDayState = this.repository.dayState.value;
     if (!currentDayState.isDailyArenaObligationMet) {
-      this.showMessage('⚠️ Arenaya uğramadan günü geçiremezsin! Ya kuradaki kendi maçına çıkmalı ya da bir dövüşçüye seyirci bahsi yatırmalısın!');
+      this.showMessage('Arenaya uğramadan günü geçiremezsin! Ya kuradaki kendi maçına çıkmalı ya da bir dövüşçüye seyirci bahsi yatırmalısın!');
       return;
     }
     this._launch(async () => {
@@ -725,7 +728,8 @@ export class GameViewModel {
           narrativeText: logStr,
           attackerName: this.player.value.name,
           defenderName: opp.name,
-          event: logStr.includes('⚡') ? CombatEvent.CRITICAL : logStr.includes('💫') ? CombatEvent.DODGED : CombatEvent.HIT,
+          // Kotlin'de '' ile işaretli kritik atış anlatımları; emojiler kaldırıldığı için anlatımın kendisinden tanınır
+          event: KRITIK_ATIS_IPUCLARI.some((ip) => logStr.includes(ip)) ? CombatEvent.CRITICAL : CombatEvent.HIT,
           damage: 0,
           defenderHpLeft: currentOpponentHp,
           defenderMaxHp: fullResult.opponentMaxHp,
@@ -892,7 +896,7 @@ export class GameViewModel {
   listenTavernTale(category = null) {
     if (!this.dayState.value.canEavesdropToday) {
       this.showMessage(
-        `🤫 Masadakiler şüphelenip fısıldaşmayı kesti! Bugünkü dinleme hakkın tükendi (${this.dayState.value.dailyEavesdropsDone}/${this.dayState.value.maxEavesdropsPerDay}).`,
+        `Masadakiler şüphelenip fısıldaşmayı kesti! Bugünkü dinleme hakkın tükendi (${this.dayState.value.dailyEavesdropsDone}/${this.dayState.value.maxEavesdropsPerDay}).`,
       );
       return;
     }

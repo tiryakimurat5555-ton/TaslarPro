@@ -389,7 +389,7 @@ function kotlinToString(x) {
                 if (isSingleBeast) {
                     logs.push(BeastCombatNarratives.generateMatadorManeuver(defender.name, attacker.name, true, defender.speed))
                 } else {
-                    logs.push(`💨 ${kotlinToString(defender)} çevik bir sıçrayışla ${kotlinToString(attacker)}'ın hücumunun üstünden aştı; dişler boş havayı kapattı!`)
+                    logs.push(`${kotlinToString(defender)} çevik bir sıçrayışla ${kotlinToString(attacker)}'ın hücumunun üstünden aştı; dişler boş havayı kapattı!`)
                 }
                 return
             }
@@ -432,10 +432,10 @@ function kotlinToString(x) {
                     // Canavar & Vahşet
                     // Not: Kotlin kaynağı burada "$fighter" ile nesnenin kendisini (data class toString) yerleştiriyor; aynen korundu.
                     const tearLog = newCondition.stage === 1
-                        ? `🩸 ${opponentName}'nin pençeleri ${kotlinToString(fighter)}'ın kuşamını boydan boya yırttı; deri ve kumaş parçaları kumlara savruldu!`
+                        ? `${opponentName}'nin pençeleri ${kotlinToString(fighter)}'ın kuşamını boydan boya yırttı; deri ve kumaş parçaları kumlara savruldu!`
                         : newCondition.stage === 2
-                          ? `🩸 Şiddetli pençe darbesiyle ${kotlinToString(fighter)}'ın göğüs koruması parçalandı; kan ve ter kızıl kum zeminine damlıyor!`
-                          : `🩸 ${kotlinToString(fighter)}'ın kıyafetleri neredeyse tamamen parçalandı; çıplak göğsü ve adeleleri pençe sıyrıklarıyla kaplanmış halde hayatta kalmak için kükrüyor!`
+                          ? `Şiddetli pençe darbesiyle ${kotlinToString(fighter)}'ın göğüs koruması parçalandı; kan ve ter kızıl kum zeminine damlıyor!`
+                          : `${kotlinToString(fighter)}'ın kıyafetleri neredeyse tamamen parçalandı; çıplak göğsü ve adeleleri pençe sıyrıklarıyla kaplanmış halde hayatta kalmak için kükrüyor!`
                     logs.push(tearLog)
                     logs.push(BeastCombatNarratives.generateBloodlustCrowd())
 

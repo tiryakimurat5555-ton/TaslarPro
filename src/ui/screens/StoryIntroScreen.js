@@ -153,7 +153,7 @@ export function StoryIntroScreen({ onFinishStory, modifier }) {
 
           <TextBtn label="Hikayeyi doğrudan geç ve oyuna başla" onPress={skipStory}>
             <T size={12} weight="bold" color={TextMuted}>
-              Hikayeyi Geç ⏩
+              Hikayeyi Geç
             </T>
           </TextBtn>
         </Row>
@@ -239,7 +239,7 @@ export function StoryIntroScreen({ onFinishStory, modifier }) {
             style={{ flex: currentPageIndex > 0 ? 1.2 : 1, height: 46 }}
           >
             <T weight="bold" size={14} color={sonSayfa ? Color.White : DarkBg} align="center">
-              {sonSayfa ? '⚔️ Kırlangıç Arenasına Adım At' : 'Sayfayı Çevir →'}
+              {sonSayfa ? 'Kırlangıç Arenasına Adım At' : 'Sayfayı Çevir →'}
             </T>
           </Btn>
         </Row>

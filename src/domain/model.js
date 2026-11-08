@@ -54,15 +54,15 @@ Data.register(Stats);
 // Equipment.kt
 // ===========================================================================
 export const EquipmentSlot = kt.defineEnum('EquipmentSlot', {
-  HEAD: { displayName: 'Başlık / Miğfer', icon: '🪖' },
-  CHEST: { displayName: 'Gövdelik / Zırh / Cübbe', icon: '🥋' },
-  GLOVES: { displayName: 'Eldiven', icon: '🧤' },
-  PANTS: { displayName: 'Pantolon & Tozluk', icon: '👖' },
-  BOOTS: { displayName: 'Ayakkabı & Çizme', icon: '👢' },
-  WEAPON: { displayName: 'Silah', icon: '⚔️' },
-  SHIELD: { displayName: 'Kalkan / İkincil El', icon: '🛡️' },
-  TALISMAN: { displayName: 'Tılsım & Mühür', icon: '🧿' },
-  RING: { displayName: 'Yüzük', icon: '💍' },
+  HEAD: { displayName: 'Başlık / Miğfer', icon: '' },
+  CHEST: { displayName: 'Gövdelik / Zırh / Cübbe', icon: '' },
+  GLOVES: { displayName: 'Eldiven', icon: '' },
+  PANTS: { displayName: 'Pantolon & Tozluk', icon: '' },
+  BOOTS: { displayName: 'Ayakkabı & Çizme', icon: '' },
+  WEAPON: { displayName: 'Silah', icon: '' },
+  SHIELD: { displayName: 'Kalkan / İkincil El', icon: '' },
+  TALISMAN: { displayName: 'Tılsım & Mühür', icon: '' },
+  RING: { displayName: 'Yüzük', icon: '' },
 });
 // Geriye dönük uyumluluk alias'ları (companion object)
 EquipmentSlot.HELMET = EquipmentSlot.HEAD;
@@ -79,7 +79,7 @@ export const ItemRarity = kt.defineEnum('ItemRarity', {
 export class EquipmentSpecialTrait extends Data {
   static T = 'EquipmentSpecialTrait';
   static defaults() {
-    return { id: undefined, name: undefined, description: undefined, icon: '✨' };
+    return { id: undefined, name: undefined, description: undefined, icon: '' };
   }
 }
 Data.register(EquipmentSpecialTrait);
@@ -202,43 +202,43 @@ Data.register(Equipment);
 export const WeaponCategory = kt.defineEnum('WeaponCategory', {
   SWORD: {
     displayName: 'Kılıç',
-    icon: '🗡️',
+    icon: '',
     description: 'Dengeli kesiş ve savurma darbeleri. Hem atak hem savunmada istikrarlıdır.',
     combatStyle: 'Dengeli & Çevik',
   },
   SPEAR: {
     displayName: 'Mızrak & Kargı',
-    icon: '🔱',
+    icon: '',
     description: 'Uzak menzilden delici hamleler. Düşmanı yaklaştırmadan zırh aralıklarına saplanır.',
     combatStyle: 'Mesafe & Zırh Delme',
   },
   DAGGER: {
     displayName: 'Hançer & Kama',
-    icon: '🔪',
+    icon: '',
     description: 'Kısa, seri ve beklenmedik darbeler. Yüksek hız ve kritik hasar avantajı sunar.',
     combatStyle: 'Hız & Kritik Vuruş',
   },
   MACE: {
     displayName: 'Gürz & Topuz',
-    icon: '🔨',
+    icon: '',
     description: 'Ağır küt darbeler. Kemik kırar, düşmanı sersemletir ve ağır zırhı ezer.',
     combatStyle: 'Ezici Güç & Sersemletme',
   },
   BOW: {
     displayName: 'Yay & Arbalet',
-    icon: '🏹',
+    icon: '',
     description: 'Menzilli yay veya mekanik arbalet. Rüzgar ve mesafe hesabı ile uzaktan avlar.',
     combatStyle: 'Menzil & Keskin Nişan',
   },
   STAFF: {
     displayName: 'Asa & Değnek',
-    icon: '🦯',
+    icon: '',
     description: 'Kadim oymalarla işlenmiş odun veya taş asa. Manevi odak ve savunma direnci verir.',
     combatStyle: 'Odak & Manevi Direnç',
   },
   AXE: {
     displayName: 'Balta & Nacak',
-    icon: '🪓',
+    icon: '',
     description: 'Vahşi ve ağır savuruşlar. Zırh parçalar, derin yarıklar açar.',
     combatStyle: 'Yıkıcı Darbe & Parçalama',
   },
@@ -251,19 +251,19 @@ export const ArmorCategory = kt.defineEnum('ArmorCategory', {
   // Gövde Zırhları
   LIGHT_ARMOR: {
     displayName: 'Hafif Zırh',
-    icon: '🥋',
+    icon: '',
     slot: EquipmentSlot.CHEST,
     description: 'İşlenmiş deri, keten ve esnek avcı yelekleri. Hareketi kısıtlamaz, sıyrılma şansı verir.',
   },
   HEAVY_ARMOR: {
     displayName: 'Ağır Zırh',
-    icon: '🛡️',
+    icon: '',
     slot: EquipmentSlot.CHEST,
     description: 'Dövme demir göğüslük, çelik plaka ve perçinli zincir zırh. Azami darbe emilimi ve can sağlar.',
   },
   ROBE: {
     displayName: 'Cübbe & Kaftan',
-    icon: '👘',
+    icon: '',
     slot: EquipmentSlot.CHEST,
     description: 'Kadim kumaşlardan dokunmuş cübbe ve bilge kaftanı. Manevi direnç ve hafiflik sunar.',
   },
@@ -271,19 +271,19 @@ export const ArmorCategory = kt.defineEnum('ArmorCategory', {
   // Başlıklar
   HELMET: {
     displayName: 'Miğfer',
-    icon: '🪖',
+    icon: '',
     slot: EquipmentSlot.HEAD,
     description: 'Burunluklu demir miğfer, gladyatör kaskı veya çelik başlık. Kafa darbelerine karşı üstün koruma.',
   },
   ASSASSIN_HOOD: {
     displayName: 'Kumaş Başlık & Peçe',
-    icon: '🥷',
+    icon: '',
     slot: EquipmentSlot.HEAD,
     description: 'Koyu kapüşon, deri maske veya ipek peçe. Kimliği gizler, çevikliği ve kritik isabeti artırır.',
   },
   MISC_HEADGEAR: {
     displayName: 'Çeşitli Başlık',
-    icon: '🧢',
+    icon: '',
     slot: EquipmentSlot.HEAD,
     description: 'Kumaş sargı, kürk kalpak, avcı şapkası veya madeni taç.',
   },
@@ -291,7 +291,7 @@ export const ArmorCategory = kt.defineEnum('ArmorCategory', {
   // El
   GLOVES: {
     displayName: 'Eldiven',
-    icon: '🧤',
+    icon: '',
     slot: EquipmentSlot.GLOVES,
     description: 'Deri eldiven, perçinli gladyatör elceği veya zırhlı kolluk. Kavramayı güçlendirir ve elleri korur.',
   },
@@ -299,7 +299,7 @@ export const ArmorCategory = kt.defineEnum('ArmorCategory', {
   // Bacak
   PANTS: {
     displayName: 'Pantolon & Tozluk',
-    icon: '👖',
+    icon: '',
     slot: EquipmentSlot.PANTS,
     description: 'Kaba keten pantolon, deri dizlik veya halkalı bacak zırhı.',
   },
@@ -307,7 +307,7 @@ export const ArmorCategory = kt.defineEnum('ArmorCategory', {
   // Ayak
   BOOTS: {
     displayName: 'Ayakkabı & Çizme',
-    icon: '👢',
+    icon: '',
     slot: EquipmentSlot.BOOTS,
     description: 'Deri sandalet, bağcıklı çizme veya çelik mahmuzlu avcı botu. Çevik adımlar ve denge sağlar.',
   },
@@ -319,31 +319,31 @@ export const ArmorCategory = kt.defineEnum('ArmorCategory', {
 export const AccessoryCategory = kt.defineEnum('AccessoryCategory', {
   SHIELD: {
     displayName: 'Kalkan',
-    icon: '🛡️',
+    icon: '',
     slot: EquipmentSlot.SHIELD,
     description: 'Tahta parmaklık kalkan, çelik kalkan veya kule kalkanı. Sol elde taşınarak blok şansı ve savunma sağlar.',
   },
   ARROW: {
     displayName: 'Ok & Cephane',
-    icon: '🎯',
+    icon: '',
     slot: EquipmentSlot.SHIELD,
     description: 'Menzilli yay ve arbaletler için özel temrenli oklar, sadaklar ve çelik cıvalar. İkincil elde taşınır.',
   },
   TOME: {
     displayName: 'Büyü Kitabı & Kadim Tomar',
-    icon: '📖',
+    icon: '',
     slot: EquipmentSlot.SHIELD,
     description: 'Mistik asalarla birlikte ikincil elde (sol el) taşınan kadim büyü kitapları, efsunlu tomarlar ve rünik yazıtlar.',
   },
   RING: {
     displayName: 'Yüzük',
-    icon: '💍',
+    icon: '',
     slot: EquipmentSlot.RING,
     description: 'Mühürlü bronz yüzük, gümüş halka veya değerli taşlı takı.',
   },
   TALISMAN: {
     displayName: 'Tılsım & Mühür',
-    icon: '🧿',
+    icon: '',
     slot: EquipmentSlot.TALISMAN,
     description: 'Kemik muska, hanedan mührü, mühürlü taş, kadim kolye veya koruma tılsımı.',
   },
@@ -355,27 +355,27 @@ export const AccessoryCategory = kt.defineEnum('AccessoryCategory', {
 export const UsableCategory = kt.defineEnum('UsableCategory', {
   POTION: {
     displayName: 'İksir',
-    icon: '🧪',
+    icon: '',
     description: 'Şişelenmiş şifa iksirleri, enerji tentürleri ve simya karışımları.',
   },
   HERB: {
     displayName: 'Şifalı Bitki',
-    icon: '🌿',
+    icon: '',
     description: 'Dağ kekikleri, kurutulmuş kökler, yara otları ve şifalı lapalar.',
   },
   SCROLL: {
     displayName: 'Tomar & Ferman',
-    icon: '📜',
+    icon: '',
     description: 'Kadim parşömenler, mühürlü fermanlar, gizemli teknikler ve büyü yazıtları.',
   },
   OINTMENT: {
     displayName: 'Merhem & Yağ',
-    icon: '🍯',
+    icon: '',
     description: 'Silaha ve vücuda sürülen zehirli yağlar, koruyucu merhemler ve savaş lapaları.',
   },
   PEHLIVAN_OIL: {
     displayName: 'Er Meydanı Yağı & Merhem',
-    icon: '🏺',
+    icon: '',
     description: 'Güreşçilerin ve pehlivanların er meydanına çıkmadan önce adelelerine sürdükleri geleneksel yağlar ve ovuşlar.',
   },
 });
@@ -472,24 +472,24 @@ Data.register(ConsumableItem);
 // Gem.kt
 // ===========================================================================
 export const GemType = kt.defineEnum('GemType', {
-  YAKUT: { displayName: 'Yakut', icon: '🔴', primaryStatDescription: '+Hasar & Saldırı Gücü' },
-  SAFIR: { displayName: 'Safir', icon: '🔵', primaryStatDescription: '+Zırh & Korunma' },
-  ZUMRUT: { displayName: 'Zümrüt', icon: '🟢', primaryStatDescription: '+Maksimum Can & Hayat' },
-  TOPAZ: { displayName: 'Topaz', icon: '🟡', primaryStatDescription: '+Hız & Çeviklik' },
-  AMETIST: { displayName: 'Ametist', icon: '🟣', primaryStatDescription: '+Kritik Vuruş Şansı' },
-  OPAL: { displayName: 'Opal', icon: '⚪', primaryStatDescription: '+Zırh Delme (% Delme)' },
-  OBSIDYEN: { displayName: 'Obsidyen', icon: '⚫', primaryStatDescription: '+Sersemletme Şansı' },
-  AKIK: { displayName: 'Kırmızı Akik', icon: '🟤', primaryStatDescription: '+Can Çalma (% Lifesteal)' },
-  KUVARS: { displayName: 'Dumanlı Kuvars', icon: '🌫️', primaryStatDescription: '+Savuşturma & Sıyrılma' },
-  AYTASI: { displayName: 'Mistik Aytaşı', icon: '🌙', primaryStatDescription: '+Maks Can & Zırh' },
-  KEHRIBAR: { displayName: 'Kadim Kehribar', icon: '🍯', primaryStatDescription: '+Maks Can & Hasar' },
-  YESIM: { displayName: 'Gök Yeşimi', icon: '❇️', primaryStatDescription: '+Yüksek Can Dirayeti' },
-  MALAKIT: { displayName: 'Derin Malakit', icon: '🦚', primaryStatDescription: '+Zırh & Kalkan Blok' },
-  PIRIT: { displayName: 'Pirit', icon: '✨', primaryStatDescription: '+Dengeli Hasar' },
-  LAPIS: { displayName: 'Lapis Lazuli', icon: '🔷', primaryStatDescription: '+Hasar & Hız' },
-  AKVAMARIN: { displayName: 'Akvamarin', icon: '💧', primaryStatDescription: '+Maks Can & Hız' },
-  GRANAT: { displayName: 'Granat (Lal)', icon: '🍷', primaryStatDescription: '+Hasar & Kritik Vuruş' },
-  TURMALIN: { displayName: 'Turmalin', icon: '🌈', primaryStatDescription: '+Bütüncül Nitelik (Can/Hasar/Zırh/Hız)' },
+  YAKUT: { displayName: 'Yakut', icon: '', primaryStatDescription: '+Hasar & Saldırı Gücü' },
+  SAFIR: { displayName: 'Safir', icon: '', primaryStatDescription: '+Zırh & Korunma' },
+  ZUMRUT: { displayName: 'Zümrüt', icon: '', primaryStatDescription: '+Maksimum Can & Hayat' },
+  TOPAZ: { displayName: 'Topaz', icon: '', primaryStatDescription: '+Hız & Çeviklik' },
+  AMETIST: { displayName: 'Ametist', icon: '', primaryStatDescription: '+Kritik Vuruş Şansı' },
+  OPAL: { displayName: 'Opal', icon: '', primaryStatDescription: '+Zırh Delme (% Delme)' },
+  OBSIDYEN: { displayName: 'Obsidyen', icon: '', primaryStatDescription: '+Sersemletme Şansı' },
+  AKIK: { displayName: 'Kırmızı Akik', icon: '', primaryStatDescription: '+Can Çalma (% Lifesteal)' },
+  KUVARS: { displayName: 'Dumanlı Kuvars', icon: '', primaryStatDescription: '+Savuşturma & Sıyrılma' },
+  AYTASI: { displayName: 'Mistik Aytaşı', icon: '', primaryStatDescription: '+Maks Can & Zırh' },
+  KEHRIBAR: { displayName: 'Kadim Kehribar', icon: '', primaryStatDescription: '+Maks Can & Hasar' },
+  YESIM: { displayName: 'Gök Yeşimi', icon: '', primaryStatDescription: '+Yüksek Can Dirayeti' },
+  MALAKIT: { displayName: 'Derin Malakit', icon: '', primaryStatDescription: '+Zırh & Kalkan Blok' },
+  PIRIT: { displayName: 'Pirit', icon: '', primaryStatDescription: '+Dengeli Hasar' },
+  LAPIS: { displayName: 'Lapis Lazuli', icon: '', primaryStatDescription: '+Hasar & Hız' },
+  AKVAMARIN: { displayName: 'Akvamarin', icon: '', primaryStatDescription: '+Maks Can & Hız' },
+  GRANAT: { displayName: 'Granat (Lal)', icon: '', primaryStatDescription: '+Hasar & Kritik Vuruş' },
+  TURMALIN: { displayName: 'Turmalin', icon: '', primaryStatDescription: '+Bütüncül Nitelik (Can/Hasar/Zırh/Hız)' },
 });
 /** companion object: fromNameOrNull (büyük/küçük harf duyarsız) */
 GemType.fromNameOrNull = (name) => GemType.values().find((it) => it.name.toLowerCase() === String(name).toLowerCase()) ?? null;
@@ -583,7 +583,7 @@ export class Gem extends Data {
   }
 
   get displayName() {
-    return `${this.type.icon} ${this.type.displayName} (Sv. ${this.level})`;
+    return `${this.type.displayName} (Sv. ${this.level})`;
   }
 
   get effectSummary() {
@@ -832,56 +832,56 @@ export const ArenaDiscipline = kt.defineEnum('ArenaDiscipline', {
   SOLO_1V1: {
     tabIndex: 0,
     title: '1v1 Düello & Lig',
-    shortTitle: '⚔️ 1v1',
-    icon: '⚔️',
+    shortTitle: '1v1',
+    icon: '',
     badge: 'Lig Maçı',
     description: 'Geleneksel birebir arena kum çukuru ve garnizon puanlı lig karşılaşması.',
   },
   DUO_2V2: {
     tabIndex: 1,
     title: "2v2 İttifak Kur'ası",
-    shortTitle: '👥 2v2',
-    icon: '👥',
+    shortTitle: '2v2',
+    icon: '',
     badge: 'Çark & Kura',
     description: 'Çarkın dönüşüyle rastgele bir yoldaş ve iki rakip gladyatörün eşleştiği, değişken zemin kurallı ikili ittifak arenası.',
   },
   UNARMED_SHOW: {
     tabIndex: 2,
     title: 'Silahsız Gösteri (Pankration)',
-    shortTitle: '🥋 Silahsız',
-    icon: '🥋',
+    shortTitle: 'Silahsız',
+    icon: '',
     badge: 'Er Meydanı',
     description: 'Silah ve zırhların yasak olduğu; tekil canavarlara, yaratık sürülerini veya pehlivanlara karşı saf kas, çeviklik ve teknik gösterisi.',
   },
   LABYRINTH_3V3: {
     tabIndex: 3,
     title: 'Labirent (3v3 Katakomp)',
-    shortTitle: '🌀 Labirent',
-    icon: '🌀',
+    shortTitle: 'Labirent',
+    icon: '',
     badge: 'Taktik & Tuzak',
     description: 'Dehlizlerdeki dinamik tuzakların, dar koridorların ve 3 kişilik kura takımlarının katakomp hayatta kalma mücadelesi.',
   },
   BETTING: {
     tabIndex: 4,
     title: 'Tribün Bahisleri',
-    shortTitle: '🎲 Bahis',
-    icon: '🎲',
+    shortTitle: 'Bahis',
+    icon: '',
     badge: 'Tribün',
     description: 'Günün diğer gladyatör maçlarını canlı izleyip altın yatırarak kazanç elde etme alanı.',
   },
   LEAGUE_STANDINGS: {
     tabIndex: 5,
     title: 'Lig Puan Durumu',
-    shortTitle: '🏆 Lig',
-    icon: '🏆',
+    shortTitle: 'Lig',
+    icon: '',
     badge: 'Puan Tablosu',
     description: 'Gladyatörlerin puan, galibiyet, mağlubiyet ve averaj tablosu.',
   },
   ARENA_LOGS: {
     tabIndex: 6,
     title: 'Arena Günlükleri',
-    shortTitle: '📜 Günlük',
-    icon: '📜',
+    shortTitle: 'Günlük',
+    icon: '',
     badge: 'Havadis',
     description: 'Arenadaki son dövüşler, tellal duyuruları ve gladyatör hareketleri.',
   },
@@ -927,7 +927,7 @@ export class DuoMatchState extends Data {
     new BattlefieldCondition({
       id: 'loose_sand',
       name: 'Gevşek Çöl Kumu',
-      icon: '⚡',
+      icon: '',
       focusStatName: 'Çeviklik ve Hız',
       description: 'Zemin derin ve batak kumla kaplı. Ağır zırhlı dövüşçüler batarken çevik ve hafif olanlar sıyrılarak çifte hamle vurur. Saf güç burada yavaş kalır!',
       tacticalHint: 'Hızı yüksek partnerler burada iki kat etkili olur.',
@@ -935,7 +935,7 @@ export class DuoMatchState extends Data {
     new BattlefieldCondition({
       id: 'narrow_pass',
       name: 'Dar Taş Boğaz',
-      icon: '🛡️',
+      icon: '',
       focusStatName: 'Dayanıklılık ve Kalkan',
       description: 'Meydan iki dev granit blokla daraltılmış. Manevra şansı yok; sadece sağlam kalkan, yüksek zırh ve canı olanlar ayakta kalır.',
       tacticalHint: 'Ağır zırhlı ve kalkanlı müttefikler hasarı göğüsler.',
@@ -943,7 +943,7 @@ export class DuoMatchState extends Data {
     new BattlefieldCondition({
       id: 'wind_tempest',
       name: 'Kuzey Fırtınası Menfezi',
-      icon: '🌪️',
+      icon: '',
       focusStatName: 'Taktik ve Dövüş Sanatları',
       description: 'Sur menfezinden esen dondurucu rüzgar gözleri yakıyor. Dövüş yeteneklerinin bekleme süresi hızlanır, sanatı güçlü olan üstün gelir.',
       tacticalHint: 'Güçlü yetenekleri olan gladyatörler maçı erkenden bitirir.',
@@ -951,7 +951,7 @@ export class DuoMatchState extends Data {
     new BattlefieldCondition({
       id: 'blood_pit',
       name: 'Kızıl Çamur Çukuru',
-      icon: '🩸',
+      icon: '',
       focusStatName: 'Kondisyon ve Vahşet',
       description: 'Ayakların kaydığı kanlı çamurda kılıç tutmak bile hüner ister. Kritik vuruş şansı yükselir ve darbeler kemik çatlatır.',
       tacticalHint: 'Kritik hasarı yüksek savaşçılar ölümcül darbeler indirir.',
@@ -962,10 +962,10 @@ Data.register(DuoMatchState);
 
 // === Silahsız Gösteri (Pankration) Modeli ===
 export const UnarmedShowType = kt.defineEnum('UnarmedShowType', {
-  SINGLE_BEAST: { title: 'Vahşi Canavar Boğuşması', icon: '🦁', categoryName: 'Tekil Canavar' },
-  BEAST_PACK: { title: 'Aç Kurt/Sırtlan Sürüsü', icon: '🐺', categoryName: 'Yaratık Grubu' },
-  GLADIATOR_BRAWL: { title: 'Garnizon Pehlivan Güreşi', icon: '🤼', categoryName: 'Bilek Güreşi / İnsan' },
-  AESTHETIC_DUEL: { title: 'Zarafet & Estetik Düellosu', icon: '✨', categoryName: 'Estetik / İnsan' },
+  SINGLE_BEAST: { title: 'Vahşi Canavar Boğuşması', icon: '', categoryName: 'Tekil Canavar' },
+  BEAST_PACK: { title: 'Aç Kurt/Sırtlan Sürüsü', icon: '', categoryName: 'Yaratık Grubu' },
+  GLADIATOR_BRAWL: { title: 'Garnizon Pehlivan Güreşi', icon: '', categoryName: 'Bilek Güreşi / İnsan' },
+  AESTHETIC_DUEL: { title: 'Zarafet & Estetik Düellosu', icon: '', categoryName: 'Estetik / İnsan' },
 });
 
 export class UnarmedOpponent extends Data {
@@ -1008,7 +1008,7 @@ export class UnarmedMatchState extends Data {
       id: 'unarmed_hyena',
       name: 'Yaralı Çöl Sırtlanı',
       title: 'Kemik Kıran Yırtıcı',
-      icon: '🐆',
+      icon: '',
       showType: UnarmedShowType.SINGLE_BEAST,
       health: 220,
       rawStrength: 24,
@@ -1021,7 +1021,7 @@ export class UnarmedMatchState extends Data {
       id: 'unarmed_bull',
       name: 'Kuduz Bozkır Boğası',
       title: 'Demir Boynuzlu Canavar',
-      icon: '🐂',
+      icon: '',
       showType: UnarmedShowType.SINGLE_BEAST,
       health: 290,
       rawStrength: 30,
@@ -1034,7 +1034,7 @@ export class UnarmedMatchState extends Data {
       id: 'unarmed_pack_2',
       name: '2 Kuduz Çöl Sırtlanı',
       title: 'İkili Çene Tuzağı',
-      icon: '🐆',
+      icon: '',
       showType: UnarmedShowType.BEAST_PACK,
       health: 230,
       rawStrength: 22,
@@ -1047,7 +1047,7 @@ export class UnarmedMatchState extends Data {
       id: 'unarmed_pack',
       name: '3 Aç Bozkır Tazısı',
       title: 'Sürü Avcıları',
-      icon: '🐺',
+      icon: '',
       showType: UnarmedShowType.BEAST_PACK,
       health: 260,
       rawStrength: 20,
@@ -1060,7 +1060,7 @@ export class UnarmedMatchState extends Data {
       id: 'unarmed_pack_4',
       name: '4 Yırtıcı Dağ Kurdu',
       title: 'Dörtlü Kuşatma Sürüsü',
-      icon: '🐺',
+      icon: '',
       showType: UnarmedShowType.BEAST_PACK,
       health: 300,
       rawStrength: 22,
@@ -1074,7 +1074,7 @@ export class UnarmedMatchState extends Data {
       id: 'unarmed_brawler',
       name: 'Demir Bilek Torok',
       title: 'Garnizon Baş Pehlivanı',
-      icon: '🤼',
+      icon: '',
       showType: UnarmedShowType.GLADIATOR_BRAWL,
       health: 320,
       rawStrength: 32,
@@ -1087,7 +1087,7 @@ export class UnarmedMatchState extends Data {
       id: 'unarmed_aesthetic_duelist',
       name: 'Saten Düellocu Leander',
       title: 'Gül Bahçesi Şampiyonu',
-      icon: '🪡',
+      icon: '',
       showType: UnarmedShowType.AESTHETIC_DUEL,
       health: 250,
       rawStrength: 20,
@@ -1119,10 +1119,10 @@ export class LabyrinthTrapCondition extends Data {
 Data.register(LabyrinthTrapCondition);
 
 export const LabyrinthTactic = kt.defineEnum('LabyrinthTactic', {
-  BALANCED: { title: 'Dengeli Formasyon', icon: '⚖️', bonusDesc: 'Tüm takım eşit savunma ve hücum dengesini korur.' },
-  VANGUARD_RUSH: { title: 'Öncü Tank Yarma', icon: '🛡️', bonusDesc: 'Öndeki güçlü savaşçı hasarı çeker, arkadakiler güvenle vurur.' },
-  FLANK_AMBUSH: { title: 'Karanlıkta Çevik Pusu', icon: '⚡', bonusDesc: 'Çevikliği yüksek dövüşçüler sütun arkasından ilk vuruş kritik şansı yakalar.' },
-  TRAP_BAIT: { title: 'Tuzak Tuzağı', icon: '🎯', bonusDesc: 'Düşmanları dehlizdeki zehirli oklara doğru geri çekerek tuzağa düşürür.' },
+  BALANCED: { title: 'Dengeli Formasyon', icon: '', bonusDesc: 'Tüm takım eşit savunma ve hücum dengesini korur.' },
+  VANGUARD_RUSH: { title: 'Öncü Tank Yarma', icon: '', bonusDesc: 'Öndeki güçlü savaşçı hasarı çeker, arkadakiler güvenle vurur.' },
+  FLANK_AMBUSH: { title: 'Karanlıkta Çevik Pusu', icon: '', bonusDesc: 'Çevikliği yüksek dövüşçüler sütun arkasından ilk vuruş kritik şansı yakalar.' },
+  TRAP_BAIT: { title: 'Tuzak Tuzağı', icon: '', bonusDesc: 'Düşmanları dehlizdeki zehirli oklara doğru geri çekerek tuzağa düşürür.' },
 });
 
 export class LabyrinthMatchState extends Data {
@@ -1147,7 +1147,7 @@ export class LabyrinthMatchState extends Data {
     new LabyrinthTrapCondition({
       id: 'poison_darts',
       name: 'Zehirli Duvar Mazgalları',
-      icon: '🏹',
+      icon: '',
       trapType: 'Mekanik Basınç Plakası',
       dangerLevel: 'Yüksek',
       testStat: 'Çeviklik',
@@ -1157,7 +1157,7 @@ export class LabyrinthMatchState extends Data {
     new LabyrinthTrapCondition({
       id: 'rising_water',
       name: 'Yükselen Sarnıç Suyu',
-      icon: '💧',
+      icon: '',
       trapType: 'Çevresel Tehdit',
       dangerLevel: 'Orta',
       testStat: 'Dayanıklılık',
@@ -1167,7 +1167,7 @@ export class LabyrinthMatchState extends Data {
     new LabyrinthTrapCondition({
       id: 'falling_rubble',
       name: 'Çöken Antik Kemer',
-      icon: '🪨',
+      icon: '',
       trapType: 'Yapısal Çöküş',
       dangerLevel: 'Kritik',
       testStat: 'Farkındalık / Hız',
@@ -1182,9 +1182,9 @@ Data.register(LabyrinthMatchState);
 // CharacterProfile.kt
 // ===========================================================================
 export const CharacterCategory = kt.defineEnum('CharacterCategory', {
-  GLADIATOR: { title: 'Arena Gladyatörü', icon: '⚔️' },
-  TOWN_FOLK: { title: 'Kasaba Sakini', icon: '🏘️' },
-  GARRISON: { title: 'Garnizon Şahsiyeti', icon: '🏰' },
+  GLADIATOR: { title: 'Arena Gladyatörü', icon: '' },
+  TOWN_FOLK: { title: 'Kasaba Sakini', icon: '' },
+  GARRISON: { title: 'Garnizon Şahsiyeti', icon: '' },
 });
 
 export class CharacterProfile extends Data {
@@ -1519,32 +1519,32 @@ export const DuoTeam = kt.defineEnum('DuoTeam', {
 export const DuoSynergyType = kt.defineEnum('DuoSynergyType', {
   TANK_AND_STRIKER: {
     title: 'Kalkan & Çekiç Dengesi',
-    icon: '🛡️⚔️',
+    icon: '',
     description: 'Biri darbeleri göğüsleyip dikkati çekerken diğeri açılan gedikten ölümcül infaz darbeleri indirir.',
   },
   TWIN_SHADOWS: {
     title: 'Çifte Gölge Kıskacı',
-    icon: '🌪️⚡',
+    icon: '',
     description: 'İki çevik avcı aynı anda iki kanattan süzülerek hasmın kör noktalarını çapraz ateşe alır.',
   },
   SPELL_AND_STEEL: {
     title: 'Büyü & Çelik Rezonansı',
-    icon: '🔮🗡️',
+    icon: '',
     description: 'Arkadan gelen elementel baskı ve menzilli destek, ön saftaki savaşçının yolunu açar.',
   },
   IRON_PHALANX: {
     title: 'Aşılmaz İkiz Sur',
-    icon: '🧱🛡️',
+    icon: '',
     description: 'İki ağır zırhlı omuz omuza vererek dar alanda aşılmaz bir savunma barikatı kurar.',
   },
   TACTICAL_DISRUPTOR: {
     title: 'Taktiksel Zaaf Avcıları',
-    icon: '🎯🩸',
+    icon: '',
     description: 'Biri hasmı sersemletip dengesini bozarken diğeri kanayan yaraya acımasızca yüklenir.',
   },
   BALANCED_COHESION: {
     title: 'Dengeli Muharebe İttifakı',
-    icon: '🤝⚖️',
+    icon: '',
     description: 'Nitelikleri birbirini dengeleyen, disiplinli ve senkronize bir takım çalışması.',
   },
 });
@@ -1555,27 +1555,27 @@ export const DuoSynergyType = kt.defineEnum('DuoSynergyType', {
 export const DuoDiscordType = kt.defineEnum('DuoDiscordType', {
   RECKLESS_BERSERK: {
     title: 'Vahşet Kargaşası & Kabza Çarpışması',
-    icon: '💥⚠️',
+    icon: '',
     penaltyDescription: 'İki gözü dönmüş savaşçı aynı anda savrulunca silahlarının kabzaları birbirine çarpar ve hamle ıskalanır.',
   },
   SPEED_GAP: {
     title: 'Kopuk Muharebe Ritimleri',
-    icon: '🏃‍♂️🐢',
+    icon: '',
     penaltyDescription: 'Çevik dövüşçü tek başına ileri fırlayıp 2 hedefin ortasında kalırken ağır müttefiki geride yetişemez.',
   },
   GREEDY_RIVALRY: {
     title: 'Şan Hırsı & Hedef Rekabeti',
-    icon: '👑⚡',
+    icon: '',
     penaltyDescription: 'İki kibirli savaşçı son vuruşu yapma hırsıyla birbirinin önünü kesip savunma gardını düşürür.',
   },
   CROWDED_CHAOS: {
     title: 'Dar Alan Manevra Kısıtı',
-    icon: '🧱🌪️',
+    icon: '',
     penaltyDescription: 'Meydanın darlığında geniş silah savuruşları yoldaşın hareket alanını kısıtlar.',
   },
   NONE: {
     title: 'Kusursuz Koordinasyon',
-    icon: '✨',
+    icon: '',
     penaltyDescription: 'Sürtüşme yok.',
   },
 });
@@ -1638,32 +1638,32 @@ Data.register(DuoFighterLiveHp);
 export const PersonalityArchetype = kt.defineEnum('PersonalityArchetype', {
   HIRSLI: {
     title: 'Hırslı & Disiplinli',
-    icon: '⚡',
+    icon: '',
     description: 'Kazandığı tüm altını demircide silah dövdürmeye, çelik perçinlere ve kum torbası talimlerine harcar. Nitelikleri düzenli artar.',
   },
   TEMBEL: {
     title: 'Tembel & Keyifçi',
-    icon: '🍺',
+    icon: '',
     description: "Kazandığı parayı Kırlangıç Hanı'nda kumara ve fıçılara döker. Bazen kumarda zengin olur veya şanslı muska bulur; bazen de ertesi gün arenaya baş ağrısıyla (Mahmur) çıkar.",
   },
   VAHSI: {
     title: 'Vahşi & Acımasız',
-    icon: '🩸',
+    icon: '',
     description: 'Savunmayı ve zırhı zayıflık sayar. Bütün enerjisini silahlarını jilet gibi bilemeye ve acımasız kanatıcı vuruşlara adar.',
   },
   KURNAZ: {
     title: 'Kurnaz & Fırsatçı',
-    icon: '🐍',
+    icon: '',
     description: 'Arenadaki maçlara gizlice bahis oynar, zehirli ot karışımları satın alır ve hasmını yorup sıyrılma taktikleri geliştirir.',
   },
   GURURLU: {
     title: 'Onurlu Şövalye',
-    icon: '🛡️',
+    icon: '',
     description: 'Kalkanını usta zırhçılara perçinletir, ağır zırhını parlatır ve savunma disiplinini mükemmelleştirir. Hileye asla başvurmaz.',
   },
   GIZEMLI: {
     title: 'Mistik Münzevi',
-    icon: '🔮',
+    icon: '',
     description: 'Tuz çölü kehanetleri, karga kemiği muskaları ve kadim mühürlerle dövüşür. Sezgileriyle rakiplerinin hamlelerini boşa çıkarır.',
   },
 });
@@ -1723,13 +1723,13 @@ export class FighterPsychology extends Data {
    */
   get dominantTraits() {
     const list = [
-      new PsychologyTraitSummary({ name: 'Sadakat & Dostluk', value: this.loyalty, icon: '🛡️', description: getLoyaltyDesc(this.loyalty) }),
-      new PsychologyTraitSummary({ name: 'İhanet Riski', value: this.treachery, icon: '🗡️', description: getTreacheryDesc(this.treachery) }),
-      new PsychologyTraitSummary({ name: 'Çıkar & Bencillik', value: this.pragmatism, icon: '💰', description: getPragmatismDesc(this.pragmatism) }),
-      new PsychologyTraitSummary({ name: 'Hırs & İhtiras', value: this.ambition, icon: '⚡', description: getAmbitionDesc(this.ambition) }),
-      new PsychologyTraitSummary({ name: 'Onur & Gurur', value: this.pride, icon: '👑', description: getPrideDesc(this.pride) }),
-      new PsychologyTraitSummary({ name: 'Boşvermişlik', value: this.apathy, icon: '💤', description: getApathyDesc(this.apathy) }),
-      new PsychologyTraitSummary({ name: 'Vahşi İçgüdü', value: this.wildInstinct, icon: '🐾', description: getInstinctDesc(this.wildInstinct) }),
+      new PsychologyTraitSummary({ name: 'Sadakat & Dostluk', value: this.loyalty, icon: '', description: getLoyaltyDesc(this.loyalty) }),
+      new PsychologyTraitSummary({ name: 'İhanet Riski', value: this.treachery, icon: '', description: getTreacheryDesc(this.treachery) }),
+      new PsychologyTraitSummary({ name: 'Çıkar & Bencillik', value: this.pragmatism, icon: '', description: getPragmatismDesc(this.pragmatism) }),
+      new PsychologyTraitSummary({ name: 'Hırs & İhtiras', value: this.ambition, icon: '', description: getAmbitionDesc(this.ambition) }),
+      new PsychologyTraitSummary({ name: 'Onur & Gurur', value: this.pride, icon: '', description: getPrideDesc(this.pride) }),
+      new PsychologyTraitSummary({ name: 'Boşvermişlik', value: this.apathy, icon: '', description: getApathyDesc(this.apathy) }),
+      new PsychologyTraitSummary({ name: 'Vahşi İçgüdü', value: this.wildInstinct, icon: '', description: getInstinctDesc(this.wildInstinct) }),
     ];
     return kt.take(kt.sortedByDescending(list, (it) => it.value), 2);
   }
@@ -1738,18 +1738,18 @@ export class FighterPsychology extends Data {
    * Karakterin genel mizaç rozeti.
    */
   get behavioralBadge() {
-    if (this.wildInstinct >= 80) return '🐾 Kaotik & İçgüdüsel';
-    if (this.treachery >= 70) return '🗡️ Tehlikeli Fırsatçı';
-    if (this.pride >= 80 && this.treachery <= 25) return '👑 Onurlu Savaşçı';
-    if (this.loyalty >= 75) return '🛡️ Sadık Yoldaş';
-    if (this.apathy >= 75) return '💤 Duyarsız & Kayıtsız';
-    if (this.pragmatism >= 75) return '💰 Soğuk Hesapçı';
-    if (this.ambition >= 80) return '⚡ İhtiraslı Yırtıcı';
-    return '⚖️ Dengeli Mizaç';
+    if (this.wildInstinct >= 80) return 'Kaotik & İçgüdüsel';
+    if (this.treachery >= 70) return 'Tehlikeli Fırsatçı';
+    if (this.pride >= 80 && this.treachery <= 25) return 'Onurlu Savaşçı';
+    if (this.loyalty >= 75) return 'Sadık Yoldaş';
+    if (this.apathy >= 75) return 'Duyarsız & Kayıtsız';
+    if (this.pragmatism >= 75) return 'Soğuk Hesapçı';
+    if (this.ambition >= 80) return 'İhtiraslı Yırtıcı';
+    return 'Dengeli Mizaç';
   }
 
   // ==============================================================
-  // 🎲 KARAR MEKANİZMALARI (YÜZDELİK HESAP + İÇGÜDÜSEL KAOS ZARI)
+  // KARAR MEKANİZMALARI (YÜZDELİK HESAP + İÇGÜDÜSEL KAOS ZARI)
   // ==============================================================
 
   /**
@@ -2064,10 +2064,10 @@ Data.register(EnemyWeakness);
 // GladiatorSkill.kt
 // ===========================================================================
 export const SkillType = kt.defineEnum('SkillType', {
-  ATTACK: { displayName: 'Taarruz', icon: '⚔️' },
-  DEFENSE: { displayName: 'Savunma', icon: '🛡️' },
-  TACTICAL: { displayName: 'Taktik & Kurnazlık', icon: '🎯' },
-  ULTIMATE: { displayName: 'Nihai Vuruş', icon: '💥' },
+  ATTACK: { displayName: 'Taarruz', icon: '' },
+  DEFENSE: { displayName: 'Savunma', icon: '' },
+  TACTICAL: { displayName: 'Taktik & Kurnazlık', icon: '' },
+  ULTIMATE: { displayName: 'Nihai Vuruş', icon: '' },
 });
 
 export class GladiatorSkill extends Data {
@@ -2091,15 +2091,15 @@ Data.register(GladiatorSkill);
 // Home.kt
 // ===========================================================================
 export const RoomType = kt.defineEnum('RoomType', {
-  REST_ROOM: { title: 'İstirahatgah (Yatak Odası)', icon: '🛏️' },
-  TRAINING_GROUND: { title: 'Talimgah (İdman Meydanı)', icon: '🥊' },
-  TREASURY: { title: 'Hazine Odası & Kasa', icon: '🪙' },
-  INFIRMARY: { title: 'Şifahane & Simya Mahzeni', icon: '🧪' },
-  TROPHY_HALL: { title: 'Kupa ve Nam Salonu', icon: '🏆' },
-  LIBRARY_STUDY: { title: 'Kadim Harita & Kütüphane', icon: '📜' },
-  ARMORY_WORKSHOP: { title: 'Biley Taşı & Silahhane', icon: '⚔️' },
-  GARDEN_CELLAR: { title: 'Şifalı Ot Bahçesi & Mahzen', icon: '🌿' },
-  STORAGE_VAULT: { title: 'Depo Mahzeni & Sandık Odası', icon: '📦' },
+  REST_ROOM: { title: 'İstirahatgah (Yatak Odası)', icon: '' },
+  TRAINING_GROUND: { title: 'Talimgah (İdman Meydanı)', icon: '' },
+  TREASURY: { title: 'Hazine Odası & Kasa', icon: '' },
+  INFIRMARY: { title: 'Şifahane & Simya Mahzeni', icon: '' },
+  TROPHY_HALL: { title: 'Kupa ve Nam Salonu', icon: '' },
+  LIBRARY_STUDY: { title: 'Kadim Harita & Kütüphane', icon: '' },
+  ARMORY_WORKSHOP: { title: 'Biley Taşı & Silahhane', icon: '' },
+  GARDEN_CELLAR: { title: 'Şifalı Ot Bahçesi & Mahzen', icon: '' },
+  STORAGE_VAULT: { title: 'Depo Mahzeni & Sandık Odası', icon: '' },
 });
 
 export class RoomTierInfo extends Data {
@@ -2144,42 +2144,42 @@ Data.register(HomeRoom);
 export const LabyrinthBiomeType = kt.defineEnum('LabyrinthBiomeType', {
   KADIM_SARNIC: {
     title: 'Kadim Su Sarnıcı',
-    icon: '🌊',
+    icon: '',
     shortDescription: 'Yosunlu su kanalları, boğucu derinlikler ve paslı su bentleri.',
     dominantHazardType: 'Boğulma, Kaygan Zemin, Su Canavarları',
     visualAtmosphere: 'Yeşilimsi fosforlu su yansımaları, tavandan düşen ağır damlalar ve küf kokusu.',
   },
   VOLKANIK_KORLUK: {
     title: 'Volkanik Kükürt Fırınları',
-    icon: '🌋',
+    icon: '',
     shortDescription: 'Kızgın lav bacaları, kükürt dumanları ve kor ateşi ızgaraları.',
     dominantHazardType: 'Kızgın Alev, Yakıcı Duman, Sıcaklık Bunalımı',
     visualAtmosphere: 'Karanlığı yaran kırmızı lav yarıkları, titreşen sıcak hava dalgası ve geniz yakan kül.',
   },
   CURUK_SARMASIK: {
     title: 'Çürümüş Bataklık & Zehirli Sarmaşıklar',
-    icon: '🌿',
+    icon: '',
     shortDescription: 'Zehirli mantar sporları, eti dağlayan sarmaşıklar ve asit çukurları.',
     dominantHazardType: 'Zehirli Gaz, Asit Eritmesi, Kök Prangaları',
     visualAtmosphere: 'Mor parıldayan mantar küfleri, çamurlaşmış zemin ve ağır organik çürüme kokusu.',
   },
   DIPSIZ_YARIK: {
     title: 'Dipsiz Uçurum & Asma Köprüler',
-    icon: '🌉',
+    icon: '',
     shortDescription: 'Kör karanlığa inen derin uçurumlar, sallanan tahta köprüler ve fırtına rüzgarları.',
     dominantHazardType: 'Düşme Riski, Çöken Taşlar, Denge Kaybı',
     visualAtmosphere: 'Aşağıdan esen dondurucu yeraltı cereyanı, gıcırdayan halatlar ve sonsuz bir boşluk.',
   },
   CARKLI_MEKANIZMA: {
     title: 'Çarklı Dişliler & Ezici Granit Bloklar',
-    icon: '⚙️',
+    icon: '',
     shortDescription: 'Pirinç dişliler, inip kalkan tonluk taş bloklar ve dönen dev tırpanlar.',
     dominantHazardType: 'Ezilme, Kesilme, Basınç Tuzakları',
     visualAtmosphere: 'Ağır taş ve bronz sürtünme sesleri, yağ kokusu ve duvarlardan fırlayan mekanizmalar.',
   },
   KUTSAL_KRIPTA: {
     title: 'Kadim Rünik Kripta & Lahit Dehlizleri',
-    icon: '🔮',
+    icon: '',
     shortDescription: 'Gölge oyunları, illüzyonlu taş duvarlar ve rünik ışık prizmaları.',
     dominantHazardType: 'Zihinsel Sersemlik, Gizli Çiviler, Kadim Lanet',
     visualAtmosphere: 'Göz kırpan kadim rün yazıları, fısıldayan gölgeler ve soğuk mermer sessizliği.',
@@ -2190,12 +2190,12 @@ export const LabyrinthBiomeType = kt.defineEnum('LabyrinthBiomeType', {
  * Labirentteki tehlike / engel kategorisi.
  */
 export const HazardCategory = kt.defineEnum('HazardCategory', {
-  CRUSHING: { title: 'Ezici & Darbeli', icon: '🧱' },
-  POISON_ACID: { title: 'Zehir & Asit', icon: '🧪' },
-  FIRE_HEAT: { title: 'Alev & Kükürt', icon: '🔥' },
-  CHASM_FALL: { title: 'Uçurum & Düşme', icon: '🕳️' },
-  MECHANICAL_BLADE: { title: 'Mekanik & Bıçak', icon: '⚙️' },
-  SUBMERGED_WATER: { title: 'Su & Balçık', icon: '💧' },
+  CRUSHING: { title: 'Ezici & Darbeli', icon: '' },
+  POISON_ACID: { title: 'Zehir & Asit', icon: '' },
+  FIRE_HEAT: { title: 'Alev & Kükürt', icon: '' },
+  CHASM_FALL: { title: 'Uçurum & Düşme', icon: '' },
+  MECHANICAL_BLADE: { title: 'Mekanik & Bıçak', icon: '' },
+  SUBMERGED_WATER: { title: 'Su & Balçık', icon: '' },
 });
 
 /**
@@ -2226,12 +2226,12 @@ Data.register(LabyrinthHazard);
  * Labirent bulmaca türü.
  */
 export const PuzzleType = kt.defineEnum('PuzzleType', {
-  GEAR_LEVER: { title: 'Dişli & Kol Mekanizması', icon: '🕹️' },
-  WEIGHT_PRESSURE: { title: 'Ağırlık & Basınç Kaidesi', icon: '⚖️' },
-  LIGHT_REFRACTION: { title: 'Işık & Ayna Odaklama', icon: '🔦' },
-  SECRET_LATCH: { title: 'Gizli Mandal & Yanılsama Duvarı', icon: '🧱' },
-  WATER_VALVE: { title: 'Su Vanası & Bent Açma', icon: '🚰' },
-  RUNE_MATCHING: { title: 'Rün Sıralama & Kutsal Semboller', icon: '✨' },
+  GEAR_LEVER: { title: 'Dişli & Kol Mekanizması', icon: '' },
+  WEIGHT_PRESSURE: { title: 'Ağırlık & Basınç Kaidesi', icon: '' },
+  LIGHT_REFRACTION: { title: 'Işık & Ayna Odaklama', icon: '' },
+  SECRET_LATCH: { title: 'Gizli Mandal & Yanılsama Duvarı', icon: '' },
+  WATER_VALVE: { title: 'Su Vanası & Bent Açma', icon: '' },
+  RUNE_MATCHING: { title: 'Rün Sıralama & Kutsal Semboller', icon: '' },
 });
 
 /**
@@ -2291,12 +2291,12 @@ Data.register(LabyrinthAtmosphereEvent);
  * Arka planda diğer gladyatörlerin başına gelen olayların oyuncuya bildirim yankısı.
  */
 export const GladiatorEchoType = kt.defineEnum('GladiatorEchoType', {
-  BETRAYAL: { icon: '🗡️', title: 'Kalleşlik & İhanet' },
-  ALLIANCE: { icon: '🛡️', title: 'Geçici İttifak' },
-  TRAP_TRIGGER: { icon: '💥', title: 'Tuzak Kazası' },
-  LOOT_FIGHT: { icon: '💰', title: 'Hazine Kapışması' },
-  BEAST_ENCOUNTER: { icon: '🐾', title: 'Canavar Savaşı' },
-  DEATH_ELIMINATION: { icon: '☠️', title: 'Elenme & Ölüm' },
+  BETRAYAL: { icon: '', title: 'Kalleşlik & İhanet' },
+  ALLIANCE: { icon: '', title: 'Geçici İttifak' },
+  TRAP_TRIGGER: { icon: '', title: 'Tuzak Kazası' },
+  LOOT_FIGHT: { icon: '', title: 'Hazine Kapışması' },
+  BEAST_ENCOUNTER: { icon: '', title: 'Canavar Savaşı' },
+  DEATH_ELIMINATION: { icon: '', title: 'Elenme & Ölüm' },
 });
 
 export class LabyrinthGladiatorEcho extends Data {
@@ -2318,9 +2318,9 @@ Data.register(LabyrinthGladiatorEcho);
  * Labirent odalarında bulunan hazine sandıklarının kademesi.
  */
 export const LabyrinthChestRarity = kt.defineEnum('LabyrinthChestRarity', {
-  SIRADAN: { title: 'Eski Tahta Sandık', icon: '📦', minGold: 25, maxGold: 50 },
-  NADIR: { title: 'Demir Kilitli Sandık', icon: '🗝️', minGold: 55, maxGold: 95 },
-  EFSANEVI: { title: 'Kadim Rünik Hazine Sandığı', icon: '👑', minGold: 110, maxGold: 220 },
+  SIRADAN: { title: 'Eski Tahta Sandık', icon: '', minGold: 25, maxGold: 50 },
+  NADIR: { title: 'Demir Kilitli Sandık', icon: '', minGold: 55, maxGold: 95 },
+  EFSANEVI: { title: 'Kadim Rünik Hazine Sandığı', icon: '', minGold: 110, maxGold: 220 },
 });
 
 /**
@@ -2575,7 +2575,7 @@ Data.register(SkillOrb);
 const IRON_WILL = new SkillOrb({
   id: 'skill_iron_will',
   name: 'Demir İrade',
-  icon: '🛡️',
+  icon: '',
   description: 'Ölümün eşiğinde zihni dinginleştirip kasları çelik gibi germe tekniği.',
   triggerConditionText: 'Can %40 altına indiğinde otomatik tetiklenir',
   effectSummary: '2 hamle boyunca alınan hasarı %30 kırar ve +6 geçici Zırh sağlar',
@@ -2585,7 +2585,7 @@ const IRON_WILL = new SkillOrb({
 const CRUSHING_IMPACT = new SkillOrb({
   id: 'skill_crushing_impact',
   name: 'Ezici Balyoz',
-  icon: '💥',
+  icon: '',
   description: 'Rakibin en savunmasız anında tüm vücut ağırlığını tek noktaya odaklama sanatı.',
   triggerConditionText: 'Her 4 saldırı hamlesinde bir kesin tetiklenir',
   effectSummary: 'Zırhı hiçe sayan +10 saf darbe vurur ve rakibin sıradaki hamlesini boşa düşürür',
@@ -2595,7 +2595,7 @@ const CRUSHING_IMPACT = new SkillOrb({
 const COUNTER_FLURRY = new SkillOrb({
   id: 'skill_counter_flurry',
   name: 'Akrobatik Karşı Vuruş',
-  icon: '⚡',
+  icon: '',
   description: 'Düşman silahından sıyrılırken açılan boşluğa tereddütsüz saplanan yıldırım darbesi.',
   triggerConditionText: 'Düşman saldırısından başarıyla sıyrıldığında (Dodge) tetiklenir',
   effectSummary: 'Sıfır gecikmeyle anında bedava +%50 hasarlı karşı hücum savurur',
@@ -2606,7 +2606,7 @@ const COUNTER_FLURRY = new SkillOrb({
 const EAST_DRAGON = new SkillOrb({
   id: 'skill_east_dragon',
   name: 'Ejder Nefesi Hamlesi',
-  icon: '🐉',
+  icon: '',
   description: 'Doğu tapınaklarından kalma kadim odaklanma; silahın ucunu kor gibi ısıtıp rakibin zırh gardını eritir.',
   triggerConditionText: 'Saldırı hamlelerinde her 3 vuruşta bir tetiklenir',
   effectSummary: '+%40 Ağır Hasar vurur ve rakibin zırh gardını kırarak savunmasız bırakır',
@@ -2616,7 +2616,7 @@ const EAST_DRAGON = new SkillOrb({
 const EAST_CRANE = new SkillOrb({
   id: 'skill_east_crane',
   name: 'Turna Zarafeti',
-  icon: '🕊️',
+  icon: '',
   description: 'Rüzgarın akışına uyarak rakibin vuruş çizgisinden tüy gibi süzülme ve anında açık kollama sanatı.',
   triggerConditionText: 'Düşman hücum ettiğinde veya can %50 altına indiğinde tetiklenir',
   effectSummary: 'Düşman saldırısından kaçınma şansını +%20 artırır ve anında karşı açık yakalar',
@@ -2626,7 +2626,7 @@ const EAST_CRANE = new SkillOrb({
 const EAST_STORM = new SkillOrb({
   id: 'skill_east_storm',
   name: 'Fırtına Kesisi',
-  icon: '🌪️',
+  icon: '',
   description: 'Göz açıp kapayıncaya dek art arda indirilen seri ve kesici rüzgar darbeleri.',
   triggerConditionText: 'Saldırı hamlelerinde %35 ihtimalle tetiklenir',
   effectSummary: '+%30 Seri darbe hasarı ve rakipte 3 tur süren kan kaybı (Bleed) açar',
@@ -2636,7 +2636,7 @@ const EAST_STORM = new SkillOrb({
 const EAST_NIGHT = new SkillOrb({
   id: 'skill_east_night',
   name: 'Gölge Adımı',
-  icon: '🌑',
+  icon: '',
   description: 'Rakibin göz kırpma anında gölgelere karışarak kör noktasına sızma ve arkadan vurma sanatı.',
   triggerConditionText: 'Her 4 turda bir veya rakip sersemlediğinde tetiklenir',
   effectSummary: 'Garanti Kritik Vuruş (+%50 Hasar) sağlar ve rakibi 1 tur afallatır',
@@ -2646,7 +2646,7 @@ const EAST_NIGHT = new SkillOrb({
 const EAST_TIGER = new SkillOrb({
   id: 'skill_east_tiger',
   name: 'Kaplan Pençesi',
-  icon: '🐅',
+  icon: '',
   description: 'Vahşi bir içgüdüyle düşmanın etini parçalayan amansız ve vahşi doğu pençe savuruşu.',
   triggerConditionText: 'Can %60 üzerindeyken yapılan saldırılarda %40 ihtimalle tetiklenir',
   effectSummary: '+%35 Yırtıcı Hasar vurur ve rakibin yaralarından derin kan fışkırtır',
@@ -2656,7 +2656,7 @@ const EAST_TIGER = new SkillOrb({
 const EAST_MOUNTAIN = new SkillOrb({
   id: 'skill_east_mountain',
   name: 'Kadim Dağ Duruşu',
-  icon: '🏔️',
+  icon: '',
   description: 'Köklerini toprağın derinliklerine salmış bir ulu dağ gibi sarsılmaz beden mukavemeti.',
   triggerConditionText: 'Ağır bir darbe alındığında otomatik tetiklenir',
   effectSummary: 'Gelen darbeyi yarıya indirir, +8 Geçici Zırh sağlar ve sersemletmeyi bozar',
@@ -2687,21 +2687,21 @@ export const StarterSkills = {
 export const TrainingType = kt.defineEnum('TrainingType', {
   ENDURANCE: {
     title: 'Fırtına Geçidi Su Taşıma (Dayanıklılık)',
-    icon: '🏺',
+    icon: '',
     description: 'Sarp kayalıklarda sırtında dolu küplerle koşu. Ciğerlerini ve bacak kaslarını çelikleştirir.',
     costGold: 15,
     costHp: 10,
   },
   STRENGTH: {
     title: 'Granit Kaya İtme & Kas Koordinasyonu (Kuvvet)',
-    icon: '🪨',
+    icon: '',
     description: 'Ağır granit blokları zincirlerle çekme ve itme. Omuz ve sırt adelelerini patlatır.',
     costGold: 20,
     costHp: 15,
   },
   AGILITY: {
     title: 'Çelik Çember & Refleks Talimi (Çeviklik)',
-    icon: '🎯',
+    icon: '',
     description: 'Dönen sivri uçlu halkalar arasında darbe almadan sıyrılma ve ayak oyunu koordinasyonu.',
     costGold: 25,
     costHp: 20,
@@ -2740,12 +2740,12 @@ Data.register(TrainerStatus);
 // StorageChest.kt
 // ===========================================================================
 export const ChestType = kt.defineEnum('ChestType', {
-  JEWELRY_CHEST: { id: 'chest_jewelry', displayName: 'Mücevher Sandığı', icon: '💎', description: 'Ekipman taşları ve cevher parçaları saklamak için kadife sandık.', resourceKey: 'gem' },
-  STONE_CHEST: { id: 'chest_stone', displayName: 'Taş Sandığı', icon: '🪨', description: 'Yontulmuş ve ham inşaat taşları deposu.', resourceKey: 'stone' },
-  IRON_CHEST: { id: 'chest_iron', displayName: 'Demir Sandığı', icon: '⛏️', description: 'Demir cevheri, külçeler ve maden yatakları.', resourceKey: 'iron' },
-  CLOTH_CHEST: { id: 'chest_cloth', displayName: 'Kumaş & İp Sandığı', icon: '🧵', description: 'Keten, ipek ve halat stokları.', resourceKey: 'cloth' },
-  WOOD_CHEST: { id: 'chest_wood', displayName: 'Odun Sandığı', icon: '🪵', description: 'Meşe, gürgen ve sert keresteler.', resourceKey: 'wood' },
-  HERB_CHEST: { id: 'chest_herb', displayName: 'Şifalı Bitki Sandığı', icon: '🌿', description: 'Kurutulmuş otlar, kökler ve simya malzemeleri.', resourceKey: 'herb' },
+  JEWELRY_CHEST: { id: 'chest_jewelry', displayName: 'Mücevher Sandığı', icon: '', description: 'Ekipman taşları ve cevher parçaları saklamak için kadife sandık.', resourceKey: 'gem' },
+  STONE_CHEST: { id: 'chest_stone', displayName: 'Taş Sandığı', icon: '', description: 'Yontulmuş ve ham inşaat taşları deposu.', resourceKey: 'stone' },
+  IRON_CHEST: { id: 'chest_iron', displayName: 'Demir Sandığı', icon: '', description: 'Demir cevheri, külçeler ve maden yatakları.', resourceKey: 'iron' },
+  CLOTH_CHEST: { id: 'chest_cloth', displayName: 'Kumaş & İp Sandığı', icon: '', description: 'Keten, ipek ve halat stokları.', resourceKey: 'cloth' },
+  WOOD_CHEST: { id: 'chest_wood', displayName: 'Odun Sandığı', icon: '', description: 'Meşe, gürgen ve sert keresteler.', resourceKey: 'wood' },
+  HERB_CHEST: { id: 'chest_herb', displayName: 'Şifalı Bitki Sandığı', icon: '', description: 'Kurutulmuş otlar, kökler ve simya malzemeleri.', resourceKey: 'herb' },
 });
 /** companion object: fromId */
 ChestType.fromId = (id) => ChestType.values().find((it) => it.id === id) ?? null;
@@ -2774,7 +2774,7 @@ export class HarvestResult extends Data {
       success: undefined,
       narrative: undefined,
       resourceName: null,
-      resourceIcon: '📦',
+      resourceIcon: '',
       amount: 0,
       isShard: false,
       shardType: null,
@@ -2787,10 +2787,10 @@ Data.register(HarvestResult);
 // Tavern.kt
 // ===========================================================================
 export const RumorCategory = kt.defineEnum('RumorCategory', {
-  WORLD_LORE: { displayName: 'Diyar Efsaneleri', badgeIcon: '📜' },
-  TOWN_TROUBLE: { displayName: 'Kasabalının Dertleri', badgeIcon: '🍂' },
-  ARENA_GOSSIP: { displayName: 'Arena Fısıltıları', badgeIcon: '⚔️' },
-  WANDERER_TALE: { displayName: 'Gezgin & Kervan Hikayeleri', badgeIcon: '🐪' },
+  WORLD_LORE: { displayName: 'Diyar Efsaneleri', badgeIcon: '' },
+  TOWN_TROUBLE: { displayName: 'Kasabalının Dertleri', badgeIcon: '' },
+  ARENA_GOSSIP: { displayName: 'Arena Fısıltıları', badgeIcon: '' },
+  WANDERER_TALE: { displayName: 'Gezgin & Kervan Hikayeleri', badgeIcon: '' },
 });
 
 export class TavernTale extends Data {

@@ -1606,9 +1606,9 @@ export const TextTemplateEngine = {
     } else if (wLower.includes('azam surları') || wLower.includes('ayna yüzeyli') || wLower.includes('statik zırh') || wLower.includes('deniz rüzgarı')) {
       if (event === CombatEvent.BLOCKED) {
         return kt.random([
-          '🏰 [AZAM SURLARI!] Darbe granit bloklar gibi sağlam siperde yankılandı; çelik darbe taşa çarpan cam gibi dağıldı!',
-          '🪞 [AYNA SİPERİ!] Kalkanın parlak yüzeyi darbenin açısını bükerek kıvılcımları saldırganın yüzüne fırlattı!',
-          '⚡ [STATİK DİRENÇ!] Darbe temas ettiği an zırhtan mavi arklar saçıldı; saldırganın kolları sarsıntıyla titredi!'
+          '[AZAM SURLARI!] Darbe granit bloklar gibi sağlam siperde yankılandı; çelik darbe taşa çarpan cam gibi dağıldı!',
+          '[AYNA SİPERİ!] Kalkanın parlak yüzeyi darbenin açısını bükerek kıvılcımları saldırganın yüzüne fırlattı!',
+          '[STATİK DİRENÇ!] Darbe temas ettiği an zırhtan mavi arklar saçıldı; saldırganın kolları sarsıntıyla titredi!'
         ]);
       } else if (event === CombatEvent.CRITICAL || event === CombatEvent.HIT) {
         return `${attacker} ${weapon} siperinin masif çelik göbeğiyle ${defender}'ın göğsüne sertçe yüklendi! (-${damage} Can)`;
@@ -1662,34 +1662,34 @@ export const TextTemplateEngine = {
     const tLower = trait.name.toLowerCase();
     if (tLower.includes('ayna') || tLower.includes('yankı')) {
       return kt.random([
-        `🪞 [${trait.name.toUpperCase()}!] ${defender}'ın aynalı yüzeyi darbenin kinetik şokunu soğurup kör edici bir ışık prizmasıyla ${attacker}'a geri patlattı! (-${damage} Yansıtma Hasarı)`,
-        `🪞 [${trait.name.toUpperCase()}!] ${attacker}'ın hücumu pürüzsüz ayna çeliğinde kırıldı; yansıyan güç aynı şiddetle göğsüne geri çarptı! (-${damage} Yansıtma Hasarı)`
+        `[${trait.name.toUpperCase()}!] ${defender}'ın aynalı yüzeyi darbenin kinetik şokunu soğurup kör edici bir ışık prizmasıyla ${attacker}'a geri patlattı! (-${damage} Yansıtma Hasarı)`,
+        `[${trait.name.toUpperCase()}!] ${attacker}'ın hücumu pürüzsüz ayna çeliğinde kırıldı; yansıyan güç aynı şiddetle göğsüne geri çarptı! (-${damage} Yansıtma Hasarı)`
       ]);
     } else if (tLower.includes('statik') || tLower.includes('şok') || tLower.includes('yıldırım')) {
       return kt.random([
-        `⚡ [${trait.name.toUpperCase()}!] Darbenin temasıyla ${defender}'ın zırhındaki statik rünler alevlendi; çatırdayan mavi yıldırımlar ${attacker}'ın ellerini ve kollarını kavurarak geri çarptı! (-${damage} Yansıtma Hasarı)`,
-        `⚡ [${trait.name.toUpperCase()}!] ${defender}'ın plaka zırhı yüksek voltajlı bir ark salarak ${attacker}'ın sinirlerini uyuşturdu ve darbeyi sahibine iade etti! (-${damage} Yansıtma Hasarı)`
+        `[${trait.name.toUpperCase()}!] Darbenin temasıyla ${defender}'ın zırhındaki statik rünler alevlendi; çatırdayan mavi yıldırımlar ${attacker}'ın ellerini ve kollarını kavurarak geri çarptı! (-${damage} Yansıtma Hasarı)`,
+        `[${trait.name.toUpperCase()}!] ${defender}'ın plaka zırhı yüksek voltajlı bir ark salarak ${attacker}'ın sinirlerini uyuşturdu ve darbeyi sahibine iade etti! (-${damage} Yansıtma Hasarı)`
       ]);
     } else if (tLower.includes('diken') || tLower.includes('kemik') || tLower.includes('çivi')) {
       return kt.random([
-        `🩸 [${trait.name.toUpperCase()}!] ${attacker} hücum ederken ${defender}'ın zırhındaki keskin çelik dikenlere çarptı; kanlı çiviler saldırganın etine saplanarak geri tepti! (-${damage} Yansıtma Hasarı)`,
-        `🩸 [${trait.name.toUpperCase()}!] Zırhtan dışarı taşan çelik sivrilikler darbeyi emmeyip ${attacker}'ın uzuvlarına batarak etini yırttı! (-${damage} Yansıtma Hasarı)`
+        `[${trait.name.toUpperCase()}!] ${attacker} hücum ederken ${defender}'ın zırhındaki keskin çelik dikenlere çarptı; kanlı çiviler saldırganın etine saplanarak geri tepti! (-${damage} Yansıtma Hasarı)`,
+        `[${trait.name.toUpperCase()}!] Zırhtan dışarı taşan çelik sivrilikler darbeyi emmeyip ${attacker}'ın uzuvlarına batarak etini yırttı! (-${damage} Yansıtma Hasarı)`
       ]);
     } else if (tLower.includes('tsunami') || tLower.includes('su') || tLower.includes('dalga')) {
       return kt.random([
-        `🌊 [${trait.name.toUpperCase()}!] ${defender}'ın etrafındaki su bariyeri darbeyi emip oluşan tazyikli basınç dalgasıyla ${attacker}'ı geriye savurdu! (-${damage} Yansıtma Hasarı)`,
-        `🌊 [${trait.name.toUpperCase()}!] Tsunami rünü patlayarak savrulan darbeyi bir girdap gibi yuttu ve geri tepmeyle ${attacker}'ın dengesini dağıttı! (-${damage} Yansıtma Hasarı)`
+        `[${trait.name.toUpperCase()}!] ${defender}'ın etrafındaki su bariyeri darbeyi emip oluşan tazyikli basınç dalgasıyla ${attacker}'ı geriye savurdu! (-${damage} Yansıtma Hasarı)`,
+        `[${trait.name.toUpperCase()}!] Tsunami rünü patlayarak savrulan darbeyi bir girdap gibi yuttu ve geri tepmeyle ${attacker}'ın dengesini dağıttı! (-${damage} Yansıtma Hasarı)`
       ]);
     } else if (tLower.includes('azam') || tLower.includes('sur')) {
       return kt.random([
-        `🏰 [${trait.name.toUpperCase()}!] ${attacker}'ın silahı yıkılmaz sur çeliğine çarptığı an oluşan granit sarsıntı kollarına geri tepti, bilek bağlarını zorladı! (-${damage} Yansıtma Hasarı)`,
-        `🏰 [${trait.name.toUpperCase()}!] Taş Hisar surlarının kadim alaşımı darbeyi bir kale gibi göğüsleyip kinetik basıncı saldırganın göğsüne vurdu! (-${damage} Yansıtma Hasarı)`
+        `[${trait.name.toUpperCase()}!] ${attacker}'ın silahı yıkılmaz sur çeliğine çarptığı an oluşan granit sarsıntı kollarına geri tepti, bilek bağlarını zorladı! (-${damage} Yansıtma Hasarı)`,
+        `[${trait.name.toUpperCase()}!] Taş Hisar surlarının kadim alaşımı darbeyi bir kale gibi göğüsleyip kinetik basıncı saldırganın göğsüne vurdu! (-${damage} Yansıtma Hasarı)`
       ]);
     } else {
       if (isPlayerAttacker) {
-        return `🪞 [${trait.name.toUpperCase()}!] Hasmın özel donanımı darbenin bir kısmını sana geri yansıttı (-${damage} Yansıtma Hasarı)!`;
+        return `[${trait.name.toUpperCase()}!] Hasmın özel donanımı darbenin bir kısmını sana geri yansıttı (-${damage} Yansıtma Hasarı)!`;
       } else {
-        return `🪞 [${trait.name.toUpperCase()}!] Donanımındaki koruma mühürleri darbeyi saldırgana geri tepti (-${damage} Yansıtma Hasarı)!`;
+        return `[${trait.name.toUpperCase()}!] Donanımındaki koruma mühürleri darbeyi saldırgana geri tepti (-${damage} Yansıtma Hasarı)!`;
       }
     }
   },
@@ -1855,7 +1855,7 @@ export const TextTemplateEngine = {
       fighterSpecific = null;
     }
     if (fighterSpecific != null && kt.Random.nextBoolean()) {
-      return `${fighterSpecific}\n📢 Sunucu Tellal bağırıyor: 'İki canavar da kumlara serildi! Hakem kararı: BERABERLİK!'`;
+      return `${fighterSpecific}\nSunucu Tellal bağırıyor: 'İki canavar da kumlara serildi! Hakem kararı: BERABERLİK!'`;
     }
     // 2. Silah eşleşmelerine ve dövüş durumuna göre zengin edebi tasvirler
     let situationalText;
@@ -1881,28 +1881,28 @@ export const TextTemplateEngine = {
       }
     }
     const announcerFlavor = kt.random([
-      "📢 Sunucu Tellal şaşkınlıkla trompeti çaldırıyor: 'İki canavar da aynı anda kumlara serildi! Hakem kararı: BERABERLİK!'",
-      "📢 Sunucu Tellal: 'Böylesi bir çifte nakavt Kırlangıç Kasabası tarihinde görülmedi! İki tarafa da 1'er lig puanı!'",
-      '🏟️ Tribünler donakaldı; ardından arenanın gördüğü en vahşi çifte nakavt için ayağa fırlayarak tezahürat yaptı!'
+      "Sunucu Tellal şaşkınlıkla trompeti çaldırıyor: 'İki canavar da aynı anda kumlara serildi! Hakem kararı: BERABERLİK!'",
+      "Sunucu Tellal: 'Böylesi bir çifte nakavt Kırlangıç Kasabası tarihinde görülmedi! İki tarafa da 1'er lig puanı!'",
+      'Tribünler donakaldı; ardından arenanın gördüğü en vahşi çifte nakavt için ayağa fırlayarak tezahürat yaptı!'
     ]);
     return `${situationalText}\n${announcerFlavor}`;
   },
 
   generateWolfRageNarrative(lifestealAmount) {
     return kt.random([
-      `🐺 [AK AYAZ ÖFKESİ!] Kan kokusu burnuna doldukça içindeki aç kurt uyandı; aldığın yaralara aldırmadan öne atılıp hasmının canını emdin (+${lifestealAmount} Can)!`,
-      `🐺 [AK AYAZ ÖFKESİ!] Ağır darbeler altında sendelemek yerine dişlerini sıktın! Kuzey ayazının vahşi hırıltısıyla savurduğun darbe rakibin etini biçti (+${lifestealAmount} Can)!`,
-      `🐺 [AK AYAZ ÖFKESİ!] Gözlerin kurdun gözleri gibi kızıla çaldı; göğsündeki ayaz postu gerildi ve her vuruşun rakibin gücünü çalarak seni ayakta tuttu (+${lifestealAmount} Can)!`,
-      `🐺 [AK AYAZ ÖFKESİ!] Ölümün soğuk nefesini hissettiğin anda bedenin vahşi bir refleksle kudurarak rakibin üzerine çullandı (+${lifestealAmount} Can)!`
+      `[AK AYAZ ÖFKESİ!] Kan kokusu burnuna doldukça içindeki aç kurt uyandı; aldığın yaralara aldırmadan öne atılıp hasmının canını emdin (+${lifestealAmount} Can)!`,
+      `[AK AYAZ ÖFKESİ!] Ağır darbeler altında sendelemek yerine dişlerini sıktın! Kuzey ayazının vahşi hırıltısıyla savurduğun darbe rakibin etini biçti (+${lifestealAmount} Can)!`,
+      `[AK AYAZ ÖFKESİ!] Gözlerin kurdun gözleri gibi kızıla çaldı; göğsündeki ayaz postu gerildi ve her vuruşun rakibin gücünü çalarak seni ayakta tuttu (+${lifestealAmount} Can)!`,
+      `[AK AYAZ ÖFKESİ!] Ölümün soğuk nefesini hissettiğin anda bedenin vahşi bir refleksle kudurarak rakibin üzerine çullandı (+${lifestealAmount} Can)!`
     ]);
   },
 
   generateMeteorBurnNarrative(bonusDamage) {
     return kt.random([
-      `🔥 [GÖKTAŞI HARI!] Palanın kabzasındaki kızıl filiz akkor gibi parladı; savrulan kıvılcımlar hasmın zırhını eritip etine yapıştı (+${bonusDamage} Alev Hasarı)!`,
-      `🔥 [GÖKTAŞI HARI!] Namludan çıkan kükürtlü alev dalgası rakibin siperini kavurarak gardını düşürdü (+${bonusDamage} Alev Hasarı)!`,
-      `🔥 [GÖKTAŞI HARI!] Gökyüzünden düşen krater taşının harı kılıcın ucunda çatırdadı; korlaşan çelik rakibin zırhını delip geçti (+${bonusDamage} Alev Hasarı)!`,
-      `🔥 [GÖKTAŞI HARI!] Palanın kestiği yerden sızan kızıl alevler rakibin etini dağlayarak acı dolu bir feryat kopardı (+${bonusDamage} Alev Hasarı)!`
+      `[GÖKTAŞI HARI!] Palanın kabzasındaki kızıl filiz akkor gibi parladı; savrulan kıvılcımlar hasmın zırhını eritip etine yapıştı (+${bonusDamage} Alev Hasarı)!`,
+      `[GÖKTAŞI HARI!] Namludan çıkan kükürtlü alev dalgası rakibin siperini kavurarak gardını düşürdü (+${bonusDamage} Alev Hasarı)!`,
+      `[GÖKTAŞI HARI!] Gökyüzünden düşen krater taşının harı kılıcın ucunda çatırdadı; korlaşan çelik rakibin zırhını delip geçti (+${bonusDamage} Alev Hasarı)!`,
+      `[GÖKTAŞI HARI!] Palanın kestiği yerden sızan kızıl alevler rakibin etini dağlayarak acı dolu bir feryat kopardı (+${bonusDamage} Alev Hasarı)!`
     ]);
   },
 
@@ -2028,41 +2028,41 @@ export const TextTemplateEngine = {
     let skillPrefix;
     if (skill.type === SkillType.ATTACK) {
       skillPrefix = kt.random([
-        `${skill.icon} [${attacker}: ${skill.name.toUpperCase()}!] ${positionContext} öne atıldı; ${skill.description}`,
-        `${skill.icon} [${attacker}: ${skill.name.toUpperCase()}!] ${positionContext} ölümcül bir ivmeyle atıldı; ${skill.description}`,
-        `${skill.icon} [${attacker}: ${skill.name.toUpperCase()}!] ${positionContext} ${defender}'ın gardını delerek ${skill.name} hamlesini indirdi!`
+        `[${attacker}: ${skill.name.toUpperCase()}!] ${positionContext} öne atıldı; ${skill.description}`,
+        `[${attacker}: ${skill.name.toUpperCase()}!] ${positionContext} ölümcül bir ivmeyle atıldı; ${skill.description}`,
+        `[${attacker}: ${skill.name.toUpperCase()}!] ${positionContext} ${defender}'ın gardını delerek ${skill.name} hamlesini indirdi!`
       ]);
     } else if (skill.type === SkillType.DEFENSE) {
       skillPrefix = kt.random([
-        `${skill.icon} [${attacker}: ${skill.name.toUpperCase()}!] ${positionContext} geri adım atmak yerine karşı saldırıya geçti; ${skill.description}`,
-        `${skill.icon} [${attacker}: ${skill.name.toUpperCase()}!] ${positionContext} sağlam bir duruş sergileyip ${skill.description}`,
-        `${skill.icon} [${attacker}: ${skill.name.toUpperCase()}!] ${positionContext} çelik gibi sertleşip ${skill.name} ile hasmının dengesini sarstı!`
+        `[${attacker}: ${skill.name.toUpperCase()}!] ${positionContext} geri adım atmak yerine karşı saldırıya geçti; ${skill.description}`,
+        `[${attacker}: ${skill.name.toUpperCase()}!] ${positionContext} sağlam bir duruş sergileyip ${skill.description}`,
+        `[${attacker}: ${skill.name.toUpperCase()}!] ${positionContext} çelik gibi sertleşip ${skill.name} ile hasmının dengesini sarstı!`
       ]);
     } else if (skill.type === SkillType.TACTICAL) {
       skillPrefix = kt.random([
-        `${skill.icon} [${attacker}: ${skill.name.toUpperCase()}!] ${positionContext} kumları yarıp göz açıp kapayıncaya dek ${skill.description}`,
-        `${skill.icon} [${attacker}: ${skill.name.toUpperCase()}!] ${positionContext} kör noktaya süzüldü; ${skill.description}`,
-        `${skill.icon} [${attacker}: ${skill.name.toUpperCase()}!] ${positionContext} taktiksel bir üstünlük kurarak ${skill.description}`
+        `[${attacker}: ${skill.name.toUpperCase()}!] ${positionContext} kumları yarıp göz açıp kapayıncaya dek ${skill.description}`,
+        `[${attacker}: ${skill.name.toUpperCase()}!] ${positionContext} kör noktaya süzüldü; ${skill.description}`,
+        `[${attacker}: ${skill.name.toUpperCase()}!] ${positionContext} taktiksel bir üstünlük kurarak ${skill.description}`
       ]);
     } else if (skill.type === SkillType.ULTIMATE) {
       skillPrefix = kt.random([
-        `${skill.icon} ⚡ [NİHAİ SANAT: ${skill.name.toUpperCase()}!] ${positionContext} tüm varlığını bu vuruşa koydu; ${skill.description} Arenadaki toz bulutu ikiye ayrıldı!`,
-        `${skill.icon} ⚡ [NİHAİ SANAT: ${skill.name.toUpperCase()}!] Arenayı titreten bir haykırışla ${positionContext} hasmının tepesine kabus gibi çöktü; ${skill.description}`,
-        `${skill.icon} ⚡ [NİHAİ SANAT: ${skill.name.toUpperCase()}!] Seyircilerin nefesi kesildi; ${positionContext} ölümcül ${skill.name} sanatıyla kumlarda fırtına kopardı! ${skill.description}`
+        `[NİHAİ SANAT: ${skill.name.toUpperCase()}!] ${positionContext} tüm varlığını bu vuruşa koydu; ${skill.description} Arenadaki toz bulutu ikiye ayrıldı!`,
+        `[NİHAİ SANAT: ${skill.name.toUpperCase()}!] Arenayı titreten bir haykırışla ${positionContext} hasmının tepesine kabus gibi çöktü; ${skill.description}`,
+        `[NİHAİ SANAT: ${skill.name.toUpperCase()}!] Seyircilerin nefesi kesildi; ${positionContext} ölümcül ${skill.name} sanatıyla kumlarda fırtına kopardı! ${skill.description}`
       ]);
     }
     const severity = TextTemplateEngine.calculateSeverity(damage, isCrit, 100);
     let effectText;
     if (severity === DamageSeverity.GLANCING) {
-      effectText = `⚡ [${skill.combatEffect}] ${defender}'ın ${bodyPart.dativeSuffix} gelen darbe zırhı sıyırıp hafifçe sarstı. (-${damage} Can)`;
+      effectText = `[${skill.combatEffect}] ${defender}'ın ${bodyPart.dativeSuffix} gelen darbe zırhı sıyırıp hafifçe sarstı. (-${damage} Can)`;
     } else if (severity === DamageSeverity.MODERATE) {
-      effectText = `⚡ [${skill.combatEffect}] ${defender}'ın ${bodyPart.dativeSuffix} oturan darbe nefesini kesti! (-${damage} Can)`;
+      effectText = `[${skill.combatEffect}] ${defender}'ın ${bodyPart.dativeSuffix} oturan darbe nefesini kesti! (-${damage} Can)`;
     } else if (severity === DamageSeverity.HEAVY) {
-      effectText = `⚡ [${skill.combatEffect}] ${defender}'ın ${bodyPart.dativeSuffix} inen sert vuruş kaslarını ve kemiklerini sarstı! (-${damage} Can)`;
+      effectText = `[${skill.combatEffect}] ${defender}'ın ${bodyPart.dativeSuffix} inen sert vuruş kaslarını ve kemiklerini sarstı! (-${damage} Can)`;
     } else if (severity === DamageSeverity.DEVASTATING) {
-      effectText = `⚡ [${skill.combatEffect}] ${defender}'ın ${bodyPart.dativeSuffix} patlayan darbe kemikleri inletti, arenayı kana buladı! (-${damage} Can)`;
+      effectText = `[${skill.combatEffect}] ${defender}'ın ${bodyPart.dativeSuffix} patlayan darbe kemikleri inletti, arenayı kana buladı! (-${damage} Can)`;
     }
-    const customLine = customFighterFlavor != null ? `\n📜 ${customFighterFlavor}` : '';
+    const customLine = customFighterFlavor != null ? `\n${customFighterFlavor}` : '';
     let flavor;
     if (kt.Random.nextInt(100) < 40) {
       flavor = '\n' + kt.random(([...TextTemplateEngine.crowdAtmospheres, ...TextTemplateEngine.announcerPhrases]));
@@ -2088,9 +2088,9 @@ export const TextTemplateEngine = {
       specificDodge = null;
     }
     return specificDodge ?? kt.random([
-      `${skill.icon} [${attacker}: ${skill.name.toUpperCase()} BOŞA ÇIKTI!] ${attacker} ${skill.name} hamlesiyle atıldı, fakat ${defender} bir derviş gibi dönerek sıyrıldı ve ${weapon} yalnızca havayı biçti!`,
-      `${skill.icon} [${attacker}: ${skill.name.toUpperCase()} ISKALANDI!] ${attacker}'ın büyük bir hırsla başlattığı ${skill.name} sanatı, ${defender}'ın olağanüstü refleksleri sayesinde kumlara gömüldü!`,
-      `${skill.icon} [${attacker}: ${skill.name.toUpperCase()} SAVUŞTURULDU!] ${defender} ${attacker}'ın ${skill.name} hazırlığını saniyeler öncesinden sezdi; son anda yana kayarak boşluğu kumlara bıraktı!`
+      `[${attacker}: ${skill.name.toUpperCase()} BOŞA ÇIKTI!] ${attacker} ${skill.name} hamlesiyle atıldı, fakat ${defender} bir derviş gibi dönerek sıyrıldı ve ${weapon} yalnızca havayı biçti!`,
+      `[${attacker}: ${skill.name.toUpperCase()} ISKALANDI!] ${attacker}'ın büyük bir hırsla başlattığı ${skill.name} sanatı, ${defender}'ın olağanüstü refleksleri sayesinde kumlara gömüldü!`,
+      `[${attacker}: ${skill.name.toUpperCase()} SAVUŞTURULDU!] ${defender} ${attacker}'ın ${skill.name} hazırlığını saniyeler öncesinden sezdi; son anda yana kayarak boşluğu kumlara bıraktı!`
     ]);
   },
 
@@ -2108,9 +2108,9 @@ export const TextTemplateEngine = {
       specificBlock = null;
     }
     return specificBlock ?? kt.random([
-      `${skill.icon} [${attacker}: ${skill.name.toUpperCase()} BLOKLANDI!] ${attacker} ${skill.name} ile kükreyerek yüklendi; ancak ${defender} kalkanını iki elle çakıp çeliğin patlamasını göğüsledi!`,
-      `${skill.icon} [${attacker}: ${skill.name.toUpperCase()} SİPERDEN DÖNDÜ!] ${skill.name} vuruşu ${defender}'ın ağır siperinde kıvılcımlarla yankılandı; kollar sarsıldı fakat siper delinmedi!`,
-      `${skill.icon} [${attacker}: ${skill.name.toUpperCase()} DURDURULDU!] ${attacker}'ın ölümcül ${skill.name} saldırısı ${defender}'ın kusursuz blok açısıyla sönümlendi!`
+      `[${attacker}: ${skill.name.toUpperCase()} BLOKLANDI!] ${attacker} ${skill.name} ile kükreyerek yüklendi; ancak ${defender} kalkanını iki elle çakıp çeliğin patlamasını göğüsledi!`,
+      `[${attacker}: ${skill.name.toUpperCase()} SİPERDEN DÖNDÜ!] ${skill.name} vuruşu ${defender}'ın ağır siperinde kıvılcımlarla yankılandı; kollar sarsıldı fakat siper delinmedi!`,
+      `[${attacker}: ${skill.name.toUpperCase()} DURDURULDU!] ${attacker}'ın ölümcül ${skill.name} saldırısı ${defender}'ın kusursuz blok açısıyla sönümlendi!`
     ]);
   },
 
@@ -2119,75 +2119,75 @@ export const TextTemplateEngine = {
   },
 };
 TextTemplateEngine.crowdAtmospheres = [
-  '🏟️ Tribünlerden kan kokusu almış kurtlar gibi vahşi uğultular yükseliyor!',
-  "🏟️ Seyirciler ahşap parmaklıkları tekmeliyor: 'Yere ser onu! Acıma!'",
-  '🏟️ Kırlangıç Kasabası ve Taş Hisar halkı heyecandan ayaklandı, gözlerini kumdan ayıramıyorlar!',
-  '🏟️ Tribünlerin çığlıkları arenanın kızgın tozuna karışıyor; havada gerilim elle tutulacak gibi!',
-  '🏟️ Kasaba tüccarları parmaklıkların dibinde ellerindeki altın keselerini şıngırdatarak bağırıyor!',
-  '🏟️ Kumlara sıçrayan taze kan kokusu kalabalığın vahşi iştahını kabarttı!',
-  '🏟️ Çatılardaki kara kargalar arenanın üzerindeki toz bulutuna bakarak gaklıyor!',
-  '🏟️ Hancı ve aşçılar ellerindeki bezleri sallayarak kendi favori dövüşçülerine tezahürat yapıyor!',
-  '🏟️ Tribündeki demirciler iki savaşçının çelik kalitesini ve dövüş tekniğini hararetle tartışıyor!',
-  '🏟️ Kızgın güneş tepede yakıyor; arenanın tozu gladyatörlerin terli tenine yapışıyor!',
-  '🏟️ Taş Hisar garnizon nöbetçileri kılıçlarını kalkanlarına ritmik biçimde vurarak arenayı inletiyor!',
-  '🏟️ Locadaki asilzadeler şarap kadehlerini unutup parmaklıkların kenarına yığıldı!',
-  '🏟️ Seyirciler bir anlığına nefesini tuttu; arenada yalnızca çeliğin sürtünme sesi duyuluyor!',
-  '🏟️ Bahis tellalları kalabalığın arasında ter içinde koşuşturup oranları haykırıyor!',
-  '🏟️ Genç çıraklar heyecandan parmaklıkların üzerine tırmanıp bağırmaya başladı!',
-  "🏟️ Toz bulutunun ardından gelen metal çarpışması tribünlerden devasa bir 'Oooo!' kopardı!",
-  '🏟️ İki dövüşçünün çarpışmasıyla arenanın kumları havaya savrulurken seyirciler coşkuyla kükredi!',
-  "🏟️ 'Bitir işini! Merhamet yok!' çığlıkları sur duvarlarından yankılanıyor!",
-  '🏟️ Kalabalık ayağa fırladı; iki tarafın destekçileri tribünlerde birbirine yumruk sallıyor!',
-  '🏟️ Kadife cübbeli hami tüccar, dövüşçüsü darbe alınca dişlerini sıkarak küfretti!',
-  '🏟️ Arenanın kum havuzuna bir sessizlik çöktü; ardından gök gürültüsü gibi bir alkış patladı!',
-  '🏟️ Seyircilerden biri arenaya bakır sikke fırlatarak vahşetin devam etmesini istedi!',
-  '🏟️ Ahşap tribün tahtaları yüzlerce insanın ayağını aynı anda vurmasıyla beşik gibi sallanıyor!',
-  '🏟️ Yaşlı bir eski gladyatör parmaklıklara yaslanıp dövüşçülerin ayak hareketlerini takdirle süzdü!',
-  '🏟️ Arenadaki gerilim o kadar yoğun ki havada uçan kum taneleri bile ateşe kesmiş gibi!'
+  'Tribünlerden kan kokusu almış kurtlar gibi vahşi uğultular yükseliyor!',
+  "Seyirciler ahşap parmaklıkları tekmeliyor: 'Yere ser onu! Acıma!'",
+  'Kırlangıç Kasabası ve Taş Hisar halkı heyecandan ayaklandı, gözlerini kumdan ayıramıyorlar!',
+  'Tribünlerin çığlıkları arenanın kızgın tozuna karışıyor; havada gerilim elle tutulacak gibi!',
+  'Kasaba tüccarları parmaklıkların dibinde ellerindeki altın keselerini şıngırdatarak bağırıyor!',
+  'Kumlara sıçrayan taze kan kokusu kalabalığın vahşi iştahını kabarttı!',
+  'Çatılardaki kara kargalar arenanın üzerindeki toz bulutuna bakarak gaklıyor!',
+  'Hancı ve aşçılar ellerindeki bezleri sallayarak kendi favori dövüşçülerine tezahürat yapıyor!',
+  'Tribündeki demirciler iki savaşçının çelik kalitesini ve dövüş tekniğini hararetle tartışıyor!',
+  'Kızgın güneş tepede yakıyor; arenanın tozu gladyatörlerin terli tenine yapışıyor!',
+  'Taş Hisar garnizon nöbetçileri kılıçlarını kalkanlarına ritmik biçimde vurarak arenayı inletiyor!',
+  'Locadaki asilzadeler şarap kadehlerini unutup parmaklıkların kenarına yığıldı!',
+  'Seyirciler bir anlığına nefesini tuttu; arenada yalnızca çeliğin sürtünme sesi duyuluyor!',
+  'Bahis tellalları kalabalığın arasında ter içinde koşuşturup oranları haykırıyor!',
+  'Genç çıraklar heyecandan parmaklıkların üzerine tırmanıp bağırmaya başladı!',
+  "Toz bulutunun ardından gelen metal çarpışması tribünlerden devasa bir 'Oooo!' kopardı!",
+  'İki dövüşçünün çarpışmasıyla arenanın kumları havaya savrulurken seyirciler coşkuyla kükredi!',
+  "'Bitir işini! Merhamet yok!' çığlıkları sur duvarlarından yankılanıyor!",
+  'Kalabalık ayağa fırladı; iki tarafın destekçileri tribünlerde birbirine yumruk sallıyor!',
+  'Kadife cübbeli hami tüccar, dövüşçüsü darbe alınca dişlerini sıkarak küfretti!',
+  'Arenanın kum havuzuna bir sessizlik çöktü; ardından gök gürültüsü gibi bir alkış patladı!',
+  'Seyircilerden biri arenaya bakır sikke fırlatarak vahşetin devam etmesini istedi!',
+  'Ahşap tribün tahtaları yüzlerce insanın ayağını aynı anda vurmasıyla beşik gibi sallanıyor!',
+  'Yaşlı bir eski gladyatör parmaklıklara yaslanıp dövüşçülerin ayak hareketlerini takdirle süzdü!',
+  'Arenadaki gerilim o kadar yoğun ki havada uçan kum taneleri bile ateşe kesmiş gibi!'
 ];
 TextTemplateEngine.announcerPhrases = [
-  "📢 Sunucu Tellal bağırıyor: 'Kumlar kızarıyor, işte arenaların gerçek vahşeti!'",
-  "📢 Sunucu Tellal: 'Bu darbenin yankısı Taş Hisar surlarından duyuldu! Nefesler tutuldu!'",
-  "📢 Sunucu Tellal: 'Gözlerinizi kırpmayın ey ahali! Biri bu kumların üstünde kalacak!'",
-  "📢 Sunucu Tellal borusunu üflüyor: 'İşte gerçek bir gladyatör hamlesi! Kan kumlara aktı!'",
-  "📢 Sunucu Tellal: 'Bahis oranları altüst oluyor baylar, kumlarda fırtına kopuyor!'",
-  "📢 Sunucu Tellal: 'Kimse bu vuruşun ağırlığını inkar edemez! Şampiyonlar çarpışıyor!'",
-  "📢 Sunucu Tellal: 'Diyarın kaderi bu kumların üzerinde çelikle yazılıyor!'",
-  "📢 Sunucu Tellal haykırıyor: 'Usta işi bir manevra! İki gladyatör de eceline meydan okuyor!'",
-  "📢 Sunucu Tellal: 'Bu vuruş demir zırhı bile kağıt gibi deler geçer! Devam edin!'",
-  "📢 Sunucu Tellal borazanına asılıyor: 'Halk kandan fazlasını istiyor, sanat istiyor!'",
-  "📢 Sunucu Tellal: 'Diz çöken kalkamaz! Gardınızı düşürmeyin!'",
-  "📢 Sunucu Tellal parmaklıkların tepesinden nida atıyor: 'İşte Diyarın en sert gladyatörleri!'",
-  "📢 Sunucu Tellal: 'Kumlar kanla sulanmadıkça bu meydandan çıkış yok!'",
-  "📢 Sunucu Tellal seyircilere dönüyor: 'Gördünüz mü o hamleyi? Kılıç havada ikiye bölündü sandım!'",
-  "📢 Sunucu Tellal: 'Rakipler nefes nefese, ama gözlerindeki avcı ateşi sönmedi!'",
-  "📢 Sunucu Tellal tellal borusunu çaldı: 'Dövüşün en kızgın dakikaları! Geri adım atan kaybeder!'",
-  "📢 Sunucu Tellal: 'Garnizonun taşları böyle bir hırsı nadir görmüştür!'",
-  "📢 Sunucu Tellal bağırıyor: 'Kader çarkı dönüyor, bir taraf tükenişin eşiğinde!'",
-  "📢 Sunucu Tellal: 'Ayakta kalan tarihe adını kazıyacak, düşen ise kumlara karışacak!'",
-  "📢 Sunucu Tellal feryat ediyor: 'Böyle bir çeviklik, böyle bir çelik savuruşu görülmedi!'"
+  "Sunucu Tellal bağırıyor: 'Kumlar kızarıyor, işte arenaların gerçek vahşeti!'",
+  "Sunucu Tellal: 'Bu darbenin yankısı Taş Hisar surlarından duyuldu! Nefesler tutuldu!'",
+  "Sunucu Tellal: 'Gözlerinizi kırpmayın ey ahali! Biri bu kumların üstünde kalacak!'",
+  "Sunucu Tellal borusunu üflüyor: 'İşte gerçek bir gladyatör hamlesi! Kan kumlara aktı!'",
+  "Sunucu Tellal: 'Bahis oranları altüst oluyor baylar, kumlarda fırtına kopuyor!'",
+  "Sunucu Tellal: 'Kimse bu vuruşun ağırlığını inkar edemez! Şampiyonlar çarpışıyor!'",
+  "Sunucu Tellal: 'Diyarın kaderi bu kumların üzerinde çelikle yazılıyor!'",
+  "Sunucu Tellal haykırıyor: 'Usta işi bir manevra! İki gladyatör de eceline meydan okuyor!'",
+  "Sunucu Tellal: 'Bu vuruş demir zırhı bile kağıt gibi deler geçer! Devam edin!'",
+  "Sunucu Tellal borazanına asılıyor: 'Halk kandan fazlasını istiyor, sanat istiyor!'",
+  "Sunucu Tellal: 'Diz çöken kalkamaz! Gardınızı düşürmeyin!'",
+  "Sunucu Tellal parmaklıkların tepesinden nida atıyor: 'İşte Diyarın en sert gladyatörleri!'",
+  "Sunucu Tellal: 'Kumlar kanla sulanmadıkça bu meydandan çıkış yok!'",
+  "Sunucu Tellal seyircilere dönüyor: 'Gördünüz mü o hamleyi? Kılıç havada ikiye bölündü sandım!'",
+  "Sunucu Tellal: 'Rakipler nefes nefese, ama gözlerindeki avcı ateşi sönmedi!'",
+  "Sunucu Tellal tellal borusunu çaldı: 'Dövüşün en kızgın dakikaları! Geri adım atan kaybeder!'",
+  "Sunucu Tellal: 'Garnizonun taşları böyle bir hırsı nadir görmüştür!'",
+  "Sunucu Tellal bağırıyor: 'Kader çarkı dönüyor, bir taraf tükenişin eşiğinde!'",
+  "Sunucu Tellal: 'Ayakta kalan tarihe adını kazıyacak, düşen ise kumlara karışacak!'",
+  "Sunucu Tellal feryat ediyor: 'Böyle bir çeviklik, böyle bir çelik savuruşu görülmedi!'"
 ];
 TextTemplateEngine.sensoryAtmospheres = [
-  '⚡ İki dövüşçünün nefes nefese solukları arenanın uğultusuna karışıyor.',
-  '⚡ Çeliğin çeliğe sürttüğü an fırlayan kıvılcımlar havada sönüyor.',
-  '⚡ Kumlardan kalkan kızıl toz bulutu görüşü zorlaştırıyor, iki savaşçı da avcı gibi birbirini süzüyor.',
-  '⚡ Ter dövüşçülerin gözlerine akıyor; tek bir göz kırpışı bile ölümcül olabilir.',
-  '⚡ Kumlara damlayan kan damlaları sıcak toprakta anında kuruyup koyu lekelere dönüşüyor.',
-  '⚡ Ağır adımların altında ezilen kumlar çıtırdıyor, iki taraf da bir sonraki hamleyi hesaplıyor.',
-  '⚡ Meşalelerden yükselen reçine ve is kokusu, arenanın demir ve ter kokusuna karışıyor.',
-  '⚡ Kas gerilmeleri ve eklemlerin çıtırtısı iki adım öteden duyulacak kadar net.',
-  '⚡ Rüzgar sur menfezlerinden ıslıkla esip gladyatörlerin cübbelerini savuruyor.',
-  '⚡ İki savaşçının gözlerindeki ölümcül odaklanma, etraftaki tüm gürültüyü sessizliğe gömüyor.',
-  '⚡ Kalkanlardan kopan meşe kıymıkları havada uçuşup kumlara saçılıyor.',
-  '⚡ Zırh perçinlerinin birbirine çarpma sesi metalik bir ritim tutturmuş gibi.',
-  '⚡ Her iki dövüşçünün de ciğerleri körük gibi inip kalkıyor; yorgunluk iradeyle bastırılıyor.',
-  '⚡ Havada keskin bir demir ve ozon kokusu asılı kaldı.',
-  '⚡ Ayakların kaydığı zemin dengenin her an yitirilebileceğini hatırlatıyor.',
-  '⚡ Kılıcın kabzasına yapışan kanlı avuç içi kaymayı engellemek için daha da sıkılıyor.',
-  '⚡ Toz perdesinin arasından parlayan çeliğin soğuk ışıltısı tehditkar bir kobra gibi görünüyor.',
-  '⚡ Hasmının hırıltılı nefesini yüzünde hisseden savaşçı soğukkanlılığını korumaya çalışıyor.',
-  '⚡ Darbenin oluşturduğu şok dalgası arenanın taş duvarlarında eko yapıyor.',
-  '⚡ Gladyatörlerin etrafında dönen gölgeler batan güneşin altında kızıla çalıyor.'
+  'İki dövüşçünün nefes nefese solukları arenanın uğultusuna karışıyor.',
+  'Çeliğin çeliğe sürttüğü an fırlayan kıvılcımlar havada sönüyor.',
+  'Kumlardan kalkan kızıl toz bulutu görüşü zorlaştırıyor, iki savaşçı da avcı gibi birbirini süzüyor.',
+  'Ter dövüşçülerin gözlerine akıyor; tek bir göz kırpışı bile ölümcül olabilir.',
+  'Kumlara damlayan kan damlaları sıcak toprakta anında kuruyup koyu lekelere dönüşüyor.',
+  'Ağır adımların altında ezilen kumlar çıtırdıyor, iki taraf da bir sonraki hamleyi hesaplıyor.',
+  'Meşalelerden yükselen reçine ve is kokusu, arenanın demir ve ter kokusuna karışıyor.',
+  'Kas gerilmeleri ve eklemlerin çıtırtısı iki adım öteden duyulacak kadar net.',
+  'Rüzgar sur menfezlerinden ıslıkla esip gladyatörlerin cübbelerini savuruyor.',
+  'İki savaşçının gözlerindeki ölümcül odaklanma, etraftaki tüm gürültüyü sessizliğe gömüyor.',
+  'Kalkanlardan kopan meşe kıymıkları havada uçuşup kumlara saçılıyor.',
+  'Zırh perçinlerinin birbirine çarpma sesi metalik bir ritim tutturmuş gibi.',
+  'Her iki dövüşçünün de ciğerleri körük gibi inip kalkıyor; yorgunluk iradeyle bastırılıyor.',
+  'Havada keskin bir demir ve ozon kokusu asılı kaldı.',
+  'Ayakların kaydığı zemin dengenin her an yitirilebileceğini hatırlatıyor.',
+  'Kılıcın kabzasına yapışan kanlı avuç içi kaymayı engellemek için daha da sıkılıyor.',
+  'Toz perdesinin arasından parlayan çeliğin soğuk ışıltısı tehditkar bir kobra gibi görünüyor.',
+  'Hasmının hırıltılı nefesini yüzünde hisseden savaşçı soğukkanlılığını korumaya çalışıyor.',
+  'Darbenin oluşturduğu şok dalgası arenanın taş duvarlarında eko yapıyor.',
+  'Gladyatörlerin etrafında dönen gölgeler batan güneşin altında kızıla çalıyor.'
 ];
 
 export const DrawSituation = kt.defineEnum('DrawSituation', {

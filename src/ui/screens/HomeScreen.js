@@ -63,7 +63,7 @@ export function HomeScreen({ viewModel, modifier }) {
             <Column pad={14}>
               <Row justify="between" style={{ alignSelf: 'stretch' }}>
                 <T heading size={14} weight="bold" color={TextGold} style={{ flex: 1 }}>
-                  {`📜 Şafak Bülteni (${dayState.currentDay}. Gün)`}
+                  {`Şafak Bülteni (${dayState.currentDay}. Gün)`}
                 </T>
                 <IconBtn label="Bülteni Kapat" onPress={() => viewModel.dismissDawnNarrative()}>
                   <Ikon name="Close" color={AmberGold} />
@@ -96,11 +96,11 @@ export function HomeScreen({ viewModel, modifier }) {
             <Column label={`Karargah: ${player.residenceTitle}, Mevcut Altın: ${player.gold}, Gün: ${dayState.currentDay}`} heading>
               <Row justify="between" style={{ alignSelf: 'stretch' }}>
                 <T style={Typography.labelSmall} color={TextMuted}>
-                  🏛️ Savaşçının Meskeni
+                  Savaşçının Meskeni
                 </T>
                 <Surface radius={6} color={DarkBg} borderColor={AmberGold} borderWidth={1}>
                   <T size={11} weight="bold" color={AmberGold} style={{ paddingHorizontal: 6, paddingVertical: 2 }}>
-                    {`📅 ${dayState.currentDay}. Gün`}
+                    {`${dayState.currentDay}. Gün`}
                   </T>
                 </Surface>
               </Row>
@@ -120,7 +120,7 @@ export function HomeScreen({ viewModel, modifier }) {
 
             <Row justify="between" gap={8} style={{ alignSelf: 'stretch' }}>
               <T weight="bold" color={AmberGold}>
-                {`🪙 Kasa: ${player.gold} Altın`}
+                {`Kasa: ${player.gold} Altın`}
               </T>
               <Btn
                 onPress={() => viewModel.advanceDay(0)}
@@ -131,7 +131,7 @@ export function HomeScreen({ viewModel, modifier }) {
                 label={dayState.isDailyArenaObligationMet ? 'İstirahat Et ve Yeni Güne Başla' : 'İstirahat Et, Arena Katılımı Gerekli'}
               >
                 <T weight="bold" size={11} color={TextLight} align="center">
-                  {dayState.isDailyArenaObligationMet ? '💤 İstirahat Et & Yeni Güne Başla' : '💤 İstirahat Et (Arena Katılımı Gerekli)'}
+                  {dayState.isDailyArenaObligationMet ? 'İstirahat Et & Yeni Güne Başla' : 'İstirahat Et (Arena Katılımı Gerekli)'}
                 </T>
               </Btn>
             </Row>
@@ -192,9 +192,7 @@ function HouseTransformationCard({ player, transformationStatus, onTransform }) 
         label={`Müstakil Karargah: ${player.residenceTitle}. Taş avlu, kütüphane ve biley silahhanesiyle donatılmış bağımsız karargahın. Tüm odalar için üst kademeler açıldı.`}
       >
         <Row pad={14} gap={12}>
-          <T size={28} hidden>
-            🏡
-          </T>
+          
           <Column style={{ flex: 1 }}>
             <T weight="bold" size={14} color={TextGold}>
               {`Müstakil Mülk: ${player.residenceTitle}`}
@@ -213,9 +211,7 @@ function HouseTransformationCard({ player, transformationStatus, onTransform }) 
     <Card color={DarkSurfaceCard} radius={12} borderColor={transformationStatus.canTransform ? AmberGold : DarkBorder} borderWidth={1} style={{ alignSelf: 'stretch' }}>
       <Column pad={14}>
         <Row gap={8} label="Kendi Evine Geçiş ve Mülk Dönüşümü Şartları" heading>
-          <T size={20} hidden>
-            🏛️
-          </T>
+          
           <T weight="bold" size={15} color={TextGold} style={{ flexShrink: 1 }}>
             Kendi Evine Geçiş & Mülk Dönüşümü
           </T>
@@ -266,7 +262,7 @@ function HouseTransformationCard({ player, transformationStatus, onTransform }) 
           }
         >
           <T weight="bold" size={13} color={transformationStatus.canTransform ? DarkBg : TextMuted} align="center">
-            {transformationStatus.canTransform ? '🔨 Kendi Evine Taşın & Karargahını Kur (500 🪙)' : `🔒 Şartlar Karşılanmadı (${metCount}/4)`}
+            {transformationStatus.canTransform ? 'Kendi Evine Taşın & Karargahını Kur (500 Altın)' : `Şartlar Karşılanmadı (${metCount}/4)`}
           </T>
         </Btn>
       </Column>
@@ -279,9 +275,9 @@ function RoomCard({ room, canUpgrade, upgradeRequirementNote, canTrainToday, onU
   return (
     <Card color={DarkSurface} radius={10} borderColor={DarkBorder} borderWidth={1} style={{ alignSelf: 'stretch' }}>
       <Column pad={14}>
-        <Column heading label={`${room.type.icon} ${room.name}, Kademe ${room.level}, Yükseltme Bedeli: ${room.upgradeCostGold} Altın`}>
+        <Column heading label={`${room.name}, Kademe ${room.level}, Yükseltme Bedeli: ${room.upgradeCostGold} Altın`}>
           <T weight="bold" color={TextGold} size={16}>
-            {`${room.type.icon} ${room.type.title}`}
+            {`${room.type.title}`}
           </T>
           <T size={13} weight="semibold" color={AmberGold}>
             {`Kademe ${room.level}/${room.maxLevel} • ${room.name}`}
@@ -296,7 +292,7 @@ function RoomCard({ room, canUpgrade, upgradeRequirementNote, canTrainToday, onU
         <Spacer h={6} />
         <Surface color={DarkSurfaceCard} radius={6} style={{ alignSelf: 'stretch' }}>
           <T size={12} color={FamePurple} weight="semibold" style={{ paddingHorizontal: 10, paddingVertical: 6 }}>
-            {`✨ Sağladığı Tesir: ${room.bonusSummary}`}
+            {`Sağladığı Tesir: ${room.bonusSummary}`}
           </T>
         </Surface>
 
@@ -305,7 +301,7 @@ function RoomCard({ room, canUpgrade, upgradeRequirementNote, canTrainToday, onU
           <>
             <Spacer h={6} />
             <T size={11} color={TextMuted} lineHeight={15}>
-              {`➡️ Sonraki: ${room.nextUpgradeDescription}`}
+              {`Sonraki: ${room.nextUpgradeDescription}`}
             </T>
           </>
         ) : null}
@@ -316,7 +312,7 @@ function RoomCard({ room, canUpgrade, upgradeRequirementNote, canTrainToday, onU
             <Spacer h={6} />
             <Surface color={alpha(HealthRed, 0.15)} radius={6} borderColor={alpha(HealthRed, 0.5)} borderWidth={1} style={{ alignSelf: 'stretch' }}>
               <T size={11} color={HealthRed} weight="semibold" style={{ paddingHorizontal: 10, paddingVertical: 5 }} label={`Kilitli: ${upgradeRequirementNote}`}>
-                {`🔒 ${upgradeRequirementNote}`}
+                {`${upgradeRequirementNote}`}
               </T>
             </Surface>
           </>
@@ -337,7 +333,7 @@ function RoomCard({ room, canUpgrade, upgradeRequirementNote, canTrainToday, onU
               label={canTrainToday ? 'Günlük İdman Yap, artı Tecrübe' : 'Bugünkü İdman Tamamlandı, Yarın Tekrar Gel'}
             >
               <T size={12} weight="bold" color={canTrainToday ? DarkBg : TextMuted} align="center">
-                {canTrainToday ? '⚔️ Günlük İdman Yap (+Tecrübe EXP)' : '✓ Bugünkü İdman Tamamlandı (Yarın Tekrar Gel)'}
+                {canTrainToday ? 'Günlük İdman Yap (+Tecrübe EXP)' : '✓ Bugünkü İdman Tamamlandı (Yarın Tekrar Gel)'}
               </T>
             </Btn>
           </>
@@ -348,7 +344,7 @@ function RoomCard({ room, canUpgrade, upgradeRequirementNote, canTrainToday, onU
             <Spacer h={10} />
             <Btn onPress={onOpenVault} color={color(0xff2c3e50)} contentColor={TextGold} radius={8} style={{ alignSelf: 'stretch' }} label="Sandık Odasını Aç, 4'lü Kasa Izgarası">
               <T size={12} weight="bold" color={TextGold} align="center">
-                📦 Sandık Odasını Aç (4'lü Kasa Izgarası)
+                Sandık Odasını Aç (4'lü Kasa Izgarası)
               </T>
             </Btn>
           </>
@@ -388,7 +384,7 @@ function CharacterRegistryCard({ unlockedCount, totalCount, isHouse, onOpenCodex
       <Row pad={14} justify="between" gap={8} style={{ alignSelf: 'stretch' }}>
         <Row gap={12} style={{ flex: 1 }} onPress={onOpenCodex} label={`${baslik}. ${alt}. Sicili açmak için dokunun.`}>
           <T size={24} hidden>
-            {isHouse ? '📚' : '📜'}
+            {isHouse ? '' : ''}
           </T>
           <Column style={{ flex: 1 }}>
             <T style={Typography.titleMedium} weight="bold" color={TextGold}>
@@ -401,7 +397,7 @@ function CharacterRegistryCard({ unlockedCount, totalCount, isHouse, onOpenCodex
         </Row>
         <Btn onPress={onOpenCodex} color={AmberGoldDark} contentColor={TextLight} radius={8} pad={8} label="Sicili Aç">
           <T size={11} weight="bold" color={TextLight}>
-            Sicili Aç 📖
+            Sicili Aç
           </T>
         </Btn>
       </Row>
@@ -451,9 +447,7 @@ function CharacterRegistryDialog({ profiles, onDismiss }) {
       title={
         <Column>
           <Row gap={8} label={`Diyar Şahsiyetleri & Karakter Sicili, ${unlockedCount} / ${profiles.length} Şahsiyet Keşfedildi`} heading>
-            <T size={22} hidden>
-              📚
-            </T>
+            
             <Column style={{ flex: 1 }}>
               <T size={15} weight="bold" color={TextGold}>
                 Diyar Şahsiyetleri & Karakter Sicili
@@ -470,10 +464,10 @@ function CharacterRegistryDialog({ profiles, onDismiss }) {
               {`Tümü (${regionProfiles.length})`}
             </Chip>
             <Chip selected={selectedTab === 1} onPress={() => setSelectedTab(1)} label={`Dövüşçü, ${gladCount}`}>
-              {`⚔️ Dövüşçü (${gladCount})`}
+              {`Dövüşçü (${gladCount})`}
             </Chip>
             <Chip selected={selectedTab === 2} onPress={() => setSelectedTab(2)} label={`Ahali, ${ahaliCount}`}>
-              {`🏘️ Ahali (${ahaliCount})`}
+              {`Ahali (${ahaliCount})`}
             </Chip>
           </Row>
 
@@ -513,9 +507,7 @@ function CharacterRegistryDialog({ profiles, onDismiss }) {
               label={`Kilitli: ${lockedAlertMessage}. Kapatmak için dokunun.`}
             >
               <Row pad={8} gap={6}>
-                <T size={14} hidden>
-                  🔒
-                </T>
+                
                 <T size={11} color={color(0xffffb4ab)} lineHeight={15} style={{ flex: 1 }}>
                   {lockedAlertMessage}
                 </T>
@@ -561,7 +553,7 @@ function CharacterRegistryDialog({ profiles, onDismiss }) {
                       borderWidth={1}
                       style={{ width: 64, height: 64 }}
                     >
-                      <T size={isUnlocked ? 30 : 22}>{isUnlocked ? profile.avatarIcon : '🔒'}</T>
+                      <T size={isUnlocked ? 30 : 22}>{isUnlocked ? profile.avatarIcon : ''}</T>
                     </Box>
 
                     <Spacer h={6} />
@@ -602,12 +594,12 @@ function CharacterDetailDialog({ liveProfile, onDismiss }) {
     return list.length > 0 ? list : profile.skills;
   }, [liveProfile]);
 
-  const sekmeler = [['🧠 Zihin', 0, 'Zihin'], ['📜 Hikaye', 1, 'Hikaye'], isGladiator ? ['⚔️ Dövüş', 2, 'Dövüş'] : ['⚒️ Rol', 2, 'Rol']];
-  const rozet = isGladiator ? '⚔️ Arena Gladyatörü' : `🏘️ ${profile.locationOrDuty ?? 'Kasaba Ahali'}`;
+  const sekmeler = [['Zihin', 0, 'Zihin'], ['Hikaye', 1, 'Hikaye'], isGladiator ? ['Dövüş', 2, 'Dövüş'] : ['Rol', 2, 'Rol']];
+  const rozet = isGladiator ? 'Arena Gladyatörü' : `${profile.locationOrDuty ?? 'Kasaba Ahali'}`;
 
   let icerik;
   if (selectedTab === 0) {
-    // 🧠 ZİHİN VE PSİKOLOJİK SEVİYE BARLARI
+    // ZİHİN VE PSİKOLOJİK SEVİYE BARLARI
     const psychology = liveProfile.effectivePsychology ?? liveEnemy?.personality?.psychology ?? FighterPsychology.fromArchetype(PersonalityArchetype.HIRSLI);
     icerik = <GladiatorPsychologyCard psychology={psychology} />;
   } else if (selectedTab === 1) {
@@ -617,9 +609,7 @@ function CharacterDetailDialog({ liveProfile, onDismiss }) {
         <Surface radius={8} color={DarkSurfaceCard} borderColor={alpha(AmberGoldDark, 0.4)} borderWidth={1} style={{ alignSelf: 'stretch' }}>
           <Column pad={10}>
             <Row gap={6}>
-              <T size={14} hidden>
-                👁️
-              </T>
+              
               <T heading size={12} weight="bold" color={AmberGold}>
                 Görünüş ve Tasvir
               </T>
@@ -637,9 +627,7 @@ function CharacterDetailDialog({ liveProfile, onDismiss }) {
         <Surface radius={8} color={DarkSurfaceCard} borderColor={DarkBorder} borderWidth={1} style={{ alignSelf: 'stretch' }}>
           <Column pad={10}>
             <Row gap={6}>
-              <T size={14} hidden>
-                📜
-              </T>
+              
               <T heading size={12} weight="bold" color={TextGold}>
                 Biyografi ve Diyar Geçmişi
               </T>
@@ -662,9 +650,7 @@ function CharacterDetailDialog({ liveProfile, onDismiss }) {
               <Column pad={10}>
                 <Row justify="between" style={{ alignSelf: 'stretch' }}>
                   <Row gap={6}>
-                    <T size={14} hidden>
-                      ⚡
-                    </T>
+                    
                     <T heading size={12} weight="bold" color={TextGold}>
                       Canlı Savaşçı Durumu & Güç
                     </T>
@@ -687,16 +673,16 @@ function CharacterDetailDialog({ liveProfile, onDismiss }) {
                   label={`Can: ${liveEnemy.stats.maxHealth} HP, Hasar: ${liveEnemy.stats.damage}, Zırh: ${liveEnemy.stats.armor}, Hız: ${liveEnemy.stats.speed}`}
                 >
                   <T size={11} color={HealthGreen} weight="bold">
-                    {`❤️ Can: ${liveEnemy.stats.maxHealth} HP`}
+                    {`Can: ${liveEnemy.stats.maxHealth} HP`}
                   </T>
                   <T size={11} color={HealthRed} weight="bold">
-                    {`⚔️ Hasar: ${liveEnemy.stats.damage}`}
+                    {`Hasar: ${liveEnemy.stats.damage}`}
                   </T>
                   <T size={11} color={AmberGoldLight} weight="bold">
-                    {`🛡️ Zırh: ${liveEnemy.stats.armor}`}
+                    {`Zırh: ${liveEnemy.stats.armor}`}
                   </T>
                   <T size={11} color={color(0xff64b5f6)} weight="bold">
-                    {`💨 Hız: ${liveEnemy.stats.speed}`}
+                    {`Hız: ${liveEnemy.stats.speed}`}
                   </T>
                 </Row>
 
@@ -704,10 +690,10 @@ function CharacterDetailDialog({ liveProfile, onDismiss }) {
 
                 <Row justify="between" wrap gap={4} style={{ alignSelf: 'stretch' }}>
                   <T size={11} color={TextLight} label={`Silah: ${liveEnemy.weaponName}`}>
-                    {`🗡️ Silah: ${liveEnemy.weaponName}`}
+                    {`Silah: ${liveEnemy.weaponName}`}
                   </T>
                   <T size={11} weight="bold" color={AmberGold} label={`Cüzdan: ${liveEnemy.personality.gold} Altın`}>
-                    {`🪙 Cüzdan: ${liveEnemy.personality.gold} Altın`}
+                    {`Cüzdan: ${liveEnemy.personality.gold} Altın`}
                   </T>
                 </Row>
 
@@ -721,12 +707,12 @@ function CharacterDetailDialog({ liveProfile, onDismiss }) {
                       label={`Takılı Taşlar: ${liveEnemy.socketedGems.map((gem) => `${gem.type.displayName} Seviye ${gem.level}`).join(', ')}`}
                     >
                       <T size={10} color={AmberGold} weight="bold">
-                        💎 Takılı Taşlar:
+                        Takılı Taşlar:
                       </T>
                       {liveEnemy.socketedGems.map((gem, i) => (
                         <Surface key={i} radius={4} color={DarkBg} borderColor={alpha(AmberGold, 0.5)} borderWidth={1}>
                           <T size={9} color={TextLight} style={{ paddingHorizontal: 4, paddingVertical: 2 }}>
-                            {`${gem.type.icon} Sv.${gem.level}`}
+                            {`Sv.${gem.level}`}
                           </T>
                         </Surface>
                       ))}
@@ -737,7 +723,7 @@ function CharacterDetailDialog({ liveProfile, onDismiss }) {
                 <Spacer h={6} />
 
                 <T size={10} color={TextMuted} lineHeight={14}>
-                  {`🎭 Mizaç: ${liveEnemy.personality.archetype.icon} ${liveEnemy.personality.archetype.title} - ${liveEnemy.personality.bio}`}
+                  {`Mizaç: ${liveEnemy.personality.archetype.title} - ${liveEnemy.personality.bio}`}
                 </T>
 
                 {/* Canlı Günlük Hareketi */}
@@ -747,7 +733,7 @@ function CharacterDetailDialog({ liveProfile, onDismiss }) {
                     <Surface radius={6} color={DarkBg} style={{ alignSelf: 'stretch' }}>
                       <Column pad={8}>
                         <T size={10} weight="bold" color={AmberGold}>
-                          📝 Son Günlük Hareketi:
+                          Son Günlük Hareketi:
                         </T>
                         <Spacer h={2} />
                         <T size={10} color={TextLight} lineHeight={14}>
@@ -765,9 +751,7 @@ function CharacterDetailDialog({ liveProfile, onDismiss }) {
               <Surface radius={8} color={color(0xff1e3a24)} borderColor={HealthGreen} borderWidth={1} style={{ alignSelf: 'stretch' }}>
                 <Column pad={10}>
                   <Row gap={6}>
-                    <T size={14} hidden>
-                      🎯
-                    </T>
+                    
                     <T heading size={12} weight="bold" color={HealthGreen} style={{ flexShrink: 1 }}>
                       {`Keşfedilen Kusur: ${weakness.flawTitle}`}
                     </T>
@@ -778,16 +762,14 @@ function CharacterDetailDialog({ liveProfile, onDismiss }) {
                   </T>
                   <Spacer h={4} />
                   <T size={10} weight="bold" color={AmberGoldLight}>
-                    {`⚔️ Taktik Üstünlük: %${weakness.exploitChancePercent} şansla +%${weakness.bonusDamagePercent} hasar & zırh kırma`}
+                    {`Taktik Üstünlük: %${weakness.exploitChancePercent} şansla +%${weakness.bonusDamagePercent} hasar & zırh kırma`}
                   </T>
                 </Column>
               </Surface>
             ) : (
               <Surface radius={8} color={DarkSurfaceCard} borderColor={DarkBorder} borderWidth={1} style={{ alignSelf: 'stretch' }}>
                 <Row pad={10} gap={6}>
-                  <T size={14} hidden>
-                    🔒
-                  </T>
+                  
                   <T size={10} color={TextMuted} lineHeight={14} style={{ flex: 1 }}>
                     Zaafiyet Henüz Bilinmiyor (İsli Kandil Hanı'ndaki masalara kulak kabartarak veya muhbire danışarak keşfedebilirsin).
                   </T>
@@ -802,9 +784,7 @@ function CharacterDetailDialog({ liveProfile, onDismiss }) {
           <Surface radius={8} color={color(0xff1b242e)} borderColor={color(0xff3e5a73)} borderWidth={1} style={{ alignSelf: 'stretch' }}>
             <Column pad={10}>
               <Row gap={6}>
-                <T size={14} hidden>
-                  ⚒️
-                </T>
+                
                 <T heading size={12} weight="bold" color={TextGold}>
                   Zanaat ve Diyar Rolü
                 </T>
@@ -827,15 +807,13 @@ function CharacterDetailDialog({ liveProfile, onDismiss }) {
             <Column pad={10}>
               <Row justify="between" style={{ alignSelf: 'stretch' }}>
                 <Row gap={6}>
-                  <T size={14} hidden>
-                    🥋
-                  </T>
+                  
                   <T heading size={12} weight="bold" color={TextGold}>
                     {`Dövüş Yetenekleri (${skills.length} Sanat)`}
                   </T>
                 </Row>
                 <T size={10} color={AmberGoldLight} hidden>
-                  İncele 👆
+                  İncele
                 </T>
               </Row>
               <Spacer h={10} />
@@ -962,11 +940,11 @@ function SkillDetailDialog({ skill, onDismiss }) {
             <Row gap={6} wrap>
               <Surface radius={4} color={DarkSurfaceCard}>
                 <T size={10} color={AmberGold} style={{ paddingHorizontal: 6, paddingVertical: 2 }}>
-                  {`${skill.type.icon} ${skill.type.displayName}`}
+                  {`${skill.type.displayName}`}
                 </T>
               </Surface>
               <T size={11} color={TextMuted}>
-                {`⭐ Kademe ${skill.tier} / 3`}
+                {`Kademe ${skill.tier} / 3`}
               </T>
             </Row>
           </Column>
@@ -977,7 +955,7 @@ function SkillDetailDialog({ skill, onDismiss }) {
           <Surface radius={6} color={DarkBg} style={{ alignSelf: 'stretch' }}>
             <Column pad={10}>
               <T size={10} weight="bold" color={TextMuted}>
-                📜 Yetenek Tasviri:
+                Yetenek Tasviri:
               </T>
               <Spacer h={2} />
               <T size={12} color={TextLight} lineHeight={16} italic>
@@ -989,9 +967,7 @@ function SkillDetailDialog({ skill, onDismiss }) {
           <Surface radius={6} color={color(0xff1e3a24)} borderColor={alpha(HealthGreen, 0.7)} borderWidth={1} style={{ alignSelf: 'stretch' }}>
             <Column pad={10}>
               <Row gap={6}>
-                <T size={13} hidden>
-                  💥
-                </T>
+                
                 <T size={11} weight="bold" color={HealthGreen}>
                   Savaş İçi Etki & Üstünlük:
                 </T>
@@ -1002,7 +978,7 @@ function SkillDetailDialog({ skill, onDismiss }) {
               </T>
               <Spacer h={4} />
               <T size={10} color={TextMuted}>
-                {`⏳ Bekleme Süresi: ${skill.cooldownTurns} Tur`}
+                {`Bekleme Süresi: ${skill.cooldownTurns} Tur`}
               </T>
             </Column>
           </Surface>
@@ -1036,7 +1012,7 @@ export function StorageVaultDialog({ player, viewModel, onDismiss }) {
         <Row justify="between" gap={8} style={{ alignSelf: 'stretch' }}>
           <Column style={{ flex: 1 }} label={`${a11y} Açma Bedeli: ${unlockCost} Altın`}>
             <T weight="bold" color={TextMuted} size={13}>
-              {`🔒 ${slotIndex + 1}. Sandık Alanı (Kilitli)`}
+              {`${slotIndex + 1}. Sandık Alanı (Kilitli)`}
             </T>
             <T size={11} color={AmberGold}>
               {`Açma Bedeli: ${unlockCost} Altın`}
@@ -1051,7 +1027,7 @@ export function StorageVaultDialog({ player, viewModel, onDismiss }) {
             label={`${slotIndex + 1}. Sandık Alanının Kilidini Aç, ${unlockCost} Altın`}
           >
             <T size={11} weight="bold" color={player.gold >= unlockCost ? DarkBg : TextMuted}>
-              ➕ Kilidi Aç
+              Kilidi Aç
             </T>
           </Btn>
         </Row>
@@ -1099,7 +1075,7 @@ export function StorageVaultDialog({ player, viewModel, onDismiss }) {
             <Row gap={4}>
               <OutlinedBtn onPress={() => setViewingChest(chest)} pad={6} label={`${chest.type.displayName} Aç`}>
                 <T size={10} color={AmberGold} weight="bold">
-                  🔍 Aç
+                  Aç
                 </T>
               </OutlinedBtn>
               <Btn
@@ -1111,7 +1087,7 @@ export function StorageVaultDialog({ player, viewModel, onDismiss }) {
                 label={`${chest.type.displayName} Geliştir, ${chest.upgradeCostGold} Altın`}
               >
                 <T size={10} weight="bold" color={player.gold >= chest.upgradeCostGold ? DarkBg : TextMuted}>
-                  {`🔨 (${chest.upgradeCostGold}🪙)`}
+                  {`(${chest.upgradeCostGold} Altın)`}
                 </T>
               </Btn>
             </Row>
@@ -1119,7 +1095,7 @@ export function StorageVaultDialog({ player, viewModel, onDismiss }) {
 
           <Spacer h={6} />
           <T size={11} color={HealthGreen} weight="medium" hidden>
-            {`📦 Stok: ${contentSummary}`}
+            {`Stok: ${contentSummary}`}
           </T>
         </>
       );
@@ -1129,7 +1105,7 @@ export function StorageVaultDialog({ player, viewModel, onDismiss }) {
         <Column>
           <Row justify="between" gap={6} style={{ alignSelf: 'stretch' }}>
             <T weight="bold" color={TextLight} size={13} label={a11y} style={{ flexShrink: 1 }}>
-              {`📦 ${slotIndex + 1}. Sandık Alanı (Boş)`}
+              {`${slotIndex + 1}. Sandık Alanı (Boş)`}
             </T>
             <TextBtn
               onPress={() => setSelectedBuildSlot(selectedBuildSlot === slotIndex ? null : slotIndex)}
@@ -1162,9 +1138,9 @@ export function StorageVaultDialog({ player, viewModel, onDismiss }) {
                     label={`${cType.displayName} inşa et, 60 Altın`}
                   >
                     <Row justify="between" style={{ alignSelf: 'stretch', flex: 1 }}>
-                      <T size={11} color={player.gold >= 60 ? AmberGold : TextMuted}>{`${cType.icon} ${cType.displayName}`}</T>
+                      <T size={11} color={player.gold >= 60 ? AmberGold : TextMuted}>{`${cType.displayName}`}</T>
                       <T size={11} color={AmberGold}>
-                        60 🪙
+                        60 Altın
                       </T>
                     </Row>
                   </OutlinedBtn>
@@ -1196,9 +1172,7 @@ export function StorageVaultDialog({ player, viewModel, onDismiss }) {
       containerColor={DarkSurface}
       title={
         <Row gap={8} heading label={`Depo Mahzeni & Kutu Odası, 4 Yuvalı Kasa Izgarası, ${player.unlockedChestSlots} / 4 Açık`}>
-          <T size={24} hidden>
-            📦
-          </T>
+          
           <Column style={{ flex: 1 }}>
             <T weight="bold" color={TextGold} size={16}>
               Depo Mahzeni & Kutu Odası
@@ -1265,10 +1239,10 @@ export function ChestContentsDialog({ chest, player, viewModel, onDismiss }) {
           <Column pad={10}>
             <Row justify="between" style={{ alignSelf: 'stretch' }} label={`Taşlar: ${player.gemsInventory.length} Adet, Kırıklar: ${shardSum} Adet`}>
               <T size={12} weight="bold" color={TextGold}>
-                {`💎 Taşlar: ${player.gemsInventory.length} Adet`}
+                {`Taşlar: ${player.gemsInventory.length} Adet`}
               </T>
               <T size={12} weight="bold" color={AmberGoldLight}>
-                {`✨ Kırıklar: ${shardSum} Adet`}
+                {`Kırıklar: ${shardSum} Adet`}
               </T>
             </Row>
             <Spacer h={8} />
@@ -1283,7 +1257,7 @@ export function ChestContentsDialog({ chest, player, viewModel, onDismiss }) {
                 label="Tüm Kırıkları Sentezle"
               >
                 <T size={10} weight="bold" color={sentezOlur ? DarkBg : TextMuted} align="center">
-                  ✨ Tüm Kırıkları Sentezle
+                  Tüm Kırıkları Sentezle
                 </T>
               </Btn>
               <Btn
@@ -1296,7 +1270,7 @@ export function ChestContentsDialog({ chest, player, viewModel, onDismiss }) {
                 label="Tümünü Yükselt"
               >
                 <T size={10} weight="bold" color={hasAnyUpgradable ? Color.White : TextMuted} align="center">
-                  ⚡ Tümünü Yükselt
+                  Tümünü Yükselt
                 </T>
               </Btn>
             </Row>
@@ -1305,7 +1279,7 @@ export function ChestContentsDialog({ chest, player, viewModel, onDismiss }) {
 
         {/* 2. KIRIK PARÇALAR LİSTESİ */}
         <T heading size={12} weight="bold" color={TextLight} label="Hasat Edilen Kırık Parçalar, 3 Kırık artı 15 Altın, 1 Taş eder">
-          ⛏️ Hasat Edilen Kırık Parçalar (3 Kırık + 15🪙 = 1 Taş):
+          Hasat Edilen Kırık Parçalar (3 Kırık + 15 Altın = 1 Taş):
         </T>
         {GemType.values().map((gType) => {
           const count = player.getShardCount(gType);
@@ -1315,7 +1289,7 @@ export function ChestContentsDialog({ chest, player, viewModel, onDismiss }) {
               <Row pad={8} justify="between" gap={6} style={{ alignSelf: 'stretch' }}>
                 <Column style={{ flex: 1 }} label={`${gType.displayName} Kırığı, Miktar: ${count} / 3`}>
                   <T weight="bold" size={12} color={TextGold}>
-                    {`${gType.icon} ${gType.displayName} Kırığı`}
+                    {`${gType.displayName} Kırığı`}
                   </T>
                   <T size={11} color={count >= 3 ? HealthGreen : TextMuted}>
                     {`Miktar: ${count} / 3`}
@@ -1330,7 +1304,7 @@ export function ChestContentsDialog({ chest, player, viewModel, onDismiss }) {
                   label={`${gType.displayName} Sentezle, ${GemCraftingRules.SHARD_SYNTHESIS_COST_GOLD} Altın`}
                 >
                   <T size={10} weight="bold" color={olur ? DarkBg : TextMuted}>
-                    {`Sentezle (${GemCraftingRules.SHARD_SYNTHESIS_COST_GOLD}🪙)`}
+                    {`Sentezle (${GemCraftingRules.SHARD_SYNTHESIS_COST_GOLD} Altın)`}
                   </T>
                 </Btn>
               </Row>
@@ -1341,7 +1315,7 @@ export function ChestContentsDialog({ chest, player, viewModel, onDismiss }) {
         {/* 3. İŞLENMİŞ TAŞLAR */}
         <Spacer h={4} />
         <T heading size={12} weight="bold" color={TextLight}>
-          💎 Sandıktaki Kesilmiş Taşlar:
+          Sandıktaki Kesilmiş Taşlar:
         </T>
         {grouped.length === 0 ? (
           <T size={11} color={TextMuted}>
@@ -1389,7 +1363,7 @@ export function ChestContentsDialog({ chest, player, viewModel, onDismiss }) {
                           label={`3 ${gType.displayName} Taşını Seviye ${targetLevel}'e Yükselt, ${cost} Altın`}
                         >
                           <T size={10} weight="bold" color={olur ? DarkBg : TextMuted}>
-                            {`3 Taşı Yükselt (${cost}🪙)`}
+                            {`3 Taşı Yükselt (${cost} Altın)`}
                           </T>
                         </Btn>
                       </Row>
@@ -1405,7 +1379,7 @@ export function ChestContentsDialog({ chest, player, viewModel, onDismiss }) {
           <>
             <Spacer h={4} />
             <T heading size={12} weight="bold" color={AmberGold}>
-              🛡️ Aktif Şans Koruma & Telafi (Pity) Durumları:
+              Aktif Şans Koruma & Telafi (Pity) Durumları:
             </T>
             {activePities.map(([lvl, bonus]) => (
               <Surface key={lvl} radius={4} color={DarkSurfaceCard} borderColor={alpha(AmberGold, 0.3)} borderWidth={1} style={{ alignSelf: 'stretch' }}>
@@ -1467,7 +1441,7 @@ export function ChestContentsDialog({ chest, player, viewModel, onDismiss }) {
           </T>
           <Spacer h={6} />
           <T size={10} color={TextMuted}>
-            💡 Sandık dolduğunda yeni toplanan materyaller ziyan olur. Sandığı genişleterek kapasiteyi artırabilirsin.
+            Sandık dolduğunda yeni toplanan materyaller ziyan olur. Sandığı genişleterek kapasiteyi artırabilirsin.
           </T>
         </Column>
       </Card>

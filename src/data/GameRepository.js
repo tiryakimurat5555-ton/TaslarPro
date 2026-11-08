@@ -392,7 +392,7 @@ export class GameRepository {
     }
 
     if (isSuccess) {
-      const narrative = `✅ ${hazard.avoidNarrative}`;
+      const narrative = `${hazard.avoidNarrative}`;
       this._labyrinthMessage.value = narrative;
       return [true, narrative];
     } else {
@@ -400,7 +400,7 @@ export class GameRepository {
       const baseDmg = kt.coerceAtLeast(kt.toInt(f32(hazard.damageAmount * f32(1 - mitigation))), 6);
       const newHp = kt.coerceAtLeast(player.currentHealth - baseDmg, 1);
       this._player.value = player.copy({ currentHealth: newHp });
-      const narrative = `💥 ${hazard.failureNarrative} (-${baseDmg} Can)`;
+      const narrative = `${hazard.failureNarrative} (-${baseDmg} Can)`;
       this._labyrinthMessage.value = narrative;
       return [false, narrative];
     }
@@ -423,11 +423,11 @@ export class GameRepository {
       const updatedRegionFame = { ...player.regionFame };
       updatedRegionFame[player.currentRegionId] = kt.coerceAtMost(currentFame + puzzle.rewardFame, 100);
       this._player.value = player.copy({ gold: newGold, regionFame: updatedRegionFame });
-      const narrative = `✨ ${puzzle.solvedNarrative} (+${puzzle.rewardGold} Altın, +${puzzle.rewardFame} Şöhret)`;
+      const narrative = `${puzzle.solvedNarrative} (+${puzzle.rewardGold} Altın, +${puzzle.rewardFame} Şöhret)`;
       this._labyrinthMessage.value = narrative;
       return [true, narrative];
     } else {
-      const narrative = `⚠️ ${puzzle.failNarrative}`;
+      const narrative = `${puzzle.failNarrative}`;
       this._labyrinthMessage.value = narrative;
       return [false, narrative];
     }
@@ -498,14 +498,14 @@ export class GameRepository {
           this._activeLabyrinthRun.value = run.copy({ chambers: chambers });
         }
       }
-      this._labyrinthMessage.value = `⚔️ ${enemy.name} kılıcının altında yere serildi! (+${result.earnedGold} Altın, +${result.earnedExp} EXP)`;
+      this._labyrinthMessage.value = `${enemy.name} kılıcının altında yere serildi! (+${result.earnedGold} Altın, +${result.earnedExp} EXP)`;
     } else {
       // Labirentte yenilgi: canı 15'e iner, labirent sona erer
       this._player.value = playerCurrent.copy({
         currentHealth: 15,
       });
       this._activeLabyrinthRun.value = null;
-      this._labyrinthMessage.value = `💀 ${enemy.name} karşısında ağır yara alarak labirentten güçlükle geri çekildin...`;
+      this._labyrinthMessage.value = `${enemy.name} karşısında ağır yara alarak labirentten güçlükle geri çekildin...`;
     }
     return result;
   }
@@ -526,7 +526,7 @@ export class GameRepository {
     updatedChambers[run.currentChamberIndex] = chamber.copy({ chestReward: null });
     this._activeLabyrinthRun.value = run.copy({ chambers: updatedChambers });
 
-    const narrative = `📦 ${chest.title} açıldı! İçinden ${goldFound} Altın ve değerli kalıntılar çıktı.`;
+    const narrative = `${chest.title} açıldı! İçinden ${goldFound} Altın ve değerli kalıntılar çıktı.`;
     this._labyrinthMessage.value = narrative;
     return [goldFound, narrative];
   }
@@ -564,7 +564,7 @@ export class GameRepository {
       });
       this._player.value = finalPlayer;
       this._activeLabyrinthRun.value = null;
-      this._labyrinthMessage.value = `🏆 TEBRİKLER! ${run.themeTitle} başarıyla tamamlandı ve gün ışığına çıktın! (+${rewardGold} Altın, +${rewardExp} Tecrübe, +${rewardFame} Şöhret)`;
+      this._labyrinthMessage.value = `TEBRİKLER! ${run.themeTitle} başarıyla tamamlandı ve gün ışığına çıktın! (+${rewardGold} Altın, +${rewardExp} Tecrübe, +${rewardFame} Şöhret)`;
       return false;
     }
   }
@@ -573,7 +573,7 @@ export class GameRepository {
     const run = this._activeLabyrinthRun.value;
     if (run == null) return;
     this._activeLabyrinthRun.value = null;
-    this._labyrinthMessage.value = `🚪 ${run.themeTitle} dehlizlerinden ayrılarak sağ salim arenaya döndün.`;
+    this._labyrinthMessage.value = `${run.themeTitle} dehlizlerinden ayrılarak sağ salim arenaya döndün.`;
   }
 
   dismissLevelUpDialog() {
@@ -1085,10 +1085,10 @@ export class GameRepository {
             maxHealth: kt.coerceAtMost(stats.maxHealth + 6, maxAllowedHealth),
             blockChancePercent: kt.coerceAtMost(stats.blockChancePercent + 1, 30),
           });
-          condition = '👑 Şampiyon Teçhizatı (Demirci Bakımı)';
+          condition = 'Şampiyon Teçhizatı (Demirci Bakımı)';
           diary = `${enemy.name} unvanını kaptırmamak için Vorn'un demirci ocağına altın yağdırdı; silahının çeliğini dövdürüp göğüslük plakalarını perçinletti (+1 Hasar, +1 Zırh, +6 Can).`;
         } else {
-          condition = '🎯 Kasabanın Hedef Tahtası (Lider)';
+          condition = 'Kasabanın Hedef Tahtası (Lider)';
           diary = `${enemy.name} lig zirvesinde kadeh kaldırırken diğer gladyatörlerin onun dövüş tarzını ezberlediğini fark etti.`;
         }
       }
@@ -1103,19 +1103,19 @@ export class GameRepository {
             armor: newArm,
             maxHealth: kt.coerceAtMost(stats.maxHealth + 5, maxAllowedHealth),
           });
-          condition = '⚒️ Bilenmiş Çelik (Demirci Bakımı)';
+          condition = 'Bilenmiş Çelik (Demirci Bakımı)';
           diary = `${enemy.name} kazandığı altınla demirci ocağına uğradı; silahının ağzını kumtaşıyla biletip zırh perçinlerini sıktırdı (+1 Hasar, +1 Zırh).`;
         } else if (roll < 75) {
           stats = stats.copy({
             maxHealth: kt.coerceAtMost(stats.maxHealth + 6, maxAllowedHealth),
             critChancePercent: kt.coerceAtMost(stats.critChancePercent + 1, 25),
           });
-          condition = '🏋️ Ağır Kütük İdmanı (+6 Can, +%1 Kritik)';
+          condition = 'Ağır Kütük İdmanı (+6 Can, +%1 Kritik)';
           diary = `${enemy.name} arenanın talim alanında kütük kaldırıp kum torbası dövdü; vuruş hassasiyetini ve kondisyonunu artırdı.`;
         } else if (gold >= 16) {
           gold -= 14;
           stats = stats.copy({ damage: kt.coerceAtMost(stats.damage + 1, maxAllowedDamage) });
-          condition = '🧪 Boğa Gücü İksiri (Simyacı)';
+          condition = 'Boğa Gücü İksiri (Simyacı)';
           diary = `${enemy.name} kasaba simyacısından boğa kanı ve pelin karışımı güç iksiri içip kaslarını şişirdi (+1 Hasar).`;
         } else {
           stats = stats.copy({ maxHealth: kt.coerceAtMost(stats.maxHealth + 3, maxAllowedHealth) });
@@ -1130,7 +1130,7 @@ export class GameRepository {
             damage: stats.damage + 1,
             critChancePercent: kt.coerceAtMost(stats.critChancePercent + 1, 25),
           });
-          condition = '🩸 Testere Dişli Ağız (+1 Hasar, +%1 Kritik)';
+          condition = 'Testere Dişli Ağız (+1 Hasar, +%1 Kritik)';
           diary = `${enemy.name} silahının kenarlarına testere dişleri açarak vahşi kanatıcı vuruşlar talim etti.`;
         } else if (roll < 75 && gold >= 18) {
           gold -= 15;
@@ -1138,7 +1138,7 @@ export class GameRepository {
             damage: kt.coerceAtMost(stats.damage + 1, maxAllowedDamage),
             maxHealth: kt.coerceAtMost(stats.maxHealth + 5, maxAllowedHealth),
           });
-          condition = '🧪 Dağ Kurdu Özü (Simyacı)';
+          condition = 'Dağ Kurdu Özü (Simyacı)';
           diary = `${enemy.name} simyacı tezgahından acı dağ kurdu yağı alıp yaralarını dağladı ve hiddetini biledi (+1 Hasar, +5 Can).`;
         } else {
           stats = stats.copy({
@@ -1157,14 +1157,14 @@ export class GameRepository {
             damage: kt.coerceAtMost(stats.damage + 1, maxAllowedDamage),
             dodgeChancePercent: kt.coerceAtMost(stats.dodgeChancePercent + 1, 25),
           });
-          condition = '🧪 Engerek Zehri & Hızlı Adım (Simyacı)';
+          condition = 'Engerek Zehri & Hızlı Adım (Simyacı)';
           diary = `${enemy.name} simyacıdan aldığı sazlık engereği zehrini kınına emdirdi; hamlelerini ölümcül kıldı (+1 Hasar, +%1 Sıyrılma).`;
         } else if (roll < 75) {
           stats = stats.copy({
             dodgeChancePercent: kt.coerceAtMost(stats.dodgeChancePercent + 1, 25),
             speed: kt.coerceAtMost(stats.speed + (roll < 30 ? 1 : 0), 15),
           });
-          condition = '⚡ Gölge Adımları Talimi';
+          condition = 'Gölge Adımları Talimi';
           diary = `${enemy.name} arenanın sütunları arasında gölge gibi kayarak hız ve sıyrılma adımları çalıştı.`;
         } else {
           condition = 'Bahis & Gözlem';
@@ -1180,14 +1180,14 @@ export class GameRepository {
             blockChancePercent: kt.coerceAtMost(stats.blockChancePercent + 2, 30),
             maxHealth: kt.coerceAtMost(stats.maxHealth + 5, maxAllowedHealth),
           });
-          condition = '🛡️ Takviyeli Kalkan Siperi (+1 Zırh, +%2 Blok)';
+          condition = 'Takviyeli Kalkan Siperi (+1 Zırh, +%2 Blok)';
           diary = `${enemy.name} kalkan siperliğini usta demirciye perçinletip plaka kenarlarını kalınlaştırdı.`;
         } else if (roll < 80) {
           stats = stats.copy({
             damage: kt.coerceAtMost(stats.damage + 1, maxAllowedDamage),
             maxHealth: kt.coerceAtMost(stats.maxHealth + 4, maxAllowedHealth),
           });
-          condition = '⚔️ Ağır Darbe Talimi (+1 Hasar)';
+          condition = 'Ağır Darbe Talimi (+1 Hasar)';
           diary = `${enemy.name} meşe kütüklerine kalkan vurup gard düşürme ve karşı darbe talimi yaptı.`;
         } else {
           condition = 'Şövalye Disiplini';
@@ -1198,13 +1198,13 @@ export class GameRepository {
       else if (personality.archetype === PersonalityArchetype.TEMBEL) {
         if (roll < 30) {
           stats = stats.copy({ speed: Math.max(5, stats.speed - 1) });
-          condition = '🍺 Mahmur & Baş Ağrısı (-1 Hız)';
+          condition = 'Mahmur & Baş Ağrısı (-1 Hız)';
           gold = Math.max(0, gold - 12);
           diary = `${enemy.name} Kırlangıç Hanı'nda fıçı dibini gördü. Arenaya esneyerek ve zonklayan bir başla çıkıyor (-1 Hız).`;
         } else if (roll < 60) {
           const winGold = 22;
           gold += winGold;
-          condition = '🎲 Keyfi Yerinde (Kumar Kazancı)';
+          condition = 'Keyfi Yerinde (Kumar Kazancı)';
           diary = `${enemy.name} handa barbut masasında zarları denk getirip +${winGold} Altın kazandı!`;
         } else if (roll < 80 && gold >= 20) {
           gold -= 18;
@@ -1212,11 +1212,11 @@ export class GameRepository {
             damage: kt.coerceAtMost(stats.damage + 1, maxAllowedDamage),
             armor: kt.coerceAtMost(stats.armor + 1, maxAllowedArmor),
           });
-          condition = '⚒️ Rastgele Demirci Bakımı (+1 Hasar, +1 Zırh)';
+          condition = 'Rastgele Demirci Bakımı (+1 Hasar, +1 Zırh)';
           diary = `${enemy.name} han çıkışı rastladığı çırağa silahını ve zırhını temizletip sivriltti.`;
         } else {
           stats = stats.copy({ critChancePercent: kt.coerceAtMost(stats.critChancePercent + 1, 25) });
-          condition = '🧿 Uğurlu Muska (+%1 Kritik)';
+          condition = 'Uğurlu Muska (+%1 Kritik)';
           diary = `${enemy.name} handaki bir gezginden uğurlu çakıl taşı satın alıp kemerine taktı.`;
         }
       }
@@ -1228,14 +1228,14 @@ export class GameRepository {
             damage: kt.coerceAtMost(stats.damage + 1, maxAllowedDamage),
             dodgeChancePercent: kt.coerceAtMost(stats.dodgeChancePercent + 1, 25),
           });
-          condition = '🧪 Mistik Çöl Merhemi (Simyacı)';
+          condition = 'Mistik Çöl Merhemi (Simyacı)';
           diary = `${enemy.name} çöl kumu ve simya otlarını karıştırıp vücuduna sürdü; duyuları keskinleşti (+1 Hasar, +%1 Sıyrılma).`;
         } else if (roll < 75) {
           stats = stats.copy({
             dodgeChancePercent: kt.coerceAtMost(stats.dodgeChancePercent + 1, 25),
             maxHealth: kt.coerceAtMost(stats.maxHealth + 6, maxAllowedHealth),
           });
-          condition = '🔮 Tuz Kehaneti (+6 Can, +%1 Sıyrılma)';
+          condition = 'Tuz Kehaneti (+6 Can, +%1 Sıyrılma)';
           diary = `${enemy.name} tuz kadehinde rüzgarın sesini dinleyip darbelerden sıyrılma adımlarını prova etti.`;
         } else {
           condition = 'Mistik Meditasyon';
@@ -1331,7 +1331,7 @@ export class GameRepository {
         if (bestCandidate != null && (isWeaponUpgrade || isShieldUpgrade) && roll < 35) {
           gold -= bestCandidate.valueInGold;
           currentEnemy = currentEnemy.equip(bestCandidate);
-          condition = `⚔️ Egzotik: ${bestCandidate.name}`;
+          condition = `Egzotik: ${bestCandidate.name}`;
           switch (enemy.name) {
             case 'Voladmir':
               diary = `Voladmir, asilzade kibrini taçlandırmak için ${bestCandidate.valueInGold} Altın sayarak ${bestCandidate.name} kuşandı: 'Taş Hisar kumları bu çeliğin asaletine boyun eğecek!'`;
@@ -1381,7 +1381,7 @@ export class GameRepository {
               }
           }
         }
-        // 1. Durum: Elinde 3 kırık var ve sentez ücreti (15🪙) + soketleme ücreti (25🪙) varsa
+        // 1. Durum: Elinde 3 kırık var ve sentez ücreti (15 Altın) + soketleme ücreti (25 Altın) varsa
         else if (
           shardCount >= GemCraftingRules.SHARDS_PER_GEM &&
           gold >= GemCraftingRules.SHARD_SYNTHESIS_COST_GOLD + GemCraftingRules.GEM_SOCKET_COST_GOLD &&
@@ -1398,7 +1398,7 @@ export class GameRepository {
               armor: kt.coerceAtLeast(newGem.stats.armor, 1),
             }),
           );
-          condition = `💎 ${newGem.displayName} Kakıldı`;
+          condition = `${newGem.displayName} Kakıldı`;
           diary = `${enemy.name} topladığı 3 adet ${preferredGemType.displayName} Kırığı ile Usta Kael'e ${GemCraftingRules.SHARD_SYNTHESIS_COST_GOLD + GemCraftingRules.GEM_SOCKET_COST_GOLD} Altın ödeyerek ${currentEnemy.weaponName} üzerine ${newGem.displayName} mıhlattı.`;
         }
         // 2. Durum: Var olan taşı yükseltme
@@ -1421,15 +1421,15 @@ export class GameRepository {
                     armor: kt.coerceAtLeast(kt.idiv(upgraded.stats.armor, 2), 1),
                   }),
                 );
-                condition = `💎 ${upgraded.displayName} Yükseltildi`;
+                condition = `${upgraded.displayName} Yükseltildi`;
                 diary = `${enemy.name} ${upgradeCost} Altın tezgah harcı ödeyerek ${upgradeableGem.displayName} cevherini ${upgraded.displayName} seviyesine yükseltti (${upgraded.effectSummary}).`;
               } else {
-                condition = '💥 Çekiç Kazası';
+                condition = 'Çekiç Kazası';
                 diary = `${enemy.name} tezgahta ${upgradeCost} Altın harcadı ancak taş aşırı baskıda çatlayıp kırıldı; teselli kırığı topladı.`;
               }
             } else {
               stats = stats.copy({ maxHealth: stats.maxHealth + 4 });
-              condition = '🧘 Kütük İdmanı';
+              condition = 'Kütük İdmanı';
               diary = `${enemy.name} cevher yükseltmeye altını yetmediği için gününü arenanın talim alanında kütük kaldırarak geçirdi.`;
             }
           }
@@ -1438,13 +1438,13 @@ export class GameRepository {
         else if (shardCount < 3 && roll < 65) {
           const gathered = kt.Random.nextInt(1, 3);
           currentShards[preferredGemType] = shardCount + gathered;
-          condition = '⛏️ Hasat & Madencilik';
+          condition = 'Hasat & Madencilik';
           diary = `${enemy.name} garnizon dışındaki maden ocaklarına ve kayalıklara çıkarak +${gathered} adet ${preferredGemType.displayName} Kırığı topladı (Mevcut: ${currentShards[preferredGemType]}/3).`;
         }
         // 4. Durum: Kondisyon & Dinlenme
         else {
           stats = stats.copy({ maxHealth: stats.maxHealth + 3 });
-          condition = '🛡️ Formunu Koruyor';
+          condition = 'Formunu Koruyor';
           diary = `${enemy.name} gününü dinlenerek, rakiplerin dövüş kayıtlarını inceleyerek geçirdi.`;
         }
 
@@ -1474,7 +1474,7 @@ export class GameRepository {
 
     // Günlük Arena Katılım Kontrolü (Maç veya Seyirci Bahsi Zorunluluğu)
     if (!force && !currentDayState.isDailyArenaObligationMet) {
-      return '⚠️ Arenaya uğramadan günü geçiremezsin! Kırlangıç Kasabası kurallarına göre ya kendi kurandaki maça çıkmalı, ya da kumdaki diğer bir dövüşçüye seyirci bahsi yatırmalısın!';
+      return 'Arenaya uğramadan günü geçiremezsin! Kırlangıç Kasabası kurallarına göre ya kendi kurandaki maça çıkmalı, ya da kumdaki diğer bir dövüşçüye seyirci bahsi yatırmalısın!';
     }
 
     if (costGold > 0 && playerCurrent.gold < costGold) {
@@ -1502,12 +1502,12 @@ export class GameRepository {
         const targetMatch = kt.firstOrNull(recent, (it) => it.fighter1Name === bet.selectedFighterName || it.fighter2Name === bet.selectedFighterName);
         if (targetMatch != null && targetMatch.winnerName === bet.selectedFighterName) {
           betWinnings = bet.potentialReturn;
-          betOutcomeNote = `🎲 Seyirci Bahsi Tuttu! ${bet.selectedFighterName} zafer kazandı (+${betWinnings} Altın)! `;
+          betOutcomeNote = `Seyirci Bahsi Tuttu! ${bet.selectedFighterName} zafer kazandı (+${betWinnings} Altın)! `;
         } else {
-          betOutcomeNote = `🎲 Seyirci Bahsi Yattı: ${bet.selectedFighterName} maçı kazanamadı. `;
+          betOutcomeNote = `Seyirci Bahsi Yattı: ${bet.selectedFighterName} maçı kazanamadı. `;
         }
       } else {
-        betOutcomeNote = '🎲 Günlük seyirci bahsi tamamlandı. ';
+        betOutcomeNote = 'Günlük seyirci bahsi tamamlandı. ';
       }
     }
 
@@ -1534,7 +1534,7 @@ export class GameRepository {
     const sampleEvolution = evolvedDiaries.length > 0 ? 'Diyar Haberleri: ' + kt.take(kt.shuffled(evolvedDiaries), 2).join(' | ') : '';
 
     let narrative = '';
-    narrative += `🌅 ${nextDay}. Gün Doğdu! `;
+    narrative += `${nextDay}. Gün Doğdu! `;
     narrative += 'Kırlangıç Kasabası sisler arasından uyandı. ';
     if (forfeitNote.length > 0) narrative += forfeitNote;
     if (betOutcomeNote.length > 0) narrative += betOutcomeNote;
@@ -1604,7 +1604,7 @@ export class GameRepository {
     }
     this._dayState.value = currentDayState.copy({ isDailyTrainingDone: true });
 
-    const msg = `⚔️ Talimgah'ta kum torbaları ve tahta kılıçlarla ter döktün. +${gainedExp} Tecrübe (EXP) kazandın!`;
+    const msg = `Talimgah'ta kum torbaları ve tahta kılıçlarla ter döktün. +${gainedExp} Tecrübe (EXP) kazandın!`;
     return [true, msg];
   }
 
@@ -1646,7 +1646,7 @@ export class GameRepository {
     }
 
     if (currentP.gold < room.upgradeCostGold) {
-      return [false, `Yetersiz altın! ${room.upgradeCostGold} Altın gerekli (Mevcut: ${currentP.gold} 🪙).`];
+      return [false, `Yetersiz altın! ${room.upgradeCostGold} Altın gerekli (Mevcut: ${currentP.gold} Altın).`];
     }
 
     return [true, null];
@@ -1712,7 +1712,7 @@ export class GameRepository {
       gold: currentP.gold - room.upgradeCostGold,
       homeBonusStats: homeStats,
     });
-    return [true, `🔨 [GELİŞİM!] ${room.type.title} Kademe ${newLevel} oldu: '${newTierInfo.name}'!`];
+    return [true, `[GELİŞİM!] ${room.type.title} Kademe ${newLevel} oldu: '${newTierInfo.name}'!`];
   }
 
   getHouseTransformationStatus() {
@@ -1743,7 +1743,7 @@ export class GameRepository {
       new HouseRequirementStatus({
         title: 'Mülk ve İntikal Harcı',
         isMet: p.gold >= 500,
-        currentText: `${p.gold} 🪙`,
+        currentText: `${p.gold} Altın`,
         requiredText: '500 Altın',
       }),
     ];
@@ -1799,7 +1799,7 @@ export class GameRepository {
     });
 
     const narrative =
-      '🏛️ [BÜYÜK DÖNÜŞÜM & ÖZGÜRLÜK!]\n' +
+      '[BÜYÜK DÖNÜŞÜM & ÖZGÜRLÜK!]\n' +
       'Rutubetli gladyatör hücresinin demir parmaklıklarını sonsuza dek arkanda bıraktın!\n' +
       'Kasabanın taş döşeli ara sokağında; etrafı yüksek taş duvarlarla çevrili, güneş alan geniş bir avluya ve şömineli taş odaya sahip yeni evine taşındın.\n' +
       'Artık evinde Kadim Harita Kütüphanesi, Biley Taşı Silahhanesi ve Şifalı Ot Mahzeni inşa edebilirsin!';
@@ -1855,7 +1855,7 @@ export class GameRepository {
         updatedFame = 100;
         const passItem = new Equipment({
           id: 'garrison_pass',
-          name: '📜 Hisartaşı Garnizonu Geçiş Fermanı',
+          name: 'Hisartaşı Garnizonu Geçiş Fermanı',
           slot: EquipmentSlot.TALISMAN,
           accessoryCategory: AccessoryCategory.TALISMAN,
           rarity: ItemRarity.KADIM,
@@ -2230,7 +2230,7 @@ export class GameRepository {
     }
     if (quest.requiredSupplyGold > 0) {
       if (currentP.gold < quest.requiredSupplyGold) {
-        return [false, `Yetersiz Altın! Görev hazırlığı ve teçhizatı için ${quest.requiredSupplyGold} Altın gereklidir (Mevcut: ${currentP.gold} 🪙).`];
+        return [false, `Yetersiz Altın! Görev hazırlığı ve teçhizatı için ${quest.requiredSupplyGold} Altın gereklidir (Mevcut: ${currentP.gold} Altın).`];
       }
     }
 
@@ -2251,8 +2251,8 @@ export class GameRepository {
 
     list[index] = list[index].copy({ isRunning: true, elapsedSeconds: 0 });
     this._quests.value = list;
-    const costNote = quest.requiredSupplyGold > 0 ? ` (-${quest.requiredSupplyGold} 🪙 harcandı)` : '';
-    return [true, `📜 ${quest.title} sözleşmesi başladı${costNote}. Karakterin yola koyuldu!`];
+    const costNote = quest.requiredSupplyGold > 0 ? ` (-${quest.requiredSupplyGold} Altın harcandı)` : '';
+    return [true, `${quest.title} sözleşmesi başladı${costNote}. Karakterin yola koyuldu!`];
   }
 
   advanceQuestTime(seconds) {
@@ -2312,7 +2312,7 @@ export class GameRepository {
     }
     if (adv.requiredSupplyGold > 0) {
       if (currentP.gold < adv.requiredSupplyGold) {
-        return [false, `Yetersiz Altın! Kazı teçhizatı ve güvenlik için ${adv.requiredSupplyGold} Altın gereklidir (Mevcut: ${currentP.gold} 🪙).`];
+        return [false, `Yetersiz Altın! Kazı teçhizatı ve güvenlik için ${adv.requiredSupplyGold} Altın gereklidir (Mevcut: ${currentP.gold} Altın).`];
       }
     }
     if (adv.requiredSupplyItemName != null) {
@@ -2328,8 +2328,8 @@ export class GameRepository {
 
     currentAdv[index] = adv.copy({ isRunning: true, elapsedSeconds: 0, isFinished: false });
     this._adventures.value = currentAdv;
-    const costNote = adv.requiredSupplyGold > 0 ? ` (-${adv.requiredSupplyGold} 🪙 kazı masrafı)` : '';
-    return [true, `🌲 ${adv.title} başladı${costNote}! Donanımını toparlayıp vahşi doğaya adım attın.`];
+    const costNote = adv.requiredSupplyGold > 0 ? ` (-${adv.requiredSupplyGold} Altın kazı masrafı)` : '';
+    return [true, `${adv.title} başladı${costNote}! Donanımını toparlayıp vahşi doğaya adım attın.`];
   }
 
   claimAdventureReward(adventureId) {
@@ -2388,7 +2388,7 @@ export class GameRepository {
     currentAdv[index] = adv.copy({ isRunning: false, elapsedSeconds: 0, isFinished: false, isClaimed: true });
     this._adventures.value = currentAdv;
 
-    const msg = `🎉 [ZAFER!] ${adv.targetName} alt edildi!\nKazanılan: +${adv.rewardGold} Altın, +${adv.rewardExp} EXP, +${fameGain} Şöhret ve 1x ${adv.rewardMaterialName} (${adv.rewardMaterialIcon}) çantana eklendi!`;
+    const msg = `[ZAFER!] ${adv.targetName} alt edildi!\nKazanılan: +${adv.rewardGold} Altın, +${adv.rewardExp} EXP, +${fameGain} Şöhret ve 1x ${adv.rewardMaterialName} () çantana eklendi!`;
     return [true, msg];
   }
 
@@ -2402,7 +2402,7 @@ export class GameRepository {
       return [false, `Yetersiz malzeme! Bu eseri dövmek için ${recipe.requiredMaterialCount}x ${recipe.requiredMaterialName} gereklidir (Mevcut: ${matCount}).`];
     }
     if (currentP.gold < recipe.requiredGold) {
-      return [false, `Yetersiz altın! Demirci ocak ve çekiç hakkı için ${recipe.requiredGold} Altın talep ediyor (Mevcut: ${currentP.gold} 🪙).`];
+      return [false, `Yetersiz altın! Demirci ocak ve çekiç hakkı için ${recipe.requiredGold} Altın talep ediyor (Mevcut: ${currentP.gold} Altın).`];
     }
 
     const updatedMaterials = { ...currentP.craftingMaterials };
@@ -2418,7 +2418,7 @@ export class GameRepository {
     const traitName = recipe.resultItem.specialTrait?.name ?? '';
     return [
       true,
-      `🔨 [EFSANEVİ ESER DÖVÜLDÜ!]\nDemirci Zaven örsünde kızıl kıvılcımlar saçarak ${recipe.resultItem.name} eşyasını tamamladı!\nÖzel Nitelik: '${traitName}' başarıyla çantana eklendi.`,
+      `[EFSANEVİ ESER DÖVÜLDÜ!]\nDemirci Zaven örsünde kızıl kıvılcımlar saçarak ${recipe.resultItem.name} eşyasını tamamladı!\nÖzel Nitelik: '${traitName}' başarıyla çantana eklendi.`,
     ];
   }
 
@@ -2488,7 +2488,7 @@ export class GameRepository {
       } else {
         newConsumables.push(droppedScroll);
       }
-      scrollMsg = `\n\n📜 [ÖZEL GANİMET BULUNDU!]\n${droppedScroll.name} ele geçirildi! Kasabadaki Bilge Mütercim Jin-Zhen'e götürerek deşifre ettirebilirsin!`;
+      scrollMsg = `\n\n[ÖZEL GANİMET BULUNDU!]\n${droppedScroll.name} ele geçirildi! Kasabadaki Bilge Mütercim Jin-Zhen'e götürerek deşifre ettirebilirsin!`;
     }
 
     let intelMsg = '';
@@ -2499,7 +2499,7 @@ export class GameRepository {
       if (unknownWeaknesses.length > 0) {
         const discovered = kt.random(unknownWeaknesses);
         updatedKnownWeaknesses = kt.setPlus(updatedKnownWeaknesses, discovered.enemyId);
-        intelMsg = `\n\n🔍 [İSTİHBARAT ELDE EDİLDİ!]\n${discovered.enemyName}'in açığını çözdün: '${discovered.flawTitle}'!\n(${discovered.hintDescription})`;
+        intelMsg = `\n\n[İSTİHBARAT ELDE EDİLDİ!]\n${discovered.enemyName}'in açığını çözdün: '${discovered.flawTitle}'!\n(${discovered.hintDescription})`;
       }
     }
 
@@ -2527,7 +2527,7 @@ export class GameRepository {
     let updatedRumors = current.unlockedRumorQuestIds;
     if (quest.nextStageQuestId != null) {
       updatedRumors = kt.setPlus(kt.setMinus(updatedRumors, quest.id), quest.nextStageQuestId);
-      chainMsg = `\n\n🔗 [GÖREV ZİNCİRİ İLERLEDİ!]\nSonraki Aşama (${quest.chainStep + 1}/${quest.maxChainSteps}) yarınki kasaba panosuna eklendi!`;
+      chainMsg = `\n\n[GÖREV ZİNCİRİ İLERLEDİ!]\nSonraki Aşama (${quest.chainStep + 1}/${quest.maxChainSteps}) yarınki kasaba panosuna eklendi!`;
     } else if (quest.isRumorQuest) {
       updatedRumors = kt.setMinus(updatedRumors, quest.id);
     }
@@ -2563,7 +2563,7 @@ export class GameRepository {
     });
 
     const fameMsg = effectiveFameGain > 0 ? `, +${effectiveFameGain} Şöhret` : '';
-    const msg = `🎉 Sözleşme tamamlandı! +${quest.rewardGold} Altın, +${quest.rewardExp} EXP${fameMsg}.${scrollMsg}${intelMsg}${chainMsg}`;
+    const msg = `Sözleşme tamamlandı! +${quest.rewardGold} Altın, +${quest.rewardExp} EXP${fameMsg}.${scrollMsg}${intelMsg}${chainMsg}`;
     return [true, msg];
   }
 
@@ -2588,7 +2588,7 @@ export class GameRepository {
     const finalized = kt.take(currentEquipped, 4);
     this._player.value = current.copy({ equippedSkillIds: finalized });
     const skillName = StarterSkills.getSkillById(skillId)?.name ?? skillId;
-    return [true, `⚔️ '${skillName}' ${finalized.indexOf(skillId) + 1}. savaş yuvasına yerleştirildi!`];
+    return [true, `'${skillName}' ${finalized.indexOf(skillId) + 1}. savaş yuvasına yerleştirildi!`];
   }
 
   unequipSkillFromSlot(slotIndex) {
@@ -2598,7 +2598,7 @@ export class GameRepository {
       const removedId = currentEquipped.splice(slotIndex, 1)[0];
       this._player.value = current.copy({ equippedSkillIds: currentEquipped });
       const skillName = StarterSkills.getSkillById(removedId)?.name ?? removedId;
-      return [true, `🛡️ '${skillName}' ${slotIndex + 1}. yuvadan çıkarıldı.`];
+      return [true, `'${skillName}' ${slotIndex + 1}. yuvadan çıkarıldı.`];
     }
     return [false, 'Bu yuva zaten boş!'];
   }
@@ -2614,15 +2614,15 @@ export class GameRepository {
       currentEquipped.splice(idx, 1);
       this._player.value = current.copy({ equippedSkillIds: currentEquipped });
       const skillName = StarterSkills.getSkillById(skillId)?.name ?? skillId;
-      return [true, `🛡️ '${skillName}' ${idx + 1}. yuvadan çıkarıldı.`];
+      return [true, `'${skillName}' ${idx + 1}. yuvadan çıkarıldı.`];
     } else {
       if (currentEquipped.length >= 4) {
-        return [false, '⚠️ Tüm 4 savaş yuvası dolu! Önce bir yeteneği yuvadan çıkarmalısın.'];
+        return [false, 'Tüm 4 savaş yuvası dolu! Önce bir yeteneği yuvadan çıkarmalısın.'];
       }
       currentEquipped.push(skillId);
       this._player.value = current.copy({ equippedSkillIds: currentEquipped });
       const skillName = StarterSkills.getSkillById(skillId)?.name ?? skillId;
-      return [true, `⚔️ '${skillName}' ${currentEquipped.length}. savaş yuvasına kuşandı!`];
+      return [true, `'${skillName}' ${currentEquipped.length}. savaş yuvasına kuşandı!`];
     }
   }
 
@@ -2657,7 +2657,7 @@ export class GameRepository {
     let autoEquipNote = '';
     if (newEquipped.length < 4 && !newEquipped.includes(targetSkillId)) {
       newEquipped.push(targetSkillId);
-      autoEquipNote = `\n⚡ Otomatik olarak ${newEquipped.length}. Savaş Yuvasına yerleştirildi!`;
+      autoEquipNote = `\nOtomatik olarak ${newEquipped.length}. Savaş Yuvasına yerleştirildi!`;
     }
 
     this._player.value = current.copy({
@@ -2668,7 +2668,7 @@ export class GameRepository {
 
     return [
       true,
-      `📜 [KADİM DOĞU SIRRI ÇÖZÜLDÜ!]\nBilge Jin-Zhen tütsü dumanında parşömenin kırmızı balmumu mührünü eritti ve antik ideogramları sesli tercüme etti:\n\n🔮 '${targetSkill.name}' Yetenek Küresi Açıldı!\n"${targetSkill.description}"\n\n⚡ Tetiklenme: ${targetSkill.triggerConditionText}\n✨ Savaş Etkisi: ${targetSkill.effectSummary}${autoEquipNote}\n\n(Envanterdeki 4 Yetenek Yuvasından birine yerleştirerek dövüşlerde kullanabilirsin!)`,
+      `[KADİM DOĞU SIRRI ÇÖZÜLDÜ!]\nBilge Jin-Zhen tütsü dumanında parşömenin kırmızı balmumu mührünü eritti ve antik ideogramları sesli tercüme etti:\n\n'${targetSkill.name}' Yetenek Küresi Açıldı!\n"${targetSkill.description}"\n\nTetiklenme: ${targetSkill.triggerConditionText}\nSavaş Etkisi: ${targetSkill.effectSummary}${autoEquipNote}\n\n(Envanterdeki 4 Yetenek Yuvasından birine yerleştirerek dövüşlerde kullanabilirsin!)`,
     ];
   }
 
@@ -2696,7 +2696,7 @@ export class GameRepository {
       encounteredEnemyIds: kt.setPlus(current.encounteredEnemyIds, enemyId),
     });
 
-    const narrative = `🕵️ Muhbir arkasına bakarak kulağına fısıldadı:\n'${weakness.enemyName} hakkındaki sırrı istiyordun demek... ${weakness.hintDescription}'\n\n(Dövüşte %${weakness.exploitChancePercent} şansla +%${weakness.bonusDamagePercent} hasar ve zırh delme avantajı elde ettin! Notlar evindeki kütüphaneye işlendi.)`;
+    const narrative = `Muhbir arkasına bakarak kulağına fısıldadı:\n'${weakness.enemyName} hakkındaki sırrı istiyordun demek... ${weakness.hintDescription}'\n\n(Dövüşte %${weakness.exploitChancePercent} şansla +%${weakness.bonusDamagePercent} hasar ve zırh delme avantajı elde ettin! Notlar evindeki kütüphaneye işlendi.)`;
     return [true, narrative];
   }
 
@@ -2720,7 +2720,7 @@ export class GameRepository {
       encounteredEnemyIds: kt.setPlus(current.encounteredEnemyIds, discovered.enemyId),
     });
 
-    const narrative = `🕵️ Muhbir altın kesesini cebine atıp kulağına fısıldadı:\n'${discovered.enemyName}'ın kumlarda sakladığı bir kusur var... ${discovered.hintDescription}'\n\n(Dövüşte %${discovered.exploitChancePercent} şansla +%${discovered.bonusDamagePercent} hasar ve zırh delme avantajı elde ettin! Notlar evindeki kütüphaneye işlendi.)`;
+    const narrative = `Muhbir altın kesesini cebine atıp kulağına fısıldadı:\n'${discovered.enemyName}'ın kumlarda sakladığı bir kusur var... ${discovered.hintDescription}'\n\n(Dövüşte %${discovered.exploitChancePercent} şansla +%${discovered.bonusDamagePercent} hasar ve zırh delme avantajı elde ettin! Notlar evindeki kütüphaneye işlendi.)`;
     return [true, narrative];
   }
 
@@ -2841,7 +2841,7 @@ export class GameRepository {
     this.refreshDailyQuests();
 
     const destName = targetRegionId === 'tashisar' ? "Taş Hisar Garnizonu'na" : "Kırlangıç Kasabası'na";
-    return [true, `🗺️ Sarp yolları aşarak ${destName} ulaştın. Yeni bölgenin çarşısı ve görev panosu açıldı!`];
+    return [true, `Sarp yolları aşarak ${destName} ulaştın. Yeni bölgenin çarşısı ve görev panosu açıldı!`];
   }
 
   // --- MÜCEVHERATÇI & TAŞ SİSTEMİ (GEM SOCKETING & SYNTHESIS) ---
@@ -2876,7 +2876,7 @@ export class GameRepository {
       inventory: inv,
       equipped: updatedEquipped,
     });
-    return [true, `💎 ${item.name} üzerine yeni bir yuva açıldı (${updatedItem.unlockedSockets}/${updatedItem.effectiveMaxSockets} Yuva) (-${costGold} 🪙)!`];
+    return [true, `${item.name} üzerine yeni bir yuva açıldı (${updatedItem.unlockedSockets}/${updatedItem.effectiveMaxSockets} Yuva) (-${costGold} Altın)!`];
   }
 
   unlockAllSocketsForEquipment(equipmentId) {
@@ -2900,7 +2900,7 @@ export class GameRepository {
     if (count === 0) {
       return [false, 'Açılabilecek yuva yok veya yeterli altınınız bulunmuyor!'];
     }
-    return [true, `💎 [TÜM YUVALAR AÇILDI] Toplam ${count} adet yeni yuva delindi (-${totalCost} Altın)!`];
+    return [true, `[TÜM YUVALAR AÇILDI] Toplam ${count} adet yeni yuva delindi (-${totalCost} Altın)!`];
   }
 
   insertGemIntoEquipment(equipmentId, gemId, costGold = GemCraftingRules.GEM_SOCKET_COST_GOLD) {
@@ -2921,7 +2921,7 @@ export class GameRepository {
     if (gemIndex === -1) return [false, 'Taş çantanızda bulunamadı!'];
 
     if (currentP.gold < costGold) {
-      return [false, `Taş kakma işçiliği için ${costGold} Altın gereklidir! (Mevcut: ${currentP.gold} 🪙)`];
+      return [false, `Taş kakma işçiliği için ${costGold} Altın gereklidir! (Mevcut: ${currentP.gold} Altın)`];
     }
 
     const gemToInsert = currentP.gemsInventory[gemIndex];
@@ -2941,7 +2941,7 @@ export class GameRepository {
       equipped: updatedEquipped,
       gemsInventory: updatedGems,
     });
-    return [true, `💎 ${gemToInsert.displayName} başarıyla ${item.name} içine mıhlandı (-${costGold} 🪙)! (${gemToInsert.effectSummary})`];
+    return [true, `${gemToInsert.displayName} başarıyla ${item.name} içine mıhlandı (-${costGold} Altın)! (${gemToInsert.effectSummary})`];
   }
 
   removeGemFromEquipment(equipmentId, gemIndex, costGold = GemCraftingRules.GEM_REMOVE_COST_GOLD) {
@@ -2955,7 +2955,7 @@ export class GameRepository {
       return [false, 'Geçersiz taş yuvası!'];
     }
     if (currentP.gold < costGold) {
-      return [false, `Taş sökme hassas işçiliği için ${costGold} Altın gereklidir! (Mevcut: ${currentP.gold} 🪙)`];
+      return [false, `Taş sökme hassas işçiliği için ${costGold} Altın gereklidir! (Mevcut: ${currentP.gold} Altın)`];
     }
 
     const removedGem = item.sockets[gemIndex];
@@ -2975,7 +2975,7 @@ export class GameRepository {
       equipped: updatedEquipped,
       gemsInventory: [...currentP.gemsInventory, removedGem],
     });
-    return [true, `💎 ${removedGem.displayName} kırılmadan söküldü ve çantana koyuldu (-${costGold} 🪙).`];
+    return [true, `${removedGem.displayName} kırılmadan söküldü ve çantana koyuldu (-${costGold} Altın).`];
   }
 
   combineGemShards(type) {
@@ -2989,7 +2989,7 @@ export class GameRepository {
     }
     const costGold = GemCraftingRules.SHARD_SYNTHESIS_COST_GOLD;
     if (currentP.gold < costGold) {
-      return [false, `Taş sentezleme işçiliği için ${costGold} Altın gereklidir! (Mevcut: ${currentP.gold} 🪙)`];
+      return [false, `Taş sentezleme işçiliği için ${costGold} Altın gereklidir! (Mevcut: ${currentP.gold} Altın)`];
     }
 
     const updatedShards = { ...currentP.gemShards };
@@ -3003,7 +3003,7 @@ export class GameRepository {
       gemShards: updatedShards,
       gemsInventory: [...currentP.gemsInventory, newGem],
     });
-    return [true, `💎 [SENTEZ BAŞARILI!] 3x ${type.displayName} Kırığı birleştirildi -> 1x ${newGem.displayName} elde edildi (-${costGold} 🪙)!`];
+    return [true, `[SENTEZ BAŞARILI!] 3x ${type.displayName} Kırığı birleştirildi -> 1x ${newGem.displayName} elde edildi (-${costGold} Altın)!`];
   }
 
   combineAllGemShards() {
@@ -3039,7 +3039,7 @@ export class GameRepository {
     }
 
     if (totalCrafted === 0) {
-      return [false, `Kırıkları sentezlemek için yeterli altınınız yok! (İşlem başına ${GemCraftingRules.SHARD_SYNTHESIS_COST_GOLD} 🪙)`];
+      return [false, `Kırıkları sentezlemek için yeterli altınınız yok! (İşlem başına ${GemCraftingRules.SHARD_SYNTHESIS_COST_GOLD} Altın)`];
     }
 
     this._player.value = currentP.copy({
@@ -3048,7 +3048,7 @@ export class GameRepository {
       gemsInventory: [...currentP.gemsInventory, ...newGems],
     });
 
-    return [true, `💎 [TOPLU SENTEZ] Toplam ${totalCrafted} adet Seviye 1 cevher dövüldü (-${totalGoldSpent} Altın)!`];
+    return [true, `[TOPLU SENTEZ] Toplam ${totalCrafted} adet Seviye 1 cevher dövüldü (-${totalGoldSpent} Altın)!`];
   }
 
   upgradeAllEligibleGems() {
@@ -3092,7 +3092,7 @@ export class GameRepository {
 
     return [
       true,
-      `⚡ [TOPLU YÜKSELTME] ${successCount} Başarılı, ${failCount} Başarısız işlem (-${totalCost} 🪙). Kırılan taşlar için telafi (pity) ve teselli parçaları eklendi!`,
+      `[TOPLU YÜKSELTME] ${successCount} Başarılı, ${failCount} Başarısız işlem (-${totalCost} Altın). Kırılan taşlar için telafi (pity) ve teselli parçaları eklendi!`,
     ];
   }
 
@@ -3113,7 +3113,7 @@ export class GameRepository {
     }
     const costGold = GemCraftingRules.getUpgradeCostGold(currentLevel);
     if (currentP.gold < costGold) {
-      return [false, `Taş birleştirme tezgah harcı için ${costGold} Altın gereklidir! (Mevcut: ${currentP.gold} 🪙)`];
+      return [false, `Taş birleştirme tezgah harcı için ${costGold} Altın gereklidir! (Mevcut: ${currentP.gold} Altın)`];
     }
 
     const targetLevel = currentLevel + 1;
@@ -3148,7 +3148,7 @@ export class GameRepository {
       });
       return [
         true,
-        `✨ [YÜKSELTME BAŞARILI! - Şans: %${effectiveSuccessRate} (Temel: %${baseSuccessRate}${currentPity > 0 ? ` + %${currentPity} Telafi` : ''})] Usta Kael'in çekici örste yankılandı! 3x Sv. ${currentLevel} ${type.displayName} birleşerek 1x ${upgradedGem.displayName} dövüldü! (${upgradedGem.effectSummary})`,
+        `[YÜKSELTME BAŞARILI! - Şans: %${effectiveSuccessRate} (Temel: %${baseSuccessRate}${currentPity > 0 ? ` + %${currentPity} Telafi` : ''})] Usta Kael'in çekici örste yankılandı! 3x Sv. ${currentLevel} ${type.displayName} birleşerek 1x ${upgradedGem.displayName} dövüldü! (${upgradedGem.effectSummary})`,
       ];
     } else {
       // Başarısızlık: Taşlar kırılır, telafi (pity) bonusu eklenir ve teselli kırığı verilir
@@ -3167,7 +3167,7 @@ export class GameRepository {
       });
       return [
         false,
-        `💥 [YÜKSELTME BAŞARISIZ! - Şans: %${effectiveSuccessRate} (Zar: ${roll})] Aşırı çekiç baskısı sebebiyle taşlar çatlayıp parçalandı! Usta Kael tezgahtan toplanan +${consolationShards} adet ${type.displayName} Kırığı verdi. 🛡️ Telafi Sistemi Devrede: Sv. ${targetLevel} için başarı şansına +%${GemCraftingRules.PITY_BONUS_PER_FAILURE} eklendi (Toplam Telafi Bonusu: +%${newPity})!`,
+        `[YÜKSELTME BAŞARISIZ! - Şans: %${effectiveSuccessRate} (Zar: ${roll})] Aşırı çekiç baskısı sebebiyle taşlar çatlayıp parçalandı! Usta Kael tezgahtan toplanan +${consolationShards} adet ${type.displayName} Kırığı verdi. Telafi Sistemi Devrede: Sv. ${targetLevel} için başarı şansına +%${GemCraftingRules.PITY_BONUS_PER_FAILURE} eklendi (Toplam Telafi Bonusu: +%${newPity})!`,
       ];
     }
   }
@@ -3180,13 +3180,13 @@ export class GameRepository {
     }
     const costGold = currentP.unlockedChestSlots === 2 ? 100 : currentP.unlockedChestSlots === 3 ? 200 : 300;
     if (currentP.gold < costGold) {
-      return [false, `Yeni sandık yuvası açmak için ${costGold} Altın gereklidir! (Mevcut: ${currentP.gold} 🪙)`];
+      return [false, `Yeni sandık yuvası açmak için ${costGold} Altın gereklidir! (Mevcut: ${currentP.gold} Altın)`];
     }
     this._player.value = currentP.copy({
       gold: currentP.gold - costGold,
       unlockedChestSlots: currentP.unlockedChestSlots + 1,
     });
-    return [true, `📦 Yeni sandık alanı açıldı (${this._player.value.unlockedChestSlots}/4 Sandık Yuvası Açık)!`];
+    return [true, `Yeni sandık alanı açıldı (${this._player.value.unlockedChestSlots}/4 Sandık Yuvası Açık)!`];
   }
 
   buildChest(slotIndex, chestType) {
@@ -3199,14 +3199,14 @@ export class GameRepository {
     }
     const costGold = 60;
     if (currentP.gold < costGold) {
-      return [false, `Sandık inşası için ${costGold} Altın gereklidir! (Mevcut: ${currentP.gold} 🪙)`];
+      return [false, `Sandık inşası için ${costGold} Altın gereklidir! (Mevcut: ${currentP.gold} Altın)`];
     }
     const newChest = new StorageChest({ slotIndex: slotIndex, type: chestType, level: 1, capacity: 50 });
     this._player.value = currentP.copy({
       gold: currentP.gold - costGold,
       builtChests: [...currentP.builtChests, newChest],
     });
-    return [true, `📦 ${chestType.displayName} başarıyla inşa edildi! (Hacim: 50)`];
+    return [true, `${chestType.displayName} başarıyla inşa edildi! (Hacim: 50)`];
   }
 
   upgradeChest(slotIndex) {
@@ -3215,7 +3215,7 @@ export class GameRepository {
     if (chest == null) return [false, 'Sandık bulunamadı!'];
     const cost = chest.upgradeCostGold;
     if (currentP.gold < cost) {
-      return [false, `Sandık genişletmesi için ${cost} Altın gereklidir! (Mevcut: ${currentP.gold} 🪙)`];
+      return [false, `Sandık genişletmesi için ${cost} Altın gereklidir! (Mevcut: ${currentP.gold} Altın)`];
     }
     const upgraded = chest.copy({ level: chest.level + 1, capacity: chest.capacity + 50 });
     const updatedChests = currentP.builtChests.map((it) => (it.slotIndex === slotIndex ? upgraded : it));
@@ -3223,7 +3223,7 @@ export class GameRepository {
       gold: currentP.gold - cost,
       builtChests: updatedChests,
     });
-    return [true, `🔨 ${chest.type.displayName} Seviye ${upgraded.level}'e yükseltildi! Yeni Kapasite: ${upgraded.capacity}`];
+    return [true, `${chest.type.displayName} Seviye ${upgraded.level}'e yükseltildi! Yeni Kapasite: ${upgraded.capacity}`];
   }
 
   // --- OTOMATİK HASAT BÖLGESİ (HARVESTING LOOP) ---
@@ -3235,10 +3235,10 @@ export class GameRepository {
     const roll = kt.randomIn(1, 100);
     if (roll > 40) {
       const failMessages = [
-        '💨 Kazma taşa çarptı, bu seferlik bir şey çıkmadı...',
-        '🍂 Rüzgar tohumları savurdu, aranmaya devam ediyorsun.',
-        '⛏️ Sert bir kayaya denk geldin, çatlağı yokluyorsun...',
-        '🌿 Çalıların arası boş görünüyor, diğer kümeye geçtin.',
+        'Kazma taşa çarptı, bu seferlik bir şey çıkmadı...',
+        'Rüzgar tohumları savurdu, aranmaya devam ediyorsun.',
+        'Sert bir kayaya denk geldin, çatlağı yokluyorsun...',
+        'Çalıların arası boş görünüyor, diğer kümeye geçtin.',
       ];
       return new HarvestResult({ success: false, narrative: kt.random(failMessages) });
     }
@@ -3258,7 +3258,7 @@ export class GameRepository {
           const destNote = hasChest ? ' (Mücevher Sandığına aktarıldı)' : '';
           result = new HarvestResult({
             success: true,
-            narrative: `✨ Parlayan bir damardan 1x ${randomGemType.displayName} Kırığı çıkardın! (${curShards + 1}/3)${destNote}`,
+            narrative: `Parlayan bir damardan 1x ${randomGemType.displayName} Kırığı çıkardın! (${curShards + 1}/3)${destNote}`,
             resourceName: `${randomGemType.displayName} Kırığı`,
             resourceIcon: randomGemType.icon,
             amount: 1,
@@ -3269,7 +3269,7 @@ export class GameRepository {
           const isIron = kt.randomIn(1, 100) <= 50;
           const key = isIron ? 'mat_iron_ore' : 'mat_stone';
           const name = isIron ? 'Demir Filizi' : 'Ham İnşaat Taşı';
-          const icon = isIron ? '⛏️' : '🪨';
+          const icon = isIron ? '' : '';
           const chestType = isIron ? ChestType.IRON_CHEST : ChestType.STONE_CHEST;
           const amount = kt.randomIn(1, 2);
           const cur = matMap[key] ?? 0;
@@ -3278,7 +3278,7 @@ export class GameRepository {
           const destNote = hasChest ? ` (${chestType.displayName}'na aktarıldı)` : '';
           result = new HarvestResult({
             success: true,
-            narrative: `${icon} Kayaları kırarak +${amount} ${name} elde ettin!${destNote}`,
+            narrative: `Kayaları kırarak +${amount} ${name} elde ettin!${destNote}`,
             resourceName: name,
             resourceIcon: icon,
             amount: amount,
@@ -3294,9 +3294,9 @@ export class GameRepository {
         const destNote = hasChest ? ' (Şifalı Bitki Sandığına aktarıldı)' : '';
         result = new HarvestResult({
           success: true,
-          narrative: `🌿 Ayaz çayırından +${amount} Şifalı Yabani Ot topladın!${destNote}`,
+          narrative: `Ayaz çayırından +${amount} Şifalı Yabani Ot topladın!${destNote}`,
           resourceName: 'Şifalı Yabani Ot',
-          resourceIcon: '🌿',
+          resourceIcon: '',
           amount: amount,
         });
         break;
@@ -3309,9 +3309,9 @@ export class GameRepository {
         const destNote = hasChest ? ' (Kumaş & İp Sandığına aktarıldı)' : '';
         result = new HarvestResult({
           success: true,
-          narrative: `🧵 Keten tarlasından +${amount} Keten & Halat Lifi eğirdin!${destNote}`,
+          narrative: `Keten tarlasından +${amount} Keten & Halat Lifi eğirdin!${destNote}`,
           resourceName: 'Keten Lifleri',
-          resourceIcon: '🧵',
+          resourceIcon: '',
           amount: amount,
         });
         break;
@@ -3324,9 +3324,9 @@ export class GameRepository {
         const destNote = hasChest ? ' (Odun Sandığına aktarıldı)' : '';
         result = new HarvestResult({
           success: true,
-          narrative: `🪵 Kadim koruluktan +${amount} Sert Meşe Kerestesi kestin!${destNote}`,
+          narrative: `Kadim koruluktan +${amount} Sert Meşe Kerestesi kestin!${destNote}`,
           resourceName: 'Sert Meşe Kerestesi',
-          resourceIcon: '🪵',
+          resourceIcon: '',
           amount: amount,
         });
         break;
@@ -3363,7 +3363,7 @@ export class GameRepository {
     if (lvlEvt != null) this._levelUpEvent.value = lvlEvt;
 
     const title = isMagic ? 'Kadim Büyü ve Rün Odaklanması' : 'Kılıç ve Yakın Dövüş Talimi';
-    return [true, `⚔️ [TALİM TAMAMLANDI!] ${title} ile ter döktün (+25 EXP kazandın, zihnin ve bedenin keskinleşti).`];
+    return [true, `[TALİM TAMAMLANDI!] ${title} ile ter döktün (+25 EXP kazandın, zihnin ve bedenin keskinleşti).`];
   }
 
   // --- ÖZEL EĞİTMEN ALTHEA TALİMHANESİ & YETENEK TOPLARI ---
@@ -3404,17 +3404,17 @@ export class GameRepository {
     if (newTotalSessions >= 10 && !unlockedSkills.includes(StarterSkills.IRON_WILL.id)) {
       unlockedSkills = kt.setPlus(unlockedSkills, StarterSkills.IRON_WILL.id);
       newSkillUnlockedText =
-        "\n\n🔮 [YENİ YETENEK KAZANILDI: DEMİR İRADE!]\nAlthea kılıcını indirip başıyla onayladı: 'Acıyı zırha çevirmeyi nihayet öğrendin.' Can %40 altına indiğinde savaşta otomatik koruma kalkanı tetiklenecek!";
+        "\n\n[YENİ YETENEK KAZANILDI: DEMİR İRADE!]\nAlthea kılıcını indirip başıyla onayladı: 'Acıyı zırha çevirmeyi nihayet öğrendin.' Can %40 altına indiğinde savaşta otomatik koruma kalkanı tetiklenecek!";
     }
     if (newTotalSessions >= 20 && !unlockedSkills.includes(StarterSkills.CRUSHING_IMPACT.id)) {
       unlockedSkills = kt.setPlus(unlockedSkills, StarterSkills.CRUSHING_IMPACT.id);
       newSkillUnlockedText =
-        "\n\n🔮 [YENİ YETENEK KAZANILDI: EZİCİ BALYOZ!]\nAlthea hafifçe tebessüm etti: 'Her 4 vuruşta bir vücut ağırlığını tek noktaya patlat.' Rakibin savunmasını kıran sersemletici vuruş açıldı!";
+        "\n\n[YENİ YETENEK KAZANILDI: EZİCİ BALYOZ!]\nAlthea hafifçe tebessüm etti: 'Her 4 vuruşta bir vücut ağırlığını tek noktaya patlat.' Rakibin savunmasını kıran sersemletici vuruş açıldı!";
     }
     if (newTotalSessions >= 30 && !unlockedSkills.includes(StarterSkills.COUNTER_FLURRY.id)) {
       unlockedSkills = kt.setPlus(unlockedSkills, StarterSkills.COUNTER_FLURRY.id);
       newSkillUnlockedText =
-        "\n\n🔮 [YENİ YETENEK KAZANILDI: AKROBATİK KARŞI VURUŞ!]\nAlthea hayranlıkla kırmızı çizmesini yere vurdu: 'Hızıma yetiştin sürgün!' Düşman saldırısını sıyırdığın an anında karşı saldırı indireceksin!";
+        "\n\n[YENİ YETENEK KAZANILDI: AKROBATİK KARŞI VURUŞ!]\nAlthea hayranlıkla kırmızı çizmesini yere vurdu: 'Hızıma yetiştin sürgün!' Düşman saldırısını sıyırdığın an anında karşı saldırı indireceksin!";
     }
 
     const gainedExp = 35 + newTotalSessions * 5;
@@ -3433,7 +3433,7 @@ export class GameRepository {
       this._levelUpEvent.value = levelEvent;
     }
 
-    const msg = `🏋️ ${trainingType.title} tamamlandı! (-${trainingType.costGold} Altın, -${trainingType.costHp} Can, +${gainedExp} EXP)\nToplam Seans: ${newTotalSessions} (Sonraki Aşama: ${updatedTrainer.nextMilestone})${newSkillUnlockedText}`;
+    const msg = `${trainingType.title} tamamlandı! (-${trainingType.costGold} Altın, -${trainingType.costHp} Can, +${gainedExp} EXP)\nToplam Seans: ${newTotalSessions} (Sonraki Aşama: ${updatedTrainer.nextMilestone})${newSkillUnlockedText}`;
     return [true, msg];
   }
 
@@ -3455,7 +3455,7 @@ export class GameRepository {
 
     return [
       true,
-      `🛁 Sıcak köpüklü lavanta banyosu ve ipek masaj ruhunu tazeledi! Canın sarıldı (+${healAmount} HP) ve bir sonraki savaşa dek Moral Bonusu kazandın!`,
+      `Sıcak köpüklü lavanta banyosu ve ipek masaj ruhunu tazeledi! Canın sarıldı (+${healAmount} HP) ve bir sonraki savaşa dek Moral Bonusu kazandın!`,
     ];
   }
 
@@ -3550,7 +3550,7 @@ export class GameRepository {
         unlockedRumorQuestIds: kt.setPlus(this._player.value.unlockedRumorQuestIds, tale.questClueId),
       });
       clueNote =
-        tale.clueDiscoveryText ?? '🔍 [YENİ SÖZLEŞME İPUCU]\nMasadaki fısıltıdan önemli bir ipucu yakaladın! Kasaba görev panosuna yeni bir sözleşme işlendi.';
+        tale.clueDiscoveryText ?? '[YENİ SÖZLEŞME İPUCU]\nMasadaki fısıltıdan önemli bir ipucu yakaladın! Kasaba görev panosuna yeni bir sözleşme işlendi.';
     }
 
     // 2. Arena fısıltısı dinlendiğinde, hikayede adı geçen dövüşçünün açığını bedava öğrenme şansı (%50)
@@ -3567,7 +3567,7 @@ export class GameRepository {
               knownWeaknessIds: kt.setPlus(this._player.value.knownWeaknessIds, matchingWeakness.enemyId),
             });
             if (clueNote == null) {
-              clueNote = `💡 ${matchingWeakness.enemyName}'in açığı hakkında bedava bir ipucu yakaladın! Bilgiler evindeki kütüphaneye eklendi.`;
+              clueNote = `${matchingWeakness.enemyName}'in açığı hakkında bedava bir ipucu yakaladın! Bilgiler evindeki kütüphaneye eklendi.`;
             }
           }
         }

@@ -25,7 +25,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_01',
                 name: 'Gürgen Vuruşu',
                 description: 'Hızlı savuruşlarla hasmın dengesini bozar.',
-                icon: '🪓'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -45,7 +45,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_02',
                 name: 'Kaya Yaran',
                 description: 'Darbe anında zırhın üst katmanını ezer.',
-                icon: '⛏️'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -65,7 +65,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_03',
                 name: 'Süvari Hamlesi',
                 description: 'Hızlı hücumla kritik hasar potansiyelini katlar.',
-                icon: '🐎'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -85,7 +85,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_04',
                 name: 'Kurt Isırığı',
                 description: 'Kritik darbelerde kanatıcı yırtık oluşturur.',
-                icon: '🐺'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -105,7 +105,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_05',
                 name: 'Kalkan Kıran',
                 description: 'Düşmanın blok direncini düşürür.',
-                icon: '🛡️'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -125,7 +125,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_06',
                 name: 'Çifte Su Verme',
                 description: 'Keskin ağzıyla zırhı aşan net hasar uygular.',
-                icon: '🗡️'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -145,7 +145,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_07',
                 name: 'Yaban Tosu',
                 description: 'Gövdeye inen vuruşlarda sarsıcı etki yapar.',
-                icon: '🐗'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -165,7 +165,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_08',
                 name: 'Kızıl Savuruş',
                 description: 'Seri vuruşlarla peş peşe hasar yığar.',
-                icon: '🚩'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -185,7 +185,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_09',
                 name: 'Çamur Batığı',
                 description: 'Ağır gövdesiyle savruldukça hasmı yorar.',
-                icon: '🪵'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -205,7 +205,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_10',
                 name: 'Hüküm Kesisi',
                 description: 'Yaralı düşmana karşı hasarı artırır.',
-                icon: '⚖️'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -225,7 +225,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_11',
                 name: 'Fırtına Islığı',
                 description: 'Savuruş hızını artırır ve atak kaçırma riskini azaltır.',
-                icon: '💨'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -245,7 +245,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_12',
                 name: 'Gedik Yaran',
                 description: 'İki yönlü savuruşla hasmı köşeye sıkıştırır.',
-                icon: '🪓'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -265,7 +265,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_13',
                 name: 'Granit Şoku',
                 description: 'Her darbede hasmın duruşunu sarsar.',
-                icon: '🪨'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -285,7 +285,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_14',
                 name: 'Köz Kıvılcımı',
                 description: 'Vuruşlarda ek alev hasarı ekler.',
-                icon: '🔥'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -305,7 +305,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_15',
                 name: 'Buzul Kesiği',
                 description: 'Düşmanın saldırı hızını yavaşlatır.',
-                icon: '❄️'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -325,7 +325,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_16',
                 name: 'Akbaba Pençesi',
                 description: 'Kalkan arkasındaki hedeflere hasar iletir.',
-                icon: '🦅'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -345,7 +345,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_17',
                 name: 'Barikat Ezici',
                 description: 'Yüksek zırhlı hedeflerin zırhını yarar.',
-                icon: '🏰'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -365,7 +365,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_18',
                 name: 'Gölge Sinsisi',
                 description: 'Kritik vuruş şansını önemli ölçüde yükseltir.',
-                icon: '🌑'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -385,7 +385,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_19',
                 name: 'Lav Çatlağı',
                 description: 'Vurulan noktada yanıcı çatlaklar açar.',
-                icon: '🌋'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -405,7 +405,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_20',
                 name: 'Lejyon Narası',
                 description: 'Dövüşçünün özgüvenini ve darbe gücünü artırır.',
-                icon: '🦁'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -425,7 +425,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_21',
                 name: 'Statik Ark',
                 description: 'Darbe anında elektrik akımı yayar.',
-                icon: '⚡'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -445,7 +445,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_22',
                 name: 'Obsidyen Yırtığı',
                 description: 'Hasımdan durdurulamaz kan sızdırır.',
-                icon: '🖤'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -465,7 +465,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_23',
                 name: 'Engerek Salgısı',
                 description: 'Düşmanın kanına yavaşlatıcı zehir akıtır.',
-                icon: '🧪'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -485,7 +485,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_24',
                 name: 'Cehennem Parıltısı',
                 description: 'Zırhı delip geçen erimiş ısı hasarı.',
-                icon: '🔥'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -505,7 +505,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_25',
                 name: 'Bozkır Fırtınası',
                 description: 'Geniş savuruş açısıyla hasmın kaçışını engeller.',
-                icon: '🌪️'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -525,7 +525,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_26',
                 name: 'Kanlı Hilal',
                 description: 'Verilen hasarın bir kısmını can olarak çeker.',
-                icon: '🩸'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -545,7 +545,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_27',
                 name: 'Kaya Yarığı',
                 description: 'Düşmanı yere serecek sarsıcı güç uygular.',
-                icon: '🪨'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -565,7 +565,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_28',
                 name: 'Boran Öfkesi',
                 description: 'Soğuk şokuyla hasmın kaslarını kasıp dondurur.',
-                icon: '🌨️'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -585,7 +585,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_29',
                 name: 'Kemik Sızısı',
                 description: 'Kritik vuruşlarda savunmayı sıfıra indirir.',
-                icon: '☠️'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -605,7 +605,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_30',
                 name: 'Yıldırım Yarığı',
                 description: 'Düşmanı afallatan yüksek voltaj patlaması.',
-                icon: '⚡'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -625,7 +625,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_31',
                 name: 'Ejderha Gazabı',
                 description: 'Zırhı tamamen kül eden yakıcı vuruş.',
-                icon: '🐉'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -645,7 +645,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_32',
                 name: 'Karanlık Biçim',
                 description: 'Hedefin isabet yeteneğini ve görüşünü köreltir.',
-                icon: '🌑'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -665,7 +665,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_33',
                 name: 'Arenanın Şehveti',
                 description: 'Vurulan her darbede saldırı gücü katlanır.',
-                icon: '🩸'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -685,7 +685,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_34',
                 name: 'Titan Kudreti',
                 description: 'Fiziksel hasarı devasa oranda patlatır.',
-                icon: '🗿'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -705,7 +705,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_35',
                 name: 'Kristal Donması',
                 description: 'Düşmanın zırhını kırılgan bir buza çevirir.',
-                icon: '🧊'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -725,7 +725,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_36',
                 name: 'Ruh Yakan',
                 description: 'Zırhı yok sayan içten yanmalı ruh hasarı.',
-                icon: '🔥'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -745,7 +745,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_37',
                 name: 'Gök Sarsıntısı',
                 description: 'Hasma ağır sersemletici şok indirir.',
-                icon: '🌩️'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -765,7 +765,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_38',
                 name: 'Büyü Kıran',
                 description: 'Mistik kalkanları ve büyü zırhlarını parçalar.',
-                icon: '🔮'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -785,7 +785,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_39',
                 name: 'Hava Hortumu',
                 description: 'Düşmanı savurup gardını tamamen düşürür.',
-                icon: '🌪️'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -805,7 +805,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_40',
                 name: 'Garnizon Hükmü',
                 description: 'Dövüşçünün hem zırhını hem saldırı gücünü besler.',
-                icon: '🏰'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -825,7 +825,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_41',
                 name: 'Mahşer Çatlağı',
                 description: 'Yüksek hasar ve zırh eritme.',
-                icon: '🌋'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 3
@@ -845,7 +845,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_42',
                 name: 'Mutlak Ayaz',
                 description: 'Düşmanın kan akışını dondurup felç eder.',
-                icon: '❄️'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 3
@@ -865,7 +865,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_43',
                 name: 'Gök Gazabı',
                 description: 'Hedefe ardışık yıldırım patlamaları indirir.',
-                icon: '⚡'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 3
@@ -885,7 +885,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_44',
                 name: 'Kızıl Kıyım',
                 description: 'Arenayı alev fırtınasına çeviren katliam darbesi.',
-                icon: '🐉'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 3
@@ -905,7 +905,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_45',
                 name: 'Ruh Biçici',
                 description: 'Can çalma ve hasmın dirençlerini yok etme.',
-                icon: '☠️'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 3
@@ -925,7 +925,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_46',
                 name: 'Yıldız Çöküşü',
                 description: 'Hasmı yere mıhlayan akıl almaz darbe gücü.',
-                icon: '✨'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 3
@@ -945,7 +945,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_47',
                 name: 'Boyut Kesiği',
                 description: 'Zamanı bükerek kaçınılmaz kritik vuruş indirir.',
-                icon: '⏳'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 3
@@ -965,7 +965,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_48',
                 name: 'İlk Kıvılcım',
                 description: 'Tüm savunmaları sıfırlayan mutlak yakış.',
-                icon: '☀️'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 3
@@ -985,7 +985,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_49',
                 name: 'Kızıl Mahşer',
                 description: 'Vurulan her kritik darbede canı ve hasarı katlar.',
-                icon: '🩸'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 3
@@ -1005,7 +1005,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_axe_50',
                 name: 'Fatihin İradesi',
                 description: 'Dövüşçüyü arenada mağlup edilemez bir savaş makinesine dönüştürür.',
-                icon: '👑'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 3
@@ -1030,7 +1030,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_01',
                 name: 'Kemik Çatlatan',
                 description: 'Darbe anında hasmın saldırı gücünü bir miktar kırar.',
-                icon: '🔨'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -1050,7 +1050,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_02',
                 name: 'Çivili Başlık',
                 description: 'Kaskın içine basınç uygulayarak sarsıntı yapar.',
-                icon: '🪨'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -1070,7 +1070,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_03',
                 name: 'Yıldız Temreni',
                 description: 'Zırhın dayanıklılığını aşındırır.',
-                icon: '⭐'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -1090,7 +1090,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_04',
                 name: 'Örs Vuruşu',
                 description: 'Hasmın göğüs zırhını içeri göçürür.',
-                icon: '⚒️'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -1110,7 +1110,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_05',
                 name: 'Bakır Ağırlığı',
                 description: 'Kalkan bloklarını daha kolay kırar.',
-                icon: '🛡️'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -1130,7 +1130,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_06',
                 name: 'Kaya Tokmağı',
                 description: 'Vuruşlarda hasmı sendeletir.',
-                icon: '⛰️'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -1150,7 +1150,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_07',
                 name: 'Kanatlı Çentik',
                 description: 'Hasmın savunma dengesini altüst eder.',
-                icon: '⚔️'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -1170,7 +1170,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_08',
                 name: 'Süvari İndirmesi',
                 description: 'Hızlı darbelerde ezici momentum ekler.',
-                icon: '🐎'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -1190,7 +1190,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_09',
                 name: 'Kurşun Ağırlığı',
                 description: 'Zırhları çökerten yüksek ham hasar.',
-                icon: '🧱'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -1210,7 +1210,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_10',
                 name: 'Hücre Disiplini',
                 description: 'Hasmı sersemleterek karşılık vermesini engeller.',
-                icon: '🗝️'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -1230,7 +1230,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_11',
                 name: 'Kızıl Koniler',
                 description: 'Zırh aralıklarına saplanarak ek hasar verir.',
-                icon: '🔴'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -1250,7 +1250,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_12',
                 name: 'Sarsılmaz Vuruş',
                 description: 'Düşmanın blok şansını kırar.',
-                icon: '🔨'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -1270,7 +1270,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_13',
                 name: 'Granit Tokmağı',
                 description: 'Her vuruşta toprağı sarsan ezici darbe.',
-                icon: '🪨'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -1290,7 +1290,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_14',
                 name: 'Dondurucu Yıldız',
                 description: 'Hasmın kolunu uyuşturarak atak hızını düşürür.',
-                icon: '❄️'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -1310,7 +1310,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_15',
                 name: 'Körük Harı',
                 description: 'Ezici darbeye ek alev hasarı katar.',
-                icon: '🔥'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -1330,7 +1330,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_16',
                 name: 'Gedik Açan',
                 description: 'Kalkan ve zırhı aynı anda ezer.',
-                icon: '🚪'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -1350,7 +1350,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_17',
                 name: 'Subay Fermanı',
                 description: 'Dövüşçüye yüksek moral ve atak sağlar.',
-                icon: '⚜️'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -1370,7 +1370,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_18',
                 name: 'Kara Ezici',
                 description: 'Hasmın göğüs kafesine derin basınç yapar.',
-                icon: '🖤'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -1390,7 +1390,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_19',
                 name: 'Statik Şok',
                 description: 'Darbe anında hasmı afallatır.',
-                icon: '⚡'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -1410,7 +1410,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_20',
                 name: 'Gaga Vuruşu',
                 description: 'Zırh delme gücünü katlar.',
-                icon: '🦅'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -1430,7 +1430,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_21',
                 name: 'Obsidyen Şoku',
                 description: 'Kırıcı etkiyle zırhı ufalar.',
-                icon: '🖤'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -1450,7 +1450,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_22',
                 name: 'Ejderha Nefesi',
                 description: 'Hasmın zırhını ısıtıp yumuşatır.',
-                icon: '🐉'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -1470,7 +1470,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_23',
                 name: 'Yargıç Tokmağı',
                 description: 'Kritik vuruşlarda ilahi hasar patlatır.',
-                icon: '⚖️'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -1490,7 +1490,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_24',
                 name: 'Boğa Tosu',
                 description: 'Düşmanı geriye püskürten muazzam momentum.',
-                icon: '🐂'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -1510,7 +1510,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_25',
                 name: 'Hayat Damarı',
                 description: 'Can çalma ve direnç takviyesi.',
-                icon: '💚'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -1530,7 +1530,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_26',
                 name: 'Komutanın Zaferi',
                 description: 'Saldırı ve zırhı dengeli yükseltir.',
-                icon: '🏆'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -1550,7 +1550,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_27',
                 name: 'Dev Tokmağı',
                 description: 'Akıl almaz ezici kuvvet.',
-                icon: '🗿'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -1570,7 +1570,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_28',
                 name: 'Ayaz İğneleri',
                 description: 'Hedefin kaslarını dondurup felç eder.',
-                icon: '🧊'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -1590,7 +1590,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_29',
                 name: 'Kükürt Dumanı',
                 description: 'Zırhı eriten cehennem darbesi.',
-                icon: '🔥'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -1610,7 +1610,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_30',
                 name: 'Gök Çökmesi',
                 description: 'Sağır edici sersemletme etkisi.',
-                icon: '🌩️'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -1630,7 +1630,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_31',
                 name: 'Zırh Parçalayan',
                 description: 'Düşmanın tüm zırh bonuslarını yok sayar.',
-                icon: '☠️'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -1650,7 +1650,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_32',
                 name: 'Şafak Işıltısı',
                 description: 'Nur saçarak hedefin gözünü kör eder.',
-                icon: '☀️'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -1670,7 +1670,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_33',
                 name: 'Titan Yumruğu',
                 description: 'Kemik ve kalkan dinlemeyen ham güç.',
-                icon: '👊'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -1690,7 +1690,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_34',
                 name: 'Ejderha Isırığı',
                 description: 'Vurulan noktayı küle çeviren alev patlaması.',
-                icon: '🐉'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -1710,7 +1710,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_35',
                 name: 'Kırılgan Zırh',
                 description: 'Düşmanın zırh direncini paramparça eder.',
-                icon: '❄️'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -1730,7 +1730,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_36',
                 name: 'Ruh Kıran',
                 description: 'Fiziksel zırhı aşan doğrudan can hasarı.',
-                icon: '⛓️'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -1750,7 +1750,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_37',
                 name: 'Fırtına Tokadı',
                 description: 'Hasmı yere seren yıldırım dalgası.',
-                icon: '⚡'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -1770,7 +1770,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_38',
                 name: 'Sarsılmaz Tahkimat',
                 description: 'Dövüşçüye yüksek zırh ve blok gücü katar.',
-                icon: '🏛️'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -1790,7 +1790,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_39',
                 name: 'Yerçekimi Çöküşü',
                 description: 'Hasmı kendine çekip dengesini yok eder.',
-                icon: '🕳️'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -1810,7 +1810,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_40',
                 name: 'Şampiyon Tokmağı',
                 description: 'Vurdukça can çeker ve saldırıyı katlar.',
-                icon: '🩸'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -1830,7 +1830,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_41',
                 name: 'Kıyamet Vuruşu',
                 description: 'Muazzam hasar ve zırh erimesi.',
-                icon: '🌋'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 3
@@ -1850,7 +1850,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_42',
                 name: 'Ebedi Ayaz',
                 description: 'Hasmın kanını dondurup hareketini sıfırlar.',
-                icon: '🏔️'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 3
@@ -1870,7 +1870,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_43',
                 name: 'Göklerin Hükmü',
                 description: 'Arenada şimşek fırtınası patlatır.',
-                icon: '⚡'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 3
@@ -1890,7 +1890,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_44',
                 name: 'Güneş Plazması',
                 description: 'Zırhı sıvılaştıran kavurucu darbe.',
-                icon: '☀️'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 3
@@ -1910,7 +1910,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_45',
                 name: 'Ruh Göçüren',
                 description: 'Hasmın canını ve nefesini çeker.',
-                icon: '☠️'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 3
@@ -1930,7 +1930,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_46',
                 name: 'Tekillik Ezmesi',
                 description: 'Fizik yasalarını aşan ezici kuvvet.',
-                icon: '🌌'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 3
@@ -1950,7 +1950,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_47',
                 name: 'Zaman Mührü',
                 description: 'Hasmı zaman boşluğunda dondurur.',
-                icon: '⏳'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 3
@@ -1970,7 +1970,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_48',
                 name: 'Alfa & Omega',
                 description: 'Arenada mutlak üstünlük ve sarsılmaz direnç.',
-                icon: '👑'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 3
@@ -1990,7 +1990,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_49',
                 name: 'Kara Mahşer',
                 description: 'Düşmanı un ufak eden devasa yıkım.',
-                icon: '☄️'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 3
@@ -2010,7 +2010,7 @@ export const TashisarBlacksmithAxesAndMacesData = {
                 id: 'trait_tash_mc_50',
                 name: 'Hanedan Hükmü',
                 description: 'Tüm nitelikleri zirveye çıkaran nihai silah.',
-                icon: '🏰'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 3

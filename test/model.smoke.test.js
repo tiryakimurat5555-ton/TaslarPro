@@ -128,14 +128,14 @@ test('Gem.create ve GemCraftingRules', () => {
   expect(Gem.create(GemType.ZUMRUT, 7).stats.maxHealth).toBe(706); // 15 * 1.9^6 = 705.69 (Kotlin yorumundaki 705 yaklaşık)
   expect(Gem.create(GemType.LAPIS, 5).stats.speed).toBe(3);
   expect(Gem.create(GemType.TOPAZ, 3).stats.speed).toBe(5);
-  expect(g.displayName).toBe('🟢 Zümrüt (Sv. 4)');
+  expect(g.displayName).toBe('Zümrüt (Sv. 4)');
   expect(GemCraftingRules.getEffectiveSuccessRate(3, 20)).toBe(100);
   expect(GemCraftingRules.getEffectiveSuccessRate(9, 7)).toBe(17);
 });
 
 test('varsayılanı başka alana bağlı alanlar', () => {
   expect(new ConsumableItem({ id: 'a', name: 'n', type: ItemType.HERB, description: 'd' }).usableCategory).toBe(UsableCategory.HERB);
-  expect(new ConsumableItem({ id: 'a', name: 'n', type: ItemType.EXTRACT, description: 'd' }).categoryIcon).toBe('🧪');
+  expect(new ConsumableItem({ id: 'a', name: 'n', type: ItemType.EXTRACT, description: 'd' }).categoryIcon).toBe('');
   expect(new ConsumableItem({ id: 'a', name: 'n', type: ItemType.HERB, usableCategory: UsableCategory.PEHLIVAN_OIL, description: 'd' }).usableCategory).toBe(UsableCategory.PEHLIVAN_OIL);
   const e = new Enemy({ id: 'e', name: 'n', title: 't', level: 1, stats: new Stats({ damage: 1 }), weaponName: 'w', description: 'biyo', rewardGold: 1, rewardExp: 1, rewardFame: 1 });
   expect(e.personality.archetype).toBe(PersonalityArchetype.HIRSLI);
@@ -148,7 +148,7 @@ test('varsayılanı başka alana bağlı alanlar', () => {
 
 test('FighterPsychology kararları', () => {
   const g = FighterPsychology.fromArchetype(PersonalityArchetype.GURURLU);
-  expect(g.behavioralBadge).toBe('👑 Onurlu Savaşçı');
+  expect(g.behavioralBadge).toBe('Onurlu Savaşçı');
   expect(g.dominantTraits.map((t) => t.value)).toEqual([95, 85]);
   expect(g.evaluateAllianceOffer(99)).toBe(AllianceDecision.HONORABLE_ALLIANCE);
   expect(g.evaluateAllianceOffer(0)).toBe(AllianceDecision.CHAOTIC_ACCEPT);

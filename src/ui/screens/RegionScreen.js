@@ -252,7 +252,7 @@ export function RegionScreen({ viewModel, style }) {
               <Column pad={14}>
                 <Row justify="between" style={{ alignSelf: 'stretch' }} gap={8}>
                   <T weight="bold" size={16} color={TextGold} style={{ flexShrink: 1 }}>
-                    🏰 Hisartaşı Garnizonu Kervanı
+                    Hisartaşı Garnizonu Kervanı
                   </T>
                   <Badge text="FERMAN ONAYLANDI" textColor={HealthGreen} bg={alpha(HealthGreen, 0.2)} borderColor={HealthGreen} />
                 </Row>
@@ -445,7 +445,7 @@ export function RegionScreen({ viewModel, style }) {
 
   return (
     <View style={[{ flex: 1, backgroundColor: DarkBg }, style]}>
-      {/* ÜST SEKMELER: 🏛️ Kasaba Çarşısı | 🗺️ Diyar Haritası */}
+      {/* ÜST SEKMELER: Kasaba Çarşısı | Diyar Haritası */}
       <Row gap={8} style={{ paddingHorizontal: 16, paddingVertical: 8 }}>
         <Chip
           selected={currentSection === RegionSection.MARKET}
@@ -454,7 +454,7 @@ export function RegionScreen({ viewModel, style }) {
           style={{ flex: 1, justifyContent: 'center' }}
         >
           <T weight="bold" size={13} color={currentSection === RegionSection.MARKET ? Color.White : TextLight}>
-            🏛️ Kasaba Çarşısı
+            Kasaba Çarşısı
           </T>
         </Chip>
         <Chip
@@ -464,7 +464,7 @@ export function RegionScreen({ viewModel, style }) {
           style={{ flex: 1, justifyContent: 'center' }}
         >
           <T weight="bold" size={13} color={currentSection === RegionSection.MAP ? Color.White : TextLight}>
-            🗺️ Diyar Haritası
+            Diyar Haritası
           </T>
         </Chip>
       </Row>
@@ -532,7 +532,7 @@ function DecipherDialog({ data, onDismiss }) {
           </T>
           <Column style={{ flex: 1 }}>
             <T size={15} weight="bold" color={AmberGold} heading>
-              📜 KADİM DOĞU SIRRI ÇÖZÜLDÜ!
+              KADİM DOĞU SIRRI ÇÖZÜLDÜ!
             </T>
             <T size={13} weight="bold" color={Color.White}>
               {skill.name}
@@ -545,7 +545,7 @@ function DecipherDialog({ data, onDismiss }) {
           <Surface radius={8} color={alpha(DarkBg, 0.85)} borderColor={alpha(AmberGoldDark, 0.5)} borderWidth={1}>
             <Column pad={10}>
               <T size={12} weight="bold" color={TextGold}>
-                {`🪔 ${lore.ritualTitle}`}
+                {`${lore.ritualTitle}`}
               </T>
               <Spacer h={4} />
               <T size={12} color={TextLight} lineHeight={17} italic>
@@ -556,7 +556,7 @@ function DecipherDialog({ data, onDismiss }) {
 
           <Column>
             <T size={12} weight="bold" color={AmberGold}>
-              🥋 Savaş Felsefesi & İdeogram Öğretisi:
+              Savaş Felsefesi & İdeogram Öğretisi:
             </T>
             <Spacer h={2} />
             <T size={12} color={alpha(TextLight, 0.95)} lineHeight={17}>
@@ -571,20 +571,20 @@ function DecipherDialog({ data, onDismiss }) {
           <Surface radius={8} color={DarkSurfaceCard} borderColor={alpha(HealthGreen, 0.7)} borderWidth={1}>
             <Column pad={10}>
               <T size={11} color={TextGold}>
-                {`⚡ Tetiklenme Şartı: ${skill.triggerConditionText}`}
+                {`Tetiklenme Şartı: ${skill.triggerConditionText}`}
               </T>
               <Spacer h={3} />
               <T size={11} weight="bold" color={HealthGreen}>
-                {`✨ Muharebe Etkisi: ${skill.effectSummary}`}
+                {`Muharebe Etkisi: ${skill.effectSummary}`}
               </T>
               <Spacer h={4} />
               {data.autoEquippedSlot != null ? (
                 <T size={11} weight="bold" color={AmberGold}>
-                  {`⚔️ Otomatik olarak ${data.autoEquippedSlot}. Savaş Yuvasına yerleştirildi!`}
+                  {`Otomatik olarak ${data.autoEquippedSlot}. Savaş Yuvasına yerleştirildi!`}
                 </T>
               ) : (
                 <T size={11} color={TextMuted}>
-                  {'🎒 4 yuvan da dolu olduğundan yedek kulübeye alındı. Envanter > Yetenekler menüsünden kuşanabilirsin!'}
+                  {'4 yuvan da dolu olduğundan yedek kulübeye alındı. Envanter > Yetenekler menüsünden kuşanabilirsin!'}
                 </T>
               )}
             </Column>
@@ -647,7 +647,7 @@ function ShopEquipmentRow({ eq, label, line2, buttonText, buttonLabel, onInspect
           {showInspect ? (
             <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
               <IconBtn onPress={onInspect} label="İncele">
-                <T size={14}>🔍</T>
+                
               </IconBtn>
             </View>
           ) : null}
@@ -698,7 +698,7 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
     add('shop_tabs', () => (
       <Column>
         <Tabs
-          titles={[`🛒 Satın Al (${forSale.length})`, `💰 Teçhizat Sat (${player.inventory.length})`]}
+          titles={[`Satın Al (${forSale.length})`, `Teçhizat Sat (${player.inventory.length})`]}
           selected={blacksmithTab}
           onSelect={setBlacksmithTab}
           color={DarkSurfaceCard}
@@ -714,67 +714,67 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
       let size = 11;
       if (isTailorShop) {
         chips = [
-          { index: 0, text: `🥋 Hafif (${say(tailorFilters, 0)})` },
-          { index: 1, text: `👘 Cübbe (${say(tailorFilters, 1)})` },
-          { index: 2, text: `🥷 Başlık (${say(tailorFilters, 2)})` },
+          { index: 0, text: `Hafif (${say(tailorFilters, 0)})` },
+          { index: 1, text: `Cübbe (${say(tailorFilters, 1)})` },
+          { index: 2, text: `Başlık (${say(tailorFilters, 2)})` },
         ];
         gap = 4;
         size = 10;
       } else if (hasRings && hasTalismans) {
         chips = [
-          { index: 0, text: `💍 Yüzükler (${say(ringSealFilters, 0)})` },
-          { index: 1, text: `🧿 Mühürler (${say(ringSealFilters, 1)})` },
+          { index: 0, text: `Yüzükler (${say(ringSealFilters, 0)})` },
+          { index: 1, text: `Mühürler (${say(ringSealFilters, 1)})` },
         ];
       } else if (isBlacksmithShop) {
         const otherWeaponCount = say(blacksmithFilters, 3);
         const clothesCount = say(blacksmithFilters, 6);
         chips = [
-          { index: 0, text: `🗡️ Kılıç (${say(blacksmithFilters, 0)})` },
-          { index: 1, text: `🪓 Balta & Teber (${say(blacksmithFilters, 1)})` },
-          { index: 2, text: `🔨 Gürz (${say(blacksmithFilters, 2)})` },
-          { index: 3, text: `🔪 Diğer Silahlar (${otherWeaponCount})`, visible: otherWeaponCount > 0 },
-          { index: 4, text: `🛡️ Kalkan (${say(blacksmithFilters, 4)})` },
-          { index: 5, text: `🪖 Zırh & Miğfer (${say(blacksmithFilters, 5)})` },
-          { index: 6, text: `🧤 Kolçak, Tozluk & Çizme (${clothesCount})`, visible: clothesCount > 0 },
+          { index: 0, text: `Kılıç (${say(blacksmithFilters, 0)})` },
+          { index: 1, text: `Balta & Teber (${say(blacksmithFilters, 1)})` },
+          { index: 2, text: `Gürz (${say(blacksmithFilters, 2)})` },
+          { index: 3, text: `Diğer Silahlar (${otherWeaponCount})`, visible: otherWeaponCount > 0 },
+          { index: 4, text: `Kalkan (${say(blacksmithFilters, 4)})` },
+          { index: 5, text: `Zırh & Miğfer (${say(blacksmithFilters, 5)})` },
+          { index: 6, text: `Kolçak, Tozluk & Çizme (${clothesCount})`, visible: clothesCount > 0 },
         ];
         scrollable = true;
       } else if (isSpearMasterShop) {
         chips = [
-          { index: 0, text: `🔱 Mızrak & Zıpkın (${say(spearFilters, 0)})` },
-          { index: 1, text: `🚩 Kargı & Teber (${say(spearFilters, 1)})` },
+          { index: 0, text: `Mızrak & Zıpkın (${say(spearFilters, 0)})` },
+          { index: 1, text: `Kargı & Teber (${say(spearFilters, 1)})` },
         ];
       } else if (isDaggerMasterShop) {
         chips = [
-          { index: 0, text: `🔪 Hançer & Bıçak (${say(daggerFilters, 0)})` },
-          { index: 1, text: `🗡️ Kama & Stiletto (${say(daggerFilters, 1)})` },
+          { index: 0, text: `Hançer & Bıçak (${say(daggerFilters, 0)})` },
+          { index: 1, text: `Kama & Stiletto (${say(daggerFilters, 1)})` },
         ];
       } else if (isArmorerShop) {
         chips = [
-          { index: 0, text: `🛡️ Ağır Zırh (${say(armorerFilters, 0)})` },
-          { index: 1, text: `👢 Çizme & Ayakkabı (${say(armorerFilters, 1)})` },
+          { index: 0, text: `Ağır Zırh (${say(armorerFilters, 0)})` },
+          { index: 1, text: `Çizme & Ayakkabı (${say(armorerFilters, 1)})` },
         ];
       } else if (isBowyerShop) {
         chips = [
-          { index: 0, text: `🏹 Yay & Arbalet (${say(bowyerFilters, 0)})` },
-          { index: 1, text: `🎯 Ok & Cephane (${say(bowyerFilters, 1)})` },
+          { index: 0, text: `Yay & Arbalet (${say(bowyerFilters, 0)})` },
+          { index: 1, text: `Ok & Cephane (${say(bowyerFilters, 1)})` },
         ];
       } else if (isLeatherworkerShop) {
         chips = [
-          { index: 0, text: `🧤 Bileklik & Kolluk (${say(leatherFilters, 0)})` },
-          { index: 1, text: `👖 Bacak Zırhı & Tozluk (${say(leatherFilters, 1)})` },
+          { index: 0, text: `Bileklik & Kolluk (${say(leatherFilters, 0)})` },
+          { index: 1, text: `Bacak Zırhı & Tozluk (${say(leatherFilters, 1)})` },
         ];
       } else if (isWandShop) {
         chips = [
-          { index: 0, text: `🦯 Asalar (${say(wandFilters, 0)})` },
-          { index: 1, text: `📖 Büyü Kitabı & Tomar (${say(wandFilters, 1)})` },
+          { index: 0, text: `Asalar (${say(wandFilters, 0)})` },
+          { index: 1, text: `Büyü Kitabı & Tomar (${say(wandFilters, 1)})` },
         ];
       } else if (isAestheticAtelier) {
         chips = [
-          { index: 0, text: `🎩 Başlık (${say(aestheticFilters, 0)})` },
-          { index: 1, text: `🥋 Üstlük (${say(aestheticFilters, 1)})` },
-          { index: 2, text: `👖 Pantolon & Etek (${say(aestheticFilters, 2)})` },
-          { index: 3, text: `👢 Ayakkabı (${say(aestheticFilters, 3)})` },
-          { index: 4, text: `🧤 Eldiven & Sargı (${say(aestheticFilters, 4)})` },
+          { index: 0, text: `Başlık (${say(aestheticFilters, 0)})` },
+          { index: 1, text: `Üstlük (${say(aestheticFilters, 1)})` },
+          { index: 2, text: `Pantolon & Etek (${say(aestheticFilters, 2)})` },
+          { index: 3, text: `Ayakkabı (${say(aestheticFilters, 3)})` },
+          { index: 4, text: `Eldiven & Sargı (${say(aestheticFilters, 4)})` },
         ];
         scrollable = true;
       }
@@ -838,7 +838,7 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
               eq={eq}
               label={`${eq.name}, ${eq.slot.displayName}. Satış değeri ${eq.sellPrice} altın. ${eq.stats.toStatSummary()}.`}
               line2={`${eq.slot.displayName} • Satış: ${eq.sellPrice} Altın`}
-              buttonText={`Sat (+${eq.sellPrice} 🪙)`}
+              buttonText={`Sat (+${eq.sellPrice} Altın)`}
               buttonLabel={`Sat: ${eq.name}, artı ${eq.sellPrice} altın`}
               onInspect={() => onInspectEquipment(eq)}
               onAction={() => viewModel.sellEquipment(eq)}
@@ -858,8 +858,8 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
 
     if (hasMultiTabs) {
       const maxTabIdx = hasPehlivanOils ? 3 : 2;
-      const basliklar = ['🧪 İksir', '🍯 Merhem', '🌿 Otlar'];
-      if (hasPehlivanOils) basliklar.push('🏺 Er Meydanı');
+      const basliklar = ['İksir', 'Merhem', 'Otlar'];
+      if (hasPehlivanOils) basliklar.push('Er Meydanı');
       add('alch_tabs', () => (
         <Column>
           <Tabs titles={basliklar} selected={kt.coerceIn(alchemistTab, 0, maxTabIdx)} onSelect={setAlchemistTab} color={DarkSurfaceCard} />
@@ -890,14 +890,14 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
         const canBuy = player.gold >= con.valueInGold && isLevelMet;
         let statSummary = '';
         if (con.healAmount > 0) statSummary += `+${con.healAmount} Can • `;
-        if (con.buffEffect != null) statSummary += `${con.buffEffect.icon} ${con.buffEffect.name} • `;
+        if (con.buffEffect != null) statSummary += `${con.buffEffect.name} • `;
         statSummary += `${con.valueInGold} Altın`;
         return (
           <Card color={DarkSurfaceCard} radius={6}>
             <Row pad={8} justify="between" gap={6}>
               <Column style={{ flex: 1 }} onPress={() => onInspectConsumable(con)} label={`${con.name}, ${con.valueInGold} altın. İncelemek için tıklayın.`}>
                 <Row wrap>
-                  <T size={13}>{con.categoryIcon + ' '}</T>
+                  <T size={13}>{''}</T>
                   <T weight="bold" color={HealthGreen} size={13}>
                     {con.name}
                   </T>
@@ -920,7 +920,7 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
               <Row gap={4}>
                 <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
                   <IconBtn onPress={() => onInspectConsumable(con)} label="İncele">
-                    <T size={14}>🔍</T>
+                    
                   </IconBtn>
                 </View>
                 <Btn
@@ -949,9 +949,7 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
       <Surface radius={10} color={DarkSurfaceCard} borderColor={AmberGold} borderWidth={1.5}>
         <Column pad={12}>
           <Row gap={8}>
-            <T size={24} hidden>
-              📜
-            </T>
+            
             <Column style={{ flex: 1 }}>
               <T size={14} weight="bold" color={AmberGold} heading>
                 Kadim Doğu Yazıtları & Tomar Tercümesi
@@ -1007,7 +1005,7 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
                   style={{ alignSelf: 'stretch' }}
                   label={alreadyLearned ? `${scroll.name}: Bu Sır Zaten Çözüldü` : `${scroll.name}: Mührü Erit & Deşifre Et (Yetenek Aç)`}
                 >
-                  {alreadyLearned ? '✓ Bu Sır Zaten Çözüldü' : '📜 Mührü Erit & Deşifre Et (Yetenek Aç)'}
+                  {alreadyLearned ? '✓ Bu Sır Zaten Çözüldü' : 'Mührü Erit & Deşifre Et (Yetenek Aç)'}
                 </Btn>
               </Column>
             </Surface>
@@ -1019,7 +1017,7 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
         <Surface radius={8} color={alpha(DarkBg, 0.7)} borderColor={DarkBorder} borderWidth={1}>
           <Column pad={12}>
             <T weight="bold" color={AmberGoldDark} size={12}>
-              ⚠️ Üzerinde Mühürlü Tomar Yok
+              Üzerinde Mühürlü Tomar Yok
             </T>
             <Spacer h={4} />
             <T size={11} color={alpha(TextLight, 0.8)} lineHeight={15}>
@@ -1036,7 +1034,7 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
     const isRegion2Unlocked = viewModel.canTravelToRegion2;
     add('jew_tabs', () => (
       <Column>
-        <Tabs titles={['💎 Yuvalar & Kakma', '✨ Kırık Sentezi', '⚡ Taş Yükselt']} selected={jewelerTab} onSelect={setJewelerTab} color={DarkSurfaceCard} />
+        <Tabs titles={['Yuvalar & Kakma', 'Kırık Sentezi', 'Taş Yükselt']} selected={jewelerTab} onSelect={setJewelerTab} color={DarkSurfaceCard} />
         <Spacer h={4} />
       </Column>
     ));
@@ -1046,7 +1044,7 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
         <Surface radius={8} color={DarkSurfaceCard} borderColor={alpha(AmberGold, 0.5)} borderWidth={1}>
           <Column pad={10}>
             <T weight="bold" color={AmberGold} size={14} heading>
-              💎 Mücevherat & Yuva Tezgahı
+              Mücevherat & Yuva Tezgahı
             </T>
             <Spacer h={4} />
             <T size={12} color={alpha(TextLight, 0.85)}>
@@ -1061,9 +1059,7 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
                 <Spacer h={8} />
                 <Surface radius={6} color={DarkBg} borderColor={alpha(HealthRed, 0.7)} borderWidth={1}>
                   <Row pad={8} gap={6}>
-                    <T size={16} hidden>
-                      🔒
-                    </T>
+                    
                     <T size={11} color={HealthRed} weight="semibold" style={{ flex: 1 }}>
                       Taş Yuvaları Kilitli! Bu kadim zanaat 2. Bölüm (Taş Hisar) fermanı açıldığında kullanılabilir.
                     </T>
@@ -1102,7 +1098,7 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
                     ? eq.sockets.map((gem, sIdx) => (
                         <Row key={sIdx} justify="between" style={{ alignSelf: 'stretch' }}>
                           <T size={11} color={TextLight} style={{ flex: 1 }}>
-                            {`${gem.type.icon} ${gem.displayName} (${gem.effectSummary})`}
+                            {`${gem.displayName} (${gem.effectSummary})`}
                           </T>
                           <TextBtn
                             onPress={() => viewModel.removeGem(eq.id, sIdx)}
@@ -1110,7 +1106,7 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
                             textSize={10}
                             label={`Sök: ${gem.displayName}, ${GemCraftingRules.GEM_REMOVE_COST_GOLD} altın`}
                           >
-                            {`Sök (${GemCraftingRules.GEM_REMOVE_COST_GOLD}🪙)`}
+                            {`Sök (${GemCraftingRules.GEM_REMOVE_COST_GOLD} Altın)`}
                           </TextBtn>
                         </Row>
                       ))
@@ -1126,7 +1122,7 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
                           pad={4}
                           textSize={10}
                         >
-                          {isRegion2Unlocked ? `+ Yuva Del (${drillCost}🪙)` : '🔒 Yuva (Kilitli)'}
+                          {isRegion2Unlocked ? `+ Yuva Del (${drillCost} Altın)` : 'Yuva (Kilitli)'}
                         </OutlinedBtn>
                         {eq.lockedSockets >= 2 ? (
                           <OutlinedBtn
@@ -1136,7 +1132,7 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
                             pad={4}
                             textSize={10}
                           >
-                            {isRegion2Unlocked ? 'Tümünü Del ⚡' : '🔒 Kilitli'}
+                            {isRegion2Unlocked ? 'Tümünü Del' : 'Kilitli'}
                           </OutlinedBtn>
                         ) : null}
                       </>
@@ -1152,7 +1148,7 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
                         pad={4}
                         textSize={10}
                       >
-                        {isRegion2Unlocked ? `Taş Seç & Mıhla (${GemCraftingRules.GEM_SOCKET_COST_GOLD}🪙)` : '🔒 Kakma (Kilitli)'}
+                        {isRegion2Unlocked ? `Taş Seç & Mıhla (${GemCraftingRules.GEM_SOCKET_COST_GOLD} Altın)` : 'Kakma (Kilitli)'}
                       </Btn>
                     ) : null}
                   </Row>
@@ -1170,7 +1166,7 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
           <Surface radius={8} color={DarkSurfaceCard} borderColor={alpha(AmberGold, 0.5)} borderWidth={1}>
             <Column pad={10}>
               <T weight="bold" color={AmberGold} size={14} heading>
-                ✨ Kırık Parça Sentez Tezgahı
+                Kırık Parça Sentez Tezgahı
               </T>
               <Spacer h={4} />
               <T size={12} color={alpha(TextLight, 0.85)} lineHeight={16}>
@@ -1186,7 +1182,7 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
                 pad={8}
                 textSize={11}
               >
-                {isRegion2Unlocked ? `✨ Tüm Kırıkları Sentezle (${GemCraftingRules.SHARD_SYNTHESIS_COST_GOLD}🪙/Adet)` : '🔒 2. Bölümde Açılır'}
+                {isRegion2Unlocked ? `Tüm Kırıkları Sentezle (${GemCraftingRules.SHARD_SYNTHESIS_COST_GOLD} Altın/Adet)` : '2. Bölümde Açılır'}
               </Btn>
             </Column>
           </Surface>
@@ -1201,7 +1197,7 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
               <Row pad={10} justify="between" gap={6}>
                 <Column style={{ flex: 1 }} label={`${gType.displayName} Kırığı. Kırık Parça: ${count} / 3`}>
                   <T weight="bold" size={13} color={TextGold}>
-                    {`${gType.icon} ${gType.displayName} Kırığı`}
+                    {`${gType.displayName} Kırığı`}
                   </T>
                   <T size={11} color={count >= 3 ? HealthGreen : TextMuted} weight={count >= 3 ? 'bold' : 'normal'}>
                     {`Kırık Parça: ${count} / 3`}
@@ -1220,7 +1216,7 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
                       : `${gType.displayName}: Kilitli`
                   }
                 >
-                  {isRegion2Unlocked ? `Sentezle (${GemCraftingRules.SHARD_SYNTHESIS_COST_GOLD}🪙)` : '🔒 Kilitli'}
+                  {isRegion2Unlocked ? `Sentezle (${GemCraftingRules.SHARD_SYNTHESIS_COST_GOLD} Altın)` : 'Kilitli'}
                 </Btn>
               </Row>
             </Card>
@@ -1238,7 +1234,7 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
           <Surface radius={8} color={DarkSurfaceCard} borderColor={alpha(AmberGold, 0.5)} borderWidth={1}>
             <Column pad={10}>
               <T weight="bold" color={AmberGold} size={14} heading>
-                ⚡ Taş Seviye Yükseltme (Sv. 1 - 10)
+                Taş Seviye Yükseltme (Sv. 1 - 10)
               </T>
               <Spacer h={4} />
               <T size={12} color={alpha(TextLight, 0.85)} lineHeight={16}>
@@ -1254,7 +1250,7 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
                 pad={8}
                 textSize={11}
               >
-                {isRegion2Unlocked ? '⚡ Tümünü Yükselt (Toplu Sentez)' : '🔒 2. Bölümde Açılır'}
+                {isRegion2Unlocked ? 'Tümünü Yükselt (Toplu Sentez)' : '2. Bölümde Açılır'}
               </Btn>
             </Column>
           </Surface>
@@ -1299,7 +1295,7 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
                     <>
                       <Row justify="between" style={{ alignSelf: 'stretch' }} wrap gap={4}>
                         <T size={11} color={effectiveRate >= 70 ? HealthGreen : effectiveRate >= 40 ? AmberGold : HealthRed} weight="bold">
-                          {`Başarı Şansı: %${effectiveRate}` + (currentPity > 0 ? ` (%${baseRate} + %${currentPity} 🛡️ Telafi)` : '')}
+                          {`Başarı Şansı: %${effectiveRate}` + (currentPity > 0 ? ` (%${baseRate} + %${currentPity} Telafi)` : '')}
                         </T>
                         {currentPity > 0 ? (
                           <T size={10} color={AmberGold} weight="bold">
@@ -1317,12 +1313,12 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
                         pad={6}
                         textSize={11}
                       >
-                        {isRegion2Unlocked ? `3 Taşı Birleştir -> Sv. ${targetLevel} (${cost} 🪙) [Şans: %${effectiveRate}]` : '🔒 2. Bölümde Açılır'}
+                        {isRegion2Unlocked ? `3 Taşı Birleştir -> Sv. ${targetLevel} (${cost} Altın) [Şans: %${effectiveRate}]` : '2. Bölümde Açılır'}
                       </Btn>
                     </>
                   ) : (
                     <T size={11} color={AmberGold} weight="bold">
-                      {`✨ Azami Seviyeye Ulaşıldı (Sv. ${GemCraftingRules.MAX_GEM_LEVEL})`}
+                      {`Azami Seviyeye Ulaşıldı (Sv. ${GemCraftingRules.MAX_GEM_LEVEL})`}
                     </T>
                   )}
                 </Column>
@@ -1341,7 +1337,7 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
       <Surface radius={8} color={DarkSurfaceCard} borderColor={alpha(AmberGold, 0.5)} borderWidth={1}>
         <Column pad={10}>
           <T weight="bold" color={AmberGold} size={14} heading>
-            🥋 Althea'nın Talim Salonu
+            Althea'nın Talim Salonu
           </T>
           <Spacer h={4} />
           <T size={12} weight="bold" color={TextLight}>
@@ -1360,10 +1356,10 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
           <Column pad={10}>
             <Row justify="between" style={{ alignSelf: 'stretch' }} gap={6}>
               <T weight="bold" size={13} color={TextGold} style={{ flexShrink: 1 }}>
-                {`${tType.icon} ${tType.title}`}
+                {`${tType.title}`}
               </T>
               <T size={11} color={HealthRed} label={`${tType.costGold} altın, eksi ${tType.costHp} can`}>
-                {`🪙 ${tType.costGold} | ❤️ -${tType.costHp} HP`}
+                {`${tType.costGold} Altın | -${tType.costHp} HP`}
               </T>
             </Row>
             <Spacer h={4} />
@@ -1394,9 +1390,7 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
       <Surface radius={10} color={color(0xff241220)} borderColor={FamePurple} borderWidth={1}>
         <Column pad={14}>
           <Row>
-            <T size={24} hidden>
-              🏛️
-            </T>
+            
             <Spacer w={8} />
             <Column style={{ flex: 1 }}>
               <T weight="bold" color={AmberGold} size={15} heading>
@@ -1415,7 +1409,7 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
             <>
               <Spacer h={8} />
               <Badge
-                text={`✨ Aktif Tesir: ${player.activeMoraleBuff}`}
+                text={`Aktif Tesir: ${player.activeMoraleBuff}`}
                 textColor={AmberGold}
                 bg={color(0xff1e101a)}
                 borderColor={alpha(AmberGold, 0.5)}
@@ -1435,7 +1429,7 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
       <Surface radius={8} color={DarkSurfaceCard} borderColor={alpha(FamePurple, 0.5)} borderWidth={1}>
         <Column pad={12}>
           <T weight="bold" color={FamePurple} size={13} heading>
-            🛁 Sıcak Lavanta Hamamı & Masaj
+            Sıcak Lavanta Hamamı & Masaj
           </T>
           <Spacer h={3} />
           <T size={11} color={alpha(TextLight, 0.85)}>
@@ -1456,9 +1450,7 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
         <Surface radius={8} color={color(0xff2b1917)} borderColor={color(0xffd47a37)} borderWidth={1}>
           <Column pad={12}>
             <Row>
-              <T size={18} hidden>
-                🍸
-              </T>
+              
               <Spacer w={6} />
               <Column style={{ flex: 1 }}>
                 <T weight="bold" color={color(0xfff5a362)} size={13} heading>
@@ -1471,12 +1463,12 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
             </Row>
             <Spacer h={6} />
             <T size={11} color={alpha(TextLight, 0.9)} lineHeight={15}>
-              {'Sınır boylarının ve arenanın vahşi ruhlu kadınlarıyla her ziyarette bir kademe derinleşen sohbet, yakınlaşma ve vuslat.\n🌪️ Bu geceki konuk: Aresula (Fırtına Dansçısı)'}
+              {'Sınır boylarının ve arenanın vahşi ruhlu kadınlarıyla her ziyarette bir kademe derinleşen sohbet, yakınlaşma ve vuslat.\nBu geceki konuk: Aresula (Fırtına Dansçısı)'}
             </T>
             <Spacer h={6} />
             <View style={{ alignSelf: 'flex-start' }}>
               <Badge
-                text={aresulaBond >= 5 ? '💖 BAĞ: ZİRVE (5/5) — Dilediğin an vuslat yaşanabilir' : `İlişki İlerlemesi: Kademe ${aresulaBond} / 5`}
+                text={aresulaBond >= 5 ? 'BAĞ: ZİRVE (5/5) — Dilediğin an vuslat yaşanabilir' : `İlişki İlerlemesi: Kademe ${aresulaBond} / 5`}
                 textColor={aresulaBond >= 5 ? color(0xffffaec9) : color(0xfff5a362)}
                 bg={aresulaBond >= 5 ? color(0xff4a1e29) : color(0xff1e1410)}
                 borderColor={aresulaBond >= 5 ? color(0xffd47a8c) : alpha(color(0xffd47a37), 0.5)}
@@ -1493,7 +1485,7 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
               style={{ alignSelf: 'stretch' }}
               textSize={12}
             >
-              {player.gold >= 2500 ? '🍸 Kehribar Meclisine Gir (2.500 Altın)' : '🔒 Yetersiz Altın (2.500 Altın)'}
+              {player.gold >= 2500 ? 'Kehribar Meclisine Gir (2.500 Altın)' : 'Yetersiz Altın (2.500 Altın)'}
             </Btn>
           </Column>
         </Surface>
@@ -1507,9 +1499,7 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
         <Surface radius={8} color={color(0xff16251e)} borderColor={color(0xff389b72)} borderWidth={1}>
           <Column pad={12}>
             <Row>
-              <T size={18} hidden>
-                👑
-              </T>
+              
               <Spacer w={6} />
               <Column style={{ flex: 1 }}>
                 <T weight="bold" color={color(0xff67d8a7)} size={13} heading>
@@ -1522,12 +1512,12 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
             </Row>
             <Spacer h={6} />
             <T size={11} color={alpha(TextLight, 0.9)} lineHeight={15}>
-              {"Taş Hisar'ın en mağrur, ulaşılamaz kumandanlarıyla her ziyarette bir kademe açılan sırlar, tensel yakınlaşma ve asil vuslat.\n👠 Bu geceki konuk: Kızıl Muhafız Althea (Sürgün Kumandan)"}
+              {"Taş Hisar'ın en mağrur, ulaşılamaz kumandanlarıyla her ziyarette bir kademe açılan sırlar, tensel yakınlaşma ve asil vuslat.\nBu geceki konuk: Kızıl Muhafız Althea (Sürgün Kumandan)"}
             </T>
             <Spacer h={6} />
             <View style={{ alignSelf: 'flex-start' }}>
               <Badge
-                text={altheaBond >= 5 ? '💖 BAĞ: ZİRVE (5/5) — Dilediğin an vuslat yaşanabilir' : `İlişki İlerlemesi: Kademe ${altheaBond} / 5`}
+                text={altheaBond >= 5 ? 'BAĞ: ZİRVE (5/5) — Dilediğin an vuslat yaşanabilir' : `İlişki İlerlemesi: Kademe ${altheaBond} / 5`}
                 textColor={altheaBond >= 5 ? color(0xffffaec9) : color(0xff67d8a7)}
                 bg={altheaBond >= 5 ? color(0xff4a1e29) : color(0xff101e17)}
                 borderColor={altheaBond >= 5 ? color(0xffd47a8c) : alpha(color(0xff389b72), 0.5)}
@@ -1544,7 +1534,7 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
               style={{ alignSelf: 'stretch' }}
               textSize={12}
             >
-              {player.gold >= 5000 ? '👑 Yeşim Mabedine Gir (5.000 Altın)' : '🔒 Yetersiz Altın (5.000 Altın)'}
+              {player.gold >= 5000 ? 'Yeşim Mabedine Gir (5.000 Altın)' : 'Yetersiz Altın (5.000 Altın)'}
             </Btn>
           </Column>
         </Surface>
@@ -1558,7 +1548,7 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
       <Surface radius={8} color={DarkSurfaceCard} borderColor={alpha(AmberGold, 0.5)} borderWidth={1}>
         <Column pad={12}>
           <T weight="bold" color={AmberGold} size={14} heading>
-            🎯 Büyük Talim ve Odaklanma Meydanı
+            Büyük Talim ve Odaklanma Meydanı
           </T>
           <Spacer h={4} />
           <T size={12} color={alpha(TextLight, 0.85)} lineHeight={16}>
@@ -1568,7 +1558,7 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
             <>
               <Spacer h={6} />
               <T size={11} weight="bold" color={AmberGold}>
-                {`✨ Aktif Tesir: ${player.activeMoraleBuff}`}
+                {`Aktif Tesir: ${player.activeMoraleBuff}`}
               </T>
             </>
           ) : null}
@@ -1580,7 +1570,7 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
       <Card color={DarkSurfaceCard} radius={8}>
         <Column pad={12}>
           <T weight="bold" size={14} color={TextGold} heading>
-            ⚔️ Kılıç ve Yakın Dövüş Talimi
+            Kılıç ve Yakın Dövüş Talimi
           </T>
           <Spacer h={4} />
           <T size={12} color={alpha(TextLight, 0.8)}>
@@ -1588,7 +1578,7 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
           </T>
           <Spacer h={8} />
           <Btn onPress={() => viewModel.trainAtTrainingGrounds('melee')} disabled={!(player.gold >= 30)} color={AmberGold} contentColor={DarkBg} style={{ alignSelf: 'stretch' }} textSize={12}>
-            Kılıç Talimi Yap (30 🪙)
+            Kılıç Talimi Yap (30 Altın)
           </Btn>
         </Column>
       </Card>
@@ -1598,7 +1588,7 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
       <Card color={DarkSurfaceCard} radius={8}>
         <Column pad={12}>
           <T weight="bold" size={14} color={TextGold} heading>
-            🔮 Kadim Büyü ve Rün Odaklanması
+            Kadim Büyü ve Rün Odaklanması
           </T>
           <Spacer h={4} />
           <T size={12} color={alpha(TextLight, 0.8)}>
@@ -1613,7 +1603,7 @@ function NpcDialog({ npc, player, viewModel, onDismiss, onInspectEquipment, onIn
             style={{ alignSelf: 'stretch' }}
             textSize={12}
           >
-            Büyü Odaklanması Yap (30 🪙)
+            Büyü Odaklanması Yap (30 Altın)
           </Btn>
         </Column>
       </Card>
@@ -1653,7 +1643,7 @@ function RegionHeaderCard({ region }) {
       <Column pad={16}>
         <Row justify="between" style={{ alignSelf: 'stretch' }}>
           <T style={Typography.labelSmall} color={AmberGold}>
-            🗺️ BÖLGE HARİTASI
+            BÖLGE HARİTASI
           </T>
           <T size={12} color={TextMuted}>
             {`Tavsiye Seviye: ${region.recommendedLevel}+`}
@@ -1726,7 +1716,7 @@ function TavernLocationCard({ onClick }) {
         <Column style={{ flex: 1 }}>
           <Row gap={6} wrap>
             <T weight="bold" color={TextGold} size={16}>
-              🍺 İsli Kandil Hanı
+              İsli Kandil Hanı
             </T>
             <Badge text="MEKAN" textColor={AmberGold} bg={color(0xff2e2211)} />
           </Row>
@@ -1765,15 +1755,15 @@ function HarvestLocationCard({ isUnlocked = true, onClick }) {
         <Column style={{ flex: 1 }}>
           <Row gap={6} wrap>
             <T weight="bold" color={isUnlocked ? TextGold : TextMuted} size={16}>
-              ⛏️ Diyar Kaynak Sahaları
+              Diyar Kaynak Sahaları
             </T>
-            <Badge text={isUnlocked ? 'MEKAN' : '🔒 KİLİTLİ'} textColor={isUnlocked ? HealthGreen : HealthRed} bg={isUnlocked ? color(0xff1b2e22) : color(0xff2e1b1b)} />
+            <Badge text={isUnlocked ? 'MEKAN' : 'KİLİTLİ'} textColor={isUnlocked ? HealthGreen : HealthRed} bg={isUnlocked ? color(0xff1b2e22) : color(0xff2e1b1b)} />
           </Row>
           <Spacer h={4} />
           <T size={12} color={isUnlocked ? alpha(TextLight, 0.85) : TextMuted}>
             {isUnlocked
               ? '"Maden Ocakları, Şifa Çayırları, Keten Vadisi ve Kadim Koruluk... Toplanan madenler ve mücevher kırıkları evindeki sandıklara akar."'
-              : '🔒 2. Bölüm (Taş Hisar Garnizonu) fermanı açılmadan kaynak sahalarına erişilemez.'}
+              : '2. Bölüm (Taş Hisar Garnizonu) fermanı açılmadan kaynak sahalarına erişilemez.'}
           </T>
         </Column>
         <Spacer w={8} />
@@ -1796,10 +1786,10 @@ export function HarvestRegionView({ viewModel, onReturn, onOpenSpot }) {
 
   // 4 Mekan Kartı:
   const spots = [
-    ['mines', '⛏️ Çorak Maden Ocağı', 'Demir Filizi, Ham İnşaat Taşı & Mücevher Kırıkları (%20 şansla 18 çeşit taştan biri)'],
-    ['herbs', '🌿 Ayaz Şifa Çayırı', 'Şifalı Yabani Otlar (İksir ve sağlık hazırlıkları için)'],
-    ['cloth', '🧵 Keten Vadisi', 'Keten ve Sağlam Halat Lifleri (Kumaş zırh ve donanım için)'],
-    ['wood', '🪵 Kadim Meşe Koruluğu', 'Sert Meşe Kerestesi ve Odun (Yapı ve yay yapımı için)'],
+    ['mines', 'Çorak Maden Ocağı', 'Demir Filizi, Ham İnşaat Taşı & Mücevher Kırıkları (%20 şansla 18 çeşit taştan biri)'],
+    ['herbs', 'Ayaz Şifa Çayırı', 'Şifalı Yabani Otlar (İksir ve sağlık hazırlıkları için)'],
+    ['cloth', 'Keten Vadisi', 'Keten ve Sağlam Halat Lifleri (Kumaş zırh ve donanım için)'],
+    ['wood', 'Kadim Meşe Koruluğu', 'Sert Meşe Kerestesi ve Odun (Yapı ve yay yapımı için)'],
   ];
 
   return (
@@ -1808,10 +1798,10 @@ export function HarvestRegionView({ viewModel, onReturn, onOpenSpot }) {
         <Column pad={16}>
           <Row justify="between" style={{ alignSelf: 'stretch' }} gap={6}>
             <T style={Typography.titleMedium} weight="black" color={AmberGold} letterSpacing={1} heading>
-              ⛏️ DİYAR KAYNAK SAHALARI
+              DİYAR KAYNAK SAHALARI
             </T>
             <Badge
-              text={isRegion2Unlocked ? 'ERİŞİLEBİLİR' : '🔒 KİLİTLİ'}
+              text={isRegion2Unlocked ? 'ERİŞİLEBİLİR' : 'KİLİTLİ'}
               textColor={isRegion2Unlocked ? HealthGreen : HealthRed}
               bg={isRegion2Unlocked ? alpha(HealthGreen, 0.2) : alpha(HealthRed, 0.2)}
               borderColor={isRegion2Unlocked ? HealthGreen : HealthRed}
@@ -1846,7 +1836,7 @@ export function HarvestRegionView({ viewModel, onReturn, onOpenSpot }) {
                   {name}
                 </T>
                 <Badge
-                  text={isRegion2Unlocked ? 'MEKAN' : '🔒 KİLİTLİ'}
+                  text={isRegion2Unlocked ? 'MEKAN' : 'KİLİTLİ'}
                   textColor={isRegion2Unlocked ? HealthGreen : HealthRed}
                   bg={isRegion2Unlocked ? color(0xff1b2e22) : color(0xff2e1b1b)}
                 />
@@ -1884,10 +1874,10 @@ function GemSelectionDialog({ equipment, player, onDismiss, onSelectGem }) {
       title={
         <Column>
           <T color={TextGold} weight="bold" size={17} heading>
-            💎 Yuva İçin Mücevher Seç
+            Yuva İçin Mücevher Seç
           </T>
           <T color={TextMuted} size={12}>
-            {`${equipment.name} • Boş Yuva: ${equipment.freeSockets} • Mıhlama: ${GemCraftingRules.GEM_SOCKET_COST_GOLD} 🪙`}
+            {`${equipment.name} • Boş Yuva: ${equipment.freeSockets} • Mıhlama: ${GemCraftingRules.GEM_SOCKET_COST_GOLD} Altın`}
           </T>
         </Column>
       }
@@ -1905,7 +1895,7 @@ function GemSelectionDialog({ equipment, player, onDismiss, onSelectGem }) {
                 <Row pad={10} justify="between" gap={6}>
                   <Column style={{ flex: 1 }}>
                     <T weight="bold" size={13} color={TextGold}>
-                      {`${gem.type.icon} ${gem.displayName}`}
+                      {`${gem.displayName}`}
                     </T>
                     <T size={11} color={HealthGreen}>
                       {gem.effectSummary}
@@ -1920,7 +1910,7 @@ function GemSelectionDialog({ equipment, player, onDismiss, onSelectGem }) {
                     textSize={10}
                     label={`Mıhla: ${gem.displayName}, ${GemCraftingRules.GEM_SOCKET_COST_GOLD} altın`}
                   >
-                    {`Mıhla (${GemCraftingRules.GEM_SOCKET_COST_GOLD}🪙)`}
+                    {`Mıhla (${GemCraftingRules.GEM_SOCKET_COST_GOLD} Altın)`}
                   </Btn>
                 </Row>
               </Card>
@@ -1962,14 +1952,14 @@ export function HarvestSpotDialog({ spotType, viewModel, onDismiss }) {
 
   const [title, icon, desc] =
     spotType === 'mines'
-      ? ['Çorak Maden Ocağı', '⛏️', 'Demir Filizi, Ham İnşaat Taşı & Mücevher Kırıkları']
+      ? ['Çorak Maden Ocağı', '', 'Demir Filizi, Ham İnşaat Taşı & Mücevher Kırıkları']
       : spotType === 'herbs'
-        ? ['Ayaz Şifa Çayırı', '🌿', 'Şifalı Yabani Otlar ve Kökler']
+        ? ['Ayaz Şifa Çayırı', '', 'Şifalı Yabani Otlar ve Kökler']
         : spotType === 'cloth'
-          ? ['Keten Vadisi', '🧵', 'Keten Lifleri ve Sağlam İplikler']
+          ? ['Keten Vadisi', '', 'Keten Lifleri ve Sağlam İplikler']
           : spotType === 'wood'
-            ? ['Kadim Meşe Koruluğu', '🪵', 'Sert Meşe Kerestesi ve Kadim Odun']
-            : ['Diyar Kaynak Sahası', '⛏️', 'Kaynak Toplama Sahası'];
+            ? ['Kadim Meşe Koruluğu', '', 'Sert Meşe Kerestesi ve Kadim Odun']
+            : ['Diyar Kaynak Sahası', '', 'Kaynak Toplama Sahası'];
 
   const kapat = () => {
     setIsHarvesting(false);
@@ -1990,7 +1980,7 @@ export function HarvestSpotDialog({ spotType, viewModel, onDismiss }) {
         <Column>
           <Row gap={8} wrap>
             <T color={TextGold} weight="bold" size={18} heading>
-              {`${icon} ${title}`}
+              {`${title}`}
             </T>
             {isHarvesting ? <Badge text="ÇALIŞILIYOR..." textColor={HealthGreen} bg={alpha(HealthGreen, 0.2)} borderColor={HealthGreen} /> : null}
           </Row>
@@ -2004,7 +1994,7 @@ export function HarvestSpotDialog({ spotType, viewModel, onDismiss }) {
           <Surface radius={6} color={DarkSurfaceCard} borderColor={alpha(AmberGold, 0.3)} borderWidth={1}>
             <Column pad={8}>
               <T size={11} weight="bold" color={TextGold}>
-                {`📦 Ev Depo Durumu: ${builtChests.length}/${player.unlockedChestSlots} Sandık İnşa Edildi`}
+                {`Ev Depo Durumu: ${builtChests.length}/${player.unlockedChestSlots} Sandık İnşa Edildi`}
               </T>
               <T size={10} color={alpha(TextLight, 0.8)}>
                 Evinde ilgili kaynak için bir sandık varsa, toplanan malzemeler otomatik olarak sandığa yerleştirilir.
@@ -2021,7 +2011,7 @@ export function HarvestSpotDialog({ spotType, viewModel, onDismiss }) {
             textSize={13}
             label={isHarvesting ? 'Toplamayı Durdur' : 'Otomatik Toplamayı Başlat'}
           >
-            {isHarvesting ? '⏹️ Toplamayı Durdur' : '▶️ Otomatik Toplamayı Başlat (2.5 sn)'}
+            {isHarvesting ? 'Toplamayı Durdur' : 'Otomatik Toplamayı Başlat (2.5 sn)'}
           </Btn>
 
           {logs.length > 0 ? (
@@ -2052,7 +2042,7 @@ function TavernIntroCard() {
     <Card color={DarkSurface} radius={12} borderColor={AmberGoldDark}>
       <Column pad={14}>
         <T style={Typography.labelSmall} color={AmberGold}>
-          🍺 KASABANIN KALBİ
+          KASABANIN KALBİ
         </T>
         <Spacer h={2} />
         <T style={Typography.titleLarge} color={TextGold} weight="bold" heading>
@@ -2085,7 +2075,7 @@ function TavernEavesdropCard({ currentTale, canEavesdrop, remainingCount, maxCou
           <Column style={{ flex: 1 }}>
             <Row gap={6} wrap>
               <T style={Typography.titleMedium} weight="bold" color={TextGold} heading>
-                👂 Masalara Kulak Kabart
+                Masalara Kulak Kabart
               </T>
               <Badge
                 text={`${remainingCount}/${maxCount} Hak`}
@@ -2110,7 +2100,7 @@ function TavernEavesdropCard({ currentTale, canEavesdrop, remainingCount, maxCou
             pad={8}
             textSize={11}
           >
-            {!canEavesdrop ? '🔒 Masalar Sustu' : currentTale == null ? '🎧 Masaları Dinle' : '🎧 Başka Masayı Dinle'}
+            {!canEavesdrop ? 'Masalar Sustu' : currentTale == null ? 'Masaları Dinle' : 'Başka Masayı Dinle'}
           </Btn>
         </Row>
 
@@ -2119,9 +2109,7 @@ function TavernEavesdropCard({ currentTale, canEavesdrop, remainingCount, maxCou
         {!canEavesdrop ? (
           <Surface radius={8} color={color(0xff2a1b1b)} borderColor={color(0xff8b2525)} borderWidth={1} style={{ marginBottom: 8 }}>
             <Row pad={10} gap={8}>
-              <T size={16} hidden>
-                🤫
-              </T>
+              
               <T size={11} color={color(0xffffb4ab)} lineHeight={15} style={{ flex: 1 }}>
                 Gözlerin üzerinizde olduğunu fark ettin. Masadakiler fısıldaşmayı kesip kuşkulu bakışlar atıyor. Yeni dedikodular için yarın şafağı beklemelisin.
               </T>
@@ -2142,12 +2130,12 @@ function TavernEavesdropCard({ currentTale, canEavesdrop, remainingCount, maxCou
                     {currentTale.speakerTitle}
                   </T>
                 </Column>
-                <Badge text={`${currentTale.category.badgeIcon} ${currentTale.category.displayName}`} textColor={AmberGold} bg={DarkSurfaceCard} weight="normal" />
+                <Badge text={`${currentTale.category.displayName}`} textColor={AmberGold} bg={DarkSurfaceCard} weight="normal" />
               </Row>
 
               <Spacer h={6} />
               <T size={13} weight="semibold" color={AmberGoldDark}>
-                {`📌 ${currentTale.title}`}
+                {`${currentTale.title}`}
               </T>
 
               <Spacer h={6} />
@@ -2160,9 +2148,7 @@ function TavernEavesdropCard({ currentTale, canEavesdrop, remainingCount, maxCou
                   <Spacer h={8} />
                   <Surface radius={6} color={color(0xff1e3a24)} borderColor={HealthGreen} borderWidth={1}>
                     <Row gap={6} style={{ paddingHorizontal: 10, paddingVertical: 6 }}>
-                      <T size={14} hidden>
-                        📜
-                      </T>
+                      
                       <T size={11} weight="semibold" color={HealthGreen} style={{ flex: 1 }}>
                         {clueText}
                       </T>
@@ -2190,7 +2176,7 @@ function TavernMealsCard({ playerGold, dayState, onOrderSoup, onOrderRabbit, onR
       <Column pad={14}>
         <Row justify="between" style={{ alignSelf: 'stretch' }} gap={6}>
           <T style={Typography.titleMedium} weight="bold" color={TextGold} heading>
-            🍲 Hancı Kazanı & Geceleme
+            Hancı Kazanı & Geceleme
           </T>
           <T size={11} color={AmberGold}>
             {`Öğün: ${dayState.dailyMealsEaten}/${dayState.maxMealsPerDay}`}
@@ -2216,7 +2202,7 @@ function TavernMealsCard({ playerGold, dayState, onOrderSoup, onOrderRabbit, onR
           >
             <Column align="center" style={{ paddingVertical: 4 }}>
               <T weight="bold" size={12} color={HealthGreen} align="center">
-                🥣 İsli Arpa Çorbası
+                İsli Arpa Çorbası
               </T>
               <T size={11} color={AmberGold} align="center">
                 +15 Can • 5 Altın
@@ -2236,7 +2222,7 @@ function TavernMealsCard({ playerGold, dayState, onOrderSoup, onOrderRabbit, onR
           >
             <Column align="center" style={{ paddingVertical: 4 }}>
               <T weight="bold" size={12} color={AmberGold} align="center">
-                🍗 Dağ Tavşanı & Şarap
+                Dağ Tavşanı & Şarap
               </T>
               <T size={11} color={AmberGold} align="center">
                 +35 Can • 12 Altın
@@ -2256,7 +2242,7 @@ function TavernMealsCard({ playerGold, dayState, onOrderSoup, onOrderRabbit, onR
           style={{ alignSelf: 'stretch' }}
           textSize={11}
         >
-          {dayState.isDailyArenaObligationMet ? '🛏️ Han Odasında Sabahla (5 Altın & Yeni Gün)' : '🛏️ Han Odasında Sabahla (Arena Katılımı Gerekli)'}
+          {dayState.isDailyArenaObligationMet ? 'Han Odasında Sabahla (5 Altın & Yeni Gün)' : 'Han Odasında Sabahla (Arena Katılımı Gerekli)'}
         </Btn>
       </Column>
     </Card>
@@ -2264,14 +2250,14 @@ function TavernMealsCard({ playerGold, dayState, onOrderSoup, onOrderRabbit, onR
 }
 
 function TavernDiceGameCard({ playerGold, dayState, selectedBet, lastResult, onSelectBet, onRollDice }) {
-  const sonucBaslik = lastResult != null ? (lastResult.playerWon ? '🏆 KAZANDIN!' : lastResult.isTie ? '🤝 BERABERE!' : '💀 KAYBETTİN...') : null;
+  const sonucBaslik = lastResult != null ? (lastResult.playerWon ? 'KAZANDIN!' : lastResult.isTie ? 'BERABERE!' : 'KAYBETTİN...') : null;
   useAnnounceOnChange(lastResult, lastResult != null ? `${sonucBaslik} ${lastResult.narrativeOutcome}` : null);
   return (
     <Card color={DarkSurface} radius={10} borderColor={DarkBorder}>
       <Column pad={14}>
         <Row justify="between" style={{ alignSelf: 'stretch' }} gap={6}>
           <T style={Typography.titleMedium} weight="bold" color={TextGold} heading>
-            🎲 Çukur Zarı (Gladyatör Kumarı)
+            Çukur Zarı (Gladyatör Kumarı)
           </T>
           <T size={11} weight="semibold" color={AmberGold}>
             {`Zar: ${dayState.dailyDiceGamesPlayed}/${dayState.maxDiceGamesPerDay} El`}
@@ -2303,7 +2289,7 @@ function TavernDiceGameCard({ playerGold, dayState, selectedBet, lastResult, onS
             textSize={11}
             label={dayState.canPlayDiceToday ? `Zar at, ${selectedBet} altın` : 'Masa Kapandı'}
           >
-            {dayState.canPlayDiceToday ? `🎲 ZAR AT (${selectedBet} 🪙)` : 'Masa Kapandı'}
+            {dayState.canPlayDiceToday ? `ZAR AT (${selectedBet} Altın)` : 'Masa Kapandı'}
           </Btn>
         </Row>
 
@@ -2337,7 +2323,7 @@ function TavernDiceGameCard({ playerGold, dayState, selectedBet, lastResult, onS
 
 function TavernBardCard({ currentSong, playerGold, onTipBard }) {
   const isEpicSong = currentSong != null ? kt.count(kt.lines(currentSong), (it) => kt.isNotBlank(it)) >= 6 : false;
-  const sarkiBaslik = isEpicSong ? "👑 Destansı 8'lik Kahramanlık Şarkısı" : '🪕 Ozanın Dörtlüğü';
+  const sarkiBaslik = isEpicSong ? "Destansı 8'lik Kahramanlık Şarkısı" : 'Ozanın Dörtlüğü';
   useAnnounceOnChange(currentSong, currentSong != null ? `${sarkiBaslik}. ${currentSong}` : null);
   return (
     <Card color={DarkSurfaceCard} radius={10} borderColor={DarkBorder}>
@@ -2345,7 +2331,7 @@ function TavernBardCard({ currentSong, playerGold, onTipBard }) {
         <Row justify="between" style={{ alignSelf: 'stretch' }}>
           <Column style={{ flex: 1 }}>
             <T weight="bold" color={TextGold} size={14} heading>
-              🪕 Kör Ozan Miras'ın Köşesi
+              Kör Ozan Miras'ın Köşesi
             </T>
             <T size={11} color={TextMuted}>
               Kırık sazıyla diyarın unutulmuş destanlarını fısıldar.
@@ -2357,10 +2343,10 @@ function TavernBardCard({ currentSong, playerGold, onTipBard }) {
 
         <Row gap={8} style={{ alignSelf: 'stretch' }} align="stretch">
           <Btn onPress={() => onTipBard(false)} disabled={!(playerGold >= 1)} color={FamePurple} contentColor={Color.White} radius={8} pad={8} textSize={11} style={{ flex: 1 }}>
-            🪙 1 Altın: Dörtlük
+            1 Altın: Dörtlük
           </Btn>
           <Btn onPress={() => onTipBard(true)} disabled={!(playerGold >= 5)} color={AmberGold} contentColor={Color.Black} radius={8} pad={8} textSize={11} style={{ flex: 1 }}>
-            👑 5 Altın: 8'lik Destan
+            5 Altın: 8'lik Destan
           </Btn>
         </Row>
 
@@ -2398,9 +2384,7 @@ function TavernInformantCard({ weaknesses, knownWeaknessIds, playerGold, lastWhi
       <Column pad={14}>
         <Row justify="between" style={{ alignSelf: 'stretch' }} gap={6}>
           <Row gap={8} style={{ flexShrink: 1 }}>
-            <T size={20} hidden>
-              🕵️
-            </T>
+            
             <Column style={{ flexShrink: 1 }}>
               <T style={Typography.titleMedium} weight="bold" color={TextGold} heading>
                 Gölgeli Muhbir
@@ -2449,7 +2433,7 @@ function TavernInformantCard({ weaknesses, knownWeaknessIds, playerGold, lastWhi
               : `Muhbire 30 altın rüşvet vererek rastgele bir gladyatörün açığını öğren. Mevcut altın: ${playerGold}.`
           }
         >
-          {allKnown ? '✨ Tüm Gladyatör Açıkları Çözüldü' : !canAffordBribe ? '🕵️ Rüşvet Ver (30 🪙 - Yetersiz Altın)' : '🕵️ Muhbire Rüşvet Ver (30 🪙 - Sır Satın Al)'}
+          {allKnown ? 'Tüm Gladyatör Açıkları Çözüldü' : !canAffordBribe ? 'Rüşvet Ver (30 Altın - Yetersiz Altın)' : 'Muhbire Rüşvet Ver (30 Altın - Sır Satın Al)'}
         </Btn>
 
         {lastWhisper != null ? (
@@ -2459,7 +2443,7 @@ function TavernInformantCard({ weaknesses, knownWeaknessIds, playerGold, lastWhi
               <Column pad={10}>
                 <Row justify="between" style={{ alignSelf: 'stretch' }}>
                   <T size={11} weight="bold" color={HealthGreen}>
-                    🤫 Muhbirin Fısıltısı
+                    Muhbirin Fısıltısı
                   </T>
                   <TextBtn onPress={onDismissWhisper} contentColor={TextMuted} textSize={10} pad={2} label="Fısıltıyı kapat">
                     Kapat ✕
@@ -2477,9 +2461,7 @@ function TavernInformantCard({ weaknesses, knownWeaknessIds, playerGold, lastWhi
         <Spacer h={8} />
 
         <Row gap={6} style={{ alignSelf: 'stretch' }}>
-          <T size={12} hidden>
-            📚
-          </T>
+          
           <T size={11} color={TextMuted} lineHeight={15} style={{ flex: 1 }}>
             Keşfedilen tüm dövüşçü dosyaları, geçmiş hikayeleri ve zaafiyetler evindeki Gladyatör Kütüğü'ne kaydedilir.
           </T>
@@ -2543,7 +2525,7 @@ function ShopEquipmentDetailDialog({ item, player, onDismiss, onBuy }) {
             <Surface radius={6} color={color(0xff2b1b36)} borderColor={FamePurple} borderWidth={1}>
               <Column pad={8}>
                 <T size={12} weight="bold" color={FamePurple}>
-                  {`${item.specialTrait.icon} 2. Özel Nitelik: ${item.specialTrait.name}`}
+                  {`2. Özel Nitelik: ${item.specialTrait.name}`}
                 </T>
                 <Spacer h={2} />
                 <T size={11} color={alpha(TextLight, 0.95)}>
@@ -2557,7 +2539,7 @@ function ShopEquipmentDetailDialog({ item, player, onDismiss, onBuy }) {
 
           {/* Kuşanılan Eşya ile Karşılaştırma */}
           <T size={12} weight="bold" color={TextGold}>
-            {`⚖️ Kuşanılan ile Karşılaştırma (${item.slot.displayName}):`}
+            {`Kuşanılan ile Karşılaştırma (${item.slot.displayName}):`}
           </T>
 
           {equippedItem == null ? (
@@ -2603,24 +2585,24 @@ function ShopEquipmentDetailDialog({ item, player, onDismiss, onBuy }) {
           {/* Seviye uyarısı */}
           {!canEquip ? (
             <T size={12} color={HealthRed} weight="semibold">
-              {`⚠️ Seviyeniz: ${player.level}. Bu eşyayı kuşanabilmek için Seviye ${item.requiredLevel} olmalısınız!`}
+              {`Seviyeniz: ${player.level}. Bu eşyayı kuşanabilmek için Seviye ${item.requiredLevel} olmalısınız!`}
             </T>
           ) : null}
 
           {/* Fiyat & Cüzdan */}
           <Row justify="between" style={{ alignSelf: 'stretch' }}>
             <T size={12} weight="bold" color={AmberGold}>
-              {`Fiyat: 🪙 ${item.valueInGold} Altın`}
+              {`Fiyat: ${item.valueInGold} Altın`}
             </T>
             <T size={12} color={canAfford ? TextLight : HealthRed}>
-              {`Cüzdan: 🪙 ${player.gold}`}
+              {`Cüzdan: ${player.gold} Altın`}
             </T>
           </Row>
         </Column>
       }
       confirm={
         <Btn onPress={onBuy} disabled={!canAfford} color={AmberGold} contentColor={DarkBg} disabledColor={DarkSurfaceCard} disabledContentColor={TextMuted}>
-          {canAfford ? `Satın Al (${item.valueInGold} 🪙)` : 'Yetersiz Altın'}
+          {canAfford ? `Satın Al (${item.valueInGold} Altın)` : 'Yetersiz Altın'}
         </Btn>
       }
       dismiss={
@@ -2665,7 +2647,7 @@ function compareEquipmentStats(newItem, currentItem) {
 function ShopConsumableDetailDialog({ item, player, onDismiss, onBuy }) {
   const isLevelMet = player.level >= item.requiredLevel;
   const canAfford = player.gold >= item.valueInGold && isLevelMet;
-  const buttonText = !isLevelMet ? `Seviye Yetersiz (${item.requiredLevel})` : player.gold < item.valueInGold ? 'Yetersiz Altın' : `Satın Al (${item.valueInGold} 🪙)`;
+  const buttonText = !isLevelMet ? `Seviye Yetersiz (${item.requiredLevel})` : player.gold < item.valueInGold ? 'Yetersiz Altın' : `Satın Al (${item.valueInGold} Altın)`;
 
   return (
     <AlertDialog
@@ -2674,7 +2656,7 @@ function ShopConsumableDetailDialog({ item, player, onDismiss, onBuy }) {
       title={
         <Row wrap>
           <T size={20} hidden>
-            {`${item.categoryIcon} `}
+            {``}
           </T>
           <T size={17} weight="bold" color={HealthGreen} heading style={{ flexShrink: 1 }}>
             {item.name}
@@ -2703,7 +2685,7 @@ function ShopConsumableDetailDialog({ item, player, onDismiss, onBuy }) {
 
           {item.healAmount > 0 ? (
             <View style={{ alignSelf: 'flex-start' }}>
-              <Badge text={`❤️ +${item.healAmount} Can Sağaltır`} textColor={HealthGreen} bg={alpha(HealthGreen, 0.2)} borderColor={HealthGreen} size={13} padH={8} padV={6} />
+              <Badge text={`+${item.healAmount} Can Sağaltır`} textColor={HealthGreen} bg={alpha(HealthGreen, 0.2)} borderColor={HealthGreen} size={13} padH={8} padV={6} />
             </View>
           ) : null}
 
@@ -2711,7 +2693,7 @@ function ShopConsumableDetailDialog({ item, player, onDismiss, onBuy }) {
             <Surface radius={6} color={alpha(AmberGold, 0.15)} borderColor={AmberGold} borderWidth={1}>
               <Column pad={8}>
                 <T size={12} weight="bold" color={AmberGold}>
-                  {`${item.buffEffect.icon} ${item.buffEffect.name} (Süre: ${item.buffEffect.remainingBattles} Dövüş)`}
+                  {`${item.buffEffect.name} (Süre: ${item.buffEffect.remainingBattles} Dövüş)`}
                 </T>
                 <Spacer h={2} />
                 <T size={11} color={alpha(TextLight, 0.9)}>
@@ -2736,10 +2718,10 @@ function ShopConsumableDetailDialog({ item, player, onDismiss, onBuy }) {
           {/* Fiyat & Cüzdan */}
           <Row justify="between" style={{ alignSelf: 'stretch' }}>
             <T size={12} weight="bold" color={AmberGold}>
-              {`Fiyat: 🪙 ${item.valueInGold} Altın`}
+              {`Fiyat: ${item.valueInGold} Altın`}
             </T>
             <T size={12} color={player.gold >= item.valueInGold ? TextLight : HealthRed}>
-              {`Cüzdan: 🪙 ${player.gold}`}
+              {`Cüzdan: ${player.gold} Altın`}
             </T>
           </Row>
         </Column>
@@ -2781,7 +2763,7 @@ kt.Data.register(MapNodeInfo);
 function nodeDurumRenkleri(node) {
   return {
     rozetZemin: node.isCurrentLocation ? alpha(HealthGreen, 0.2) : node.isUnlocked ? alpha(AmberGold, 0.2) : alpha(HealthRed, 0.2),
-    rozetMetin: node.isCurrentLocation ? 'MEVCUT' : node.isUnlocked ? 'AÇIK' : '🔒 KİLİTLİ',
+    rozetMetin: node.isCurrentLocation ? 'MEVCUT' : node.isUnlocked ? 'AÇIK' : 'KİLİTLİ',
     rozetRenk: node.isCurrentLocation ? HealthGreen : node.isUnlocked ? TextGold : HealthRed,
   };
 }
@@ -2795,7 +2777,7 @@ export function WorldMapSection({ viewModel, onReturnToMarket, onEnterHarvestReg
   const nodes = [
     new MapNodeInfo({
       id: 'kirlangic',
-      icon: '🌾',
+      icon: '',
       name: 'Kırlangıç Kasabası',
       subtitle: 'Bataklık & Çukur Arenası (Bölge 1)',
       description:
@@ -2805,7 +2787,7 @@ export function WorldMapSection({ viewModel, onReturnToMarket, onEnterHarvestReg
     }),
     new MapNodeInfo({
       id: 'tashisar',
-      icon: '🏰',
+      icon: '',
       name: 'Taş Hisar Garnizonu',
       subtitle: 'Fırtınalı Kıyı Surları & Lejyoner Arenası (Bölge 2)',
       description:
@@ -2816,7 +2798,7 @@ export function WorldMapSection({ viewModel, onReturnToMarket, onEnterHarvestReg
     }),
     new MapNodeInfo({
       id: 'harvest',
-      icon: '⛏️',
+      icon: '',
       name: 'Diyar Kaynak Sahaları',
       subtitle: 'Maden Ocakları, Şifa Çayırları & Kadim Koruluk',
       description:
@@ -2839,7 +2821,7 @@ export function WorldMapSection({ viewModel, onReturnToMarket, onEnterHarvestReg
         <Card color={DarkSurface} radius={12} borderColor={AmberGoldDark} borderWidth={1.5}>
           <Column pad={16}>
             <T style={Typography.titleMedium} weight="black" color={AmberGold} letterSpacing={1} heading>
-              🗺️ DİYAR HARİTASI & KADİM YOLLAR
+              DİYAR HARİTASI & KADİM YOLLAR
             </T>
             <Spacer h={4} />
             <T size={12} color={TextLight} lineHeight={17}>
@@ -2853,10 +2835,10 @@ export function WorldMapSection({ viewModel, onReturnToMarket, onEnterHarvestReg
           <Column pad={14}>
             <Row justify="between" style={{ alignSelf: 'stretch' }} gap={6}>
               <T size={13} weight="black" color={AmberGold} letterSpacing={1} heading>
-                👑 DİNAMİK BÖLGESEL ŞÖHRET
+                DİNAMİK BÖLGESEL ŞÖHRET
               </T>
               <Badge
-                text={isCurrentlyInTashisar ? '🏰 MEVCUT: TAŞ HİSAR' : '🌾 MEVCUT: KIRLANGIÇ'}
+                text={isCurrentlyInTashisar ? 'MEVCUT: TAŞ HİSAR' : 'MEVCUT: KIRLANGIÇ'}
                 textColor={HealthGreen}
                 bg={alpha(HealthGreen, 0.2)}
                 borderColor={HealthGreen}
@@ -2870,7 +2852,7 @@ export function WorldMapSection({ viewModel, onReturnToMarket, onEnterHarvestReg
             <Column pad={10} radius={8} color={color(0xff120e08)} style={{ alignSelf: 'stretch' }}>
               <Row justify="between" style={{ alignSelf: 'stretch' }}>
                 <T size={12} weight="bold" color={TextLight}>
-                  🌾 Kırlangıç Kasabası
+                  Kırlangıç Kasabası
                 </T>
                 <T size={12} weight="black" color={FamePurple}>
                   {`${kirlangicFame} / 100 Şöhret`}
@@ -2880,7 +2862,7 @@ export function WorldMapSection({ viewModel, onReturnToMarket, onEnterHarvestReg
               <Progress value={kt.coerceIn(kirlangicFame / 100, 0, 1)} color={AmberGold} track={DarkSurfaceCard} height={6} radius={3} />
               <Spacer h={4} />
               <T size={11} color={TextGold} weight="semibold">
-                {`Unvan: ${kirlangicTitle} ${kirlangicFame >= 100 || player.hasGarrisonPass ? '🏆 [TAMAMLANDI]' : ''}`}
+                {`Unvan: ${kirlangicTitle} ${kirlangicFame >= 100 || player.hasGarrisonPass ? '[TAMAMLANDI]' : ''}`}
               </T>
             </Column>
 
@@ -2890,10 +2872,10 @@ export function WorldMapSection({ viewModel, onReturnToMarket, onEnterHarvestReg
             <Column pad={10} radius={8} color={color(0xff120e08)} style={{ alignSelf: 'stretch' }}>
               <Row justify="between" style={{ alignSelf: 'stretch' }}>
                 <T size={12} weight="bold" color={TextLight}>
-                  🏰 Taş Hisar Garnizonu
+                  Taş Hisar Garnizonu
                 </T>
                 <T size={12} weight="black" color={canTravel ? FamePurple : TextMuted}>
-                  {canTravel ? `${tashisarFame} / 100 Şöhret` : '🔒 Kilitli (0 / 100)'}
+                  {canTravel ? `${tashisarFame} / 100 Şöhret` : 'Kilitli (0 / 100)'}
                 </T>
               </Row>
               <Spacer h={4} />
@@ -2942,7 +2924,7 @@ export function WorldMapSection({ viewModel, onReturnToMarket, onEnterHarvestReg
                   }}
                 >
                   <Gradient colors={topRenkleri} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                    <T size={26}>{node.isUnlocked ? node.icon : '🔒'}</T>
+                    <T size={26}>{node.isUnlocked ? node.icon : ''}</T>
                     {node.isCurrentLocation ? (
                       <Surface radius={3} color={HealthGreen} style={{ marginTop: 2, paddingHorizontal: 4, paddingVertical: 1 }}>
                         <T size={7} weight="black" color={Color.Black}>
@@ -3021,7 +3003,7 @@ export function RegionNodeDetailDialog({ node, viewModel, onReturnToMarket, onEn
         contentColor={DarkBg}
         radius={8}
       >
-        🏛️ Kasaba Çarşısına Git
+        Kasaba Çarşısına Git
       </Btn>
     );
   } else if (node.id === 'tashisar') {
@@ -3038,7 +3020,7 @@ export function RegionNodeDetailDialog({ node, viewModel, onReturnToMarket, onEn
         disabledContentColor={TextMuted}
         radius={8}
       >
-        {node.isUnlocked ? '🏰 Yolculuk Yap (Bölge 2)' : '🔒 Yolculuk Kilitli'}
+        {node.isUnlocked ? 'Yolculuk Yap (Bölge 2)' : 'Yolculuk Kilitli'}
       </Btn>
     );
   } else if (node.id === 'harvest') {
@@ -3055,7 +3037,7 @@ export function RegionNodeDetailDialog({ node, viewModel, onReturnToMarket, onEn
         disabledContentColor={TextMuted}
         radius={8}
       >
-        {node.isUnlocked ? '⛏️ Kaynak Sahalarına Git' : '🔒 Sahalar Kilitli'}
+        {node.isUnlocked ? 'Kaynak Sahalarına Git' : 'Sahalar Kilitli'}
       </Btn>
     );
   }
@@ -3078,7 +3060,7 @@ export function RegionNodeDetailDialog({ node, viewModel, onReturnToMarket, onEn
         <Column>
           <Row gap={8} wrap>
             <T color={TextGold} weight="bold" size={18} heading>
-              {`${node.icon} ${node.name}`}
+              {`${node.name}`}
             </T>
             <Badge text={d.rozetMetin} textColor={d.rozetRenk} bg={d.rozetZemin} />
           </Row>
@@ -3117,7 +3099,7 @@ export function RegionNodeDetailDialog({ node, viewModel, onReturnToMarket, onEn
           {!node.isUnlocked && node.lockReason != null ? (
             <Surface radius={6} color={color(0xff2a1414)} borderColor={alpha(HealthRed, 0.6)} borderWidth={1}>
               <T size={11} color={HealthRed} lineHeight={15} weight="medium" style={{ padding: 8 }}>
-                {`⚠️ ${node.lockReason}`}
+                {`${node.lockReason}`}
               </T>
             </Surface>
           ) : null}
@@ -3142,13 +3124,13 @@ export function CompanionDialogueModal({ session, player, viewModel }) {
   if (session.isCulminationReached) {
     confirm = (
       <Btn onPress={() => viewModel.closeCompanionSession()} color={AmberGold} contentColor={DarkBg} radius={8}>
-        🌅 Şafak Sökerken Köşkten Ayrıl
+        Şafak Sökerken Köşkten Ayrıl
       </Btn>
     );
   } else if (session.isKademeCompleted) {
     confirm = (
       <Btn onPress={() => viewModel.closeCompanionSession()} color={FamePurple} contentColor={Color.White} radius={8}>
-        🌙 Geceyi Noktala & Köşkten Ayrıl
+        Geceyi Noktala & Köşkten Ayrıl
       </Btn>
     );
   } else if (session.isShowingChoiceResponse) {
@@ -3162,8 +3144,8 @@ export function CompanionDialogueModal({ session, player, viewModel }) {
         {roundIndex < 4
           ? `Sonraki Konuşmaya Geç (${roundIndex + 2} / 5) ➔`
           : session.kademeLevel < 5
-            ? `🌙 Geceyi Tamamla & Vedalaş (Kademe ${session.kademeLevel}) ➔`
-            : '🔥 Büyük Vuslatı Başlat ➔'}
+            ? `Geceyi Tamamla & Vedalaş (Kademe ${session.kademeLevel}) ➔`
+            : 'Büyük Vuslatı Başlat ➔'}
       </Btn>
     );
   }
@@ -3177,9 +3159,9 @@ export function CompanionDialogueModal({ session, player, viewModel }) {
 
   const durumMetni =
     session.isCulminationReached || session.isRepeatCulmination
-      ? '💖 BAĞ: ZİRVE (5/5)'
+      ? 'BAĞ: ZİRVE (5/5)'
       : session.isKademeCompleted
-        ? `✅ KADEME ${session.kademeLevel} BİTTİ`
+        ? `KADEME ${session.kademeLevel} BİTTİ`
         : `Kademe ${session.kademeLevel}/5 • Tur ${roundIndex + 1}/5`;
 
   let govde = null;
@@ -3228,7 +3210,7 @@ export function CompanionDialogueModal({ session, player, viewModel }) {
         ) : (
           <>
             <T size={12} weight="bold" color={AmberGold}>
-              {`💬 Nasıl bir karşılık vereceksin? (Tur ${roundIndex + 1} / 5)`}
+              {`Nasıl bir karşılık vereceksin? (Tur ${roundIndex + 1} / 5)`}
             </T>
             {currentRound.choices.map((c, choiceIdx) => (
               <Surface
@@ -3261,7 +3243,7 @@ export function CompanionDialogueModal({ session, player, viewModel }) {
       <>
         <Column>
           <T size={14} weight="bold" color={AmberGold} heading>
-            🌙 Gecenin Sonu & Vedalaşma
+            Gecenin Sonu & Vedalaşma
           </T>
           <Spacer h={4} />
           <Surface radius={8} color={color(0xff241420)} borderColor={FamePurple} borderWidth={1}>
@@ -3274,7 +3256,7 @@ export function CompanionDialogueModal({ session, player, viewModel }) {
         <Surface radius={8} color={color(0xff1e2818)} borderColor={alpha(HealthGreen, 0.8)} borderWidth={1}>
           <Column pad={10}>
             <T size={12} weight="bold" color={HealthGreen}>
-              {`✨ Kademe ${session.kademeLevel} Tamamlandı!`}
+              {`Kademe ${session.kademeLevel} Tamamlandı!`}
             </T>
             <Spacer h={2} />
             <T size={11} color={TextLight} lineHeight={15}>
@@ -3290,7 +3272,7 @@ export function CompanionDialogueModal({ session, player, viewModel }) {
       <>
         <Column>
           <T size={15} weight="bold" color={AmberGold} heading>
-            {`🔥 ${culm.title}`}
+            {`${culm.title}`}
           </T>
           <Spacer h={4} />
           <T size={12} color={alpha(TextLight, 0.9)} italic lineHeight={17}>
@@ -3309,7 +3291,7 @@ export function CompanionDialogueModal({ session, player, viewModel }) {
         <Surface radius={8} color={color(0xff1e101a)} borderColor={alpha(AmberGold, 0.6)} borderWidth={1}>
           <Column pad={10}>
             <T size={11} weight="bold" color={AmberGold}>
-              🌅 Şafak Vakti:
+              Şafak Vakti:
             </T>
             <Spacer h={4} />
             <T size={12} color={TextLight} lineHeight={17}>
@@ -3321,7 +3303,7 @@ export function CompanionDialogueModal({ session, player, viewModel }) {
         <Surface radius={8} color={color(0xff2d1e0f)} borderColor={alpha(HealthGreen, 0.8)} borderWidth={1}>
           <Column pad={10}>
             <T size={12} weight="bold" color={HealthGreen}>
-              {`✨ ${culm.buffRewardTitle}`}
+              {`${culm.buffRewardTitle}`}
             </T>
             <Spacer h={3} />
             <T size={11} color={TextLight} lineHeight={15}>
@@ -3329,7 +3311,7 @@ export function CompanionDialogueModal({ session, player, viewModel }) {
             </T>
             <Spacer h={6} />
             <T size={11} weight="bold" color={AmberGold}>
-              🏰 Geleceğin Üs Yemini & Yoldaşlık Sözü:
+              Geleceğin Üs Yemini & Yoldaşlık Sözü:
             </T>
             <Spacer h={2} />
             <T size={11} color={TextLight} lineHeight={15} italic>

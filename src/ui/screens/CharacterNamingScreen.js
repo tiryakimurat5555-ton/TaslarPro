@@ -48,7 +48,7 @@ export function CharacterNamingScreen({ currentName, onConfirmName, modifier }) 
 
           {/* Üst İkon & Başlık Alanı */}
           <Surface hidden radius={16} color={alpha(AmberGoldDark, 0.2)} borderColor={AmberGold} borderWidth={2} align="center" justify="center" style={{ width: 76, height: 76 }}>
-            <T size={38}>⚔️</T>
+            
           </Surface>
 
           <Spacer h={18} />
@@ -66,7 +66,7 @@ export function CharacterNamingScreen({ currentName, onConfirmName, modifier }) 
           <Card color={DarkSurface} radius={12} borderColor={DarkBorder} borderWidth={1.5} style={{ alignSelf: 'stretch' }}>
             <Column pad={16}>
               <T size={15} weight="bold" color={TextGold}>
-                📜 Sürgünün Yeni Kimliği
+                Sürgünün Yeni Kimliği
               </T>
               <Spacer h={8} />
               <T size={13} color={TextLight} lineHeight={19}>
@@ -133,7 +133,7 @@ export function CharacterNamingScreen({ currentName, onConfirmName, modifier }) 
             style={{ alignSelf: 'stretch', minHeight: 52 }}
           >
             <T size={15} weight="bold" color={DarkBg} align="center">
-              🛡️ Bu Adla Kumları Titret (Oyuna Başla)
+              Bu Adla Kumları Titret (Oyuna Başla)
             </T>
           </Btn>
 

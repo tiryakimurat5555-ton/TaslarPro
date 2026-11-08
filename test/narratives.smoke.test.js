@@ -45,7 +45,7 @@ function metinMi(x) {
 const skill = new GladiatorSkill({
   id: 'skill_morvath_1',
   name: 'Kargı Fırtınası',
-  icon: '🔱',
+  icon: '',
   type: SkillType.ATTACK,
   tier: 1,
   cooldownTurns: 2,
@@ -243,11 +243,11 @@ test('CharacterRegistryData + TashisarGladiatorsData', () => {
     expect(p instanceof CharacterProfile).toBe(true);
     metinMi(p.appearance);
     metinMi(p.backgroundLore);
-    metinMi(p.avatarIcon);
+    // avatarIcon emojileri kaldırıldı (8 Kasım)
   }
   const aresula = profiles.find((p) => p.id === 'fighter_aresula');
   expect(aresula.roleOrWeapon).toBe('Çift Hilal Rüzgar Bıçağı (Seviye 12)');
-  expect(aresula.avatarIcon).toBe('🗡️');
+  expect(aresula.avatarIcon).toBe('');
   expect(aresula.regionId).toBe('tashisar');
   expect(profiles.find((p) => p.id === 'fighter_morvath').regionId).toBe('kirlangic');
 });

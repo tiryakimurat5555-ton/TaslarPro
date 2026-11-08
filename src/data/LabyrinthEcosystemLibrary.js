@@ -18,7 +18,7 @@ import {
  */
 
 // =========================================================================
-// 🧱 1. TEHLİKELER & TUZAKLAR KÜTÜPHANESİ (HER BİYOM İÇİN ZENGİN HAVUZ)
+// 1. TEHLİKELER & TUZAKLAR KÜTÜPHANESİ (HER BİYOM İÇİN ZENGİN HAVUZ)
 // =========================================================================
 
 function getAllHazards() {
@@ -248,7 +248,7 @@ function getAllHazards() {
 }
 
 // =========================================================================
-// 🧩 2. BULMACALAR & ETKİLEŞİMLİ MEKANİZMALAR KÜTÜPHANESİ
+// 2. BULMACALAR & ETKİLEŞİMLİ MEKANİZMALAR KÜTÜPHANESİ
 // =========================================================================
 
 function getAllPuzzles() {
@@ -329,7 +329,7 @@ function getAllPuzzles() {
 }
 
 // =========================================================================
-// ⚔️ 3. EKİPMAN & HABİTAT SİNERJİLERİ (AVANTAJ VE DEZAVANTAJLAR)
+// 3. EKİPMAN & HABİTAT SİNERJİLERİ (AVANTAJ VE DEZAVANTAJLAR)
 // =========================================================================
 
 function getAllHabitatSynergies() {
@@ -398,7 +398,7 @@ function getAllHabitatSynergies() {
 }
 
 // =========================================================================
-// 🔊 4. ORTAM SESLERİ & DUYUSAL AMBİYANS KÜTÜPHANESİ
+// 4. ORTAM SESLERİ & DUYUSAL AMBİYANS KÜTÜPHANESİ
 // =========================================================================
 
 function getAtmosphericEvents(biome) {
@@ -443,7 +443,7 @@ function getAtmosphericEvents(biome) {
 }
 
 // =========================================================================
-// 📢 5. DİĞER GLADYATÖRLERİN ARKA PLAN YANKILARI (CANLI BİLDİRİMLER)
+// 5. DİĞER GLADYATÖRLERİN ARKA PLAN YANKILARI (CANLI BİLDİRİMLER)
 // =========================================================================
 
 function generateDistantEcho(

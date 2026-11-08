@@ -12,21 +12,21 @@ test('testArchetypePsychologyGeneration', () => {
   expect(proud.pride).toBe(95);
   expect(proud.loyalty).toBe(85);
   expect(proud.treachery <= 15).toBe(true);
-  expect(proud.behavioralBadge).toBe('👑 Onurlu Savaşçı');
+  expect(proud.behavioralBadge).toBe('Onurlu Savaşçı');
 
   const cunning = FighterPsychology.fromArchetype(PersonalityArchetype.KURNAZ);
   expect(cunning.treachery >= 75).toBe(true);
   expect(cunning.pragmatism >= 85).toBe(true);
   expect(cunning.loyalty <= 25).toBe(true);
-  expect(cunning.behavioralBadge).toBe('🗡️ Tehlikeli Fırsatçı');
+  expect(cunning.behavioralBadge).toBe('Tehlikeli Fırsatçı');
 
   const wild = FighterPsychology.fromArchetype(PersonalityArchetype.VAHSI);
   expect(wild.wildInstinct).toBe(95);
-  expect(wild.behavioralBadge).toBe('🐾 Kaotik & İçgüdüsel');
+  expect(wild.behavioralBadge).toBe('Kaotik & İçgüdüsel');
 
   const lazy = FighterPsychology.fromArchetype(PersonalityArchetype.TEMBEL);
   expect(lazy.apathy).toBe(90);
-  expect(lazy.behavioralBadge).toBe('💤 Duyarsız & Kayıtsız');
+  expect(lazy.behavioralBadge).toBe('Duyarsız & Kayıtsız');
 
   const ambitious = FighterPsychology.fromArchetype(PersonalityArchetype.HIRSLI);
   expect(ambitious.ambition).toBe(95);

@@ -64,8 +64,8 @@ export class Data {
 /**
  * Kotlin enum class karşılığı.
  *   export const EquipmentSlot = defineEnum('EquipmentSlot', {
- *     HEAD: { displayName: 'Başlık', icon: '🪖' },
- *     CHEST: { displayName: 'Gövdelik', icon: '🥋' },
+ *     HEAD: { displayName: 'Başlık', icon: '' },
+ *     CHEST: { displayName: 'Gövdelik', icon: '' },
  *   }, {
  *     get isArmor() { return this === EquipmentSlot.HEAD; },   // getter
  *     describe(x) { return this.displayName + x; },              // yöntem

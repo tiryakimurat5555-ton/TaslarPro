@@ -53,7 +53,7 @@ test('testAllGladiatorsGrandTournamentSimulation', () => {
   }
 
   console.log('=================================================================');
-  console.log('🏟️ BÜYÜK TAŞ HİSAR GLADYATÖR TURNUVASI BAŞLIYOR!');
+  console.log('BÜYÜK TAŞ HİSAR GLADYATÖR TURNUVASI BAŞLIYOR!');
   console.log(`Toplam Gladyatör Sayısı : ${allGladiators.length}`);
   console.log(`Planlanan Toplam 1v1 Maç : ${matches.length}`);
   console.log(`Her Dövüşçü İçin En Az Maç: ${targetMatchesPerFighter}`);

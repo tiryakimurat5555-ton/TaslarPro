@@ -7,10 +7,10 @@ export const DuoCombatNarratives = {
   // =========================================================================
   generateOpening(player, ally, enemy1, enemy2, condition) {
     const templates = [
-      `🏟️ [KURA DÖVÜŞÜ BAŞLADI!] Kum çukuruna iki koldan inen savaşçılar; Mavi Köşede ${player.name} ve yoldaşı ${ally.name} sırt sırta verirken, Kırmızı Köşede ${enemy1.name} ile ${enemy2.name} ölümcül bir bakışla silahlarını kavradı! Zemin: ${condition.name} (${condition.focusStatName}).`,
-      `🏟️ [ARENA BORAZANLARI YANKILANDI!] Taş Hisar tribünlerinin uğultusu arasında dört savaşçı meydana adımlarını attı. ${player.name} ve ${ally.name} çapraz savunma hattı kurarken, ${enemy1.name} ile ${enemy2.name} kumları ezen adımlarla hücuma geçti!`,
-      `🏟️ [İKİLİ İTTİFAK MEYDANI!] Çarkın dönüşü kaderi belirledi! ${player.name} yanındaki ${ally.name} ile göz göze gelip başını salladı. Karşıda ise ${enemy1.name} ve ${enemy2.name} kan kokusu almış kurtlar gibi iki kanattan yaklaşmakta!`,
-      `🏟️ [DEMİR VE KAN İTTİFAKI!] Kum çukuruna kilitlenen demir kapılar kapandı. ${player.name} ve ${ally.name} meydanın merkezini tutarken, ${enemy1.name} ve ${enemy2.name} zırhlarını şakırdatarak çifte hücum düzenine geçti! Meydan kuralı: ${condition.description}`
+      `[KURA DÖVÜŞÜ BAŞLADI!] Kum çukuruna iki koldan inen savaşçılar; Mavi Köşede ${player.name} ve yoldaşı ${ally.name} sırt sırta verirken, Kırmızı Köşede ${enemy1.name} ile ${enemy2.name} ölümcül bir bakışla silahlarını kavradı! Zemin: ${condition.name} (${condition.focusStatName}).`,
+      `[ARENA BORAZANLARI YANKILANDI!] Taş Hisar tribünlerinin uğultusu arasında dört savaşçı meydana adımlarını attı. ${player.name} ve ${ally.name} çapraz savunma hattı kurarken, ${enemy1.name} ile ${enemy2.name} kumları ezen adımlarla hücuma geçti!`,
+      `[İKİLİ İTTİFAK MEYDANI!] Çarkın dönüşü kaderi belirledi! ${player.name} yanındaki ${ally.name} ile göz göze gelip başını salladı. Karşıda ise ${enemy1.name} ve ${enemy2.name} kan kokusu almış kurtlar gibi iki kanattan yaklaşmakta!`,
+      `[DEMİR VE KAN İTTİFAKI!] Kum çukuruna kilitlenen demir kapılar kapandı. ${player.name} ve ${ally.name} meydanın merkezini tutarken, ${enemy1.name} ve ${enemy2.name} zırhlarını şakırdatarak çifte hücum düzenine geçti! Meydan kuralı: ${condition.description}`
     ];
     return kt.random(templates);
   },
@@ -19,36 +19,36 @@ export const DuoCombatNarratives = {
     if (isShield) {
       if (triggerCount === 1) {
         return kt.random([
-          `🛡️ [MÜTTEFİK SİPERİ!] ${attackerName} tam ${targetName}'ın savunmasız böğrüne darbe indirecekken ${interceptorName} yıldırım gibi araya girdi! Ağır kalkanını yere mıhlayarak vuruşu zırhında soğurdu (${damageAbsorbed} Hasar absorbe edildi)!`,
-          `🛡️ [FEDAKARCA ATILIŞ!] ${targetName} sendelediği anda ${interceptorName} öne fırladı; ${attackerName}'ın ölümcül namlusunu kalkanının göbeğiyle saptırarak yoldaşını mutlak bir darbeden kurtardı!`,
-          `🛡️ [AŞILMAZ KALKAN DUVARI!] ${interceptorName} 'Arkama geç!' diye haykırarak kalkanını gerdi; ${attackerName}'ın savurduğu keskin çelik kalkanın üzerinde kıvılcımlar saçarak geri tepti (${damageAbsorbed} Hasar soğuruldu)!`
+          `[MÜTTEFİK SİPERİ!] ${attackerName} tam ${targetName}'ın savunmasız böğrüne darbe indirecekken ${interceptorName} yıldırım gibi araya girdi! Ağır kalkanını yere mıhlayarak vuruşu zırhında soğurdu (${damageAbsorbed} Hasar absorbe edildi)!`,
+          `[FEDAKARCA ATILIŞ!] ${targetName} sendelediği anda ${interceptorName} öne fırladı; ${attackerName}'ın ölümcül namlusunu kalkanının göbeğiyle saptırarak yoldaşını mutlak bir darbeden kurtardı!`,
+          `[AŞILMAZ KALKAN DUVARI!] ${interceptorName} 'Arkama geç!' diye haykırarak kalkanını gerdi; ${attackerName}'ın savurduğu keskin çelik kalkanın üzerinde kıvılcımlar saçarak geri tepti (${damageAbsorbed} Hasar soğuruldu)!`
         ]);
       } else if (triggerCount === 2) {
         return kt.random([
-          `🛡️ [İKİNCİ SİPER: SARSILMAZ SADAKAT!] ${interceptorName}, kalkanında beliren çatlaklara aldırmadan ikinci kez ${attackerName} ile yoldaşının arasına daldı! 'Burayı geçemezsin!' narasıyla darbeyi bir kez daha göğüsledi (${damageAbsorbed} Hasar soğuruldu)!`,
-          `🛡️ [YİNELENEN FEDAKARLIK!] ${attackerName}'ın ${targetName}'ı hedef alan ardışık hamlesi, yine ${interceptorName}'ın inatçı çelik kalkanına çarparak boşa düştü!`
+          `[İKİNCİ SİPER: SARSILMAZ SADAKAT!] ${interceptorName}, kalkanında beliren çatlaklara aldırmadan ikinci kez ${attackerName} ile yoldaşının arasına daldı! 'Burayı geçemezsin!' narasıyla darbeyi bir kez daha göğüsledi (${damageAbsorbed} Hasar soğuruldu)!`,
+          `[YİNELENEN FEDAKARLIK!] ${attackerName}'ın ${targetName}'ı hedef alan ardışık hamlesi, yine ${interceptorName}'ın inatçı çelik kalkanına çarparak boşa düştü!`
         ]);
       } else {
         return kt.random([
-          `🛡️ [ZİRVE SİPER: CAN PAHASINA SUR!] Kan ter içindeki ${interceptorName}, paramparça olmuş kalkanını son bir iradeyle havaya kaldırıp üçüncü kez darbenin önüne atıldı! Arenadaki kalabalık bu insanüstü yoldaşlık bağı karşısında ayağa fırladı (${damageAbsorbed} Hasar soğuruldu)!`,
-          `🛡️ [ÖLÜMÜNE YOLDAŞLIK!] Kalkanından saçılan madeni parçalara rağmen ${interceptorName} ${targetName}'ın önüne adeta etten ve çelikten bir kale ördü!`
+          `[ZİRVE SİPER: CAN PAHASINA SUR!] Kan ter içindeki ${interceptorName}, paramparça olmuş kalkanını son bir iradeyle havaya kaldırıp üçüncü kez darbenin önüne atıldı! Arenadaki kalabalık bu insanüstü yoldaşlık bağı karşısında ayağa fırladı (${damageAbsorbed} Hasar soğuruldu)!`,
+          `[ÖLÜMÜNE YOLDAŞLIK!] Kalkanından saçılan madeni parçalara rağmen ${interceptorName} ${targetName}'ın önüne adeta etten ve çelikten bir kale ördü!`
         ]);
       }
     } else {
       if (triggerCount === 1) {
         return kt.random([
-          `🛡️ [GÖVDE SİPERİ!] ${interceptorName}, ${attackerName}'ın ${targetName}'a inen vuruşunun önüne tereddüt etmeden atıldı! Darbeyi zırhlı omzuyla göğüsleyerek yoldaşına nefes aldırdı (${damageAbsorbed} Hasar soğuruldu)!`,
-          `🛡️ [NAMLU SAPTIRMA!] ${attackerName}'ın silahı tam hedefe ulaşacakken ${interceptorName} kılıcının kabzasıyla vuruş çizgisini yukarı saptırdı ve yoldaşını ölümcül yaradan kurtardı!`,
-          `🛡️ [CAN PAHASINA ATILMA!] ${targetName}'ın tökezlediğini gören ${interceptorName} araya girerek vuruşun hızını kesti; çelik çeliğe çarptı, taş zemin sarsıldı!`
+          `[GÖVDE SİPERİ!] ${interceptorName}, ${attackerName}'ın ${targetName}'a inen vuruşunun önüne tereddüt etmeden atıldı! Darbeyi zırhlı omzuyla göğüsleyerek yoldaşına nefes aldırdı (${damageAbsorbed} Hasar soğuruldu)!`,
+          `[NAMLU SAPTIRMA!] ${attackerName}'ın silahı tam hedefe ulaşacakken ${interceptorName} kılıcının kabzasıyla vuruş çizgisini yukarı saptırdı ve yoldaşını ölümcül yaradan kurtardı!`,
+          `[CAN PAHASINA ATILMA!] ${targetName}'ın tökezlediğini gören ${interceptorName} araya girerek vuruşun hızını kesti; çelik çeliğe çarptı, taş zemin sarsıldı!`
         ]);
       } else if (triggerCount === 2) {
         return kt.random([
-          `🛡️ [İKİNCİ GÖVDE SİPERİ!] Önceki darbenin omzunda bıraktığı sızıya aldırmayan ${interceptorName}, bir kez daha ${targetName}'ın önüne atılarak ${attackerName}'ın vuruşunu zırh plakalarında eritti!`,
-          `🛡️ [AMANSIZ KORUMA!] ${interceptorName} yoldaşını geriye çekip kendi gövdesini siper etti; kanayan yarasına rağmen gardını bir an bile düşürmedi!`
+          `[İKİNCİ GÖVDE SİPERİ!] Önceki darbenin omzunda bıraktığı sızıya aldırmayan ${interceptorName}, bir kez daha ${targetName}'ın önüne atılarak ${attackerName}'ın vuruşunu zırh plakalarında eritti!`,
+          `[AMANSIZ KORUMA!] ${interceptorName} yoldaşını geriye çekip kendi gövdesini siper etti; kanayan yarasına rağmen gardını bir an bile düşürmedi!`
         ]);
       } else {
         return kt.random([
-          `🛡️ [SON DİRENİŞ SİPERİ!] Tükenmenin eşiğindeki ${interceptorName}, ${targetName}'ı kurtarmak için son nefesini harcarcasına kendini namlunun önüne fırlattı! Arenada yankılanan çarpışma sesi tribünleri buz kesti!`
+          `[SON DİRENİŞ SİPERİ!] Tükenmenin eşiğindeki ${interceptorName}, ${targetName}'ı kurtarmak için son nefesini harcarcasına kendini namlunun önüne fırlattı! Arenada yankılanan çarpışma sesi tribünleri buz kesti!`
         ]);
       }
     }
@@ -57,22 +57,22 @@ export const DuoCombatNarratives = {
   generatePincerDoubleTeam(attacker1, attacker2, target, bonusDamage, triggerCount = 1) {
     if (triggerCount === 1) {
       return kt.random([
-        `⚔️ [ÇAPRAZ KISKAÇ!] ${attacker1} hasmın dikkatini önden sahte bir hamleyle çekerken, ${attacker2} kör noktadan sessizce süzülüp omuriliğe ölümcül bir darbe vurdu (+${bonusDamage} Çifte Baskı Hasarı)!`,
-        `⚔️ [İKİ ATEŞ ARASINDA!] Kumda sırt sırta veren iki yoldaş, ${target}'ı iki cepheden kuşattı. ${attacker1} gardı ezerken ${attacker2} boşta kalan kaburgaya amansızca yüklendi!`,
-        `⚔️ [SENKRONİZE ÇİFTE HAMLE!] ${attacker1}'in sağ kanattan savurduğu saldırıdan kaçmaya çalışan ${target}, tam sol kanatta pusuya yatan ${attacker2}'nin namlusuna çarptı (+${bonusDamage} Hasar)!`,
-        `⚔️ [İKİLİ BASKI VE YARMA!] ${attacker1} hasmın kalkanını yere mıhladığı saniyede ${attacker2} havaya sıçrayıp boş kalan boyun boşluğunu yardı!`,
-        `⚔️ [KUSURSUZ FLANK!] İki savaşçı tek bir vücut gibi hareket etti; ${attacker1}'in vuruşunun hemen ardından ${attacker2}'nin ardışık kesisi indi, ${target} neye uğradığını şaşırdı!`
+        `[ÇAPRAZ KISKAÇ!] ${attacker1} hasmın dikkatini önden sahte bir hamleyle çekerken, ${attacker2} kör noktadan sessizce süzülüp omuriliğe ölümcül bir darbe vurdu (+${bonusDamage} Çifte Baskı Hasarı)!`,
+        `[İKİ ATEŞ ARASINDA!] Kumda sırt sırta veren iki yoldaş, ${target}'ı iki cepheden kuşattı. ${attacker1} gardı ezerken ${attacker2} boşta kalan kaburgaya amansızca yüklendi!`,
+        `[SENKRONİZE ÇİFTE HAMLE!] ${attacker1}'in sağ kanattan savurduğu saldırıdan kaçmaya çalışan ${target}, tam sol kanatta pusuya yatan ${attacker2}'nin namlusuna çarptı (+${bonusDamage} Hasar)!`,
+        `[İKİLİ BASKI VE YARMA!] ${attacker1} hasmın kalkanını yere mıhladığı saniyede ${attacker2} havaya sıçrayıp boş kalan boyun boşluğunu yardı!`,
+        `[KUSURSUZ FLANK!] İki savaşçı tek bir vücut gibi hareket etti; ${attacker1}'in vuruşunun hemen ardından ${attacker2}'nin ardışık kesisi indi, ${target} neye uğradığını şaşırdı!`
       ]);
     } else if (triggerCount === 2) {
       return kt.random([
-        `⚔️ [YİNELENEN KISKAÇ KILIDI!] ${attacker1} ve ${attacker2} aynı amansız taktiği ikinci kez sahneye koydu! İlk hücumun sersemliğini atlatamayan ${target}, kaçış açısı bulamayıp iki taraftan sıkıştırılan bir mengene gibi aralarında ezildi (+${bonusDamage} Çifte Baskı Hasarı)!`,
-        `⚔️ [İKİNCİ DALGA ÇAPRAZ ATEŞ!] Ritimleri bir kat daha hızlanan iki yoldaş, ${target}'ın etrafındaki çemberi daha da daralttı; ${attacker1} sol böğrü parçalarken ${attacker2} sırt zırhını çatlattı!`,
-        `⚔️ [KAÇIŞI OLMAYAN MENGENE!] ${target} geriye adım atmak istedi ancak ${attacker2} arkasını çoktan kesmişti; ${attacker1}'in ittiği gövdeyi ${attacker2} havada karşıladı!`
+        `[YİNELENEN KISKAÇ KILIDI!] ${attacker1} ve ${attacker2} aynı amansız taktiği ikinci kez sahneye koydu! İlk hücumun sersemliğini atlatamayan ${target}, kaçış açısı bulamayıp iki taraftan sıkıştırılan bir mengene gibi aralarında ezildi (+${bonusDamage} Çifte Baskı Hasarı)!`,
+        `[İKİNCİ DALGA ÇAPRAZ ATEŞ!] Ritimleri bir kat daha hızlanan iki yoldaş, ${target}'ın etrafındaki çemberi daha da daralttı; ${attacker1} sol böğrü parçalarken ${attacker2} sırt zırhını çatlattı!`,
+        `[KAÇIŞI OLMAYAN MENGENE!] ${target} geriye adım atmak istedi ancak ${attacker2} arkasını çoktan kesmişti; ${attacker1}'in ittiği gövdeyi ${attacker2} havada karşıladı!`
       ]);
     } else {
       return kt.random([
-        `⚔️ [ÖLÜMCÜL KISKAÇ KAPAN!] İttifakın koordinasyonu tam bir kıyıma dönüştü! ${attacker1} ve ${attacker2}, nefesi tükenen ${target}'ın etrafında üçüncü kez bir ölüm girdabı ördü; kaçacak tek bir santim kum dahi bırakmadılar (+${bonusDamage} Çifte Baskı Hasarı)!`,
-        `⚔️ [ZİRVE ÇİFTE İNFAZ HAMLESİ!] Seyircilerin çılgınca haykırışları arasında iki savaşçı aynı anda hedefe daldı; ${target} iki yönden gelen çeliğin arasında çaresizce diz çöktü!`
+        `[ÖLÜMCÜL KISKAÇ KAPAN!] İttifakın koordinasyonu tam bir kıyıma dönüştü! ${attacker1} ve ${attacker2}, nefesi tükenen ${target}'ın etrafında üçüncü kez bir ölüm girdabı ördü; kaçacak tek bir santim kum dahi bırakmadılar (+${bonusDamage} Çifte Baskı Hasarı)!`,
+        `[ZİRVE ÇİFTE İNFAZ HAMLESİ!] Seyircilerin çılgınca haykırışları arasında iki savaşçı aynı anda hedefe daldı; ${target} iki yönden gelen çeliğin arasında çaresizce diz çöktü!`
       ]);
     }
   },
@@ -100,11 +100,11 @@ export const DuoCombatNarratives = {
     // Başlık etiketi
     let headerTag;
     if (triggerCount === 1) {
-      headerTag = `🔥 [${synergyType.title} İTTİFAKI]`;
+      headerTag = `[${synergyType.title} İTTİFAKI]`;
     } else if (triggerCount === 2) {
-      headerTag = `⚡ [TEKRARLANAN FIRTINA: ${synergyType.title}]`;
+      headerTag = `[TEKRARLANAN FIRTINA: ${synergyType.title}]`;
     } else {
-      headerTag = `💥 [ZİRVE SENFONİ: ${synergyType.title}]`;
+      headerTag = `[ZİRVE SENFONİ: ${synergyType.title}]`;
     }
     return `${headerTag} ${initiator}, ${executor} ile ${actionPhrase} '${skillName}' tekniğini ateşleyerek ${target}'ın üzerine atıldı; ${energyPhrase}, ${atmospherePhrase} (${target} ${targetImpactPhrase}, +${extraDamage} Uyum Hasarı)!`;
   },
@@ -128,7 +128,7 @@ export const DuoCombatNarratives = {
     } else {
       critText = 've savuşturulamaz sertlikte bir darbe indirdi';
     }
-    const critTag = isCrit ? '💥 [KRİTİK YETENEK]' : `${skill.icon} [YETENEK: ${skill.name}]`;
+    const critTag = isCrit ? '[KRİTİK YETENEK]' : `[YETENEK: ${skill.name}]`;
     let executionPhrase;
     if (skill.type === SkillType.ATTACK) {
       if (triggerCount === 1) {
@@ -177,26 +177,26 @@ export const DuoCombatNarratives = {
   generateDiscordIncident(discordType, fighter1, fighter2, affectedFighter) {
     if (discordType === DuoDiscordType.RECKLESS_BERSERK) {
       return kt.random([
-        `⚠️ [KABZA ÇARPIŞMASI!] ${fighter1} ve ${fighter2} aynı hedefe kör bir öfkeyle atılınca geniş savrulan silahlarının sapları birbirine çarptı! Çıkan kıvılcımlarla ikisi de tökezleyip açık verdi!`,
-        `⚠️ [KONTROLSÜZ SAVRULMA!] ${fighter1}'in gözü dönmüş şekilde savurduğu dev silah neredeyse yoldaşı ${fighter2}'nin boynunu biçecekti! ${fighter2} geri kaçmak zorunda kalınca hücum hattı bozuldu!`,
-        '⚠️ [VAHŞET KARGAŞASI!] İki savaşçı da hasmın üzerine aynı anda atılınca omuz omuza çarpıştılar; silahların savrulma açısı kapandı ve fırsat kaçtı!'
+        `[KABZA ÇARPIŞMASI!] ${fighter1} ve ${fighter2} aynı hedefe kör bir öfkeyle atılınca geniş savrulan silahlarının sapları birbirine çarptı! Çıkan kıvılcımlarla ikisi de tökezleyip açık verdi!`,
+        `[KONTROLSÜZ SAVRULMA!] ${fighter1}'in gözü dönmüş şekilde savurduğu dev silah neredeyse yoldaşı ${fighter2}'nin boynunu biçecekti! ${fighter2} geri kaçmak zorunda kalınca hücum hattı bozuldu!`,
+        '[VAHŞET KARGAŞASI!] İki savaşçı da hasmın üzerine aynı anda atılınca omuz omuza çarpıştılar; silahların savrulma açısı kapandı ve fırsat kaçtı!'
       ]);
     } else if (discordType === DuoDiscordType.SPEED_GAP) {
       return kt.random([
-        `⚠️ [KOPUK TEMPO!] ${fighter1} aşırı çevik adımlarla ileri fırladı ancak ağır zırhlı yoldaşı ${fighter2} geride kaldı! ${fighter1} iki rakibin ortasında tek başına kısılıp zor anlar yaşadı!`,
-        `⚠️ [RİTİM UYUŞMAZLIĞI!] ${fighter1}'in başlattığı hızlı hücuma ${fighter2} yetişemedi; saflar arasında açılan boşluğu gören rakipler araya sızdı!`,
-        `⚠️ [YALNIZ KALAN ÖNCÜ!] ${fighter1} çok hızlı daldığı için arkasındaki korumayı kaybetti; yoldaşı nefes nefese yetişmeye çalışırken ${fighter1} çifte baskı altında kaldı!`
+        `[KOPUK TEMPO!] ${fighter1} aşırı çevik adımlarla ileri fırladı ancak ağır zırhlı yoldaşı ${fighter2} geride kaldı! ${fighter1} iki rakibin ortasında tek başına kısılıp zor anlar yaşadı!`,
+        `[RİTİM UYUŞMAZLIĞI!] ${fighter1}'in başlattığı hızlı hücuma ${fighter2} yetişemedi; saflar arasında açılan boşluğu gören rakipler araya sızdı!`,
+        `[YALNIZ KALAN ÖNCÜ!] ${fighter1} çok hızlı daldığı için arkasındaki korumayı kaybetti; yoldaşı nefes nefese yetişmeye çalışırken ${fighter1} çifte baskı altında kaldı!`
       ]);
     } else if (discordType === DuoDiscordType.GREEDY_RIVALRY) {
       return kt.random([
-        `⚠️ [ŞAN HIRSI REKABETİ!] Hem ${fighter1} hem de ${fighter2} son vuruşu kendi namına yazma hırsıyla aynı anda atıldı; birbirlerinin vuruş çizgisini kapatıp rakibe kolay bir kaçış sundular!`,
-        `⚠️ [KİBİR SÜRTÜŞMESİ!] ${fighter1} 'Bu av benim!' dercesine yoldaşının önüne geçti; ${fighter2} hamlesini yarıda kesmek zorunda kalınca ikisi de açık hedef haline geldi!`,
-        '⚠️ [HEDEF KARGAŞASI!] İki kibirli dövüşçü aynı noktayı vurmak için çekişince kılıçları birbirine dolandı ve gardları düştü!'
+        `[ŞAN HIRSI REKABETİ!] Hem ${fighter1} hem de ${fighter2} son vuruşu kendi namına yazma hırsıyla aynı anda atıldı; birbirlerinin vuruş çizgisini kapatıp rakibe kolay bir kaçış sundular!`,
+        `[KİBİR SÜRTÜŞMESİ!] ${fighter1} 'Bu av benim!' dercesine yoldaşının önüne geçti; ${fighter2} hamlesini yarıda kesmek zorunda kalınca ikisi de açık hedef haline geldi!`,
+        '[HEDEF KARGAŞASI!] İki kibirli dövüşçü aynı noktayı vurmak için çekişince kılıçları birbirine dolandı ve gardları düştü!'
       ]);
     } else if (discordType === DuoDiscordType.CROWDED_CHAOS) {
       return kt.random([
-        `⚠️ [DAR ALAN MANEVRA KISITI!] Meydanın kısıtlı alanında ${fighter1}'in geniş kılıç savuruşu ${fighter2}'nin hareket kabiliyetini sıfırladı; ikisi de darbeyi tamamlayamadı!`,
-        '⚠️ [KUMDA TÖKEZLEME!] Dar geçitte birbirinin ayağına basan iki yoldaş kısa bir an sendeleyerek savunma dengesini yitirdi!'
+        `[DAR ALAN MANEVRA KISITI!] Meydanın kısıtlı alanında ${fighter1}'in geniş kılıç savuruşu ${fighter2}'nin hareket kabiliyetini sıfırladı; ikisi de darbeyi tamamlayamadı!`,
+        '[KUMDA TÖKEZLEME!] Dar geçitte birbirinin ayağına basan iki yoldaş kısa bir an sendeleyerek savunma dengesini yitirdi!'
       ]);
     } else if (discordType === DuoDiscordType.NONE) {
       return '';
@@ -206,22 +206,22 @@ export const DuoCombatNarratives = {
 
   generateTeammateFallen(fallenName, survivorName, opponentsRemaining) {
     const templates = [
-      `💀 [YOLDAŞ YERE YIĞILDI!] ${fallenName} aldığı ağır darbelerin ardından kumun üzerine kanlar içinde serildi ve bilincini kaybetti! ${survivorName} artık ${opponentsRemaining} rakibe karşı kum çukurunda TEK BAŞINA!`,
-      `💀 [İTTİFAK KIRILDI!] ${fallenName}'ın kalkanı elinden düştü, gözleri kararıp yere çöktü. ${survivorName} yoldaşının baygın bedenine bir an bakıp dişlerini sıktı; çember onun üzerine daralıyor!`,
-      `💀 [KAYIP VE ÖFKE!] ${fallenName} devrilirken arenadan uğultulu bir çığlık yükseldi. Sayıca azalan ${survivorName}, kan çanağına dönen gözleriyle etrafını saran ${opponentsRemaining} avcıya meydan okuyor!`,
-      `💀 [SON NEFESE KADAR TEK!] ${fallenName} kumların üzerine boylu boyunca uzandı. ${survivorName} derin bir nefes alarak sırtını arenanın taş duvarına yasladı: Artık merhamet yok, sadece hayatta kalma savaşı!`,
-      `💀 [YOLDAŞIN DÜŞÜŞÜ!] ${fallenName}'ın bilinci kapandı. Hasmın iki savaşçısı zafer naralarıyla ${survivorName}'ın üzerine doğru adımlarını hızlandırdı!`
+      `[YOLDAŞ YERE YIĞILDI!] ${fallenName} aldığı ağır darbelerin ardından kumun üzerine kanlar içinde serildi ve bilincini kaybetti! ${survivorName} artık ${opponentsRemaining} rakibe karşı kum çukurunda TEK BAŞINA!`,
+      `[İTTİFAK KIRILDI!] ${fallenName}'ın kalkanı elinden düştü, gözleri kararıp yere çöktü. ${survivorName} yoldaşının baygın bedenine bir an bakıp dişlerini sıktı; çember onun üzerine daralıyor!`,
+      `[KAYIP VE ÖFKE!] ${fallenName} devrilirken arenadan uğultulu bir çığlık yükseldi. Sayıca azalan ${survivorName}, kan çanağına dönen gözleriyle etrafını saran ${opponentsRemaining} avcıya meydan okuyor!`,
+      `[SON NEFESE KADAR TEK!] ${fallenName} kumların üzerine boylu boyunca uzandı. ${survivorName} derin bir nefes alarak sırtını arenanın taş duvarına yasladı: Artık merhamet yok, sadece hayatta kalma savaşı!`,
+      `[YOLDAŞIN DÜŞÜŞÜ!] ${fallenName}'ın bilinci kapandı. Hasmın iki savaşçısı zafer naralarıyla ${survivorName}'ın üzerine doğru adımlarını hızlandırdı!`
     ];
     return kt.random(templates);
   },
 
   generateLastStandTurn(survivorName, opponent1, opponent2) {
     const templates = [
-      `🔥 [1'E 2 KANLI DİRENİŞ!] Sayıca dezavantajda olan ${survivorName}, hem ${opponent1} hem de ${opponent2}'den gelen çifte darbeleri insanüstü bir refleks ve adrenalinle savuşturmaya çalışıyor!`,
-      `🔥 [KÖŞEYE KISILMIŞ ASLAN!] ${opponent1} önden baskı kurarken ${opponent2} arkadan boşluk arıyor; ${survivorName} can havliyle vahşi bir döner kesi savurarak ikisini de bir adım geri püskürttü!`,
-      `🔥 [NEFES NEFESE DÜELLO!] Dört bir yandan inen çelik sesleri arasında tek başına kalan ${survivorName}, her darbede kumları sıçratarak sonuna kadar direniyor!`,
-      `🔥 [ÇEMBERDE MÜCADELE!] İki kurt tek bir avın etrafında dönerken ${survivorName} gardını bir an bile düşürmeden iki cepheye birden kılıç sallıyor!`,
-      `🔥 [YALNIZ SAVAŞÇININ GAZABI!] Yoldaşının intikamı için gözü dönen ${survivorName}, iki rakibin arasına dalıp çifte savunma kalkanı oluşturdu!`
+      `[1'E 2 KANLI DİRENİŞ!] Sayıca dezavantajda olan ${survivorName}, hem ${opponent1} hem de ${opponent2}'den gelen çifte darbeleri insanüstü bir refleks ve adrenalinle savuşturmaya çalışıyor!`,
+      `[KÖŞEYE KISILMIŞ ASLAN!] ${opponent1} önden baskı kurarken ${opponent2} arkadan boşluk arıyor; ${survivorName} can havliyle vahşi bir döner kesi savurarak ikisini de bir adım geri püskürttü!`,
+      `[NEFES NEFESE DÜELLO!] Dört bir yandan inen çelik sesleri arasında tek başına kalan ${survivorName}, her darbede kumları sıçratarak sonuna kadar direniyor!`,
+      `[ÇEMBERDE MÜCADELE!] İki kurt tek bir avın etrafında dönerken ${survivorName} gardını bir an bile düşürmeden iki cepheye birden kılıç sallıyor!`,
+      `[YALNIZ SAVAŞÇININ GAZABI!] Yoldaşının intikamı için gözü dönen ${survivorName}, iki rakibin arasına dalıp çifte savunma kalkanı oluşturdu!`
     ];
     return kt.random(templates);
   },
@@ -229,23 +229,23 @@ export const DuoCombatNarratives = {
   generateConditionEffect(condition, beneficiary, victim) {
     if (condition.id === 'loose_sand') {
       return kt.random([
-        `⚡ [GEVŞEK KUM ETKİSİ!] Batak kum zemininde hafif adımlı ${beneficiary} su gibi kayarak hız avantajı sağlarken, ağır zırhlılar kuma saplanıp yavaşladı!`,
-        `⚡ [KUMDA ÇEVİKLİK!] ${beneficiary} kumun akışını adımlarına uydurarak çevik bir sıyrılış gerçekleştirdi; zemin hantal rakipleri yoruyor!`
+        `[GEVŞEK KUM ETKİSİ!] Batak kum zemininde hafif adımlı ${beneficiary} su gibi kayarak hız avantajı sağlarken, ağır zırhlılar kuma saplanıp yavaşladı!`,
+        `[KUMDA ÇEVİKLİK!] ${beneficiary} kumun akışını adımlarına uydurarak çevik bir sıyrılış gerçekleştirdi; zemin hantal rakipleri yoruyor!`
       ]);
     } else if (condition.id === 'narrow_pass') {
       return kt.random([
-        `🛡️ [DAR BOĞAZ DİRENCİ!] Granit blokların daralttığı geçitte ${beneficiary} kalkanını duvara dayayarak hasarı minimuma indirdi; kaçış alanı yok, saf zırh konuşuyor!`,
-        `🛡️ [AŞILMAZ GEÇİT!] Dar alanda geniş savuruşlar taşa çarparken ${beneficiary} dik duruşuyla geçidi kapattı!`
+        `[DAR BOĞAZ DİRENCİ!] Granit blokların daralttığı geçitte ${beneficiary} kalkanını duvara dayayarak hasarı minimuma indirdi; kaçış alanı yok, saf zırh konuşuyor!`,
+        `[AŞILMAZ GEÇİT!] Dar alanda geniş savuruşlar taşa çarparken ${beneficiary} dik duruşuyla geçidi kapattı!`
       ]);
     } else if (condition.id === 'wind_tempest') {
       return kt.random([
-        `🌪️ [KUZEY FIRTINASI MENFEZİ!] Sur menfezinden esen dondurucu rüzgar ${beneficiary}'nin yetenek odaklanmasını körükledi; yeteneklerin bekleme süresi hızlanıyor!`,
-        `🌪️ [GÖZ YAKAN TİPİ!] Soğuk rüzgar gözleri yakarken içgüdüleriyle dövüşen ${beneficiary} sanatsal bir hamle sergiledi!`
+        `[KUZEY FIRTINASI MENFEZİ!] Sur menfezinden esen dondurucu rüzgar ${beneficiary}'nin yetenek odaklanmasını körükledi; yeteneklerin bekleme süresi hızlanıyor!`,
+        `[GÖZ YAKAN TİPİ!] Soğuk rüzgar gözleri yakarken içgüdüleriyle dövüşen ${beneficiary} sanatsal bir hamle sergiledi!`
       ]);
     } else if (condition.id === 'blood_pit') {
       return kt.random([
-        `🩸 [KIZIL ÇAMUR VAHŞETİ!] Ayakların kaydığı kanlı çamurda ${beneficiary} vahşi bir hırsla kritik vuruş gücünü artırdı; darbeler kemik çatlatıyor!`,
-        '🩸 [KAN ÇUKURU KONDİSYONU!] Zemindeki kan kokusu arenadaki vahşeti körükledi, savrulan darbeler daha derin yaralar açıyor!'
+        `[KIZIL ÇAMUR VAHŞETİ!] Ayakların kaydığı kanlı çamurda ${beneficiary} vahşi bir hırsla kritik vuruş gücünü artırdı; darbeler kemik çatlatıyor!`,
+        '[KAN ÇUKURU KONDİSYONU!] Zemindeki kan kokusu arenadaki vahşeti körükledi, savrulan darbeler daha derin yaralar açıyor!'
       ]);
     } else {
       return '';
@@ -254,20 +254,20 @@ export const DuoCombatNarratives = {
 
   generateVictory(player, ally, condition) {
     const templates = [
-      `🏆 [2v2 İTTİFAK ZAFERİ!] Taş Hisar arenasında kum tozu yatışırken ayakta kalanlar ${player.name} ve yoldaşı ${ally.name} oldu! Tribünler iki gladyatörün kusursuz uyumunu alkışlarla kutluyor!`,
-      `🏆 [MEYDAN BİZİMDİR!] İki rakip de kumların üzerine serildi. ${player.name} ve ${ally.name} silahlarını havaya kaldırarak zafer naraları attı! Zemin kuralı: ${condition.name} aşıldı!`,
-      `🏆 [KUSURSUZ İTTİFAK ZAFERİ!] Ne dar zemin ne de çifte tehdit onları durdurabildi. ${player.name} ile ${ally.name} sırt sırta vererek arenanın çarkını lehlerine çevirdi!`,
-      `🏆 [KANLI KUMDA MUTLAK ZAFER!] Son rakip de nakavt oldu. Tellallar bağırıyor: 'Mavi Köşe galip geldi! ${player.name} ve ${ally.name} kura arenasını fethetti!'`
+      `[2v2 İTTİFAK ZAFERİ!] Taş Hisar arenasında kum tozu yatışırken ayakta kalanlar ${player.name} ve yoldaşı ${ally.name} oldu! Tribünler iki gladyatörün kusursuz uyumunu alkışlarla kutluyor!`,
+      `[MEYDAN BİZİMDİR!] İki rakip de kumların üzerine serildi. ${player.name} ve ${ally.name} silahlarını havaya kaldırarak zafer naraları attı! Zemin kuralı: ${condition.name} aşıldı!`,
+      `[KUSURSUZ İTTİFAK ZAFERİ!] Ne dar zemin ne de çifte tehdit onları durdurabildi. ${player.name} ile ${ally.name} sırt sırta vererek arenanın çarkını lehlerine çevirdi!`,
+      `[KANLI KUMDA MUTLAK ZAFER!] Son rakip de nakavt oldu. Tellallar bağırıyor: 'Mavi Köşe galip geldi! ${player.name} ve ${ally.name} kura arenasını fethetti!'`
     ];
     return kt.random(templates);
   },
 
   generateDefeat(player, ally, enemy1, enemy2) {
     const templates = [
-      `☠️ [2v2 İTTİFAK MAĞLUBİYETİ!] ${player.name} ve yoldaşı ${ally.name}, ${enemy1.name} ile ${enemy2.name}'nin amansız baskısı altında daha fazla dayanamayarak yere yığıldı.`,
-      '☠️ [KUMDA HÜZÜN!] İki yoldaş da son nefeslerine kadar omuz omuza direndi ancak Kırmızı Köşenin çifte hücumu maçı bitirdi.',
-      '☠️ [İTTİFAK DAĞILDI!] Koordinasyon eksikliği ve rakiplerin sert vuruşları Mavi Köşenin direncini kırdı. Hekimler sedyelerle kum çukuruna koşuyor.',
-      `☠️ [ÇARPININ TERS YÜZÜ!] ${enemy1.name} ve ${enemy2.name} arenanın ortasında zafer naraları atarken ${player.name} ve ${ally.name} kumların üzerinde yenilgiyle tanıştı.`
+      `[2v2 İTTİFAK MAĞLUBİYETİ!] ${player.name} ve yoldaşı ${ally.name}, ${enemy1.name} ile ${enemy2.name}'nin amansız baskısı altında daha fazla dayanamayarak yere yığıldı.`,
+      '[KUMDA HÜZÜN!] İki yoldaş da son nefeslerine kadar omuz omuza direndi ancak Kırmızı Köşenin çifte hücumu maçı bitirdi.',
+      '[İTTİFAK DAĞILDI!] Koordinasyon eksikliği ve rakiplerin sert vuruşları Mavi Köşenin direncini kırdı. Hekimler sedyelerle kum çukuruna koşuyor.',
+      `[ÇARPININ TERS YÜZÜ!] ${enemy1.name} ve ${enemy2.name} arenanın ortasında zafer naraları atarken ${player.name} ve ${ally.name} kumların üzerinde yenilgiyle tanıştı.`
     ];
     return kt.random(templates);
   },

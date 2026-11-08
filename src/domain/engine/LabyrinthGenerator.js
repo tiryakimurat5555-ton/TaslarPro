@@ -58,7 +58,7 @@ export const LabyrinthGenerator = {
       if (isFirst) {
         chamber = new LabyrinthChamber({
           chamberIndex: i,
-          title: `${biome.icon} Giriş Kapısı & Karşılama Dehlizi`,
+          title: `Giriş Kapısı & Karşılama Dehlizi`,
           description: `Ağır taş kapı arkandan kilitlendi. ${biome.visualAtmosphere}`,
           hazard: null,
           puzzle: null,
@@ -68,7 +68,7 @@ export const LabyrinthGenerator = {
       } else if (isLast) {
         chamber = new LabyrinthChamber({
           chamberIndex: i,
-          title: '🏆 Büyük Çıkış Kemeri & Kadim Mihrap',
+          title: 'Büyük Çıkış Kemeri & Kadim Mihrap',
           description: 'Labirentin kalbindeki devasa kapı ve çıkışı koruyan son sınav.',
           hazard: kt.randomOrNull(activeHazards, random),
           puzzle: null,
@@ -80,7 +80,7 @@ export const LabyrinthGenerator = {
         // Sandık & Ganimet Odası (İhanet ve Çıkar Sınavı!)
         chamber = new LabyrinthChamber({
           chamberIndex: i,
-          title: '💰 Mühürlü Hazine Mahzeni',
+          title: 'Mühürlü Hazine Mahzeni',
           description: 'Ortada parıldayan demir perçinli bir sandık ve duvarlardan yankılanan nefes sesleri.',
           hazard: null,
           puzzle: kt.firstOrNull(activePuzzles),
@@ -92,7 +92,7 @@ export const LabyrinthGenerator = {
         const hazard = kt.randomOrNull(activeHazards, random);
         chamber = new LabyrinthChamber({
           chamberIndex: i,
-          title: `${hazard?.category?.icon ?? '⚠️'} Tuzaklı Geçit: ${hazard?.name ?? 'Karanlık Koridor'}`,
+          title: `Tuzaklı Geçit: ${hazard?.name ?? 'Karanlık Koridor'}`,
           description: hazard?.description ?? 'Dikkatle adım atılması gereken dar bir dehliz.',
           hazard: hazard,
           puzzle: null,
@@ -107,7 +107,7 @@ export const LabyrinthGenerator = {
         );
         chamber = new LabyrinthChamber({
           chamberIndex: i,
-          title: puzzle != null ? `🧩 ${puzzle.title}` : '⚔️ Dehliz Kesişimi',
+          title: puzzle != null ? `${puzzle.title}` : 'Dehliz Kesişimi',
           description: puzzle?.description ?? 'Uzaklardan adım seslerinin geldiği geniş bir oda.',
           hazard: null,
           puzzle: puzzle,
@@ -132,7 +132,7 @@ export const LabyrinthGenerator = {
     return new ActiveLabyrinthRun({
       runId: `run_${biome.name.toLowerCase()}_${seed}`,
       biome: biome,
-      themeTitle: `${biome.icon} ${biome.title} Labirenti`,
+      themeTitle: `${biome.title} Labirenti`,
       introductoryNarrative: `Zindan muhafızları seni ${biome.title} seviyesine indirdi. ${biome.shortDescription} ${biome.visualAtmosphere}`,
       activeHazards: activeHazards,
       activePuzzles: activePuzzles,

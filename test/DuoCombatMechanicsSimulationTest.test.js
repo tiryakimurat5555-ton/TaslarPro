@@ -34,7 +34,7 @@ test('testSynergyEvaluation', () => {
     weaponName: 'Kule Kalkanı & Mızrak',
     weaponType: 'kalkan',
     archetype: PersonalityArchetype.GURURLU,
-    skills: [gs('sk_def', 'Kalkan Duvarı', '🛡️', SkillType.DEFENSE, 1, 3, 'Savunma', '+5 Zırh')],
+    skills: [gs('sk_def', 'Kalkan Duvarı', '', SkillType.DEFENSE, 1, 3, 'Savunma', '+5 Zırh')],
   });
 
   const striker = new DuoCombatEngine.DuoFighterState({
@@ -174,7 +174,7 @@ test('testSimulateDozensOf2v2Battles', () => {
 });
 
 test('testSynergyComboModularVarietyAndEvolution', () => {
-  const skill = gs('sk_fire', 'Ateş Fırtınası', '🔥', SkillType.ATTACK, 1, 3, 'Alev patlaması', '+%40 Hasar');
+  const skill = gs('sk_fire', 'Ateş Fırtınası', '', SkillType.ATTACK, 1, 3, 'Alev patlaması', '+%40 Hasar');
 
   const trigger1 = DuoCombatNarratives.generateSynergyCombo(DuoSynergyType.TANK_AND_STRIKER, 'Ghorak', 'Gölge Bıçak', 'Morvath', 25, 1, skill);
   const trigger2 = DuoCombatNarratives.generateSynergyCombo(DuoSynergyType.TANK_AND_STRIKER, 'Ghorak', 'Gölge Bıçak', 'Morvath', 25, 2, skill);
@@ -215,7 +215,7 @@ test('testPincerAndInterceptRepetitionEvolution', () => {
 });
 
 test('testSingleSkillExecutionVariety', () => {
-  const skill = gs('sk_crush', 'Ezici Balyoz', '💥', SkillType.ATTACK, 1, 3, 'Ezici vuruş', '+%35 Hasar');
+  const skill = gs('sk_crush', 'Ezici Balyoz', '', SkillType.ATTACK, 1, 3, 'Ezici vuruş', '+%35 Hasar');
   const narrative1 = DuoCombatNarratives.generateSkillExecutionNarrative('Morvath', 'Oyuncu', 'Kargı', skill, 45, true, 120, 200, 1);
   const narrative2 = DuoCombatNarratives.generateSkillExecutionNarrative('Morvath', 'Oyuncu', 'Kargı', skill, 45, true, 75, 200, 2);
 

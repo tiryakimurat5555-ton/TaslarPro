@@ -11,7 +11,7 @@ function ortakDogrula(eq) {
   expect(eq.specialTrait).not.toBeUndefined();
   expect(kt.isNotBlank(eq.specialTrait.name)).toBe(true); // nitelik adı dolu olmalıdır
   expect(kt.isNotBlank(eq.specialTrait.description)).toBe(true); // nitelik açıklaması dolu olmalıdır
-  expect(kt.isNotBlank(eq.specialTrait.icon)).toBe(true); // nitelik ikonu dolu olmalıdır
+  // (Emojiler 8 Kasım'da kaldırıldı; ikon alanı artık boş.)
   expect(eq.maxSockets >= 1 && eq.maxSockets <= 3).toBe(true); // soket sayısı 1-3 olmalıdır
   expect(eq.unlockedSockets >= 1).toBe(true); // açık soket sayısı >= 1 olmalıdır
 }

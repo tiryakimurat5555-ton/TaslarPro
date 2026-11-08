@@ -32,7 +32,7 @@ test('testTashisarArmorerEquipment100CompleteVerification', () => {
     expect(eq.specialTrait).not.toBeUndefined();
     expect(kt.isNotBlank(eq.specialTrait.name)).toBe(true); // Özel nitelik adı dolu olmalıdır
     expect(kt.isNotBlank(eq.specialTrait.description)).toBe(true); // Özel nitelik açıklaması dolu olmalıdır
-    expect(kt.isNotBlank(eq.specialTrait.icon)).toBe(true); // Özel nitelik ikonu dolu olmalıdır
+    // (Emojiler 8 Kasım'da kaldırıldı; ikon alanı artık boş.)
     expect(eq.maxSockets >= 1 && eq.maxSockets <= 3).toBe(true); // Ağır zırh soket sayısı 1-3 olmalıdır
     expect(eq.unlockedSockets >= 1).toBe(true); // Ağır zırh açık soket sayısı >= 1 olmalıdır
   });
@@ -47,7 +47,7 @@ test('testTashisarArmorerEquipment100CompleteVerification', () => {
     expect(eq.specialTrait).not.toBeUndefined();
     expect(kt.isNotBlank(eq.specialTrait.name)).toBe(true); // Özel nitelik adı dolu olmalıdır
     expect(kt.isNotBlank(eq.specialTrait.description)).toBe(true); // Özel nitelik açıklaması dolu olmalıdır
-    expect(kt.isNotBlank(eq.specialTrait.icon)).toBe(true); // Özel nitelik ikonu dolu olmalıdır
+    // (Emojiler 8 Kasım'da kaldırıldı; ikon alanı artık boş.)
     expect(eq.maxSockets >= 1 && eq.maxSockets <= 3).toBe(true); // Çizme soket sayısı 1-3 olmalıdır
     expect(eq.unlockedSockets >= 1).toBe(true); // Çizme açık soket sayısı >= 1 olmalıdır
   });

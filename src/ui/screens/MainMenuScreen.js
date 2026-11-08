@@ -127,7 +127,7 @@ export function MainMenuScreen({ viewModel, onStartNewGame, onContinueGame, onOp
           containerColor={DarkSurface}
           title={
             <T heading color={TextGold} weight="bold" size={18}>
-              ⚠️ Kayıtlı Oyun Bulunuyor
+              Kayıtlı Oyun Bulunuyor
             </T>
           }
           text={

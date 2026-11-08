@@ -232,7 +232,7 @@ function PaperdollCharacterView({ player, onSlotClick, onUnequipSlot, onChangeSl
                 <Column align="center" style={{ alignSelf: 'stretch' }} label={`Karakter: ${player.name}, ${player.title}, Seviye ${player.level}`}>
                   {/* Karakter İkonu / Silueti */}
                   <Surface radius={27} color={alpha(AmberGoldDark, 0.2)} borderColor={AmberGold} borderWidth={2} align="center" justify="center" style={{ width: 54, height: 54 }}>
-                    <T size={26}>🤺</T>
+                    
                   </Surface>
 
                   <Spacer h={6} />
@@ -286,11 +286,11 @@ function PaperdollCharacterView({ player, onSlotClick, onUnequipSlot, onChangeSl
                     <Spacer h={6} />
                     <Column radius={4} color={DarkSurfaceCard} borderColor={alpha(AmberGold, 0.5)} borderWidth={1} pad={6} style={{ alignSelf: 'stretch' }}>
                       <T size={10} weight="bold" color={AmberGold}>
-                        ⚡ Aktif Merhem & İksirler:
+                        Aktif Merhem & İksirler:
                       </T>
                       {player.activeBuffs.map((buff, i) => (
                         <T key={i} size={9} color={TextLight} lines={1} label={`${buff.name}, ${buff.remainingBattles} dövüş kaldı`}>
-                          {`${buff.icon} ${buff.name} (${buff.remainingBattles} dövüş)`}
+                          {`${buff.name} (${buff.remainingBattles} dövüş)`}
                         </T>
                       ))}
                     </Column>
@@ -302,10 +302,10 @@ function PaperdollCharacterView({ player, onSlotClick, onUnequipSlot, onChangeSl
                 {/* Altın & Şöhret Mini Rozetler */}
                 <Row justify="between" style={{ alignSelf: 'stretch' }} label={`Altın: ${player.gold}, Şöhret: ${player.globalFame}`}>
                   <T size={11} weight="bold" color={AmberGold}>
-                    {`🪙 ${player.gold}`}
+                    {`${player.gold} Altın`}
                   </T>
                   <T size={11} weight="bold" color={FamePurple}>
-                    {`👑 ${player.globalFame}`}
+                    {`${player.globalFame} Şöhret`}
                   </T>
                 </Row>
               </Column>
@@ -325,9 +325,7 @@ function PaperdollCharacterView({ player, onSlotClick, onUnequipSlot, onChangeSl
                 style={{ width: 62, height: 62 }}
                 label="Kilitli Yan Yuva"
               >
-                <T size={16} color={alpha(TextMuted, 0.4)}>
-                  🔒
-                </T>
+                
               </Surface>
             </Column>
           </Row>
@@ -643,7 +641,7 @@ function ItemDetailDialog({ item, isEquipped, playerLevel, onDismiss, onEquip, o
             <Surface radius={6} color={color(0xff2b1b36)} borderColor={FamePurple} borderWidth={1} style={{ alignSelf: 'stretch' }}>
               <Column pad={8}>
                 <T size={12} weight="bold" color={FamePurple}>
-                  {`${item.specialTrait.icon} 2. Özel Nitelik: ${item.specialTrait.name}`}
+                  {`2. Özel Nitelik: ${item.specialTrait.name}`}
                 </T>
                 <Spacer h={2} />
                 <T size={11} color={alpha(TextLight, 0.95)}>
@@ -658,7 +656,7 @@ function ItemDetailDialog({ item, isEquipped, playerLevel, onDismiss, onEquip, o
             <Surface radius={6} color={DarkSurfaceCard} borderColor={alpha(AmberGold, 0.5)} borderWidth={1} style={{ alignSelf: 'stretch' }}>
               <Column pad={8}>
                 <T size={12} weight="bold" color={AmberGold} label={`Mücevher Yuvaları, ${item.sockets.length} / ${item.maxSockets} dolu`}>
-                  {`💎 Mücevher Yuvaları (${item.sockets.length}/${item.maxSockets}):`}
+                  {`Mücevher Yuvaları (${item.sockets.length}/${item.maxSockets}):`}
                 </T>
                 <Spacer h={4} />
                 {item.sockets.length === 0 ? (
@@ -689,13 +687,13 @@ function ItemDetailDialog({ item, isEquipped, playerLevel, onDismiss, onEquip, o
               {`Yuva: ${item.slot.displayName}`}
             </T>
             <T size={11} color={AmberGold} label={`Değer: ${item.valueInGold} Altın, Satış: ${item.sellPrice} Altın`}>
-              {`Değer: 🪙 ${item.valueInGold} (Satış: 🪙 ${item.sellPrice})`}
+              {`Değer: ${item.valueInGold} Altın (Satış: ${item.sellPrice} Altın)`}
             </T>
           </Row>
 
           {!canEquip && !isEquipped ? (
             <T size={12} color={HealthRed} weight="semibold">
-              {`⚠️ Bu eşyayı kuşanabilmek için Seviye ${item.requiredLevel} olmalısınız!`}
+              {`Bu eşyayı kuşanabilmek için Seviye ${item.requiredLevel} olmalısınız!`}
             </T>
           ) : null}
         </Column>
@@ -714,7 +712,7 @@ function ItemDetailDialog({ item, isEquipped, playerLevel, onDismiss, onEquip, o
           <Row gap={6} wrap>
             {onSell != null ? (
               <OutlinedBtn onPress={onSell} color={AmberGold} label={`Sat, artı ${item.sellPrice} Altın`}>
-                {`Sat (+${item.sellPrice} 🪙)`}
+                {`Sat (+${item.sellPrice} Altın)`}
               </OutlinedBtn>
             ) : null}
             <Btn onPress={onEquip} disabled={!canEquip} color={AmberGold} contentColor={DarkBg} label={canEquip ? `${item.name} Kuşan` : `Kuşan, Seviye ${item.requiredLevel} gerekli`}>
@@ -744,7 +742,7 @@ function SlotQuickEquipDialog({ slot, matchingItems, playerLevel, onDismiss, onE
       containerColor={DarkSurface}
       title={
         <Row heading label={`${slot.displayName} Kuşan`}>
-          <T size={20}>{`${slot.icon} `}</T>
+          <T size={20}>{``}</T>
           <T size={17} weight="bold" color={TextGold} style={{ flexShrink: 1 }}>
             {`${slot.displayName} Kuşan`}
           </T>
@@ -781,7 +779,7 @@ function SlotQuickEquipDialog({ slot, matchingItems, playerLevel, onDismiss, onE
                           {item.name}
                         </T>
                         <T size={10} color={TextMuted}>
-                          {`${item.categoryIcon} ${item.categoryDisplayName} • Sv. ${item.requiredLevel}`}
+                          {`${item.categoryDisplayName} • Sv. ${item.requiredLevel}`}
                         </T>
                         <T size={11} color={AmberGold}>
                           {formatStats(item.stats)}
@@ -789,7 +787,7 @@ function SlotQuickEquipDialog({ slot, matchingItems, playerLevel, onDismiss, onE
                       </Column>
                       <Row gap={4}>
                         <IconBtn onPress={() => onInspect(item)} label={`${item.name} İncele`}>
-                          <T size={16}>🔍</T>
+                          
                         </IconBtn>
                         <Btn
                           onPress={() => onEquip(item)}
@@ -835,7 +833,7 @@ function ConsumableDetailDialog({ item, player, onDismiss, onUse }) {
       containerColor={DarkSurface}
       title={
         <Row heading label={`${item.name}, ${item.count} adet`}>
-          <T size={20}>{`${item.categoryIcon} `}</T>
+          <T size={20}>{``}</T>
           <T size={17} weight="bold" color={HealthGreen} style={{ flexShrink: 1 }}>
             {`${item.name} (x${item.count})`}
           </T>
@@ -864,7 +862,7 @@ function ConsumableDetailDialog({ item, player, onDismiss, onUse }) {
           {item.healAmount > 0 ? (
             <Surface radius={4} color={alpha(HealthGreen, 0.2)} borderColor={HealthGreen} borderWidth={1} style={{ alignSelf: 'flex-start' }}>
               <T size={12} weight="bold" color={HealthGreen} style={{ paddingHorizontal: 8, paddingVertical: 4 }}>
-                {`❤️ +${item.healAmount} Can Sağaltır`}
+                {`+${item.healAmount} Can Sağaltır`}
               </T>
             </Surface>
           ) : null}
@@ -873,7 +871,7 @@ function ConsumableDetailDialog({ item, player, onDismiss, onUse }) {
             <Surface radius={6} color={alpha(AmberGold, 0.15)} borderColor={AmberGold} borderWidth={1} style={{ alignSelf: 'stretch' }}>
               <Column pad={8}>
                 <T size={12} weight="bold" color={AmberGold}>
-                  {`${item.buffEffect.icon} ${item.buffEffect.name} (Süre: ${item.buffEffect.remainingBattles} Dövüş)`}
+                  {`${item.buffEffect.name} (Süre: ${item.buffEffect.remainingBattles} Dövüş)`}
                 </T>
                 <Spacer h={2} />
                 <T size={11} color={alpha(TextLight, 0.9)}>
@@ -969,9 +967,7 @@ export function SkillOrbsView({ player, viewModel }) {
           </>
         ) : (
           <>
-            <T size={16} color={TextMuted}>
-              ➕
-            </T>
+            
             <T size={9} color={TextMuted}>
               Boş Yuva
             </T>
@@ -1006,7 +1002,7 @@ export function SkillOrbsView({ player, viewModel }) {
             label={isEquipped ? 'Yuvadan Çıkar, Yedeğe Al' : 'Savaş Yuvasına Yerleştir'}
           >
             <T weight="bold" color={isEquipped ? Color.White : DarkBg}>
-              {isEquipped ? '✕ Yuvadan Çıkar (Yedeğe Al)' : '➕ Savaş Yuvasına Yerleştir'}
+              {isEquipped ? '✕ Yuvadan Çıkar (Yedeğe Al)' : 'Savaş Yuvasına Yerleştir'}
             </T>
           </Btn>
         }
@@ -1024,11 +1020,11 @@ export function SkillOrbsView({ player, viewModel }) {
               </T>
               {isEquipped ? (
                 <T size={11} weight="semibold" color={HealthGreen}>
-                  {`⚔️ Savaş Yuvası ${slotNumber}'de Kuşanıldı`}
+                  {`Savaş Yuvası ${slotNumber}'de Kuşanıldı`}
                 </T>
               ) : (
                 <T size={11} color={TextMuted}>
-                  💤 Yedek Kulübesinde
+                  Yedek Kulübesinde
                 </T>
               )}
             </Column>
@@ -1042,14 +1038,14 @@ export function SkillOrbsView({ player, viewModel }) {
             <Surface radius={8} color={DarkSurfaceCard} borderColor={alpha(AmberGoldDark, 0.5)} borderWidth={1} style={{ alignSelf: 'stretch' }}>
               <Column pad={10}>
                 <T size={11} weight="bold" color={TextGold}>
-                  ⚡ Tetiklenme Koşulu:
+                  Tetiklenme Koşulu:
                 </T>
                 <T size={11} color={alpha(TextLight, 0.9)}>
                   {skill.triggerConditionText}
                 </T>
                 <Spacer h={6} />
                 <T size={11} weight="bold" color={HealthGreen}>
-                  ✨ Muharebe Etkisi:
+                  Muharebe Etkisi:
                 </T>
                 <T size={11} weight="semibold" color={Color.White}>
                   {skill.effectSummary}
@@ -1069,9 +1065,7 @@ export function SkillOrbsView({ player, viewModel }) {
         <Surface radius={12} color={DarkSurfaceCard} borderColor={alpha(AmberGold, 0.7)} borderWidth={1.5} style={{ alignSelf: 'stretch' }}>
           <Column pad={14}>
             <Row gap={10}>
-              <T size={26} hidden>
-                🔮
-              </T>
+              
               <Column style={{ flex: 1 }}>
                 <T heading size={16} weight="bold" color={AmberGold}>
                   Dövüş Yetenekleri & 4 Savaş Yuvası
@@ -1091,7 +1085,7 @@ export function SkillOrbsView({ player, viewModel }) {
 
             {/* 4 AKTİF SAVAŞ YUVASI (1, 2, 3, 4) */}
             <T heading size={12} weight="bold" color={AmberGoldDark}>
-              {`⚔️ Aktif Savaş Yuvaları (${equippedIds.length} / 4 Dolu):`}
+              {`Aktif Savaş Yuvaları (${equippedIds.length} / 4 Dolu):`}
             </T>
             <Spacer h={6} />
 
@@ -1103,7 +1097,7 @@ export function SkillOrbsView({ player, viewModel }) {
 
         {/* 2. Yetenek Izgarası (3 Kolonlu Kompakt Menü) */}
         <T heading size={13} weight="bold" color={AmberGold} style={{ paddingTop: 4 }}>
-          {`📚 Dövüş Sanatları Kitaplığı (${kumeBoyu(player.unlockedSkillIds)} / ${allSkills.length} Açık):`}
+          {`Dövüş Sanatları Kitaplığı (${kumeBoyu(player.unlockedSkillIds)} / ${allSkills.length} Açık):`}
         </T>
 
         {chunkedSkills.map((rowSkills, chunkIdx) => (
@@ -1142,19 +1136,19 @@ export function SkillOrbsView({ player, viewModel }) {
                   {isEquipped ? (
                     <Surface radius={4} color={alpha(HealthGreen, 0.25)} borderColor={HealthGreen} borderWidth={1}>
                       <T size={8} weight="bold" color={HealthGreen} style={{ paddingHorizontal: 4, paddingVertical: 1 }}>
-                        {`⚔️ YUVA ${slotNumber}`}
+                        {`YUVA ${slotNumber}`}
                       </T>
                     </Surface>
                   ) : isUnlocked ? (
                     <Surface radius={4} color={alpha(DarkBg, 0.6)} borderColor={alpha(TextMuted, 0.5)} borderWidth={1}>
                       <T size={8} weight="semibold" color={TextMuted} style={{ paddingHorizontal: 4, paddingVertical: 1 }}>
-                        💤 YEDEK
+                        YEDEK
                       </T>
                     </Surface>
                   ) : (
                     <Surface radius={4} color={alpha(Color.Black, 0.4)}>
                       <T size={8} weight="normal" color={Color.Gray} style={{ paddingHorizontal: 4, paddingVertical: 1 }}>
-                        🔒 KİLİTLİ
+                        KİLİTLİ
                       </T>
                     </Surface>
                   )}
@@ -1169,7 +1163,7 @@ export function SkillOrbsView({ player, viewModel }) {
                     borderWidth={1.5}
                     style={{ width: 38, height: 38 }}
                   >
-                    <T size={18}>{isUnlocked ? skill.icon : '🔒'}</T>
+                    <T size={18}>{isUnlocked ? skill.icon : ''}</T>
                   </Box>
 
                   {/* İsim & İpucu */}

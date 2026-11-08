@@ -65,15 +65,15 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
 
         const playerSkills = kt.mapNotNull(player.equippedSkillIds.slice(0, 4), (skillId) => {
             switch (skillId) {
-                case 'skill_crushing_impact': return gs('skill_player_crushing', 'Ezici Balyoz', '💥', SkillType.ATTACK, 1, 3, 'Tüm vücut ağırlığını tek noktaya odaklayarak savrulan ezici çekiç.', '+%35 Hasar ve Sersemletme')
-                case 'skill_iron_will': return gs('skill_player_iron_will', 'Çelik İrade', '🛡️', SkillType.DEFENSE, 1, 4, 'Acıyı zırha çevirip darbeleri soğuran kadim silahşör iradesi.', '+6 Geçici Zırh ve Hasar Kırma')
-                case 'skill_counter_flurry': return gs('skill_player_counter', 'Akrobatik Karşı Hamle', '⚡', SkillType.TACTICAL, 1, 3, 'Düşman silahından sıyrılıp açılan boşluğa saplanan yıldırım darbesi.', '+%40 Hasarlı Karşı Hamle')
-                case 'skill_east_dragon': return gs('skill_east_dragon', 'Ejder Nefesi Hamlesi', '🐉', SkillType.ATTACK, 1, 3, 'Doğu mabetlerinden kalma kadim odaklanma; silahın ucunu kor gibi ısıtıp savunmayı eritir.', '+%40 Hasar ve Gard Kırma')
-                case 'skill_east_crane': return gs('skill_east_crane', 'Turna Zarafeti', '🕊️', SkillType.TACTICAL, 1, 3, 'Rüzgarın akışına uyarak rakibin vuruş çizgisinden tüy gibi süzülme tekniği.', '+%20 Kaçınma ve Anında Karşı Açık')
-                case 'skill_east_storm': return gs('skill_east_storm', 'Fırtına Kesisi', '🌪️', SkillType.ATTACK, 1, 2, 'Göz açıp kapayıncaya dek art arda indirilen seri ve kesici rüzgar darbeleri.', '+%30 Seri Hasar ve Kan Kaybı')
-                case 'skill_east_night': return gs('skill_east_night', 'Gölge Adımı', '🌑', SkillType.TACTICAL, 1, 4, 'Rakibin göz kırpma anında gölgelere karışarak kör noktasına sızma sanatı.', '+%50 Kritik Vuruş ve Sersemletme')
-                case 'skill_east_tiger': return gs('skill_east_tiger', 'Kaplan Pençesi', '🐅', SkillType.ATTACK, 1, 3, 'Vahşi bir içgüdüyle düşmanın etini parçalayan amansız pençe savuruşu.', '+%35 Hasar ve Ağır Kanama')
-                case 'skill_east_mountain': return gs('skill_east_mountain', 'Kadim Dağ Duruşu', '🏔️', SkillType.DEFENSE, 1, 4, 'Köklerini toprağın derinliklerine salmış bir dağ gibi sarsılmaz direnç.', '+8 Geçici Zırh ve Hasar Kırma')
+                case 'skill_crushing_impact': return gs('skill_player_crushing', 'Ezici Balyoz', '', SkillType.ATTACK, 1, 3, 'Tüm vücut ağırlığını tek noktaya odaklayarak savrulan ezici çekiç.', '+%35 Hasar ve Sersemletme')
+                case 'skill_iron_will': return gs('skill_player_iron_will', 'Çelik İrade', '', SkillType.DEFENSE, 1, 4, 'Acıyı zırha çevirip darbeleri soğuran kadim silahşör iradesi.', '+6 Geçici Zırh ve Hasar Kırma')
+                case 'skill_counter_flurry': return gs('skill_player_counter', 'Akrobatik Karşı Hamle', '', SkillType.TACTICAL, 1, 3, 'Düşman silahından sıyrılıp açılan boşluğa saplanan yıldırım darbesi.', '+%40 Hasarlı Karşı Hamle')
+                case 'skill_east_dragon': return gs('skill_east_dragon', 'Ejder Nefesi Hamlesi', '', SkillType.ATTACK, 1, 3, 'Doğu mabetlerinden kalma kadim odaklanma; silahın ucunu kor gibi ısıtıp savunmayı eritir.', '+%40 Hasar ve Gard Kırma')
+                case 'skill_east_crane': return gs('skill_east_crane', 'Turna Zarafeti', '', SkillType.TACTICAL, 1, 3, 'Rüzgarın akışına uyarak rakibin vuruş çizgisinden tüy gibi süzülme tekniği.', '+%20 Kaçınma ve Anında Karşı Açık')
+                case 'skill_east_storm': return gs('skill_east_storm', 'Fırtına Kesisi', '', SkillType.ATTACK, 1, 2, 'Göz açıp kapayıncaya dek art arda indirilen seri ve kesici rüzgar darbeleri.', '+%30 Seri Hasar ve Kan Kaybı')
+                case 'skill_east_night': return gs('skill_east_night', 'Gölge Adımı', '', SkillType.TACTICAL, 1, 4, 'Rakibin göz kırpma anında gölgelere karışarak kör noktasına sızma sanatı.', '+%50 Kritik Vuruş ve Sersemletme')
+                case 'skill_east_tiger': return gs('skill_east_tiger', 'Kaplan Pençesi', '', SkillType.ATTACK, 1, 3, 'Vahşi bir içgüdüyle düşmanın etini parçalayan amansız pençe savuruşu.', '+%35 Hasar ve Ağır Kanama')
+                case 'skill_east_mountain': return gs('skill_east_mountain', 'Kadim Dağ Duruşu', '', SkillType.DEFENSE, 1, 4, 'Köklerini toprağın derinliklerine salmış bir dağ gibi sarsılmaz direnç.', '+8 Geçici Zırh ve Hasar Kırma')
                 default: return null
             }
         })
@@ -89,7 +89,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                 logs.push(
                     new CombatLog({
                         round: round,
-                        narrativeText: `🌿 [YAŞAM CANLILIĞI!] Büyülü zırh ve mühürler ${player.name}'in yaralarını tazeledi (+${pRegen} Can)!`,
+                        narrativeText: `[YAŞAM CANLILIĞI!] Büyülü zırh ve mühürler ${player.name}'in yaralarını tazeledi (+${pRegen} Can)!`,
                         attackerName: player.name,
                         defenderName: enemy.name,
                         event: CombatEvent.HIT,
@@ -106,7 +106,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                 logs.push(
                     new CombatLog({
                         round: round,
-                        narrativeText: `🌿 [YAŞAM CANLILIĞI!] Büyülü zırh ve rünler ${enemy.name}'in yaralarını tazeledi (+${eRegen} Can)!`,
+                        narrativeText: `[YAŞAM CANLILIĞI!] Büyülü zırh ve rünler ${enemy.name}'in yaralarını tazeledi (+${eRegen} Can)!`,
                         attackerName: enemy.name,
                         defenderName: player.name,
                         event: CombatEvent.HIT,
@@ -126,7 +126,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                 logs.push(
                     new CombatLog({
                         round: round,
-                        narrativeText: `🩸 [KAN KAYBI!] ${player.name} derin yarasından sızan kan yüzünden ${bleedDmg} can kaybetti!`,
+                        narrativeText: `[KAN KAYBI!] ${player.name} derin yarasından sızan kan yüzünden ${bleedDmg} can kaybetti!`,
                         attackerName: enemy.name,
                         defenderName: player.name,
                         event: CombatEvent.HIT,
@@ -144,7 +144,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                 logs.push(
                     new CombatLog({
                         round: round,
-                        narrativeText: `🩸 [KAN KAYBI!] ${enemy.name} derin yarasından sızan kan yüzünden ${bleedDmg} can kaybetti!`,
+                        narrativeText: `[KAN KAYBI!] ${enemy.name} derin yarasından sızan kan yüzünden ${bleedDmg} can kaybetti!`,
                         attackerName: player.name,
                         defenderName: enemy.name,
                         event: CombatEvent.HIT,
@@ -177,7 +177,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                     logs.push(
                         new CombatLog({
                             round: round,
-                            narrativeText: `💫 ${player.name} sersemliğin etkisiyle afalladı, bu tur karşı hamle yapamadı!`,
+                            narrativeText: `${player.name} sersemliğin etkisiyle afalladı, bu tur karşı hamle yapamadı!`,
                             attackerName: player.name,
                             defenderName: enemy.name,
                             event: CombatEvent.HIT,
@@ -235,7 +235,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                         logs.push(
                             new CombatLog({
                                 round: round,
-                                narrativeText: `🔥 [KADİM DİRİLİŞ!] ${enemy.name} kadim zırhının anka alevleriyle ölümden uyandı! (+${reviveHp} Can)`,
+                                narrativeText: `[KADİM DİRİLİŞ!] ${enemy.name} kadim zırhının anka alevleriyle ölümden uyandı! (+${reviveHp} Can)`,
                                 attackerName: enemy.name,
                                 defenderName: player.name,
                                 event: CombatEvent.HIT,
@@ -254,7 +254,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                         logs.push(
                             new CombatLog({
                                 round: round,
-                                narrativeText: `🔥 [KADİM DİRİLİŞ!] ${player.name} kaderin anka alevleriyle ölümün eşiğinden döndü ve ayağa fırladı! (+${reviveHp} Can)`,
+                                narrativeText: `[KADİM DİRİLİŞ!] ${player.name} kaderin anka alevleriyle ölümün eşiğinden döndü ve ayağa fırladı! (+${reviveHp} Can)`,
                                 attackerName: player.name,
                                 defenderName: enemy.name,
                                 event: CombatEvent.HIT,
@@ -278,7 +278,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                     logs.push(
                         new CombatLog({
                             round: round,
-                            narrativeText: `💫 ${enemy.name} aldığı ezici darbenin sersemliğiyle sarsıldı, karşı hamle yapamadı!`,
+                            narrativeText: `${enemy.name} aldığı ezici darbenin sersemliğiyle sarsıldı, karşı hamle yapamadı!`,
                             attackerName: enemy.name,
                             defenderName: player.name,
                             event: CombatEvent.HIT,
@@ -336,7 +336,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                         logs.push(
                             new CombatLog({
                                 round: round,
-                                narrativeText: `🔥 [KADİM DİRİLİŞ!] ${player.name} kaderin anka alevleriyle ölümün eşiğinden döndü ve ayağa fırladı! (+${reviveHp} Can)`,
+                                narrativeText: `[KADİM DİRİLİŞ!] ${player.name} kaderin anka alevleriyle ölümün eşiğinden döndü ve ayağa fırladı! (+${reviveHp} Can)`,
                                 attackerName: player.name,
                                 defenderName: enemy.name,
                                 event: CombatEvent.HIT,
@@ -355,7 +355,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                         logs.push(
                             new CombatLog({
                                 round: round,
-                                narrativeText: `🔥 [KADİM DİRİLİŞ!] ${enemy.name} kadim zırhının anka alevleriyle ölümden uyandı! (+${reviveHp} Can)`,
+                                narrativeText: `[KADİM DİRİLİŞ!] ${enemy.name} kadim zırhının anka alevleriyle ölümden uyandı! (+${reviveHp} Can)`,
                                 attackerName: enemy.name,
                                 defenderName: player.name,
                                 event: CombatEvent.HIT,
@@ -386,7 +386,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                             defenderSpecialTraits: enemySpecialTraits,
                             playerBuffs: playerBuffs
                         })
-                        logs.push(flurryOutcome.log.copy({narrativeText: `⚡ [AKROBATİK KARŞI VURUŞ!] Sıyrılmanın yarattığı boşluğu affetmedin ve anında yıldırım gibi karşı hücuma geçtin!\n${flurryOutcome.log.narrativeText}` }))
+                        logs.push(flurryOutcome.log.copy({narrativeText: `[AKROBATİK KARŞI VURUŞ!] Sıyrılmanın yarattığı boşluğu affetmedin ve anında yıldırım gibi karşı hücuma geçtin!\n${flurryOutcome.log.narrativeText}` }))
                         eCurrentHp = flurryOutcome.remainingHp
                         totalPlayerDamage += flurryOutcome.damageDealt
                         if (flurryOutcome.appliedBleed) enemyBleedTurns = 3
@@ -398,7 +398,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                             logs.push(
                                 new CombatLog({
                                     round: round,
-                                    narrativeText: `🔥 [KADİM DİRİLİŞ!] ${enemy.name} kadim zırhının anka alevleriyle ölümden uyandı! (+${reviveHp} Can)`,
+                                    narrativeText: `[KADİM DİRİLİŞ!] ${enemy.name} kadim zırhının anka alevleriyle ölümden uyandı! (+${reviveHp} Can)`,
                                     attackerName: enemy.name,
                                     defenderName: player.name,
                                     event: CombatEvent.HIT,
@@ -420,7 +420,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                     logs.push(
                         new CombatLog({
                             round: round,
-                            narrativeText: `💫 ${enemy.name} sersemliğin etkisiyle gardını toparlayamadı, bu hamleyi pas geçti!`,
+                            narrativeText: `${enemy.name} sersemliğin etkisiyle gardını toparlayamadı, bu hamleyi pas geçti!`,
                             attackerName: enemy.name,
                             defenderName: player.name,
                             event: CombatEvent.HIT,
@@ -477,7 +477,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                         logs.push(
                             new CombatLog({
                                 round: round,
-                                narrativeText: `🔥 [KADİM DİRİLİŞ!] ${player.name} kaderin anka alevleriyle ölümün eşiğinden döndü ve ayağa fırladı! (+${reviveHp} Can)`,
+                                narrativeText: `[KADİM DİRİLİŞ!] ${player.name} kaderin anka alevleriyle ölümün eşiğinden döndü ve ayağa fırladı! (+${reviveHp} Can)`,
                                 attackerName: player.name,
                                 defenderName: enemy.name,
                                 event: CombatEvent.HIT,
@@ -496,7 +496,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                         logs.push(
                             new CombatLog({
                                 round: round,
-                                narrativeText: `🔥 [KADİM DİRİLİŞ!] ${enemy.name} kadim zırhının anka alevleriyle ölümden uyandı! (+${reviveHp} Can)`,
+                                narrativeText: `[KADİM DİRİLİŞ!] ${enemy.name} kadim zırhının anka alevleriyle ölümden uyandı! (+${reviveHp} Can)`,
                                 attackerName: enemy.name,
                                 defenderName: player.name,
                                 event: CombatEvent.HIT,
@@ -527,7 +527,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                             defenderSpecialTraits: enemySpecialTraits,
                             playerBuffs: playerBuffs
                         })
-                        logs.push(flurryOutcome.log.copy({narrativeText: `⚡ [AKROBATİK KARŞI VURUŞ!] Sıyrılmanın yarattığı boşluğu affetmedin ve anında yıldırım gibi karşı hücuma geçtin!\n${flurryOutcome.log.narrativeText}` }))
+                        logs.push(flurryOutcome.log.copy({narrativeText: `[AKROBATİK KARŞI VURUŞ!] Sıyrılmanın yarattığı boşluğu affetmedin ve anında yıldırım gibi karşı hücuma geçtin!\n${flurryOutcome.log.narrativeText}` }))
                         eCurrentHp = flurryOutcome.remainingHp
                         totalPlayerDamage += flurryOutcome.damageDealt
                         if (flurryOutcome.appliedBleed) enemyBleedTurns = 3
@@ -539,7 +539,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                             logs.push(
                                 new CombatLog({
                                     round: round,
-                                    narrativeText: `🔥 [KADİM DİRİLİŞ!] ${enemy.name} kadim zırhının anka alevleriyle ölümden uyandı! (+${reviveHp} Can)`,
+                                    narrativeText: `[KADİM DİRİLİŞ!] ${enemy.name} kadim zırhının anka alevleriyle ölümden uyandı! (+${reviveHp} Can)`,
                                     attackerName: enemy.name,
                                     defenderName: player.name,
                                     event: CombatEvent.HIT,
@@ -563,7 +563,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                     logs.push(
                         new CombatLog({
                             round: round,
-                            narrativeText: `💫 ${player.name} sersemliğin etkisiyle gardını toparlayamadı, hamle yapamadı!`,
+                            narrativeText: `${player.name} sersemliğin etkisiyle gardını toparlayamadı, hamle yapamadı!`,
                             attackerName: player.name,
                             defenderName: enemy.name,
                             event: CombatEvent.HIT,
@@ -622,7 +622,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                         logs.push(
                             new CombatLog({
                                 round: round,
-                                narrativeText: `🔥 [KADİM DİRİLİŞ!] ${enemy.name} kadim zırhının anka alevleriyle ölümden uyandı! (+${reviveHp} Can)`,
+                                narrativeText: `[KADİM DİRİLİŞ!] ${enemy.name} kadim zırhının anka alevleriyle ölümden uyandı! (+${reviveHp} Can)`,
                                 attackerName: enemy.name,
                                 defenderName: player.name,
                                 event: CombatEvent.HIT,
@@ -641,7 +641,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                         logs.push(
                             new CombatLog({
                                 round: round,
-                                narrativeText: `🔥 [KADİM DİRİLİŞ!] ${player.name} kaderin anka alevleriyle ölümün eşiğinden döndü ve ayağa fırladı! (+${reviveHp} Can)`,
+                                narrativeText: `[KADİM DİRİLİŞ!] ${player.name} kaderin anka alevleriyle ölümün eşiğinden döndü ve ayağa fırladı! (+${reviveHp} Can)`,
                                 attackerName: player.name,
                                 defenderName: enemy.name,
                                 event: CombatEvent.HIT,
@@ -1346,40 +1346,40 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
             if (fireTrait != null && kt.Random.nextInt(100) < 32) {
                 rawDamage += 8
                 traitTriggerNote += (isPlayer)
-                    ? `🔥 [${fireTrait.name.toUpperCase()}!] Asadan fışkıran kor alevler hasmın zırhını eritti (+8 Alev Hasarı)!\n`
-                    : `🔥 [${fireTrait.name.toUpperCase()}!] ${attackerName}'in silahından fışkıran kor alevler ${defenderName}'in zırhını eritti (+8 Alev Hasarı)!\n`
+                    ? `[${fireTrait.name.toUpperCase()}!] Asadan fışkıran kor alevler hasmın zırhını eritti (+8 Alev Hasarı)!\n`
+                    : `[${fireTrait.name.toUpperCase()}!] ${attackerName}'in silahından fışkıran kor alevler ${defenderName}'in zırhını eritti (+8 Alev Hasarı)!\n`
             }
 
             // 4. Yıldırım / Şimşek Etkisi
             if (lightningTrait != null && kt.Random.nextInt(100) < 30) {
                 rawDamage += 11
                 traitTriggerNote += (isPlayer)
-                    ? `⚡ [${lightningTrait.name.toUpperCase()}!] Göksel şimşekler hasmın üzerinde çaktı (+11 Yıldırım Hasarı)!\n`
-                    : `⚡ [${lightningTrait.name.toUpperCase()}!] ${attackerName}'in göksel şimşekleri ${defenderName}'in üzerinde çaktı (+11 Yıldırım Hasarı)!\n`
+                    ? `[${lightningTrait.name.toUpperCase()}!] Göksel şimşekler hasmın üzerinde çaktı (+11 Yıldırım Hasarı)!\n`
+                    : `[${lightningTrait.name.toUpperCase()}!] ${attackerName}'in göksel şimşekleri ${defenderName}'in üzerinde çaktı (+11 Yıldırım Hasarı)!\n`
             }
 
             // 5. Zehir & Spor Etkisi
             if (poisonTrait != null && kt.Random.nextInt(100) < 35) {
                 rawDamage += 7
                 traitTriggerNote += (isPlayer)
-                    ? `🐍 [${poisonTrait.name.toUpperCase()}!] Büyülü zehir ve sporlar rakibin yaralarına işledi (+7 Zehir Hasarı)!\n`
-                    : `🐍 [${poisonTrait.name.toUpperCase()}!] ${attackerName}'in silahından sızan zehir ve sporlar ${defenderName}'in yaralarına işledi (+7 Zehir Hasarı)!\n`
+                    ? `[${poisonTrait.name.toUpperCase()}!] Büyülü zehir ve sporlar rakibin yaralarına işledi (+7 Zehir Hasarı)!\n`
+                    : `[${poisonTrait.name.toUpperCase()}!] ${attackerName}'in silahından sızan zehir ve sporlar ${defenderName}'in yaralarına işledi (+7 Zehir Hasarı)!\n`
             }
 
             // 6. Ayaz / Dondurucu Soğuk Etkisi
             if (frostTrait != null && kt.Random.nextInt(100) < 30) {
                 rawDamage += 8
                 traitTriggerNote += (isPlayer)
-                    ? `❄️ [${frostTrait.name.toUpperCase()}!] Buzul rünleri hasmı dondurarak uzuvlarını sızlattı (+8 Buzul Hasarı)!\n`
-                    : `❄️ [${frostTrait.name.toUpperCase()}!] ${attackerName}'in buzul rünleri ${defenderName}'i dondurarak uzuvlarını sızlattı (+8 Buzul Hasarı)!\n`
+                    ? `[${frostTrait.name.toUpperCase()}!] Buzul rünleri hasmı dondurarak uzuvlarını sızlattı (+8 Buzul Hasarı)!\n`
+                    : `[${frostTrait.name.toUpperCase()}!] ${attackerName}'in buzul rünleri ${defenderName}'i dondurarak uzuvlarını sızlattı (+8 Buzul Hasarı)!\n`
             }
 
             // 7. Nihai Kader / Titan / Kozmik Etkisi
             if (destinyTrait != null && (attackerHp <= (attackerMaxHp * 0.35) || kt.Random.nextInt(100) < 25)) {
                 rawDamage += 15
                 traitTriggerNote += (isPlayer)
-                    ? `⚜️ [${destinyTrait.name.toUpperCase()}!] Kozmik kudret arenayı titreterek zırhları paramparça etti (+15 Yıkıcı Hasar)!\n`
-                    : `⚜️ [${destinyTrait.name.toUpperCase()}!] ${attackerName}'in kozmik kudreti arenayı titreterek zırhları paramparça etti (+15 Yıkıcı Hasar)!\n`
+                    ? `[${destinyTrait.name.toUpperCase()}!] Kozmik kudret arenayı titreterek zırhları paramparça etti (+15 Yıkıcı Hasar)!\n`
+                    : `[${destinyTrait.name.toUpperCase()}!] ${attackerName}'in kozmik kudreti arenayı titreterek zırhları paramparça etti (+15 Yıkıcı Hasar)!\n`
             }
 
             // 8. Egzotik Sersemletme
@@ -1387,8 +1387,8 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
             if (stunTrait != null && kt.Random.nextInt(100) < 20) {
                 hasExoticStun = true
                 traitTriggerNote += (isPlayer)
-                    ? `🔨 [${stunTrait.name.toUpperCase()}!] Masif şok dalgası hasmı sersemletti!\n`
-                    : `🔨 [${stunTrait.name.toUpperCase()}!] ${attackerName}'in masif şok dalgası ${defenderName}'i sersemletti!\n`
+                    ? `[${stunTrait.name.toUpperCase()}!] Masif şok dalgası hasmı sersemletti!\n`
+                    : `[${stunTrait.name.toUpperCase()}!] ${attackerName}'in masif şok dalgası ${defenderName}'i sersemletti!\n`
             }
 
             // 9. Çift Ok Salvosu (İkili Atan Yaylar)
@@ -1396,8 +1396,8 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
             if (dualShotTrait != null && kt.Random.nextInt(100) < 35) {
                 rawDamage += 9
                 traitTriggerNote += (isPlayer)
-                    ? `🏹 [${dualShotTrait.name.toUpperCase()}!] Kiriş ardışık iki kez gerildi; fırlayan ikinci ok hedefin böğrüne saplandı (+9 Ek Hasar)!\n`
-                    : `🏹 [${dualShotTrait.name.toUpperCase()}!] ${attackerName} kirişi seri bir hamleyle tekrar çekip ikinci oku ${defenderName}'in böğrüne sapladı (+9 Ek Hasar)!\n`
+                    ? `[${dualShotTrait.name.toUpperCase()}!] Kiriş ardışık iki kez gerildi; fırlayan ikinci ok hedefin böğrüne saplandı (+9 Ek Hasar)!\n`
+                    : `[${dualShotTrait.name.toUpperCase()}!] ${attackerName} kirişi seri bir hamleyle tekrar çekip ikinci oku ${defenderName}'in böğrüne sapladı (+9 Ek Hasar)!\n`
             }
 
             // 10. Üçlü Ok Yağmuru (Üçlü Atan Salvo Yayları & Arbaletler)
@@ -1405,8 +1405,8 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
             if (tripleShotTrait != null && kt.Random.nextInt(100) < 30) {
                 rawDamage += 16
                 traitTriggerNote += (isPlayer)
-                    ? `🎯 [${tripleShotTrait.name.toUpperCase()}!] Yaydan aynı anda fırlayan üç temren havayı yırtarak hedefin savunmasını delip geçti (+16 Yayılım Hasarı)!\n`
-                    : `🎯 [${tripleShotTrait.name.toUpperCase()}!] ${attackerName}'in yayından aynı anda fırlayan üç temren ${defenderName}'in savunmasını delip geçti (+16 Yayılım Hasarı)!\n`
+                    ? `[${tripleShotTrait.name.toUpperCase()}!] Yaydan aynı anda fırlayan üç temren havayı yırtarak hedefin savunmasını delip geçti (+16 Yayılım Hasarı)!\n`
+                    : `[${tripleShotTrait.name.toUpperCase()}!] ${attackerName}'in yayından aynı anda fırlayan üç temren ${defenderName}'in savunmasını delip geçti (+16 Yayılım Hasarı)!\n`
             }
 
             // 11. Ok & Temren Özel Elemental ve Kuşatma Etkileri
@@ -1414,31 +1414,31 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
             if (arrowFireTrait != null && kt.Random.nextInt(100) < 30) {
                 rawDamage += 7
                 traitTriggerNote += (isPlayer)
-                    ? `🔥 [${arrowFireTrait.name.toUpperCase()}!] Okun ucundaki kor katran alev alarak hedefin zırhını dağladı (+7 Alev Hasarı)!\n`
-                    : `🔥 [${arrowFireTrait.name.toUpperCase()}!] ${attackerName}'in alevli oku ${defenderName}'in zırhını dağladı (+7 Alev Hasarı)!\n`
+                    ? `[${arrowFireTrait.name.toUpperCase()}!] Okun ucundaki kor katran alev alarak hedefin zırhını dağladı (+7 Alev Hasarı)!\n`
+                    : `[${arrowFireTrait.name.toUpperCase()}!] ${attackerName}'in alevli oku ${defenderName}'in zırhını dağladı (+7 Alev Hasarı)!\n`
             }
 
             const arrowPoisonTrait = kt.firstOrNull(specialTraits, (it) => it.id.startsWith('trait_tash_arrow_poison_'))
             if (arrowPoisonTrait != null && kt.Random.nextInt(100) < 32) {
                 rawDamage += 6
                 traitTriggerNote += (isPlayer)
-                    ? `🐍 [${arrowPoisonTrait.name.toUpperCase()}!] Temrenden sızan yılan zehri hedefin yaralarına işledi (+6 Zehir Hasarı)!\n`
-                    : `🐍 [${arrowPoisonTrait.name.toUpperCase()}!] ${attackerName}'in zehirli temreni ${defenderName}'in damarlarına işledi (+6 Zehir Hasarı)!\n`
+                    ? `[${arrowPoisonTrait.name.toUpperCase()}!] Temrenden sızan yılan zehri hedefin yaralarına işledi (+6 Zehir Hasarı)!\n`
+                    : `[${arrowPoisonTrait.name.toUpperCase()}!] ${attackerName}'in zehirli temreni ${defenderName}'in damarlarına işledi (+6 Zehir Hasarı)!\n`
             }
 
             const arrowSiegeTrait = kt.firstOrNull(specialTraits, (it) => it.id.startsWith('trait_tash_arrow_siege_'))
             if (arrowSiegeTrait != null && kt.Random.nextInt(100) < 25) {
                 rawDamage += 10
                 traitTriggerNote += (isPlayer)
-                    ? `💣 [${arrowSiegeTrait.name.toUpperCase()}!] Ağır kuşatma cıvası kalkanı darmadağın ederek kemikleri sarstı (+10 Kuşatma Hasarı)!\n`
-                    : `💣 [${arrowSiegeTrait.name.toUpperCase()}!] ${attackerName}'in ağır kuşatma cıvası ${defenderName}'in kalkanını sarsarak kemiklerini çatlattı (+10 Kuşatma Hasarı)!\n`
+                    ? `[${arrowSiegeTrait.name.toUpperCase()}!] Ağır kuşatma cıvası kalkanı darmadağın ederek kemikleri sarstı (+10 Kuşatma Hasarı)!\n`
+                    : `[${arrowSiegeTrait.name.toUpperCase()}!] ${attackerName}'in ağır kuşatma cıvası ${defenderName}'in kalkanını sarsarak kemiklerini çatlattı (+10 Kuşatma Hasarı)!\n`
             }
         }
 
         // Yetenek Topu: Ezici Balyoz
         if (isCrushingImpact) {
             rawDamage += 10.0
-            traitTriggerNote += '💥 [EZİCİ BALYOZ!] Balyoz darbesi zırhı ezip hasmı sersemletti!\n'
+            traitTriggerNote += '[EZİCİ BALYOZ!] Balyoz darbesi zırhı ezip hasmı sersemletti!\n'
         }
 
         // Aktif İksir / Merhem / Yağ Etkileri (Ofansif: Zehir, Ateş, Ayaz)
@@ -1448,7 +1448,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
             if (maxPoisonChance > 0 && poisonDmg > 0 && kt.Random.nextInt(100) < maxPoisonChance) {
                 rawDamage += poisonDmg
                 const buffName = kt.firstOrNull(playerBuffs, (it) => it.poisonChancePercent > 0)?.name ?? 'Zehir Yağı'
-                traitTriggerNote += `🧪 [${buffName.toUpperCase()}!] Silahındaki zehir hedefin yaralarına işledi (+${poisonDmg} Zehir Hasarı)!\n`
+                traitTriggerNote += `[${buffName.toUpperCase()}!] Silahındaki zehir hedefin yaralarına işledi (+${poisonDmg} Zehir Hasarı)!\n`
             }
 
             const maxFireChance = kt.maxOfOrNull(playerBuffs, (it) => it.fireChancePercent) ?? 0
@@ -1456,7 +1456,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
             if (maxFireChance > 0 && fireDmg > 0 && kt.Random.nextInt(100) < maxFireChance) {
                 rawDamage += fireDmg
                 const buffName = kt.firstOrNull(playerBuffs, (it) => it.fireChancePercent > 0)?.name ?? 'Alev Yağı'
-                traitTriggerNote += `🔥 [${buffName.toUpperCase()}!] Silahından saçılan alevler rakibi dağladı (+${fireDmg} Ateş Hasarı)!\n`
+                traitTriggerNote += `[${buffName.toUpperCase()}!] Silahından saçılan alevler rakibi dağladı (+${fireDmg} Ateş Hasarı)!\n`
             }
 
             const maxFrostChance = kt.maxOfOrNull(playerBuffs, (it) => it.frostChancePercent) ?? 0
@@ -1464,7 +1464,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
             if (maxFrostChance > 0 && frostDmg > 0 && kt.Random.nextInt(100) < maxFrostChance) {
                 rawDamage += frostDmg
                 const buffName = kt.firstOrNull(playerBuffs, (it) => it.frostChancePercent > 0)?.name ?? 'Ayaz Merhemi'
-                traitTriggerNote += `❄️ [${buffName.toUpperCase()}!] Keskin ayaz hedefin uzuvlarını dondurdu (+${frostDmg} Buz Hasarı)!\n`
+                traitTriggerNote += `[${buffName.toUpperCase()}!] Keskin ayaz hedefin uzuvlarını dondurdu (+${frostDmg} Buz Hasarı)!\n`
             }
         }
 
@@ -1472,7 +1472,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
         const armorPenTrait = findArmorPenTrait(specialTraits)
         const traitPenBonus = (armorPenTrait != null) ? 0.25 : 0.0
         if (armorPenTrait != null) {
-            traitTriggerNote += `⚙️ [${armorPenTrait.name.toUpperCase()}!] Silahın delici ucu hasmın zırhını yararak geçti (+%25 Zırh Delme)!\n`
+            traitTriggerNote += `[${armorPenTrait.name.toUpperCase()}!] Silahın delici ucu hasmın zırhını yararak geçti (+%25 Zırh Delme)!\n`
         }
         const penFactor = (1.0 - kt.coerceIn(((gemArmorPenPercent / 100.0) + traitPenBonus), 0.0, 0.88))
         const armorMitigation = (isWeaknessExploited
@@ -1487,7 +1487,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
         // Yetenek Topu: Demir İrade (Alınan hasarı %30 kırar)
         if (isIronWillActive) {
             finalDamage *= 0.70
-            traitTriggerNote += '🛡️ [DEMİR İRADE!] Çelik iraden sayesinde darbenin şiddeti emildi!\n'
+            traitTriggerNote += '[DEMİR İRADE!] Çelik iraden sayesinde darbenin şiddeti emildi!\n'
         }
 
         // Aktif Merhem / İksir Hasar İndirimi (Defansif)
@@ -1496,7 +1496,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
             if (totalMitigation > 0) {
                 finalDamage *= (1.0 - (totalMitigation / 100.0))
                 const buffName = kt.firstOrNull(playerBuffs, (it) => it.damageMitigationPercent > 0)?.name ?? 'Koruyucu Merhem'
-                traitTriggerNote += `🛡️ [${buffName.toUpperCase()}!] Bedenine sürdüğün merhem darbenin şiddetini hafifletti (-%${totalMitigation} Hasar)!\n`
+                traitTriggerNote += `[${buffName.toUpperCase()}!] Bedenine sürdüğün merhem darbenin şiddetini hafifletti (-%${totalMitigation} Hasar)!\n`
             }
         }
 
@@ -1505,8 +1505,8 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
         if (barrierTrait != null) {
             finalDamage *= 0.78
             traitTriggerNote += (isPlayer)
-                ? `🛡️ [${barrierTrait.name.toUpperCase()}!] Hasmın koruyucu aurası darbenin şiddetini emerek hafifletti (-%22 Hasar)!\n`
-                : `🛡️ [${barrierTrait.name.toUpperCase()}!] Bedenini saran koruyucu bariyer darbenin şiddetini emerek hafifletti (-%22 Hasar)!\n`
+                ? `[${barrierTrait.name.toUpperCase()}!] Hasmın koruyucu aurası darbenin şiddetini emerek hafifletti (-%22 Hasar)!\n`
+                : `[${barrierTrait.name.toUpperCase()}!] Bedenini saran koruyucu bariyer darbenin şiddetini emerek hafifletti (-%22 Hasar)!\n`
         }
 
         // Savunanın Son Direniş Nitelikleri (Azam Surları, Kebir Hükmü vb.)
@@ -1515,8 +1515,8 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
             if (lastStandTrait != null) {
                 finalDamage *= 0.65
                 traitTriggerNote += (isPlayer)
-                    ? `🛡️ [${lastStandTrait.name.toUpperCase()}!] Hasmın sur gibi iradesi kritik anda darbenin hasarını kırdı (-%35 Hasar)!\n`
-                    : `🛡️ [${lastStandTrait.name.toUpperCase()}!] Çelik sur iraden kritik anda gelen darbenin hasarını kırdı (-%35 Hasar)!\n`
+                    ? `[${lastStandTrait.name.toUpperCase()}!] Hasmın sur gibi iradesi kritik anda darbenin hasarını kırdı (-%35 Hasar)!\n`
+                    : `[${lastStandTrait.name.toUpperCase()}!] Çelik sur iraden kritik anda gelen darbenin hasarını kırdı (-%35 Hasar)!\n`
             }
         }
 
@@ -1526,8 +1526,8 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
             if (execTrait != null) {
                 finalDamage *= 1.25
                 traitTriggerNote += (isPlayer)
-                    ? `☠️ [${execTrait.name.toUpperCase()}!] Hasmın tükenen canını gören darben ölümcül bir infaza dönüştü (+%25 İnfaz Hasarı)!\n`
-                    : `☠️ [${execTrait.name.toUpperCase()}!] ${attackerName} tükenen canını fırsat bilip ölümcül bir infaz darbesi vurdu (+%25 İnfaz Hasarı)!\n`
+                    ? `[${execTrait.name.toUpperCase()}!] Hasmın tükenen canını gören darben ölümcül bir infaza dönüştü (+%25 İnfaz Hasarı)!\n`
+                    : `[${execTrait.name.toUpperCase()}!] ${attackerName} tükenen canını fırsat bilip ölümcül bir infaz darbesi vurdu (+%25 İnfaz Hasarı)!\n`
             }
         }
 
@@ -1537,7 +1537,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
             const critMultiplier = (critAmpTrait != null) ? 2.2 : 1.8
             finalDamage *= critMultiplier
             if (critAmpTrait != null) {
-                traitTriggerNote += `💥 [${critAmpTrait.name.toUpperCase()}!] Kritik darbenin yıkıcı şiddeti katlandı!\n`
+                traitTriggerNote += `[${critAmpTrait.name.toUpperCase()}!] Kritik darbenin yıkıcı şiddeti katlandı!\n`
             }
             event = CombatEvent.CRITICAL
         } else if (isBlock) {
@@ -1562,8 +1562,8 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                 const traitHeal = Math.max(2, Math.round((damageInt * 0.14)))
                 lifestealAmount += traitHeal
                 traitTriggerNote += (isPlayer)
-                    ? `🩸 [${lifestealTrait.name.toUpperCase()}!] Hasmın kanından ve ruhundan güç çektin (+${traitHeal} Can)!\n`
-                    : `🩸 [${lifestealTrait.name.toUpperCase()}!] ${attackerName}, ${defenderName}'in kanından güç emerek yaralarını tazeledi (+${traitHeal} Can)!\n`
+                    ? `[${lifestealTrait.name.toUpperCase()}!] Hasmın kanından ve ruhundan güç çektin (+${traitHeal} Can)!\n`
+                    : `[${lifestealTrait.name.toUpperCase()}!] ${attackerName}, ${defenderName}'in kanından güç emerek yaralarını tazeledi (+${traitHeal} Can)!\n`
             }
         }
 
@@ -1573,13 +1573,13 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
             const buffHeal = Math.max(1, Math.round((damageInt * (buffLifestealPercent / 100.0))))
             lifestealAmount += buffHeal
             const buffName = kt.firstOrNull(playerBuffs, (it) => it.lifestealPercent > 0)?.name ?? 'Vampirik Merhem'
-            traitTriggerNote += `🩸 [${buffName.toUpperCase()}!] Darbenin akıttığı kanla canını tazeledin (+${buffHeal} Can)!\n`
+            traitTriggerNote += `[${buffName.toUpperCase()}!] Darbenin akıttığı kanla canını tazeledin (+${buffHeal} Can)!\n`
         }
 
         if (gemLifestealPercent > 0 && damageInt > 0) {
             const gemHeal = Math.max(1, Math.round((damageInt * (gemLifestealPercent / 100.0))))
             lifestealAmount += gemHeal
-            traitTriggerNote += `🟣 [AMETİST CAN ÇALMA!] Darbenin enerjisi yaralarını sağalttı (+${gemHeal} Can)!\n`
+            traitTriggerNote += `[AMETİST CAN ÇALMA!] Darbenin enerjisi yaralarını sağalttı (+${gemHeal} Can)!\n`
         }
 
         if (isMeteorProc) {
@@ -1607,25 +1607,25 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                 appliedBleed = true
                 const bleedLabel = bleedTrait?.name?.toUpperCase() ?? (triggeredSkill?.name?.toUpperCase() ?? 'AĞIR KANAMA')
                 traitTriggerNote += (isPlayer)
-                    ? `🩸 [${bleedLabel}!] Açılan derin yara hedefin oluk oluk kan kaybetmesine yol açtı!\n`
-                    : `🩸 [${bleedLabel}!] ${attackerName}'in darbesi ${defenderName}'de derin bir kanama başlattı!\n`
+                    ? `[${bleedLabel}!] Açılan derin yara hedefin oluk oluk kan kaybetmesine yol açtı!\n`
+                    : `[${bleedLabel}!] ${attackerName}'in darbesi ${defenderName}'de derin bir kanama başlattı!\n`
             }
         }
 
         const appliedStun = (isPlayer && isCrushingImpact) || hasExoticStun || skillAppliedStun || (gemStunPercent > 0 && kt.Random.nextInt(100) < gemStunPercent)
         if (skillAppliedStun) {
-            traitTriggerNote += `💫 [${triggeredSkill?.name?.toUpperCase() ?? 'AFALLATMA'}!] Hedef darbenin şiddetiyle sarsılarak sersemledi!\n`
+            traitTriggerNote += `[${triggeredSkill?.name?.toUpperCase() ?? 'AFALLATMA'}!] Hedef darbenin şiddetiyle sarsılarak sersemledi!\n`
         } else if (appliedStun && !isCrushingImpact && !hasExoticStun) {
             traitTriggerNote += (isPlayer)
-                ? '⚫ [OBSİDYEN SARSINTISI!] Rakip darbenin şokuyla sersemledi!\n'
-                : `⚫ [OBSİDYEN SARSINTISI!] ${defenderName} darbenin şokuyla sersemledi!\n`
+                ? '[OBSİDYEN SARSINTISI!] Rakip darbenin şokuyla sersemledi!\n'
+                : `[OBSİDYEN SARSINTISI!] ${defenderName} darbenin şokuyla sersemledi!\n`
         }
 
         const slowTrait = findSlowDebuffTrait(specialTraits)
         if (slowTrait != null && damageInt > 0) {
             traitTriggerNote += (isPlayer)
-                ? `❄️ [${slowTrait.name.toUpperCase()}!] Çengelli ve dondurucu darbe hasmın adımlarını ve reflekslerini yavaşlattı!\n`
-                : `❄️ [${slowTrait.name.toUpperCase()}!] ${attackerName}'in dondurucu darbesi ${defenderName}'in adımlarını ve reflekslerini yavaşlattı!\n`
+                ? `[${slowTrait.name.toUpperCase()}!] Çengelli ve dondurucu darbe hasmın adımlarını ve reflekslerini yavaşlattı!\n`
+                : `[${slowTrait.name.toUpperCase()}!] ${attackerName}'in dondurucu darbesi ${defenderName}'in adımlarını ve reflekslerini yavaşlattı!\n`
         }
 
         const resolvedPosition = (tacticalPosition != null && tacticalPosition !== CombatTacticalPosition.NEUTRAL)
@@ -1659,7 +1659,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
         }
 
         let narrative = (isWeaknessExploited && knownWeakness != null)
-            ? `💡 [AÇIK İSTİSMARI!] ${knownWeakness.combatExploitPhrase}\n${baseNarrative}`
+            ? `[AÇIK İSTİSMARI!] ${knownWeakness.combatExploitPhrase}\n${baseNarrative}`
             : baseNarrative
 
         if (traitTriggerNote.length > 0) {
@@ -1785,7 +1785,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                 logs.push(
                     new CombatLog({
                         round: round,
-                        narrativeText: `🌿 [YAŞAM CANLILIĞI!] Büyülü zırh ${fighter1.name}'in yaralarını tazeledi (+${r1} Can)!`,
+                        narrativeText: `[YAŞAM CANLILIĞI!] Büyülü zırh ${fighter1.name}'in yaralarını tazeledi (+${r1} Can)!`,
                         attackerName: fighter1.name,
                         defenderName: fighter2.name,
                         event: CombatEvent.HIT,
@@ -1802,7 +1802,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                 logs.push(
                     new CombatLog({
                         round: round,
-                        narrativeText: `🌿 [YAŞAM CANLILIĞI!] Büyülü zırh ${fighter2.name}'in yaralarını tazeledi (+${r2} Can)!`,
+                        narrativeText: `[YAŞAM CANLILIĞI!] Büyülü zırh ${fighter2.name}'in yaralarını tazeledi (+${r2} Can)!`,
                         attackerName: fighter2.name,
                         defenderName: fighter1.name,
                         event: CombatEvent.HIT,
@@ -1822,7 +1822,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                 logs.push(
                     new CombatLog({
                         round: round,
-                        narrativeText: `🩸 [KAN KAYBI!] ${fighter1.name} derin yarasından sızan kan yüzünden ${bDmg} can kaybetti!`,
+                        narrativeText: `[KAN KAYBI!] ${fighter1.name} derin yarasından sızan kan yüzünden ${bDmg} can kaybetti!`,
                         attackerName: fighter2.name,
                         defenderName: fighter1.name,
                         event: CombatEvent.HIT,
@@ -1840,7 +1840,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                 logs.push(
                     new CombatLog({
                         round: round,
-                        narrativeText: `🩸 [KAN KAYBI!] ${fighter2.name} derin yarasından sızan kan yüzünden ${bDmg} can kaybetti!`,
+                        narrativeText: `[KAN KAYBI!] ${fighter2.name} derin yarasından sızan kan yüzünden ${bDmg} can kaybetti!`,
                         attackerName: fighter1.name,
                         defenderName: fighter2.name,
                         event: CombatEvent.HIT,
@@ -1866,7 +1866,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                     logs.push(
                         new CombatLog({
                             round: round,
-                            narrativeText: `💫 ${fighter1.name} sersemliğin etkisiyle toparlanamadı, hamle yapamadı!`,
+                            narrativeText: `${fighter1.name} sersemliğin etkisiyle toparlanamadı, hamle yapamadı!`,
                             attackerName: fighter1.name,
                             defenderName: fighter2.name,
                             event: CombatEvent.HIT,
@@ -1919,7 +1919,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                         logs.push(
                             new CombatLog({
                                 round: round,
-                                narrativeText: `🔥 [KADİM DİRİLİŞ!] ${fighter2.name} kadim zırhının anka alevleriyle ölümden uyandı! (+${reviveHp} Can)`,
+                                narrativeText: `[KADİM DİRİLİŞ!] ${fighter2.name} kadim zırhının anka alevleriyle ölümden uyandı! (+${reviveHp} Can)`,
                                 attackerName: fighter2.name,
                                 defenderName: fighter1.name,
                                 event: CombatEvent.HIT,
@@ -1937,7 +1937,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                         logs.push(
                             new CombatLog({
                                 round: round,
-                                narrativeText: `🔥 [KADİM DİRİLİŞ!] ${fighter1.name} kadim zırhının anka alevleriyle ölümden uyandı! (+${reviveHp} Can)`,
+                                narrativeText: `[KADİM DİRİLİŞ!] ${fighter1.name} kadim zırhının anka alevleriyle ölümden uyandı! (+${reviveHp} Can)`,
                                 attackerName: fighter1.name,
                                 defenderName: fighter2.name,
                                 event: CombatEvent.HIT,
@@ -1958,7 +1958,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                     logs.push(
                         new CombatLog({
                             round: round,
-                            narrativeText: `💫 ${fighter2.name} aldığı darbenin sersemliğiyle sarsıldı, karşı hamle yapamadı!`,
+                            narrativeText: `${fighter2.name} aldığı darbenin sersemliğiyle sarsıldı, karşı hamle yapamadı!`,
                             attackerName: fighter2.name,
                             defenderName: fighter1.name,
                             event: CombatEvent.HIT,
@@ -2012,7 +2012,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                         logs.push(
                             new CombatLog({
                                 round: round,
-                                narrativeText: `🔥 [KADİM DİRİLİŞ!] ${fighter1.name} kadim zırhının anka alevleriyle ölümden uyandı! (+${reviveHp} Can)`,
+                                narrativeText: `[KADİM DİRİLİŞ!] ${fighter1.name} kadim zırhının anka alevleriyle ölümden uyandı! (+${reviveHp} Can)`,
                                 attackerName: fighter1.name,
                                 defenderName: fighter2.name,
                                 event: CombatEvent.HIT,
@@ -2030,7 +2030,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                         logs.push(
                             new CombatLog({
                                 round: round,
-                                narrativeText: `🔥 [KADİM DİRİLİŞ!] ${fighter2.name} kadim zırhının anka alevleriyle ölümden uyandı! (+${reviveHp} Can)`,
+                                narrativeText: `[KADİM DİRİLİŞ!] ${fighter2.name} kadim zırhının anka alevleriyle ölümden uyandı! (+${reviveHp} Can)`,
                                 attackerName: fighter2.name,
                                 defenderName: fighter1.name,
                                 event: CombatEvent.HIT,
@@ -2050,7 +2050,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                     logs.push(
                         new CombatLog({
                             round: round,
-                            narrativeText: `💫 ${fighter2.name} sersemliğin etkisiyle gardını toparlayamadı, hamle yapamadı!`,
+                            narrativeText: `${fighter2.name} sersemliğin etkisiyle gardını toparlayamadı, hamle yapamadı!`,
                             attackerName: fighter2.name,
                             defenderName: fighter1.name,
                             event: CombatEvent.HIT,
@@ -2103,7 +2103,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                         logs.push(
                             new CombatLog({
                                 round: round,
-                                narrativeText: `🔥 [KADİM DİRİLİŞ!] ${fighter1.name} kadim zırhının anka alevleriyle ölümden uyandı! (+${reviveHp} Can)`,
+                                narrativeText: `[KADİM DİRİLİŞ!] ${fighter1.name} kadim zırhının anka alevleriyle ölümden uyandı! (+${reviveHp} Can)`,
                                 attackerName: fighter1.name,
                                 defenderName: fighter2.name,
                                 event: CombatEvent.HIT,
@@ -2121,7 +2121,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                         logs.push(
                             new CombatLog({
                                 round: round,
-                                narrativeText: `🔥 [KADİM DİRİLİŞ!] ${fighter2.name} kadim zırhının anka alevleriyle ölümden uyandı! (+${reviveHp} Can)`,
+                                narrativeText: `[KADİM DİRİLİŞ!] ${fighter2.name} kadim zırhının anka alevleriyle ölümden uyandı! (+${reviveHp} Can)`,
                                 attackerName: fighter2.name,
                                 defenderName: fighter1.name,
                                 event: CombatEvent.HIT,
@@ -2142,7 +2142,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                     logs.push(
                         new CombatLog({
                             round: round,
-                            narrativeText: `💫 ${fighter1.name} sersemliğin etkisiyle toparlanamadı, karşı hamle yapamadı!`,
+                            narrativeText: `${fighter1.name} sersemliğin etkisiyle toparlanamadı, karşı hamle yapamadı!`,
                             attackerName: fighter1.name,
                             defenderName: fighter2.name,
                             event: CombatEvent.HIT,
@@ -2196,7 +2196,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                         logs.push(
                             new CombatLog({
                                 round: round,
-                                narrativeText: `🔥 [KADİM DİRİLİŞ!] ${fighter2.name} kadim zırhının anka alevleriyle ölümden uyandı! (+${reviveHp} Can)`,
+                                narrativeText: `[KADİM DİRİLİŞ!] ${fighter2.name} kadim zırhının anka alevleriyle ölümden uyandı! (+${reviveHp} Can)`,
                                 attackerName: fighter2.name,
                                 defenderName: fighter1.name,
                                 event: CombatEvent.HIT,
@@ -2214,7 +2214,7 @@ function gs(id, name, icon, type, tier, cooldownTurns, description, combatEffect
                         logs.push(
                             new CombatLog({
                                 round: round,
-                                narrativeText: `🔥 [KADİM DİRİLİŞ!] ${fighter1.name} kadim zırhının anka alevleriyle ölümden uyandı! (+${reviveHp} Can)`,
+                                narrativeText: `[KADİM DİRİLİŞ!] ${fighter1.name} kadim zırhının anka alevleriyle ölümden uyandı! (+${reviveHp} Can)`,
                                 attackerName: fighter1.name,
                                 defenderName: fighter2.name,
                                 event: CombatEvent.HIT,

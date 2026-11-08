@@ -15,7 +15,7 @@ beforeEach(() => {
 
 test('runComprehensiveRealisticPlaytest30Days', () => {
   console.log('================================================================================');
-  console.log('🎮 GERÇEK OYUN TESTİ & SİMÜLASYON BAŞLATILIYOR (30 GÜNLÜK GELİŞİM VE DÖNGÜ TESTİ)');
+  console.log('GERÇEK OYUN TESTİ & SİMÜLASYON BAŞLATILIYOR (30 GÜNLÜK GELİŞİM VE DÖNGÜ TESTİ)');
   console.log('================================================================================');
 
   const totalDays = 30;

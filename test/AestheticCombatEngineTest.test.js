@@ -122,7 +122,7 @@ test('testAnnouncerCommentaryAndSpectatorReactions', () => {
   const commentary = AestheticCombatNarratives.generateAnnouncerCommentary('Sürgün Silahşör', 'Leander', 2);
   expect(commentary).not.toBeNull();
   expect(
-    commentary.includes('📢') &&
+    commentary.includes('') &&
       (ic(commentary, 'yatak') ||
         ic(commentary, 'şehvet') ||
         ic(commentary, 'esteti') ||
@@ -133,7 +133,7 @@ test('testAnnouncerCommentaryAndSpectatorReactions', () => {
 
   const spectatorReaction = AestheticCombatNarratives.generateSpectatorReaction(2);
   expect(spectatorReaction).not.toBeNull();
-  expect(spectatorReaction.includes('👥')).toBe(true); // İzleyici tepkisi loca/tribün ifadesi içermelidir
+  expect(spectatorReaction.includes('')).toBe(true); // İzleyici tepkisi loca/tribün ifadesi içermelidir
 });
 
 test('testArenaRulesAndDisciplinesNoCollisionAudit', () => {

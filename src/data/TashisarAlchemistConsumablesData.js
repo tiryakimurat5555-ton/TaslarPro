@@ -33,7 +33,7 @@ function createPotions() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_pot_02',
                 name: 'Kudret Özü',
-                icon: '💪',
+                icon: '',
                 description: '1 dövüş boyunca +8 Hasar, +3 Hız, +%5 Kritik sağlar.',
                 bonusDamage: 8,
                 bonusArmor: 0,
@@ -55,7 +55,7 @@ function createPotions() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_pot_03',
                 name: 'Demir Doku',
-                icon: '🛡️',
+                icon: '',
                 description: '1 dövüş boyunca +10 Zırh, +%8 Blok sağlar.',
                 bonusDamage: 0,
                 bonusArmor: 10,
@@ -77,7 +77,7 @@ function createPotions() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_pot_04',
                 name: 'Fırtına Çevikliği',
-                icon: '⚡',
+                icon: '',
                 description: '1 dövüş boyunca +6 Hız, +%4 Kritik, +%6 Blok sağlar.',
                 bonusDamage: 0,
                 bonusArmor: 0,
@@ -110,7 +110,7 @@ function createPotions() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_pot_06',
                 name: 'Zihin Berraklığı',
-                icon: '🧠',
+                icon: '',
                 description: '1 dövüş boyunca +5 Hasar, +4 Zırh, +4 Hız, +%6 Kritik sağlar.',
                 bonusDamage: 5,
                 bonusArmor: 4,
@@ -143,7 +143,7 @@ function createPotions() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_pot_08',
                 name: 'Boğa Kuvveti',
-                icon: '🐂',
+                icon: '',
                 description: '1 dövüş boyunca +12 Hasar, +5 Zırh, +%4 Kritik sağlar.',
                 bonusDamage: 12,
                 bonusArmor: 5,
@@ -165,7 +165,7 @@ function createPotions() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_pot_09',
                 name: 'Arı Sürati',
-                icon: '🐝',
+                icon: '',
                 description: '1 dövüş boyunca +4 Hasar, +8 Hız, +%8 Kritik, +%8 Blok sağlar.',
                 bonusDamage: 4,
                 bonusArmor: 0,
@@ -198,7 +198,7 @@ function createPotions() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_pot_11',
                 name: 'Granit Kabuk',
-                icon: '🪨',
+                icon: '',
                 description: '1 dövüş boyunca +14 Zırh, +%10 Blok sağlar.',
                 bonusDamage: 0,
                 bonusArmor: 14,
@@ -220,7 +220,7 @@ function createPotions() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_pot_12',
                 name: 'Keskin Odak',
-                icon: '🎯',
+                icon: '',
                 description: '1 dövüş boyunca +6 Hasar, +5 Hız, +%10 Kritik sağlar.',
                 bonusDamage: 6,
                 bonusArmor: 0,
@@ -253,7 +253,7 @@ function createPotions() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_pot_14',
                 name: 'Deli Dumrul Öfkesi',
-                icon: '😡',
+                icon: '',
                 description: '1 dövüş boyunca +16 Hasar, -4 Zırh, +5 Hız, +%8 Kritik sağlar.',
                 bonusDamage: 16,
                 bonusArmor: -4,
@@ -275,7 +275,7 @@ function createPotions() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_pot_15',
                 name: 'Ayaz Zırhı',
-                icon: '❄️',
+                icon: '',
                 description: '1 dövüş boyunca +12 Zırh, +4 Hız, +%8 Blok sağlar.',
                 bonusDamage: 0,
                 bonusArmor: 12,
@@ -297,7 +297,7 @@ function createPotions() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_pot_16',
                 name: 'Yıldırım Gücü',
-                icon: '⚡',
+                icon: '',
                 description: '1 dövüş boyunca +10 Hasar, +6 Zırh, +7 Hız, +%7 Kritik sağlar.',
                 bonusDamage: 10,
                 bonusArmor: 6,
@@ -330,7 +330,7 @@ function createPotions() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_pot_18',
                 name: 'Süvari Ruhu',
-                icon: '🐎',
+                icon: '',
                 description: '1 dövüş boyunca +14 Hasar, +8 Zırh, +6 Hız, +%6 Kritik, +%6 Blok sağlar.',
                 bonusDamage: 14,
                 bonusArmor: 8,
@@ -352,7 +352,7 @@ function createPotions() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_pot_19',
                 name: 'Gölge Hızı',
-                icon: '🌑',
+                icon: '',
                 description: '1 dövüş boyunca +6 Hasar, +10 Hız, +%12 Kritik, +%10 Blok sağlar.',
                 bonusDamage: 6,
                 bonusArmor: 0,
@@ -385,7 +385,7 @@ function createPotions() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_pot_21',
                 name: 'Çelik Kas',
-                icon: '🦾',
+                icon: '',
                 description: '1 dövüş boyunca +18 Hasar, +10 Zırh, +%5 Kritik sağlar.',
                 bonusDamage: 18,
                 bonusArmor: 10,
@@ -407,7 +407,7 @@ function createPotions() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_pot_22',
                 name: 'Kartal Görüşü',
-                icon: '🦅',
+                icon: '',
                 description: '1 dövüş boyunca +8 Hasar, +6 Hız, +%14 Kritik sağlar.',
                 bonusDamage: 8,
                 bonusArmor: 0,
@@ -440,7 +440,7 @@ function createPotions() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_pot_24',
                 name: 'Köz Yüreği',
-                icon: '🔥',
+                icon: '',
                 description: '1 dövüş boyunca +20 Hasar, +4 Hız, +%8 Kritik sağlar.',
                 bonusDamage: 20,
                 bonusArmor: 0,
@@ -462,7 +462,7 @@ function createPotions() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_pot_25',
                 name: 'Sarsılmaz Kalkan',
-                icon: '🛡️',
+                icon: '',
                 description: '1 dövüş boyunca +22 Zırh, +%14 Blok sağlar.',
                 bonusDamage: 0,
                 bonusArmor: 22,
@@ -495,7 +495,7 @@ function createPotions() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_pot_27',
                 name: 'Titan Kudreti',
-                icon: '🗿',
+                icon: '',
                 description: '1 dövüş boyunca +24 Hasar, +12 Zırh, +4 Hız, +%8 Kritik sağlar.',
                 bonusDamage: 24,
                 bonusArmor: 12,
@@ -517,7 +517,7 @@ function createPotions() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_pot_28',
                 name: 'Kasırga Adımı',
-                icon: '🌪️',
+                icon: '',
                 description: '1 dövüş boyunca +8 Hasar, +14 Hız, +%12 Kritik, +%12 Blok sağlar.',
                 bonusDamage: 8,
                 bonusArmor: 0,
@@ -550,7 +550,7 @@ function createPotions() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_pot_30',
                 name: 'Elmas Deri',
-                icon: '💎',
+                icon: '',
                 description: '1 dövüş boyunca +26 Zırh, +%16 Blok sağlar.',
                 bonusDamage: 0,
                 bonusArmor: 26,
@@ -572,7 +572,7 @@ function createPotions() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_pot_31',
                 name: 'Gece Avcısı',
-                icon: '🌒',
+                icon: '',
                 description: '1 dövüş boyunca +18 Hasar, +8 Hız, +%16 Kritik, +%8 Blok sağlar.',
                 bonusDamage: 18,
                 bonusArmor: 0,
@@ -605,7 +605,7 @@ function createPotions() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_pot_33',
                 name: 'Ejder Ateşi',
-                icon: '🐉',
+                icon: '',
                 description: '1 dövüş boyunca +28 Hasar, +8 Zırh, +6 Hız, +%10 Kritik sağlar.',
                 bonusDamage: 28,
                 bonusArmor: 8,
@@ -627,7 +627,7 @@ function createPotions() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_pot_34',
                 name: 'Ölümcül İsabet',
-                icon: '🎯',
+                icon: '',
                 description: '1 dövüş boyunca +12 Hasar, +8 Hız, +%20 Kritik sağlar.',
                 bonusDamage: 12,
                 bonusArmor: 0,
@@ -660,7 +660,7 @@ function createPotions() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_pot_36',
                 name: 'Aegis Kalkanı',
-                icon: '🔰',
+                icon: '',
                 description: '1 dövüş boyunca +30 Zırh, +%18 Blok sağlar.',
                 bonusDamage: 0,
                 bonusArmor: 30,
@@ -682,7 +682,7 @@ function createPotions() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_pot_37',
                 name: 'Fırtına Efendisi',
-                icon: '⛈️',
+                icon: '',
                 description: '1 dövüş boyunca +22 Hasar, +10 Zırh, +12 Hız, +%12 Kritik, +%10 Blok sağlar.',
                 bonusDamage: 22,
                 bonusArmor: 10,
@@ -715,7 +715,7 @@ function createPotions() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_pot_39',
                 name: 'Komutan Heybeti',
-                icon: '👑',
+                icon: '',
                 description: '1 dövüş boyunca +26 Hasar, +16 Zırh, +8 Hız, +%12 Kritik, +%8 Blok sağlar.',
                 bonusDamage: 26,
                 bonusArmor: 16,
@@ -748,7 +748,7 @@ function createPotions() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_pot_41',
                 name: 'İlahi Güç',
-                icon: '✨',
+                icon: '',
                 description: '1 dövüş boyunca +32 Hasar, +18 Zırh, +8 Hız, +%14 Kritik sağlar.',
                 bonusDamage: 32,
                 bonusArmor: 18,
@@ -781,7 +781,7 @@ function createPotions() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_pot_43',
                 name: 'Yıldız Dansı',
-                icon: '🌌',
+                icon: '',
                 description: '1 dövüş boyunca +25 Hasar, +16 Hız, +%18 Kritik, +%12 Blok sağlar.',
                 bonusDamage: 25,
                 bonusArmor: 0,
@@ -814,7 +814,7 @@ function createPotions() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_pot_45',
                 name: 'Zaman Akışı',
-                icon: '⏳',
+                icon: '',
                 description: '1 dövüş boyunca +15 Hasar, +22 Hız, +%16 Kritik, +%16 Blok sağlar.',
                 bonusDamage: 15,
                 bonusArmor: 0,
@@ -847,7 +847,7 @@ function createPotions() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_pot_47',
                 name: 'Titan Gazabı',
-                icon: '🌋',
+                icon: '',
                 description: '1 dövüş boyunca +40 Hasar, +20 Zırh, +8 Hız, +%16 Kritik, +%10 Blok sağlar.',
                 bonusDamage: 40,
                 bonusArmor: 20,
@@ -869,7 +869,7 @@ function createPotions() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_pot_48',
                 name: 'Yenilmez Zırh',
-                icon: '🛡️',
+                icon: '',
                 description: '1 dövüş boyunca +25 Hasar, +35 Zırh, +10 Hız, +%10 Kritik, +%20 Blok sağlar.',
                 bonusDamage: 25,
                 bonusArmor: 35,
@@ -902,7 +902,7 @@ function createPotions() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_pot_50',
                 name: 'Hükümdar Kudreti',
-                icon: '⚜️',
+                icon: '',
                 description: '1 dövüş boyunca +35 Hasar, +25 Zırh, +14 Hız, +%20 Kritik, +%15 Blok sağlar.',
                 bonusDamage: 35,
                 bonusArmor: 25,
@@ -929,7 +929,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_01',
                 name: 'Engerek Zehri',
-                icon: '🐍',
+                icon: '',
                 description: 'Silaha sürülür; sonraki dövüşte darbelerinde %35 şansla zehir bulaştırır (+7 Zehir Hasarı).',
                 bonusDamage: 0,
                 bonusArmor: 0,
@@ -956,7 +956,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_02',
                 name: 'Yanmaz Katran',
-                icon: '🛡️',
+                icon: '',
                 description: 'Zırha ve tene sürülür; dövüş boyunca gelen darbelerin şiddetini %12 kırar.',
                 bonusDamage: 0,
                 bonusArmor: 6,
@@ -983,7 +983,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_03',
                 name: 'Yakıcı Çıra',
-                icon: '🔥',
+                icon: '',
                 description: 'Silaha sürülür; %30 şansla düşmanı alevlendirip yakar (+8 Alev Hasarı).',
                 bonusDamage: 4,
                 bonusArmor: 0,
@@ -1010,7 +1010,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_04',
                 name: 'Buzul Kırağı',
-                icon: '❄️',
+                icon: '',
                 description: 'Silaha sürülür; %30 şansla hasmın etini dondurarak uzuvlarını sızlatır (+8 Buzul Hasarı).',
                 bonusDamage: 0,
                 bonusArmor: 0,
@@ -1037,7 +1037,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_05',
                 name: 'Taş Deri',
-                icon: '🛡️',
+                icon: '',
                 description: 'Omuz ve göğse sürülür; 1 dövüş boyunca +12 Zırh ve +%8 Blok sağlar.',
                 bonusDamage: 0,
                 bonusArmor: 12,
@@ -1064,7 +1064,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_06',
                 name: 'Kara Akrep',
-                icon: '🐍',
+                icon: '',
                 description: 'Bıçak veya mızrağa sürülür; %38 şansla sinsi toksin akıtır (+9 Zehir Hasarı).',
                 bonusDamage: 0,
                 bonusArmor: 0,
@@ -1091,7 +1091,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_07',
                 name: 'Kızıl Sülük',
-                icon: '🩸',
+                icon: '',
                 description: 'Silaha sürülür; vurulan hasarın %10\'u kadar dövüşçüye can sağaltır.',
                 bonusDamage: 2,
                 bonusArmor: 0,
@@ -1118,7 +1118,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_08',
                 name: 'Kükürtlü Köz',
-                icon: '🔥',
+                icon: '',
                 description: 'Kılıç ağzına sürülür; %35 şansla zırhı eriten kıvılcım saçar (+10 Alev Hasarı).',
                 bonusDamage: 5,
                 bonusArmor: 0,
@@ -1145,7 +1145,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_09',
                 name: 'Ayaz Yosunu',
-                icon: '❄️',
+                icon: '',
                 description: 'Silaha sürülür; %35 şansla hasmın gardını uyuşturur (+10 Buzul Hasarı).',
                 bonusDamage: 0,
                 bonusArmor: 0,
@@ -1172,7 +1172,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_10',
                 name: 'Geyik Tendonu',
-                icon: '🛡️',
+                icon: '',
                 description: 'Bacaklara sürülür; dövüş boyunca +8 Hız ve +%10 Kaçınma kazandırır.',
                 bonusDamage: 0,
                 bonusArmor: 0,
@@ -1199,7 +1199,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_11',
                 name: 'Yaban Domuzu',
-                icon: '🛡️',
+                icon: '',
                 description: 'Zırh plakalarına sürülür; darbelerin %15\'ini yumuşatır.',
                 bonusDamage: 0,
                 bonusArmor: 10,
@@ -1226,7 +1226,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_12',
                 name: 'Zehirli Sarmaşık',
-                icon: '🐍',
+                icon: '',
                 description: 'Menzilli veya yakın silaha sürülür; %40 şansla +11 Zehir hasarı bırakır.',
                 bonusDamage: 0,
                 bonusArmor: 0,
@@ -1253,7 +1253,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_13',
                 name: 'Kuzey Kurt',
-                icon: '🍯',
+                icon: '',
                 description: 'Namluya sürülür; +10 Hasar ve +%8 Kritik vuruş şansı sağlar.',
                 bonusDamage: 10,
                 bonusArmor: 0,
@@ -1280,7 +1280,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_14',
                 name: 'Ejderha Pulu',
-                icon: '🔥',
+                icon: '',
                 description: 'Silaha sürülür; %38 şansla +12 yakıcı alev patlatır.',
                 bonusDamage: 6,
                 bonusArmor: 0,
@@ -1307,7 +1307,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_15',
                 name: 'Dulçadır Örümceği',
-                icon: '🐍',
+                icon: '',
                 description: 'Bıçak ve oklara sürülür; %42 şansla +13 felç edici zehir akıtır.',
                 bonusDamage: 0,
                 bonusArmor: 0,
@@ -1334,7 +1334,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_16',
                 name: 'Kutup Ayısı',
-                icon: '🛡️',
+                icon: '',
                 description: 'Gövdeye sürülür; +15 Zırh verir ve gelen hasarı %16 kırar.',
                 bonusDamage: 0,
                 bonusArmor: 15,
@@ -1361,7 +1361,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_17',
                 name: 'Kıvılcım Çeliği',
-                icon: '🔥',
+                icon: '',
                 description: 'Kılıç oluklarına sürülür; %40 şansla +14 elektrikli alev saçar.',
                 bonusDamage: 8,
                 bonusArmor: 0,
@@ -1388,7 +1388,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_18',
                 name: 'Donmuş Nehir',
-                icon: '❄️',
+                icon: '',
                 description: 'Mızrak ve oklara sürülür; %40 şansla +13 dondurucu ayaz bırakır.',
                 bonusDamage: 0,
                 bonusArmor: 0,
@@ -1415,7 +1415,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_19',
                 name: 'Kan Sülüğü',
-                icon: '🩸',
+                icon: '',
                 description: 'Silaha sürülür; vurulan hasarın %13\'ünü can olarak emdirir.',
                 bonusDamage: 4,
                 bonusArmor: 0,
@@ -1442,7 +1442,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_20',
                 name: 'Çelik Yiyen',
-                icon: '🍯',
+                icon: '',
                 description: 'Silaha sürülür; hasmın zırhını çürütür, +12 doğrudan hasar ve zırh delme ekler.',
                 bonusDamage: 12,
                 bonusArmor: 0,
@@ -1469,7 +1469,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_21',
                 name: 'Mor Mantar',
-                icon: '🐍',
+                icon: '',
                 description: 'Silah ucuna sürülür; %45 şansla +15 mor spor zehri bırakır.',
                 bonusDamage: 0,
                 bonusArmor: 0,
@@ -1496,7 +1496,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_22',
                 name: 'Granit Çamuru',
-                icon: '🛡️',
+                icon: '',
                 description: 'Zırha sıvanır; gelen darbelerin hasarını %18 azaltır ve +18 Zırh verir.',
                 bonusDamage: 0,
                 bonusArmor: 18,
@@ -1523,7 +1523,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_23',
                 name: 'Volkanik Lav',
-                icon: '🔥',
+                icon: '',
                 description: 'Silaha sürülür; %42 şansla +16 lav yangını patlatır.',
                 bonusDamage: 8,
                 bonusArmor: 0,
@@ -1550,7 +1550,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_24',
                 name: 'Kutup Fırtınası',
-                icon: '❄️',
+                icon: '',
                 description: 'Silaha sürülür; %42 şansla +15 buzul çatlağı bırakır.',
                 bonusDamage: 0,
                 bonusArmor: 0,
@@ -1577,7 +1577,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_25',
                 name: 'Şahmeran Nefesi',
-                icon: '🐍',
+                icon: '',
                 description: 'Silaha sürülür; %46 şansla +17 amansız zehir akıtır.',
                 bonusDamage: 0,
                 bonusArmor: 0,
@@ -1604,7 +1604,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_26',
                 name: 'Kraliyet Muhafızı',
-                icon: '🍯',
+                icon: '',
                 description: 'Kılıç ve baltalara sürülür; +16 Hasar ve +%12 Kritik vuruş şansı sağlar.',
                 bonusDamage: 16,
                 bonusArmor: 0,
@@ -1631,7 +1631,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_27',
                 name: 'Cehennem İfriti',
-                icon: '🔥',
+                icon: '',
                 description: 'Silaha sürülür; %45 şansla +18 yakıcı ifrit ateşi saçar.',
                 bonusDamage: 10,
                 bonusArmor: 0,
@@ -1658,7 +1658,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_28',
                 name: 'Titan Zırh',
-                icon: '🛡️',
+                icon: '',
                 description: 'Gövdeye sıvanır; darbelerin %20\'sini yumuşatır ve +22 Zırh ekler.',
                 bonusDamage: 0,
                 bonusArmor: 22,
@@ -1685,7 +1685,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_29',
                 name: 'Kara Dul',
-                icon: '🐍',
+                icon: '',
                 description: 'Silaha sürülür; %48 şansla +19 ağır zehir enjekte eder.',
                 bonusDamage: 0,
                 bonusArmor: 0,
@@ -1712,7 +1712,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_30',
                 name: 'Sonsuz Kış',
-                icon: '❄️',
+                icon: '',
                 description: 'Silaha sürülür; %45 şansla +18 ebedi donma hasarı ekler.',
                 bonusDamage: 0,
                 bonusArmor: 0,
@@ -1739,7 +1739,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_31',
                 name: 'Vampir Yarasa',
-                icon: '🩸',
+                icon: '',
                 description: 'Silaha sürülür; vurulan hasarın %16\'sını doğrudan can olarak emer.',
                 bonusDamage: 6,
                 bonusArmor: 0,
@@ -1766,7 +1766,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_32',
                 name: 'Meteor Kor',
-                icon: '🔥',
+                icon: '',
                 description: 'Silaha sürülür; %48 şansla +20 meteor ateşi patlatır.',
                 bonusDamage: 12,
                 bonusArmor: 0,
@@ -1793,7 +1793,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_33',
                 name: 'Engerek Şahı',
-                icon: '🐍',
+                icon: '',
                 description: 'Silaha sürülür; %50 şansla +21 yakıcı engerek zehri salgılar.',
                 bonusDamage: 0,
                 bonusArmor: 0,
@@ -1820,7 +1820,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_34',
                 name: 'Aegis Kalkan',
-                icon: '🛡️',
+                icon: '',
                 description: 'Zırha sıvanır; alınan hasarı %22 kırar ve +25 Zırh verir.',
                 bonusDamage: 0,
                 bonusArmor: 25,
@@ -1847,7 +1847,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_35',
                 name: 'Buzul Ejderhası',
-                icon: '❄️',
+                icon: '',
                 description: 'Silaha sürülür; %48 şansla +20 dondurucu ejderha ayazı saçar.',
                 bonusDamage: 0,
                 bonusArmor: 0,
@@ -1874,7 +1874,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_36',
                 name: 'Kan Ritüeli',
-                icon: '🩸',
+                icon: '',
                 description: 'Silaha sürülür; vurulan hasarın %18\'ini cana dönüştürür.',
                 bonusDamage: 8,
                 bonusArmor: 0,
@@ -1901,7 +1901,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_37',
                 name: 'Cehennem Fırını',
-                icon: '🔥',
+                icon: '',
                 description: 'Silaha sürülür; %50 şansla +22 cehennem közü saçar.',
                 bonusDamage: 14,
                 bonusArmor: 0,
@@ -1928,7 +1928,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_38',
                 name: 'Akrep Tanrısı',
-                icon: '🐍',
+                icon: '',
                 description: 'Silaha sürülür; %52 şansla +23 ölümcül sokma zehri uygular.',
                 bonusDamage: 0,
                 bonusArmor: 0,
@@ -1955,7 +1955,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_39',
                 name: 'Elmas Kabuk',
-                icon: '🛡️',
+                icon: '',
                 description: 'Zırha sürülür; darbeleri %24 oranında yumuşatır.',
                 bonusDamage: 0,
                 bonusArmor: 28,
@@ -1982,7 +1982,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_40',
                 name: 'Mutlak Sıfır',
-                icon: '❄️',
+                icon: '',
                 description: 'Silaha sürülür; %50 şansla +22 mutlak donma hasarı verir.',
                 bonusDamage: 0,
                 bonusArmor: 0,
@@ -2009,7 +2009,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_41',
                 name: 'Kıyamet Lavı',
-                icon: '🔥',
+                icon: '',
                 description: 'Silaha sürülür; %54 şansla +25 zırh eriten ilahi lav saçar.',
                 bonusDamage: 16,
                 bonusArmor: 0,
@@ -2036,7 +2036,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_42',
                 name: 'Yeraltı Zebanisi',
-                icon: '🐍',
+                icon: '',
                 description: 'Silaha sürülür; %55 şansla +26 ruh çürüten kara zehir bırakır.',
                 bonusDamage: 0,
                 bonusArmor: 0,
@@ -2063,7 +2063,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_43',
                 name: 'Kadim Ejder',
-                icon: '🩸',
+                icon: '',
                 description: 'Silaha sürülür; hasarın %20\'sini cana çeker ve +14 Hasar verir.',
                 bonusDamage: 14,
                 bonusArmor: 0,
@@ -2090,7 +2090,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_44',
                 name: 'Sonsuz Buz',
-                icon: '❄️',
+                icon: '',
                 description: 'Silaha sürülür; %54 şansla +25 ebedi buzul hasarı saçar.',
                 bonusDamage: 0,
                 bonusArmor: 0,
@@ -2117,7 +2117,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_45',
                 name: 'Sarsılmaz Hisar',
-                icon: '🛡️',
+                icon: '',
                 description: 'Zırha sürülür; gelen tüm darbeleri %26 kırar ve +32 Zırh ekler.',
                 bonusDamage: 0,
                 bonusArmor: 32,
@@ -2144,7 +2144,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_46',
                 name: 'Güneş Harı',
-                icon: '🔥',
+                icon: '',
                 description: 'Silaha sürülür; %58 şansla +28 güneş ateşi patlatır.',
                 bonusDamage: 18,
                 bonusArmor: 0,
@@ -2171,7 +2171,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_47',
                 name: 'Medusa Bakışı',
-                icon: '🐍',
+                icon: '',
                 description: 'Silaha sürülür; %60 şansla +30 taşlaştırıcı felç zehri bırakır.',
                 bonusDamage: 0,
                 bonusArmor: 0,
@@ -2198,7 +2198,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_48',
                 name: 'Kutsi Kan',
-                icon: '🩸',
+                icon: '',
                 description: 'Silaha sürülür; hasarın %24\'ünü anında cana dönüştürür.',
                 bonusDamage: 16,
                 bonusArmor: 0,
@@ -2225,7 +2225,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_49',
                 name: 'Mutlak Çelik',
-                icon: '🍯',
+                icon: '',
                 description: 'Silaha sürülür; +28 saf Hasar, +%18 Kritik ve +%15 İsabet sağlar.',
                 bonusDamage: 28,
                 bonusArmor: 0,
@@ -2252,7 +2252,7 @@ function createOintments() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_oint_50',
                 name: 'Taş Hisar',
-                icon: '🐍',
+                icon: '',
                 description: 'Silaha ve zırha sürülür; %55 Alev (+25), %55 Zehir (+25) ve %25 Darbe indirimi bahşeder.',
                 bonusDamage: 20,
                 bonusArmor: 20,
@@ -2284,7 +2284,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_01',
                 name: 'Kekik Nefesi',
-                icon: '🌿',
+                icon: '',
                 description: '1 dövüş boyunca +2 Hasar, +2 Zırh dinçliği verir.',
                 bonusDamage: 2,
                 bonusArmor: 2,
@@ -2303,7 +2303,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_02',
                 name: 'Reçine Kalkanı',
-                icon: '🌲',
+                icon: '',
                 description: '1 dövüş boyunca +0 Hasar, +4 Zırh dinçliği verir.',
                 bonusDamage: 0,
                 bonusArmor: 4,
@@ -2333,7 +2333,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_04',
                 name: 'Kantaron Merhemi',
-                icon: '🌼',
+                icon: '',
                 description: '1 dövüş boyunca +0 Hasar, +3 Zırh dinçliği verir.',
                 bonusDamage: 0,
                 bonusArmor: 3,
@@ -2352,7 +2352,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_05',
                 name: 'Adaçayı Zindeliği',
-                icon: '🍃',
+                icon: '',
                 description: '1 dövüş boyunca +3 Hasar, +0 Zırh dinçliği verir.',
                 bonusDamage: 3,
                 bonusArmor: 0,
@@ -2371,7 +2371,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_06',
                 name: 'Buz Çiçeği Serinliği',
-                icon: '❄️',
+                icon: '',
                 description: '1 dövüş boyunca +0 Hasar, +4 Zırh dinçliği verir.',
                 bonusDamage: 0,
                 bonusArmor: 4,
@@ -2390,7 +2390,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_07',
                 name: 'Boynuz Direnci',
-                icon: '🌾',
+                icon: '',
                 description: '1 dövüş boyunca +4 Hasar, +2 Zırh dinçliği verir.',
                 bonusDamage: 4,
                 bonusArmor: 2,
@@ -2420,7 +2420,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_09',
                 name: 'Isırgan Zindeliği',
-                icon: '🌿',
+                icon: '',
                 description: '1 dövüş boyunca +3 Hasar, +3 Zırh dinçliği verir.',
                 bonusDamage: 3,
                 bonusArmor: 3,
@@ -2439,7 +2439,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_10',
                 name: 'Ceviz Kürü',
-                icon: '🍵',
+                icon: '',
                 description: '1 dövüş boyunca +0 Hasar, +5 Zırh dinçliği verir.',
                 bonusDamage: 0,
                 bonusArmor: 5,
@@ -2458,7 +2458,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_11',
                 name: 'Sakin Nabız',
-                icon: '🌸',
+                icon: '',
                 description: '1 dövüş boyunca +4 Hasar, +0 Zırh dinçliği verir.',
                 bonusDamage: 4,
                 bonusArmor: 0,
@@ -2477,7 +2477,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_12',
                 name: 'Meşe Zırhı',
-                icon: '🪵',
+                icon: '',
                 description: '1 dövüş boyunca +0 Hasar, +6 Zırh dinçliği verir.',
                 bonusDamage: 0,
                 bonusArmor: 6,
@@ -2496,7 +2496,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_13',
                 name: 'Kaya Kekiği',
-                icon: '🌿',
+                icon: '',
                 description: '1 dövüş boyunca +5 Hasar, +3 Zırh dinçliği verir.',
                 bonusDamage: 5,
                 bonusArmor: 3,
@@ -2515,7 +2515,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_14',
                 name: 'Geven Nefesi',
-                icon: '🍬',
+                icon: '',
                 description: '1 dövüş boyunca +0 Hasar, +6 Zırh dinçliği verir.',
                 bonusDamage: 0,
                 bonusArmor: 6,
@@ -2534,7 +2534,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_15',
                 name: 'Kurt Kökü',
-                icon: '🥔',
+                icon: '',
                 description: '1 dövüş boyunca +6 Hasar, +0 Zırh dinçliği verir.',
                 bonusDamage: 6,
                 bonusArmor: 0,
@@ -2553,7 +2553,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_16',
                 name: 'Arınma Tohumu',
-                icon: '🪷',
+                icon: '',
                 description: '1 dövüş boyunca +0 Hasar, +5 Zırh dinçliği verir.',
                 bonusDamage: 0,
                 bonusArmor: 5,
@@ -2572,7 +2572,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_17',
                 name: 'Ayaz Gülü',
-                icon: '🌹',
+                icon: '',
                 description: '1 dövüş boyunca +5 Hasar, +5 Zırh dinçliği verir.',
                 bonusDamage: 5,
                 bonusArmor: 5,
@@ -2591,7 +2591,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_18',
                 name: 'Cinseng Dinçliği',
-                icon: '🌱',
+                icon: '',
                 description: '1 dövüş boyunca +7 Hasar, +3 Zırh dinçliği verir.',
                 bonusDamage: 7,
                 bonusArmor: 3,
@@ -2610,7 +2610,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_19',
                 name: 'Zeytin Şifası',
-                icon: '🫒',
+                icon: '',
                 description: '1 dövüş boyunca +0 Hasar, +7 Zırh dinçliği verir.',
                 bonusDamage: 0,
                 bonusArmor: 7,
@@ -2629,7 +2629,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_20',
                 name: 'Mağara Uyuşması',
-                icon: '🍄',
+                icon: '',
                 description: '1 dövüş boyunca +6 Hasar, +4 Zırh dinçliği verir.',
                 bonusDamage: 6,
                 bonusArmor: 4,
@@ -2648,7 +2648,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_21',
                 name: 'Pençe Dinamizmi',
-                icon: '🌾',
+                icon: '',
                 description: '1 dövüş boyunca +8 Hasar, +0 Zırh dinçliği verir.',
                 bonusDamage: 8,
                 bonusArmor: 0,
@@ -2667,7 +2667,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_22',
                 name: 'Garnizon Çayı',
-                icon: '🫖',
+                icon: '',
                 description: '1 dövüş boyunca +4 Hasar, +6 Zırh dinçliği verir.',
                 bonusDamage: 4,
                 bonusArmor: 6,
@@ -2686,7 +2686,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_23',
                 name: 'Zümrüt Yosun',
-                icon: '🟢',
+                icon: '',
                 description: '1 dövüş boyunca +0 Hasar, +8 Zırh dinçliği verir.',
                 bonusDamage: 0,
                 bonusArmor: 8,
@@ -2705,7 +2705,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_24',
                 name: 'Kızıl Filiz',
-                icon: '🌿',
+                icon: '',
                 description: '1 dövüş boyunca +7 Hasar, +4 Zırh dinçliği verir.',
                 bonusDamage: 7,
                 bonusArmor: 4,
@@ -2724,7 +2724,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_25',
                 name: 'Kaplan Ateşi',
-                icon: '🧅',
+                icon: '',
                 description: '1 dövüş boyunca +8 Hasar, +3 Zırh dinçliği verir.',
                 bonusDamage: 8,
                 bonusArmor: 3,
@@ -2743,7 +2743,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_26',
                 name: 'Altın Çiçek',
-                icon: '🌻',
+                icon: '',
                 description: '1 dövüş boyunca +8 Hasar, +5 Zırh dinçliği verir.',
                 bonusDamage: 8,
                 bonusArmor: 5,
@@ -2762,7 +2762,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_27',
                 name: 'Titan Kökü',
-                icon: '🪵',
+                icon: '',
                 description: '1 dövüş boyunca +10 Hasar, +6 Zırh dinçliği verir.',
                 bonusDamage: 10,
                 bonusArmor: 6,
@@ -2781,7 +2781,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_28',
                 name: 'Ardıç Şifası',
-                icon: '🫐',
+                icon: '',
                 description: '1 dövüş boyunca +6 Hasar, +8 Zırh dinçliği verir.',
                 bonusDamage: 6,
                 bonusArmor: 8,
@@ -2800,7 +2800,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_29',
                 name: 'Ejder Sarmaşığı',
-                icon: '🐉',
+                icon: '',
                 description: '1 dövüş boyunca +11 Hasar, +4 Zırh dinçliği verir.',
                 bonusDamage: 11,
                 bonusArmor: 4,
@@ -2819,7 +2819,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_30',
                 name: 'Kardelen Şifası',
-                icon: '❄️',
+                icon: '',
                 description: '1 dövüş boyunca +0 Hasar, +10 Zırh dinçliği verir.',
                 bonusDamage: 0,
                 bonusArmor: 10,
@@ -2838,7 +2838,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_31',
                 name: 'Kraliyet Mantarı',
-                icon: '🍄',
+                icon: '',
                 description: '1 dövüş boyunca +8 Hasar, +8 Zırh dinçliği verir.',
                 bonusDamage: 8,
                 bonusArmor: 8,
@@ -2857,7 +2857,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_32',
                 name: 'Panzehir Otu',
-                icon: '🌿',
+                icon: '',
                 description: '1 dövüş boyunca +12 Hasar, +0 Zırh dinçliği verir.',
                 bonusDamage: 12,
                 bonusArmor: 0,
@@ -2876,7 +2876,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_33',
                 name: 'Çam Balı Kalkanı',
-                icon: '🍯',
+                icon: '',
                 description: '1 dövüş boyunca +0 Hasar, +12 Zırh dinçliği verir.',
                 bonusDamage: 0,
                 bonusArmor: 12,
@@ -2895,7 +2895,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_34',
                 name: 'Gök Yosunu',
-                icon: '💜',
+                icon: '',
                 description: '1 dövüş boyunca +10 Hasar, +8 Zırh dinçliği verir.',
                 bonusDamage: 10,
                 bonusArmor: 8,
@@ -2914,7 +2914,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_35',
                 name: 'Cerrah Lapası',
-                icon: '🥣',
+                icon: '',
                 description: '1 dövüş boyunca +0 Hasar, +14 Zırh dinçliği verir.',
                 bonusDamage: 0,
                 bonusArmor: 14,
@@ -2933,7 +2933,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_36',
                 name: 'İncir Kuvveti',
-                icon: '🍈',
+                icon: '',
                 description: '1 dövüş boyunca +12 Hasar, +5 Zırh dinçliği verir.',
                 bonusDamage: 12,
                 bonusArmor: 5,
@@ -2952,7 +2952,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_37',
                 name: 'Yıldız Çiçeği',
-                icon: '✨',
+                icon: '',
                 description: '1 dövüş boyunca +14 Hasar, +6 Zırh dinçliği verir.',
                 bonusDamage: 14,
                 bonusArmor: 6,
@@ -2971,7 +2971,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_38',
                 name: 'Asırlık Sıhhat',
-                icon: '🌳',
+                icon: '',
                 description: '1 dövüş boyunca +0 Hasar, +16 Zırh dinçliği verir.',
                 bonusDamage: 0,
                 bonusArmor: 16,
@@ -2990,7 +2990,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_39',
                 name: 'Köz Otu Sıcaklığı',
-                icon: '🔥',
+                icon: '',
                 description: '1 dövüş boyunca +15 Hasar, +5 Zırh dinçliği verir.',
                 bonusDamage: 15,
                 bonusArmor: 5,
@@ -3009,7 +3009,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_40',
                 name: 'Usta Harmanı',
-                icon: '🍵',
+                icon: '',
                 description: '1 dövüş boyunca +10 Hasar, +10 Zırh dinçliği verir.',
                 bonusDamage: 10,
                 bonusArmor: 10,
@@ -3028,7 +3028,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_41',
                 name: 'Şafak Şifası',
-                icon: '🌅',
+                icon: '',
                 description: '1 dövüş boyunca +16 Hasar, +8 Zırh dinçliği verir.',
                 bonusDamage: 16,
                 bonusArmor: 8,
@@ -3047,7 +3047,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_42',
                 name: 'Kemik Kaynatıcı',
-                icon: '🦴',
+                icon: '',
                 description: '1 dövüş boyunca +12 Hasar, +14 Zırh dinçliği verir.',
                 bonusDamage: 12,
                 bonusArmor: 14,
@@ -3066,7 +3066,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_43',
                 name: 'Kutsal Lotus',
-                icon: '🪷',
+                icon: '',
                 description: '1 dövüş boyunca +18 Hasar, +10 Zırh dinçliği verir.',
                 bonusDamage: 18,
                 bonusArmor: 10,
@@ -3085,7 +3085,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_44',
                 name: 'Hayat Ağacı',
-                icon: '🌲',
+                icon: '',
                 description: '1 dövüş boyunca +0 Hasar, +18 Zırh dinçliği verir.',
                 bonusDamage: 0,
                 bonusArmor: 18,
@@ -3104,7 +3104,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_45',
                 name: 'Kıyamet Azmi',
-                icon: '🌋',
+                icon: '',
                 description: '1 dövüş boyunca +20 Hasar, +12 Zırh dinçliği verir.',
                 bonusDamage: 20,
                 bonusArmor: 12,
@@ -3123,7 +3123,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_46',
                 name: 'Göksel Çiy',
-                icon: '💧',
+                icon: '',
                 description: '1 dövüş boyunca +15 Hasar, +15 Zırh dinçliği verir.',
                 bonusDamage: 15,
                 bonusArmor: 15,
@@ -3142,7 +3142,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_47',
                 name: 'Anka Dirilişi',
-                icon: '🪶',
+                icon: '',
                 description: '1 dövüş boyunca +22 Hasar, +10 Zırh dinçliği verir.',
                 bonusDamage: 22,
                 bonusArmor: 10,
@@ -3161,7 +3161,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_48',
                 name: 'Ebedi Gençlik',
-                icon: '⏳',
+                icon: '',
                 description: '1 dövüş boyunca +18 Hasar, +16 Zırh dinçliği verir.',
                 bonusDamage: 18,
                 bonusArmor: 16,
@@ -3180,7 +3180,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_49',
                 name: 'Güneş Meyvesi',
-                icon: '☀️',
+                icon: '',
                 description: '1 dövüş boyunca +25 Hasar, +12 Zırh dinçliği verir.',
                 bonusDamage: 25,
                 bonusArmor: 12,
@@ -3199,7 +3199,7 @@ function createHerbs() {
             buffEffect: new ActiveBuffEffect({
                 id: 'buff_herb_50',
                 name: 'Doğanın Tacı',
-                icon: '👑',
+                icon: '',
                 description: '1 dövüş boyunca +20 Hasar, +20 Zırh dinçliği verir.',
                 bonusDamage: 20,
                 bonusArmor: 20,

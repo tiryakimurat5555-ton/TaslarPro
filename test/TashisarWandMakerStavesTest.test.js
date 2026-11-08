@@ -45,7 +45,7 @@ test('testTashisarWandMakerStavesAndTomesCompleteVerification', async () => {
     expect(tome.specialTrait).not.toBeNull(); // ${tome.name} için specialTrait tanımlı olmalıdır
     expect(kt.isNotBlank(tome.specialTrait.name)).toBe(true); // Özellik adı dolu olmalıdır
     expect(kt.isNotBlank(tome.specialTrait.description)).toBe(true); // Özellik açıklaması dolu olmalıdır
-    expect(kt.isNotBlank(tome.specialTrait.icon)).toBe(true); // Özellik ikonu dolu olmalıdır
+    // (Emojiler 8 Kasım'da kaldırıldı; ikon alanı artık boş.)
     expect(tome.maxSockets >= 2 && tome.maxSockets <= 3).toBe(true); // ${tome.name} 2 veya 3 sokete sahip olmalıdır
     expect(tome.unlockedSockets >= 1).toBe(true); // ${tome.name} en az 1 açık sokete sahip olmalıdır
   }

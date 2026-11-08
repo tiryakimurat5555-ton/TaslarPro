@@ -28,7 +28,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_aresula_1',
             name: 'Hilal Fırtınası',
-            icon: '🌪️',
+            icon: '',
             type: SkillType.ATTACK,
             tier: 1,
             cooldownTurns: 2,
@@ -38,7 +38,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_aresula_2',
             name: 'Rüzgar Adımı',
-            icon: '💨',
+            icon: '',
             type: SkillType.DEFENSE,
             tier: 1,
             cooldownTurns: 3,
@@ -48,7 +48,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_aresula_3',
             name: 'Kör Eden Toz',
-            icon: '🎯',
+            icon: '',
             type: SkillType.TACTICAL,
             tier: 1,
             cooldownTurns: 3,
@@ -58,7 +58,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_aresula_4',
             name: 'Girdap Vuruşu',
-            icon: '💥',
+            icon: '',
             type: SkillType.ULTIMATE,
             tier: 1,
             cooldownTurns: 4,
@@ -89,7 +89,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_katerina_1',
             name: 'Donuk Dürtüş',
-            icon: '❄️',
+            icon: '',
             type: SkillType.ATTACK,
             tier: 1,
             cooldownTurns: 2,
@@ -99,7 +99,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_katerina_2',
             name: 'Buzul Kalkanı',
-            icon: '🛡️',
+            icon: '',
             type: SkillType.DEFENSE,
             tier: 1,
             cooldownTurns: 3,
@@ -109,7 +109,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_katerina_3',
             name: 'Donduran Nefes',
-            icon: '🎯',
+            icon: '',
             type: SkillType.TACTICAL,
             tier: 1,
             cooldownTurns: 3,
@@ -119,7 +119,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_katerina_4',
             name: 'Kutup Hükmü',
-            icon: '💥',
+            icon: '',
             type: SkillType.ULTIMATE,
             tier: 1,
             cooldownTurns: 4,
@@ -150,7 +150,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_xayah_1',
             name: 'Tüy Yağmuru',
-            icon: '🪶',
+            icon: '',
             type: SkillType.ATTACK,
             tier: 1,
             cooldownTurns: 2,
@@ -160,7 +160,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_xayah_2',
             name: 'Gölge Sıyrılışı',
-            icon: '💨',
+            icon: '',
             type: SkillType.DEFENSE,
             tier: 1,
             cooldownTurns: 3,
@@ -170,7 +170,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_xayah_3',
             name: 'Pençe Kapanı',
-            icon: '🎯',
+            icon: '',
             type: SkillType.TACTICAL,
             tier: 1,
             cooldownTurns: 3,
@@ -180,7 +180,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_xayah_4',
             name: 'Ölümcül Tüy Çekişi',
-            icon: '💥',
+            icon: '',
             type: SkillType.ULTIMATE,
             tier: 1,
             cooldownTurns: 4,
@@ -211,7 +211,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_valeria_1',
             name: 'Yaran Darbe',
-            icon: '⚔️',
+            icon: '',
             type: SkillType.ATTACK,
             tier: 1,
             cooldownTurns: 2,
@@ -221,7 +221,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_valeria_2',
             name: 'Demir Duruş',
-            icon: '🛡️',
+            icon: '',
             type: SkillType.DEFENSE,
             tier: 1,
             cooldownTurns: 3,
@@ -231,7 +231,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_valeria_3',
             name: 'Cesur Meydan Okuma',
-            icon: '🎯',
+            icon: '',
             type: SkillType.TACTICAL,
             tier: 1,
             cooldownTurns: 3,
@@ -241,7 +241,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_valeria_4',
             name: 'Cellat Hükmü',
-            icon: '💥',
+            icon: '',
             type: SkillType.ULTIMATE,
             tier: 1,
             cooldownTurns: 4,
@@ -272,7 +272,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_seraphina_1',
             name: 'Alevli Ok',
-            icon: '🔥',
+            icon: '',
             type: SkillType.ATTACK,
             tier: 1,
             cooldownTurns: 2,
@@ -282,7 +282,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_seraphina_2',
             name: 'Duman Perdesi',
-            icon: '💨',
+            icon: '',
             type: SkillType.DEFENSE,
             tier: 1,
             cooldownTurns: 3,
@@ -292,7 +292,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_seraphina_3',
             name: 'Köz Tuzağı',
-            icon: '🎯',
+            icon: '',
             type: SkillType.TACTICAL,
             tier: 1,
             cooldownTurns: 3,
@@ -302,7 +302,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_seraphina_4',
             name: 'Kızıl Yaylım',
-            icon: '💥',
+            icon: '',
             type: SkillType.ULTIMATE,
             tier: 1,
             cooldownTurns: 4,
@@ -333,7 +333,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_lyra_1',
             name: 'Engerek Isırığı',
-            icon: '🐍',
+            icon: '',
             type: SkillType.ATTACK,
             tier: 1,
             cooldownTurns: 2,
@@ -343,7 +343,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_lyra_2',
             name: 'Gölge Adımı',
-            icon: '🌑',
+            icon: '',
             type: SkillType.DEFENSE,
             tier: 1,
             cooldownTurns: 3,
@@ -353,7 +353,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_lyra_3',
             name: 'Sinir Felci',
-            icon: '🎯',
+            icon: '',
             type: SkillType.TACTICAL,
             tier: 1,
             cooldownTurns: 3,
@@ -363,7 +363,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_lyra_4',
             name: 'Ölümcül Dönüş',
-            icon: '💥',
+            icon: '',
             type: SkillType.ULTIMATE,
             tier: 1,
             cooldownTurns: 4,
@@ -394,7 +394,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_morgana_1',
             name: 'Ruh Sömürüsü',
-            icon: '🔮',
+            icon: '',
             type: SkillType.ATTACK,
             tier: 1,
             cooldownTurns: 2,
@@ -404,7 +404,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_morgana_2',
             name: 'Kemik Duvarı',
-            icon: '🦴',
+            icon: '',
             type: SkillType.DEFENSE,
             tier: 1,
             cooldownTurns: 3,
@@ -414,7 +414,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_morgana_3',
             name: 'Kabus Fısıltısı',
-            icon: '🎯',
+            icon: '',
             type: SkillType.TACTICAL,
             tier: 1,
             cooldownTurns: 3,
@@ -424,7 +424,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_morgana_4',
             name: 'Karanlık Çöküş',
-            icon: '💥',
+            icon: '',
             type: SkillType.ULTIMATE,
             tier: 1,
             cooldownTurns: 4,
@@ -455,7 +455,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_astrid_1',
             name: 'Kurt Isırığı',
-            icon: '🐺',
+            icon: '',
             type: SkillType.ATTACK,
             tier: 1,
             cooldownTurns: 2,
@@ -465,7 +465,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_astrid_2',
             name: 'Savaş Çığlığı',
-            icon: '📢',
+            icon: '',
             type: SkillType.DEFENSE,
             tier: 1,
             cooldownTurns: 3,
@@ -475,7 +475,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_astrid_3',
             name: 'Avcının Hırçınlığı',
-            icon: '🎯',
+            icon: '',
             type: SkillType.TACTICAL,
             tier: 1,
             cooldownTurns: 3,
@@ -485,7 +485,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_astrid_4',
             name: 'Kuzey Fırtınası',
-            icon: '💥',
+            icon: '',
             type: SkillType.ULTIMATE,
             tier: 1,
             cooldownTurns: 4,
@@ -516,7 +516,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_helena_1',
             name: 'Kargı İtişi',
-            icon: '🗡️',
+            icon: '',
             type: SkillType.ATTACK,
             tier: 1,
             cooldownTurns: 2,
@@ -526,7 +526,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_helena_2',
             name: 'Menzil Kilidi',
-            icon: '🛡️',
+            icon: '',
             type: SkillType.DEFENSE,
             tier: 1,
             cooldownTurns: 3,
@@ -536,7 +536,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_helena_3',
             name: 'Tendon Delme',
-            icon: '🎯',
+            icon: '',
             type: SkillType.TACTICAL,
             tier: 1,
             cooldownTurns: 3,
@@ -546,7 +546,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_helena_4',
             name: 'Şaşmaz Saplama',
-            icon: '💥',
+            icon: '',
             type: SkillType.ULTIMATE,
             tier: 1,
             cooldownTurns: 4,
@@ -577,7 +577,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_nyx_1',
             name: 'Biçici Hilal',
-            icon: '🌙',
+            icon: '',
             type: SkillType.ATTACK,
             tier: 1,
             cooldownTurns: 2,
@@ -587,7 +587,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_nyx_2',
             name: 'Gece Peçesi',
-            icon: '🖤',
+            icon: '',
             type: SkillType.DEFENSE,
             tier: 1,
             cooldownTurns: 3,
@@ -597,7 +597,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_nyx_3',
             name: 'Ruh Bağı',
-            icon: '🎯',
+            icon: '',
             type: SkillType.TACTICAL,
             tier: 1,
             cooldownTurns: 3,
@@ -607,7 +607,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_nyx_4',
             name: 'İnfaz Tırpanı',
-            icon: '💥',
+            icon: '',
             type: SkillType.ULTIMATE,
             tier: 1,
             cooldownTurns: 4,
@@ -638,7 +638,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_rowan_1',
             name: 'Kızıl Çentik',
-            icon: '🪓',
+            icon: '',
             type: SkillType.ATTACK,
             tier: 1,
             cooldownTurns: 2,
@@ -648,7 +648,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_rowan_2',
             name: 'Kemik Siper',
-            icon: '🛡️',
+            icon: '',
             type: SkillType.DEFENSE,
             tier: 1,
             cooldownTurns: 3,
@@ -658,7 +658,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_rowan_3',
             name: 'Öfke Narası',
-            icon: '😡',
+            icon: '',
             type: SkillType.TACTICAL,
             tier: 1,
             cooldownTurns: 3,
@@ -668,7 +668,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_rowan_4',
             name: 'Kızıl Kıyım',
-            icon: '💥',
+            icon: '',
             type: SkillType.ULTIMATE,
             tier: 1,
             cooldownTurns: 4,
@@ -699,7 +699,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_selene_1',
             name: 'Hilal Kesisi',
-            icon: '⚔️',
+            icon: '',
             type: SkillType.ATTACK,
             tier: 1,
             cooldownTurns: 2,
@@ -709,7 +709,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_selene_2',
             name: 'Ayna Yansıması',
-            icon: '🛡️',
+            icon: '',
             type: SkillType.DEFENSE,
             tier: 1,
             cooldownTurns: 3,
@@ -719,7 +719,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_selene_3',
             name: 'Ay Halesi',
-            icon: '🎯',
+            icon: '',
             type: SkillType.TACTICAL,
             tier: 1,
             cooldownTurns: 3,
@@ -729,7 +729,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_selene_4',
             name: 'Dolunay Gazabı',
-            icon: '💥',
+            icon: '',
             type: SkillType.ULTIMATE,
             tier: 1,
             cooldownTurns: 4,
@@ -760,7 +760,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_yvaine_1',
             name: 'Şafak İğnesi',
-            icon: '🗡️',
+            icon: '',
             type: SkillType.ATTACK,
             tier: 1,
             cooldownTurns: 2,
@@ -770,7 +770,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_yvaine_2',
             name: 'Zarif Yan Adım',
-            icon: '💨',
+            icon: '',
             type: SkillType.DEFENSE,
             tier: 1,
             cooldownTurns: 3,
@@ -780,7 +780,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_yvaine_3',
             name: 'Kılıç Çelmesi',
-            icon: '🎯',
+            icon: '',
             type: SkillType.TACTICAL,
             tier: 1,
             cooldownTurns: 3,
@@ -790,7 +790,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_yvaine_4',
             name: 'Kusursuz Düello',
-            icon: '💥',
+            icon: '',
             type: SkillType.ULTIMATE,
             tier: 1,
             cooldownTurns: 4,
@@ -821,7 +821,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_freya_1',
             name: 'Şampiyon Teberi',
-            icon: '⚔️',
+            icon: '',
             type: SkillType.ATTACK,
             tier: 1,
             cooldownTurns: 2,
@@ -831,7 +831,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_freya_2',
             name: 'Sarsılmaz Hisar',
-            icon: '🏰',
+            icon: '',
             type: SkillType.DEFENSE,
             tier: 1,
             cooldownTurns: 3,
@@ -841,7 +841,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_freya_3',
             name: 'Komutan Emri',
-            icon: '👑',
+            icon: '',
             type: SkillType.TACTICAL,
             tier: 1,
             cooldownTurns: 3,
@@ -851,7 +851,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_freya_4',
             name: 'Taş Hisar Gazabı',
-            icon: '💥',
+            icon: '',
             type: SkillType.ULTIMATE,
             tier: 1,
             cooldownTurns: 4,
@@ -882,7 +882,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_vespera_1',
             name: 'Zehirli Batış',
-            icon: '💉',
+            icon: '',
             type: SkillType.ATTACK,
             tier: 1,
             cooldownTurns: 2,
@@ -892,7 +892,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_vespera_2',
             name: 'Sıvışma',
-            icon: '💨',
+            icon: '',
             type: SkillType.DEFENSE,
             tier: 1,
             cooldownTurns: 3,
@@ -902,7 +902,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_vespera_3',
             name: 'Uyuşturan Dokunuş',
-            icon: '🎯',
+            icon: '',
             type: SkillType.TACTICAL,
             tier: 1,
             cooldownTurns: 3,
@@ -912,7 +912,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_vespera_4',
             name: 'Ölümcül Toksin',
-            icon: '💥',
+            icon: '',
             type: SkillType.ULTIMATE,
             tier: 1,
             cooldownTurns: 4,
@@ -944,7 +944,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_voladmir_1',
             name: 'Kan Süzüşü',
-            icon: '🩸',
+            icon: '',
             type: SkillType.ATTACK,
             tier: 1,
             cooldownTurns: 2,
@@ -954,7 +954,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_voladmir_2',
             name: 'Kızıl Kalkan',
-            icon: '🛡️',
+            icon: '',
             type: SkillType.DEFENSE,
             tier: 1,
             cooldownTurns: 3,
@@ -964,7 +964,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_voladmir_3',
             name: 'Kan Arzusu',
-            icon: '🎯',
+            icon: '',
             type: SkillType.TACTICAL,
             tier: 1,
             cooldownTurns: 3,
@@ -974,7 +974,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_voladmir_4',
             name: 'Kan Hükmü',
-            icon: '💥',
+            icon: '',
             type: SkillType.ULTIMATE,
             tier: 1,
             cooldownTurns: 4,
@@ -1005,7 +1005,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_draven_1',
             name: 'Dönen Balta',
-            icon: '🪓',
+            icon: '',
             type: SkillType.ATTACK,
             tier: 1,
             cooldownTurns: 2,
@@ -1015,7 +1015,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_draven_2',
             name: 'Baltalı Savuşturma',
-            icon: '🛡️',
+            icon: '',
             type: SkillType.DEFENSE,
             tier: 1,
             cooldownTurns: 3,
@@ -1025,7 +1025,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_draven_3',
             name: 'Seyirci Coşkusu',
-            icon: '👏',
+            icon: '',
             type: SkillType.TACTICAL,
             tier: 1,
             cooldownTurns: 3,
@@ -1035,7 +1035,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_draven_4',
             name: 'Ölümcül Giyotin',
-            icon: '💥',
+            icon: '',
             type: SkillType.ULTIMATE,
             tier: 1,
             cooldownTurns: 4,
@@ -1066,7 +1066,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_balthazar_1',
             name: 'Granit Darbe',
-            icon: '🔨',
+            icon: '',
             type: SkillType.ATTACK,
             tier: 1,
             cooldownTurns: 2,
@@ -1076,7 +1076,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_balthazar_2',
             name: 'Taş Deri',
-            icon: '🗿',
+            icon: '',
             type: SkillType.DEFENSE,
             tier: 1,
             cooldownTurns: 3,
@@ -1086,7 +1086,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_balthazar_3',
             name: 'Deprem Vuruşu',
-            icon: '🎯',
+            icon: '',
             type: SkillType.TACTICAL,
             tier: 1,
             cooldownTurns: 3,
@@ -1096,7 +1096,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_balthazar_4',
             name: 'Kıyamet Çöküşü',
-            icon: '💥',
+            icon: '',
             type: SkillType.ULTIMATE,
             tier: 1,
             cooldownTurns: 4,
@@ -1127,7 +1127,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_kaelen_1',
             name: 'Süvari Hamlesi',
-            icon: '🏇',
+            icon: '',
             type: SkillType.ATTACK,
             tier: 1,
             cooldownTurns: 2,
@@ -1137,7 +1137,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_kaelen_2',
             name: 'Rüzgar Manevrası',
-            icon: '💨',
+            icon: '',
             type: SkillType.DEFENSE,
             tier: 1,
             cooldownTurns: 3,
@@ -1147,7 +1147,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_kaelen_3',
             name: 'Kalkan Ezmesi',
-            icon: '🎯',
+            icon: '',
             type: SkillType.TACTICAL,
             tier: 1,
             cooldownTurns: 3,
@@ -1157,7 +1157,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_kaelen_4',
             name: 'Fırtına Akını',
-            icon: '💥',
+            icon: '',
             type: SkillType.ULTIMATE,
             tier: 1,
             cooldownTurns: 4,
@@ -1188,7 +1188,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_lucian_1',
             name: 'Çifte Ok',
-            icon: '🏹',
+            icon: '',
             type: SkillType.ATTACK,
             tier: 1,
             cooldownTurns: 2,
@@ -1198,7 +1198,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_lucian_2',
             name: 'Geriye Takla',
-            icon: '🤸',
+            icon: '',
             type: SkillType.DEFENSE,
             tier: 1,
             cooldownTurns: 3,
@@ -1208,7 +1208,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_lucian_3',
             name: 'Göz Delici',
-            icon: '🎯',
+            icon: '',
             type: SkillType.TACTICAL,
             tier: 1,
             cooldownTurns: 3,
@@ -1218,7 +1218,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_lucian_4',
             name: 'Işık Yaylımı',
-            icon: '💥',
+            icon: '',
             type: SkillType.ULTIMATE,
             tier: 1,
             cooldownTurns: 4,
@@ -1249,7 +1249,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_rorik_1',
             name: 'Örs Darbesi',
-            icon: '🔨',
+            icon: '',
             type: SkillType.ATTACK,
             tier: 1,
             cooldownTurns: 2,
@@ -1259,7 +1259,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_rorik_2',
             name: 'Demirci Göğsü',
-            icon: '🛡️',
+            icon: '',
             type: SkillType.DEFENSE,
             tier: 1,
             cooldownTurns: 3,
@@ -1269,7 +1269,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_rorik_3',
             name: 'Körük Harlaması',
-            icon: '🎯',
+            icon: '',
             type: SkillType.TACTICAL,
             tier: 1,
             cooldownTurns: 3,
@@ -1279,7 +1279,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_rorik_4',
             name: 'Kıvılcım Fırtınası',
-            icon: '💥',
+            icon: '',
             type: SkillType.ULTIMATE,
             tier: 1,
             cooldownTurns: 4,
@@ -1310,7 +1310,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_malakor_1',
             name: 'Gölge Hançeri',
-            icon: '🗡️',
+            icon: '',
             type: SkillType.ATTACK,
             tier: 1,
             cooldownTurns: 2,
@@ -1320,7 +1320,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_malakor_2',
             name: 'Karanlık Zırh',
-            icon: '🌑',
+            icon: '',
             type: SkillType.DEFENSE,
             tier: 1,
             cooldownTurns: 3,
@@ -1330,7 +1330,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_malakor_3',
             name: 'Kabus Bağı',
-            icon: '🎯',
+            icon: '',
             type: SkillType.TACTICAL,
             tier: 1,
             cooldownTurns: 3,
@@ -1340,7 +1340,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_malakor_4',
             name: 'Kara Girdap',
-            icon: '💥',
+            icon: '',
             type: SkillType.ULTIMATE,
             tier: 1,
             cooldownTurns: 4,
@@ -1371,7 +1371,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_viktor_1',
             name: 'Yaylı Yumruk',
-            icon: '🥊',
+            icon: '',
             type: SkillType.ATTACK,
             tier: 1,
             cooldownTurns: 2,
@@ -1381,7 +1381,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_viktor_2',
             name: 'Çelik Kol Siperi',
-            icon: '🛡️',
+            icon: '',
             type: SkillType.DEFENSE,
             tier: 1,
             cooldownTurns: 3,
@@ -1391,7 +1391,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_viktor_3',
             name: 'Duman Fırlatıcı',
-            icon: '🎯',
+            icon: '',
             type: SkillType.TACTICAL,
             tier: 1,
             cooldownTurns: 3,
@@ -1401,7 +1401,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_viktor_4',
             name: 'Hidrolik Ezme',
-            icon: '💥',
+            icon: '',
             type: SkillType.ULTIMATE,
             tier: 1,
             cooldownTurns: 4,
@@ -1432,7 +1432,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_darius_1',
             name: 'Biçen Teber',
-            icon: '🪓',
+            icon: '',
             type: SkillType.ATTACK,
             tier: 1,
             cooldownTurns: 2,
@@ -1442,7 +1442,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_darius_2',
             name: 'Savaş Duruşu',
-            icon: '🛡️',
+            icon: '',
             type: SkillType.DEFENSE,
             tier: 1,
             cooldownTurns: 3,
@@ -1452,7 +1452,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_darius_3',
             name: 'Komutan Kükremesi',
-            icon: '📢',
+            icon: '',
             type: SkillType.TACTICAL,
             tier: 1,
             cooldownTurns: 3,
@@ -1462,7 +1462,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_darius_4',
             name: 'Kıyaslanamaz Gazap',
-            icon: '💥',
+            icon: '',
             type: SkillType.ULTIMATE,
             tier: 1,
             cooldownTurns: 4,
@@ -1493,7 +1493,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_garek_1',
             name: 'Ayı Tırmığı',
-            icon: '🐾',
+            icon: '',
             type: SkillType.ATTACK,
             tier: 1,
             cooldownTurns: 2,
@@ -1503,7 +1503,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_garek_2',
             name: 'Kalın Post',
-            icon: '🐻',
+            icon: '',
             type: SkillType.DEFENSE,
             tier: 1,
             cooldownTurns: 3,
@@ -1513,7 +1513,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_garek_3',
             name: 'Ayı Kucaklaması',
-            icon: '🎯',
+            icon: '',
             type: SkillType.TACTICAL,
             tier: 1,
             cooldownTurns: 3,
@@ -1523,7 +1523,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_garek_4',
             name: 'Vahşi Parçalama',
-            icon: '💥',
+            icon: '',
             type: SkillType.ULTIMATE,
             tier: 1,
             cooldownTurns: 4,
@@ -1554,7 +1554,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_soren_1',
             name: 'Rüzgar Kesisi',
-            icon: '🌪️',
+            icon: '',
             type: SkillType.ATTACK,
             tier: 1,
             cooldownTurns: 2,
@@ -1564,7 +1564,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_soren_2',
             name: 'Bozkır Sıyrılışı',
-            icon: '💨',
+            icon: '',
             type: SkillType.DEFENSE,
             tier: 1,
             cooldownTurns: 3,
@@ -1574,7 +1574,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_soren_3',
             name: 'Kum Savurma',
-            icon: '🎯',
+            icon: '',
             type: SkillType.TACTICAL,
             tier: 1,
             cooldownTurns: 3,
@@ -1584,7 +1584,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_soren_4',
             name: 'Fırtına Dansı',
-            icon: '💥',
+            icon: '',
             type: SkillType.ULTIMATE,
             tier: 1,
             cooldownTurns: 4,
@@ -1615,7 +1615,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_theron_1',
             name: 'Alevli Saplama',
-            icon: '🔥',
+            icon: '',
             type: SkillType.ATTACK,
             tier: 1,
             cooldownTurns: 2,
@@ -1625,7 +1625,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_theron_2',
             name: 'Köz Bariyeri',
-            icon: '🛡️',
+            icon: '',
             type: SkillType.DEFENSE,
             tier: 1,
             cooldownTurns: 3,
@@ -1635,7 +1635,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_theron_3',
             name: 'Kül Dumanı',
-            icon: '🎯',
+            icon: '',
             type: SkillType.TACTICAL,
             tier: 1,
             cooldownTurns: 3,
@@ -1645,7 +1645,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_theron_4',
             name: 'Lav Patlaması',
-            icon: '💥',
+            icon: '',
             type: SkillType.ULTIMATE,
             tier: 1,
             cooldownTurns: 4,
@@ -1676,7 +1676,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_cassian_1',
             name: 'Sırttan Bıçaklama',
-            icon: '🗡️',
+            icon: '',
             type: SkillType.ATTACK,
             tier: 1,
             cooldownTurns: 2,
@@ -1686,7 +1686,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_cassian_2',
             name: 'Duman Adımı',
-            icon: '💨',
+            icon: '',
             type: SkillType.DEFENSE,
             tier: 1,
             cooldownTurns: 3,
@@ -1696,7 +1696,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_cassian_3',
             name: 'Aşil Kesisi',
-            icon: '🎯',
+            icon: '',
             type: SkillType.TACTICAL,
             tier: 1,
             cooldownTurns: 3,
@@ -1706,7 +1706,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_cassian_4',
             name: 'Gölge İnfazı',
-            icon: '💥',
+            icon: '',
             type: SkillType.ULTIMATE,
             tier: 1,
             cooldownTurns: 4,
@@ -1737,7 +1737,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_brandon_1',
             name: 'Kalkan Tokadı',
-            icon: '🛡️',
+            icon: '',
             type: SkillType.ATTACK,
             tier: 1,
             cooldownTurns: 2,
@@ -1747,7 +1747,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_brandon_2',
             name: 'Aşılmaz Duvar',
-            icon: '🧱',
+            icon: '',
             type: SkillType.DEFENSE,
             tier: 1,
             cooldownTurns: 3,
@@ -1757,7 +1757,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_brandon_3',
             name: 'Kalkan İtişi',
-            icon: '🎯',
+            icon: '',
             type: SkillType.TACTICAL,
             tier: 1,
             cooldownTurns: 3,
@@ -1767,7 +1767,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_brandon_4',
             name: 'Demir Hisar Çöküşü',
-            icon: '💥',
+            icon: '',
             type: SkillType.ULTIMATE,
             tier: 1,
             cooldownTurns: 4,
@@ -1798,7 +1798,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_orin_1',
             name: 'Lejyon Dürtüşü',
-            icon: '🗡️',
+            icon: '',
             type: SkillType.ATTACK,
             tier: 1,
             cooldownTurns: 2,
@@ -1808,7 +1808,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_orin_2',
             name: 'Bronz Siper',
-            icon: '🛡️',
+            icon: '',
             type: SkillType.DEFENSE,
             tier: 1,
             cooldownTurns: 3,
@@ -1818,7 +1818,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_orin_3',
             name: 'Disiplinli Adım',
-            icon: '🎯',
+            icon: '',
             type: SkillType.TACTICAL,
             tier: 1,
             cooldownTurns: 3,
@@ -1828,7 +1828,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_orin_4',
             name: 'İmparatorluk Hükmü',
-            icon: '💥',
+            icon: '',
             type: SkillType.ULTIMATE,
             tier: 1,
             cooldownTurns: 4,
@@ -1859,7 +1859,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_zephyr_1',
             name: 'Yıldırım Oku',
-            icon: '⚡',
+            icon: '',
             type: SkillType.ATTACK,
             tier: 1,
             cooldownTurns: 2,
@@ -1869,7 +1869,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_zephyr_2',
             name: 'Rüzgar Çemberi',
-            icon: '💨',
+            icon: '',
             type: SkillType.DEFENSE,
             tier: 1,
             cooldownTurns: 3,
@@ -1879,7 +1879,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_zephyr_3',
             name: 'Kiriş Gerilimi',
-            icon: '🎯',
+            icon: '',
             type: SkillType.TACTICAL,
             tier: 1,
             cooldownTurns: 3,
@@ -1889,7 +1889,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_zephyr_4',
             name: 'Gözbebeği Vuruşu',
-            icon: '💥',
+            icon: '',
             type: SkillType.ULTIMATE,
             tier: 1,
             cooldownTurns: 4,
@@ -1920,7 +1920,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_alistair_1',
             name: 'Topuz Ezmesi',
-            icon: '🔨',
+            icon: '',
             type: SkillType.ATTACK,
             tier: 1,
             cooldownTurns: 2,
@@ -1930,7 +1930,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_alistair_2',
             name: 'Kaya Duruşu',
-            icon: '🗿',
+            icon: '',
             type: SkillType.DEFENSE,
             tier: 1,
             cooldownTurns: 3,
@@ -1940,7 +1940,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_alistair_3',
             name: 'Ağır Tehdit',
-            icon: '🎯',
+            icon: '',
             type: SkillType.TACTICAL,
             tier: 1,
             cooldownTurns: 3,
@@ -1950,7 +1950,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_alistair_4',
             name: 'Kaya Kırıcı',
-            icon: '💥',
+            icon: '',
             type: SkillType.ULTIMATE,
             tier: 1,
             cooldownTurns: 4,
@@ -1981,7 +1981,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_cedric_1',
             name: 'Asil Dürtüş',
-            icon: '🤺',
+            icon: '',
             type: SkillType.ATTACK,
             tier: 1,
             cooldownTurns: 2,
@@ -1991,7 +1991,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_cedric_2',
             name: 'Kibirli Sıyrılış',
-            icon: '🎩',
+            icon: '',
             type: SkillType.DEFENSE,
             tier: 1,
             cooldownTurns: 3,
@@ -2001,7 +2001,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_cedric_3',
             name: 'Alaycı Selam',
-            icon: '🎯',
+            icon: '',
             type: SkillType.TACTICAL,
             tier: 1,
             cooldownTurns: 3,
@@ -2011,7 +2011,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_cedric_4',
             name: 'Mükemmel Hamle',
-            icon: '💥',
+            icon: '',
             type: SkillType.ULTIMATE,
             tier: 1,
             cooldownTurns: 4,
@@ -2042,7 +2042,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_damian_1',
             name: 'Diz Kırıcı',
-            icon: '🔨',
+            icon: '',
             type: SkillType.ATTACK,
             tier: 1,
             cooldownTurns: 2,
@@ -2052,7 +2052,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_damian_2',
             name: 'Zırhlı Omuz',
-            icon: '🛡️',
+            icon: '',
             type: SkillType.DEFENSE,
             tier: 1,
             cooldownTurns: 3,
@@ -2062,7 +2062,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_damian_3',
             name: 'Korku Salma',
-            icon: '😱',
+            icon: '',
             type: SkillType.TACTICAL,
             tier: 1,
             cooldownTurns: 3,
@@ -2072,7 +2072,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_damian_4',
             name: 'Kemik Dağıtıcı',
-            icon: '💥',
+            icon: '',
             type: SkillType.ULTIMATE,
             tier: 1,
             cooldownTurns: 4,
@@ -2103,7 +2103,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_tiberius_1',
             name: 'Kumandan Kesisi',
-            icon: '⚔️',
+            icon: '',
             type: SkillType.ATTACK,
             tier: 1,
             cooldownTurns: 2,
@@ -2113,7 +2113,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_tiberius_2',
             name: 'Şeref Siperi',
-            icon: '🛡️',
+            icon: '',
             type: SkillType.DEFENSE,
             tier: 1,
             cooldownTurns: 3,
@@ -2123,7 +2123,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_tiberius_3',
             name: 'Taktiksel Zaaf',
-            icon: '🎯',
+            icon: '',
             type: SkillType.TACTICAL,
             tier: 1,
             cooldownTurns: 3,
@@ -2133,7 +2133,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_tiberius_4',
             name: 'Garnizon Şerefi',
-            icon: '💥',
+            icon: '',
             type: SkillType.ULTIMATE,
             tier: 1,
             cooldownTurns: 4,
@@ -2164,7 +2164,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_gideon_1',
             name: 'Şafak Vuruşu',
-            icon: '☀️',
+            icon: '',
             type: SkillType.ATTACK,
             tier: 1,
             cooldownTurns: 2,
@@ -2174,7 +2174,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_gideon_2',
             name: 'Kutsal Siper',
-            icon: '🛡️',
+            icon: '',
             type: SkillType.DEFENSE,
             tier: 1,
             cooldownTurns: 3,
@@ -2184,7 +2184,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_gideon_3',
             name: 'Arındırıcı Işık',
-            icon: '🎯',
+            icon: '',
             type: SkillType.TACTICAL,
             tier: 1,
             cooldownTurns: 3,
@@ -2194,7 +2194,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_gideon_4',
             name: 'Güneşin Gazabı',
-            icon: '💥',
+            icon: '',
             type: SkillType.ULTIMATE,
             tier: 1,
             cooldownTurns: 4,
@@ -2225,7 +2225,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_malakai_1',
             name: 'Lanetli Kesik',
-            icon: '🪓',
+            icon: '',
             type: SkillType.ATTACK,
             tier: 1,
             cooldownTurns: 2,
@@ -2235,7 +2235,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_malakai_2',
             name: 'Pranga Direnci',
-            icon: '⛓️',
+            icon: '',
             type: SkillType.DEFENSE,
             tier: 1,
             cooldownTurns: 3,
@@ -2245,7 +2245,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_malakai_3',
             name: 'Deli Kahkaha',
-            icon: '🤪',
+            icon: '',
             type: SkillType.TACTICAL,
             tier: 1,
             cooldownTurns: 3,
@@ -2255,7 +2255,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_malakai_4',
             name: 'Katliam Öfkesi',
-            icon: '💥',
+            icon: '',
             type: SkillType.ULTIMATE,
             tier: 1,
             cooldownTurns: 4,
@@ -2286,7 +2286,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_roland_1',
             name: 'Pul Çarpması',
-            icon: '🛡️',
+            icon: '',
             type: SkillType.ATTACK,
             tier: 1,
             cooldownTurns: 2,
@@ -2296,7 +2296,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_roland_2',
             name: 'Kırılmaz Kubbe',
-            icon: '🧱',
+            icon: '',
             type: SkillType.DEFENSE,
             tier: 1,
             cooldownTurns: 3,
@@ -2306,7 +2306,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_roland_3',
             name: 'Gazi Bakışı',
-            icon: '👁️',
+            icon: '',
             type: SkillType.TACTICAL,
             tier: 1,
             cooldownTurns: 3,
@@ -2316,7 +2316,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_roland_4',
             name: 'Ejderha Savunması',
-            icon: '💥',
+            icon: '',
             type: SkillType.ULTIMATE,
             tier: 1,
             cooldownTurns: 4,
@@ -2347,7 +2347,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_fenris_1',
             name: 'Tırtıklı Kesik',
-            icon: '🗡️',
+            icon: '',
             type: SkillType.ATTACK,
             tier: 1,
             cooldownTurns: 2,
@@ -2357,7 +2357,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_fenris_2',
             name: 'Kum Sıyrılışı',
-            icon: '💨',
+            icon: '',
             type: SkillType.DEFENSE,
             tier: 1,
             cooldownTurns: 3,
@@ -2367,7 +2367,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_fenris_3',
             name: 'Sırtlan Isırığı',
-            icon: '🐺',
+            icon: '',
             type: SkillType.TACTICAL,
             tier: 1,
             cooldownTurns: 3,
@@ -2377,7 +2377,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_fenris_4',
             name: 'Kuduz Saldırı',
-            icon: '💥',
+            icon: '',
             type: SkillType.ULTIMATE,
             tier: 1,
             cooldownTurns: 4,
@@ -2408,7 +2408,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_baelor_1',
             name: 'Zincirli Orak Savuruşu',
-            icon: '⛓️',
+            icon: '',
             type: SkillType.ATTACK,
             tier: 1,
             cooldownTurns: 2,
@@ -2418,7 +2418,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_baelor_2',
             name: 'Demir Siper Döngüsü',
-            icon: '🛡️',
+            icon: '',
             type: SkillType.DEFENSE,
             tier: 1,
             cooldownTurns: 3,
@@ -2428,7 +2428,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_baelor_3',
             name: 'Tendon Kancası',
-            icon: '🎯',
+            icon: '',
             type: SkillType.TACTICAL,
             tier: 1,
             cooldownTurns: 3,
@@ -2438,7 +2438,7 @@ export const TashisarGladiatorsData = {
           new GladiatorSkill({
             id: 'skill_baelor_4',
             name: 'Cellat Kıskacı',
-            icon: '💥',
+            icon: '',
             type: SkillType.ULTIMATE,
             tier: 1,
             cooldownTurns: 4,
@@ -2458,19 +2458,19 @@ export const TashisarGladiatorsData = {
       category: CharacterCategory.GLADIATOR,
       avatarIcon: (() => {
         if (enemy.weaponType === 'bıçak' || enemy.weaponType === 'hançer' || enemy.weaponType === 'şiş' || enemy.weaponType === 'orak') {
-          return '🗡️';
+          return '';
         } else if (enemy.weaponType === 'yay' || enemy.weaponType === 'arbalet') {
-          return '🏹';
+          return '';
         } else if (enemy.weaponType === 'balta') {
-          return '🪓';
+          return '';
         } else if (enemy.weaponType === 'balyoz' || enemy.weaponType === 'topuz' || enemy.weaponType === 'gürz') {
-          return '🔨';
+          return '';
         } else if (enemy.weaponType === 'mızrak' || enemy.weaponType === 'kargı' || enemy.weaponType === 'teber') {
-          return '🔱';
+          return '';
         } else if (enemy.weaponType === 'kalkan') {
-          return '🛡️';
+          return '';
         } else {
-          return '⚔️';
+          return '';
         }
       })(),
       roleOrWeapon: `${enemy.weaponName} (Seviye ${enemy.level})`,

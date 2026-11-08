@@ -74,7 +74,7 @@ export function MainScreen({ gameViewModel, onReturnToMainMenu = () => {} }) {
     if (isDayTransitioning) announce(GUN_GECISI_ETIKETI);
   }, [isDayTransitioning]);
 
-  const regionPrefix = player.currentRegionId === 'tashisar' ? '🏰 Taş Hisar' : '🌾 Kırlangıç';
+  const regionPrefix = player.currentRegionId === 'tashisar' ? 'Taş Hisar' : 'Kırlangıç';
   const sekmeler = NavigationTab.values();
   const seciliSira = currentTab.ordinal;
 
@@ -117,7 +117,7 @@ export function MainScreen({ gameViewModel, onReturnToMainMenu = () => {} }) {
             <Row gap={6}>
               <Surface radius={6} color={DarkBg} borderColor={AmberGold} borderWidth={1} style={{ paddingHorizontal: 6, paddingVertical: 2 }}>
                 <T size={11} weight="bold" color={AmberGold}>
-                  {`📅 ${dayState.currentDay}. Gün`}
+                  {`${dayState.currentDay}. Gün`}
                 </T>
               </Surface>
               <Surface radius={6} color={alpha(AmberGoldDark, 0.25)} borderColor={AmberGold} borderWidth={1} style={{ paddingHorizontal: 6, paddingVertical: 2 }}>
@@ -133,13 +133,13 @@ export function MainScreen({ gameViewModel, onReturnToMainMenu = () => {} }) {
           {/* Üst Durum Çubuğu: Can, Altın, Şöhret (her yerde görünür) */}
           <Row justify="between" wrap gap={6} style={{ alignSelf: 'stretch' }}>
             <T size={12} weight="semibold" color={HealthGreen}>
-              {`❤️ ${player.currentHealth}/${player.totalStats.maxHealth} Can`}
+              {`${player.currentHealth}/${player.totalStats.maxHealth} Can`}
             </T>
             <T size={12} weight="semibold" color={AmberGold}>
-              {`🪙 ${player.gold} Altın`}
+              {`${player.gold} Altın`}
             </T>
             <T size={12} weight="semibold" color={FamePurple}>
-              {`👑 ${regionPrefix}: ${player.currentRegionFame}/100 (${player.currentRegionTitle})`}
+              {`${regionPrefix}: ${player.currentRegionFame}/100 (${player.currentRegionTitle})`}
             </T>
           </Row>
         </Surface>
@@ -185,7 +185,7 @@ export function MainScreen({ gameViewModel, onReturnToMainMenu = () => {} }) {
           <Column align="center" gap={16} pad={32}>
             <Spinner color={AmberGold} size={48} />
             <T size={20} weight="bold" color={TextGold}>
-              🌙 Gece Çöküyor...
+              Gece Çöküyor...
             </T>
             <T size={14} color={TextLight} align="center">
               Dinleniyor, yaralarını sarıyor ve yeni günün şafağını bekliyorsun...

@@ -17,7 +17,7 @@ beforeEach(() => {
 
 test('testComprehensivePlayerJourneySimulation', () => {
   console.log('================================================================================');
-  console.log('🏹 DİYARIN KADERİ: TAM OYUNCU İLERLEME & DENGE SİMÜLASYONU (BÖLÜM 1 -> BÖLÜM 2)');
+  console.log('DİYARIN KADERİ: TAM OYUNCU İLERLEME & DENGE SİMÜLASYONU (BÖLÜM 1 -> BÖLÜM 2)');
   console.log('================================================================================');
 
   // Metrics tracking
@@ -44,10 +44,10 @@ test('testComprehensivePlayerJourneySimulation', () => {
   expect(day1Player.globalFame).toBe(0);
   expect(day1Player.equippedSkillIds.length === 0).toBe(true); // Başlangıçta oyuncunun aktif yeteneği olmamalı
 
-  console.log('\n📌 GÜN 1: OYUNCU DÜNYAYA ADIM ATIYOR');
+  console.log('\nGÜN 1: OYUNCU DÜNYAYA ADIM ATIYOR');
   console.log(`• Karakter: ${day1Player.name} (${day1Player.title})`);
   console.log(`• İkametgah: ${day1Player.residenceTitle}`);
-  console.log(`• Başlangıç Altını: ${day1Player.gold} 🪙 | Can: ${day1Player.currentHealth}/${day1Player.totalStats.maxHealth}`);
+  console.log(`• Başlangıç Altını: ${day1Player.gold} Altın | Can: ${day1Player.currentHealth}/${day1Player.totalStats.maxHealth}`);
   console.log('• Yetenek Yuvaları: [BOŞ, BOŞ, BOŞ, BOŞ] (Henüz antik parşömen bulunmadı)');
 
   // SİMÜLASYON DÖNGÜSÜ (Maksimum 60 Güne Kadar)
@@ -82,7 +82,7 @@ test('testComprehensivePlayerJourneySimulation', () => {
         if (cheapWeapon != null && repository.player.value.gold >= cheapWeapon.valueInGold) {
           repository.buyEquipment(cheapWeapon);
           repository.equipItem(kt.last(repository.player.value.inventory));
-          console.log(`🗡️ Gün ${day}: Demirci Vorn'dan '${cheapWeapon.name}' satın alındı ve kuşanıldı.`);
+          console.log(`Gün ${day}: Demirci Vorn'dan '${cheapWeapon.name}' satın alındı ve kuşanıldı.`);
         }
       }
       if (currentChest == null) {
@@ -93,7 +93,7 @@ test('testComprehensivePlayerJourneySimulation', () => {
         if (cheapArmor != null && repository.player.value.gold >= cheapArmor.valueInGold) {
           repository.buyEquipment(cheapArmor);
           repository.equipItem(kt.last(repository.player.value.inventory));
-          console.log(`🛡️ Gün ${day}: Demirci Vorn'dan '${cheapArmor.name}' satın alındı ve kuşanıldı.`);
+          console.log(`Gün ${day}: Demirci Vorn'dan '${cheapArmor.name}' satın alındı ve kuşanıldı.`);
         }
       }
     }
@@ -111,7 +111,7 @@ test('testComprehensivePlayerJourneySimulation', () => {
           const claimResult = repository.lastQuestClaimResult.value;
           if (claimResult?.droppedScroll != null) {
             scrollsFound++;
-            console.log(`📜 Gün ${day}: Görevden [${claimResult.droppedScroll.name}] düştü!`);
+            console.log(`Gün ${day}: Görevden [${claimResult.droppedScroll.name}] düştü!`);
           }
         }
       }
@@ -125,7 +125,7 @@ test('testComprehensivePlayerJourneySimulation', () => {
         scrollsDeciphered++;
         const orbId = StarterContent.getScrollSkillMapping(scroll.id);
         const orb = StarterSkills.getSkillById(orbId ?? '');
-        console.log(`🔮 Gün ${day}: Bilge Jin-Zhen '${orb?.name}' yetenek küresini deşifre etti ve yuvaya yerleştirdi!`);
+        console.log(`Gün ${day}: Bilge Jin-Zhen '${orb?.name}' yetenek küresini deşifre etti ve yuvaya yerleştirdi!`);
       }
     }
 
@@ -156,7 +156,7 @@ test('testComprehensivePlayerJourneySimulation', () => {
 
       if (repository.player.value.hasGarrisonPass && dayGarrisonPassAcquired == null) {
         dayGarrisonPassAcquired = day;
-        console.log(`🎖️ GÜN ${day}: Morvath alt edildi veya 85+ Şöhrete ulaşıldı! [TAŞ HİSAR GARNİZON GEÇİŞ İZNİ ALINDI!]`);
+        console.log(`GÜN ${day}: Morvath alt edildi veya 85+ Şöhrete ulaşıldı! [TAŞ HİSAR GARNİZON GEÇİŞ İZNİ ALINDI!]`);
       }
     }
 
@@ -169,7 +169,7 @@ test('testComprehensivePlayerJourneySimulation', () => {
         if (canUp && repository.player.value.gold >= upgradableRoom.upgradeCostGold + 20) {
           const [upSuccess] = repository.upgradeRoom(upgradableRoom.id);
           if (upSuccess) {
-            console.log(`🔨 Gün ${day}: Hücre bölmesi geliştirildi: ${upgradableRoom.name} -> Kademe 2`);
+            console.log(`Gün ${day}: Hücre bölmesi geliştirildi: ${upgradableRoom.name} -> Kademe 2`);
           }
         }
       }
@@ -180,7 +180,7 @@ test('testComprehensivePlayerJourneySimulation', () => {
         const [hSuccess] = repository.transformToHouse();
         if (hSuccess) {
           dayHouseUnlocked = day;
-          console.log(`🏡 GÜN ${day}: [BÜYÜK TAŞINMA!] Avlulu Müstakil Taş Ev açıldı! Yeni odalar ve pasif bonuslar kazanıldı.`);
+          console.log(`GÜN ${day}: [BÜYÜK TAŞINMA!] Avlulu Müstakil Taş Ev açıldı! Yeni odalar ve pasif bonuslar kazanıldı.`);
         }
       }
     }
@@ -195,11 +195,11 @@ test('testComprehensivePlayerJourneySimulation', () => {
   const postSkillWinPercent = winRatePostSkills.length > 0 ? kt.idiv(kt.count(winRatePostSkills, (it) => it) * 100, winRatePostSkills.length) : 0;
 
   console.log('\n================================================================================');
-  console.log('📊 60 GÜNLÜK GELİŞİM & DENGELEME ANALİZ RAPORU');
+  console.log('60 GÜNLÜK GELİŞİM & DENGELEME ANALİZ RAPORU');
   console.log('================================================================================');
   console.log(`• Tamamlanan Gün Sayısı: ${totalDays} Gün`);
   console.log(`• Nihai Seviye: Seviye ${finalP.level} (EXP: ${finalP.currentExp})`);
-  console.log(`• Nihai Altın: ${finalP.gold} 🪙`);
+  console.log(`• Nihai Altın: ${finalP.gold} Altın`);
   console.log(`• Kırlangıç Kasabası Şöhreti: ${finalP.regionFame['kirlangic'] ?? 0} / 100`);
   console.log(`• Taş Hisar Garnizonu Şöhreti: ${finalP.regionFame['tashisar'] ?? 0} / 100`);
   console.log(`• Global Şöhret: ${finalP.globalFame} (${finalP.title})`);
@@ -222,7 +222,7 @@ test('testComprehensivePlayerJourneySimulation', () => {
 
 test('testChapter2TransitionAndCombatDifficulty', () => {
   console.log('\n================================================================================');
-  console.log('🏰 BÖLÜM 2: TAŞ HİSAR GARNİZONU GEÇİŞİ VE ZORLUK ANALİZİ');
+  console.log('BÖLÜM 2: TAŞ HİSAR GARNİZONU GEÇİŞİ VE ZORLUK ANALİZİ');
   console.log('================================================================================');
 
   // 1. Bölümü tamamlamış oyuncuyu simüle ediyoruz
@@ -258,21 +258,21 @@ test('testChapter2TransitionAndCombatDifficulty', () => {
   const [travelOk, travelMsg] = repository.travelToRegion('tashisar');
   expect(travelOk).toBe(true); // Geçiş izni olan oyuncu Taş Hisar'a geçebilmeli
   expect(repository.player.value.currentRegionId).toBe('tashisar');
-  console.log('🚶 Seyahat Başarılı: Taş Hisar Garnizonu kapılarından içeri girildi.');
+  console.log('Seyahat Başarılı: Taş Hisar Garnizonu kapılarından içeri girildi.');
 
   // Taş Hisar Gladyatörleri ile Karşılaşma
   const tashisarEnemies = repository.tashisarEnemies.value;
   expect(tashisarEnemies.length > 0).toBe(true); // Taş Hisar gladyatör havuzu dolu olmalı
 
   const firstGladiator = kt.first(tashisarEnemies); // örn: Voladmir veya Brannok
-  console.log('\n🥊 ARENA MEYDAN OKUMASI (1. Bölüm Ekipmanlarıyla):');
+  console.log('\nARENA MEYDAN OKUMASI (1. Bölüm Ekipmanlarıyla):');
   console.log(`• Oyuncu Canı: ${chapter1Hero.currentHealth} | Hasar: ${chapter1Hero.totalStats.damage} | Zırh: ${chapter1Hero.totalStats.armor}`);
   console.log(`• Rakip: ${firstGladiator.name} (${firstGladiator.title}) | Seviye: ${firstGladiator.level}`);
   console.log(`• Rakip Can: ${firstGladiator.stats.maxHealth} | Hasar: ${firstGladiator.stats.damage} | Zırh: ${firstGladiator.stats.armor}`);
 
   // 1. Bölüm donanımıyla savaş
   const fight1 = CombatEngine.simulateBattle(chapter1Hero, firstGladiator);
-  console.log(`• Savaş Sonucu: ${fight1.isPlayerWinner ? '🏆 KAZANDI' : '💀 YENİLDİ'}`);
+  console.log(`• Savaş Sonucu: ${fight1.isPlayerWinner ? 'KAZANDI' : 'YENİLDİ'}`);
   console.log(`• Kalan Oyuncu Canı: ${fight1.finalPlayerHp} / ${chapter1Hero.totalStats.maxHealth}`);
   console.log(`• Toplam Tur Sayısı: ${kt.maxOfOrNull(fight1.logs, (it) => it.round) ?? 0}`);
 
@@ -280,7 +280,7 @@ test('testChapter2TransitionAndCombatDifficulty', () => {
   const exoticWeapons = TashisarBlacksmithWeaponsData.createExoticWeapons();
   const chosenWeapon = kt.firstOrNull(exoticWeapons, (it) => it.requiredLevel >= 20 && it.requiredLevel <= 25) ?? kt.first(exoticWeapons);
 
-  console.log('\n⚒️ TAŞ HİSAR DEMİRCİSİ VE TEÇHİZAT GELİŞTİRMESİ:');
+  console.log('\nTAŞ HİSAR DEMİRCİSİ VE TEÇHİZAT GELİŞTİRMESİ:');
   console.log(`• Satın Alınan Egzotik Silah: '${chosenWeapon.name}' (Seviye ${chosenWeapon.requiredLevel})`);
   console.log(`• Silah Özellikleri: +${chosenWeapon.stats.damage} Hasar, +%${chosenWeapon.armorPenetrationPercent} Zırh Delme, Trait: ${chosenWeapon.specialTrait?.name}`);
 
@@ -290,11 +290,11 @@ test('testChapter2TransitionAndCombatDifficulty', () => {
   });
 
   const fight2 = CombatEngine.simulateBattle(upgradedHero, firstGladiator);
-  console.log(`• Egzotik Silah Kuşandıktan Sonraki Sonuç: ${fight2.isPlayerWinner ? '🏆 KAZANDI' : '💀 YENİLDİ'}`);
+  console.log(`• Egzotik Silah Kuşandıktan Sonraki Sonuç: ${fight2.isPlayerWinner ? 'KAZANDI' : 'YENİLDİ'}`);
   console.log(`• Kalan Oyuncu Canı: ${fight2.finalPlayerHp} / ${upgradedHero.totalStats.maxHealth}`);
 
   console.log('\n================================================================================');
-  console.log('📌 BÖLÜM 2 ZORLUK & DENGE ÖZETİ:');
+  console.log('BÖLÜM 2 ZORLUK & DENGE ÖZETİ:');
   console.log("1. Bölümden gelen oyuncu Taş Hisar'a ilk adım attığında bariz bir zorluk artışı (Difficulty Spike)");
   console.log('hissediyor. Taş Hisar gladyatörlerinin yüksek can rezervi ve sersemletme yetenekleri, oyuncuyu');
   console.log('Taş Hisar zanaatkarlarından egzotik donanım ve mücevher soketleme yapmaya zorluyor.');

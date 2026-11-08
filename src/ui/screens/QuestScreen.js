@@ -46,7 +46,7 @@ export function QuestScreen({ viewModel, onNavigateToArena, modifier }) {
       color={selectedSubTab === 0 ? TextGold : TextMuted}
       align="center"
     >
-      {`📜 Sözleşmeler (${activeQuests.length})`}
+      {`Sözleşmeler (${activeQuests.length})`}
     </T>,
     <T
       label={`Efsanevi Av ve Zanaat sekmesi, ${activeAdventures.length} aktif macera ve dövülebilir efsanevi ekipmanlar`}
@@ -56,7 +56,7 @@ export function QuestScreen({ viewModel, onNavigateToArena, modifier }) {
       color={selectedSubTab === 1 ? TextGold : TextMuted}
       align="center"
     >
-      {`🌲 Efsanevi Av & Zanaat (${activeAdventures.length})`}
+      {`Efsanevi Av & Zanaat (${activeAdventures.length})`}
     </T>,
   ];
 
@@ -68,7 +68,7 @@ export function QuestScreen({ viewModel, onNavigateToArena, modifier }) {
         <Card color={DarkSurface} radius={12} borderColor={AmberGoldDark} style={{ alignSelf: 'stretch' }}>
           <Column pad={16}>
             <T style={Typography.labelSmall} color={AmberGold}>
-              📜 SÖZLEŞMELER & GÖREVLER
+              SÖZLEŞMELER & GÖREVLER
             </T>
             <Spacer h={4} />
             <T heading style={Typography.titleLarge} color={TextGold} weight="bold">
@@ -88,9 +88,7 @@ export function QuestScreen({ viewModel, onNavigateToArena, modifier }) {
         {activeQuests.length === 0 ? (
           <Card color={DarkSurface} radius={12} borderColor={alpha(HealthGreen, 0.6)} style={{ alignSelf: 'stretch' }}>
             <Column align="center" pad={24} style={{ alignSelf: 'stretch' }}>
-              <T size={36} hidden>
-                📜✨
-              </T>
+              
               <Spacer h={10} />
               <T style={Typography.titleMedium} color={AmberGold} weight="bold" align="center">
                 Günün Tüm Sözleşmeleri Tamamlandı!
@@ -130,7 +128,7 @@ export function QuestScreen({ viewModel, onNavigateToArena, modifier }) {
         <Card color={DarkSurface} radius={12} borderColor={AmberGoldDark} style={{ alignSelf: 'stretch' }}>
           <Column pad={16}>
             <T style={Typography.labelSmall} color={AmberGold}>
-              🌲 EFSANEVİ AVLAR & DEMİRCİ ZANAAT OCAĞI
+              EFSANEVİ AVLAR & DEMİRCİ ZANAAT OCAĞI
             </T>
             <Spacer h={4} />
             <T heading style={Typography.titleLarge} color={TextGold} weight="bold">
@@ -147,7 +145,7 @@ export function QuestScreen({ viewModel, onNavigateToArena, modifier }) {
         <Card color={DarkSurfaceCard} radius={10} borderColor={DarkBorder} style={{ alignSelf: 'stretch' }}>
           <Column pad={12}>
             <T heading style={Typography.titleSmall} weight="bold" color={TextGold}>
-              🎒 Malzeme Kesesi
+              Malzeme Kesesi
             </T>
             <Spacer h={8} />
             <Row gap={10} align="stretch" style={{ alignSelf: 'stretch' }}>
@@ -161,7 +159,7 @@ export function QuestScreen({ viewModel, onNavigateToArena, modifier }) {
                 style={{ flex: 1 }}
               >
                 <T size={11} color={TextMuted}>
-                  🐺 Ak Kurt Postu
+                  Ak Kurt Postu
                 </T>
                 <T size={14} weight="bold" color={wolfPeltCount > 0 ? HealthGreen : TextLight}>
                   {`${wolfPeltCount} Adet`}
@@ -177,7 +175,7 @@ export function QuestScreen({ viewModel, onNavigateToArena, modifier }) {
                 style={{ flex: 1 }}
               >
                 <T size={11} color={TextMuted}>
-                  ☄️ Göktaşı Filizi
+                  Göktaşı Filizi
                 </T>
                 <T size={14} weight="bold" color={oreCount > 0 ? AmberGold : TextLight}>
                   {`${oreCount} Adet`}
@@ -195,9 +193,7 @@ export function QuestScreen({ viewModel, onNavigateToArena, modifier }) {
         {activeAdventures.length === 0 ? (
           <Card color={DarkSurface} radius={12} borderColor={alpha(HealthGreen, 0.6)} style={{ alignSelf: 'stretch' }}>
             <Column align="center" pad={20} style={{ alignSelf: 'stretch' }}>
-              <T size={32} hidden>
-                🌲✨
-              </T>
+              
               <Spacer h={8} />
               <T style={Typography.titleSmall} color={AmberGold} weight="bold" align="center">
                 Bugünkü Tüm Seferler Tamamlandı!
@@ -224,7 +220,7 @@ export function QuestScreen({ viewModel, onNavigateToArena, modifier }) {
         {/* Demirci Zanaat Ocağı Başlığı */}
         <Spacer h={10} />
         <T heading style={Typography.titleMedium} color={TextGold} weight="bold">
-          🔨 Demirci Başyapıtları (Koşullu Ekipmanlar)
+          Demirci Başyapıtları (Koşullu Ekipmanlar)
         </T>
 
         {craftingRecipes.map((recipe) => (
@@ -318,7 +314,7 @@ function QuestCard({ quest, player, isAnyTaskRunning, onStart, onClaim, onHunt }
       dugme = (
         <Surface radius={6} color={color(0xff1b2e1e)} borderColor={HealthGreen} borderWidth={1} style={{ alignSelf: 'stretch', paddingHorizontal: 10, paddingVertical: 8 }}>
           <T size={12} color={HealthGreen} weight="semibold">
-            ✅ Bugünlük Sözleşme Tamamlandı (Yarın Yenilenir)
+            Bugünlük Sözleşme Tamamlandı (Yarın Yenilenir)
           </T>
         </Surface>
       );
@@ -335,7 +331,7 @@ function QuestCard({ quest, player, isAnyTaskRunning, onStart, onClaim, onHunt }
         </T>
       );
     } else {
-      const metin = isAnyTaskRunning ? '⏳ Başka Bir Görevdesin (Tek Görev Limiti)' : !allRequirementsMet ? 'Gereksinimler Karşılanmadı' : `Sözleşmeyi Başlat (${quest.durationSeconds} sn)`;
+      const metin = isAnyTaskRunning ? 'Başka Bir Görevdesin (Tek Görev Limiti)' : !allRequirementsMet ? 'Gereksinimler Karşılanmadı' : `Sözleşmeyi Başlat (${quest.durationSeconds} sn)`;
       const etkin = allRequirementsMet && !isAnyTaskRunning;
       dugme = (
         <Btn onPress={onStart} disabled={!etkin} color={AmberGold} contentColor={DarkBg} disabledColor={DarkSurfaceCard} disabledContentColor={TextMuted} radius={8} style={{ alignSelf: 'stretch' }}>
@@ -361,7 +357,7 @@ function QuestCard({ quest, player, isAnyTaskRunning, onStart, onClaim, onHunt }
     eylem = (
       <Btn onPress={onHunt} color={HealthRed} contentColor={Color.White} radius={8} style={{ alignSelf: 'stretch' }}>
         <T weight="bold" color={Color.White}>
-          ⚔️ Yaratığı Arenada Avla
+          Yaratığı Arenada Avla
         </T>
       </Btn>
     );
@@ -382,13 +378,13 @@ function QuestCard({ quest, player, isAnyTaskRunning, onStart, onClaim, onHunt }
               {quest.chainId != null ? (
                 <Surface radius={4} color={alpha(FamePurple, 0.2)} borderColor={FamePurple} borderWidth={1} style={{ paddingHorizontal: 5, paddingVertical: 1 }}>
                   <T size={10} weight="bold" color={FamePurple}>
-                    {`🔗 Aşama ${quest.chainStep}/${quest.maxChainSteps}`}
+                    {`Aşama ${quest.chainStep}/${quest.maxChainSteps}`}
                   </T>
                 </Surface>
               ) : quest.isRumorQuest ? (
                 <Surface radius={4} color={alpha(AmberGold, 0.2)} borderColor={AmberGold} borderWidth={1} style={{ paddingHorizontal: 5, paddingVertical: 1 }}>
                   <T size={10} weight="bold" color={AmberGold}>
-                    🔍 Han Söylentisi
+                    Han Söylentisi
                   </T>
                 </Surface>
               ) : null}
@@ -396,7 +392,7 @@ function QuestCard({ quest, player, isAnyTaskRunning, onStart, onClaim, onHunt }
           </Column>
           <Surface radius={6} color={DarkSurfaceCard} label={`Ödül: ${quest.rewardGold} Altın, ${quest.rewardExp} EXP`} style={{ paddingHorizontal: 8, paddingVertical: 4 }}>
             <T size={11} color={AmberGold}>
-              {`🪙 ${quest.rewardGold} • 📖 ${quest.rewardExp} EXP`}
+              {`${quest.rewardGold} Altın • ${quest.rewardExp} EXP`}
             </T>
           </Surface>
         </Row>
@@ -418,7 +414,7 @@ function QuestCard({ quest, player, isAnyTaskRunning, onStart, onClaim, onHunt }
               style={{ alignSelf: 'flex-start', paddingHorizontal: 8, paddingVertical: 3 }}
             >
               <T size={11} weight="bold" color={AmberGold}>
-                {`⚠️ %${quest.successChancePercent} Başarı Şansı (Riskli Keşif)`}
+                {`%${quest.successChancePercent} Başarı Şansı (Riskli Keşif)`}
               </T>
             </Surface>
           </>
@@ -428,7 +424,7 @@ function QuestCard({ quest, player, isAnyTaskRunning, onStart, onClaim, onHunt }
           <>
             <Spacer h={6} />
             <T size={12} weight="bold" color={FamePurple}>
-              {`🎁 Özel Ödül: ${quest.rewardItem.name}`}
+              {`Özel Ödül: ${quest.rewardItem.name}`}
             </T>
           </>
         ) : null}
@@ -438,15 +434,15 @@ function QuestCard({ quest, player, isAnyTaskRunning, onStart, onClaim, onHunt }
           <>
             <Spacer h={8} />
             <T size={11} weight="bold" color={TextGold}>
-              📋 Görev Koşulları:
+              Görev Koşulları:
             </T>
             <Spacer h={4} />
             <Row wrap gap={6} style={{ alignSelf: 'stretch', rowGap: 4 }}>
               {quest.requiredLevel > 1 ? <RequirementBadge text={`Sv. ${quest.requiredLevel}+`} isMet={levelOk} /> : null}
-              {quest.requiredMinArmor > 0 ? <RequirementBadge text={`🛡️ ${quest.requiredMinArmor} Zırh (${player.totalStats.armor}/${quest.requiredMinArmor})`} isMet={armorOk} /> : null}
-              {quest.requiredMinDamage > 0 ? <RequirementBadge text={`⚔️ ${quest.requiredMinDamage} Hasar (${player.totalStats.damage}/${quest.requiredMinDamage})`} isMet={damageOk} /> : null}
-              {quest.requiredMinHpPercent > 0 ? <RequirementBadge text={`❤️ %${quest.requiredMinHpPercent}+ Can (${player.currentHealth}/${minHpReq})`} isMet={hpOk} /> : null}
-              {quest.requiredSupplyGold > 0 ? <RequirementBadge text={`🪙 ${quest.requiredSupplyGold} Teçhizat Masrafı (${player.gold}/${quest.requiredSupplyGold})`} isMet={goldOk} /> : null}
+              {quest.requiredMinArmor > 0 ? <RequirementBadge text={`${quest.requiredMinArmor} Zırh (${player.totalStats.armor}/${quest.requiredMinArmor})`} isMet={armorOk} /> : null}
+              {quest.requiredMinDamage > 0 ? <RequirementBadge text={`${quest.requiredMinDamage} Hasar (${player.totalStats.damage}/${quest.requiredMinDamage})`} isMet={damageOk} /> : null}
+              {quest.requiredMinHpPercent > 0 ? <RequirementBadge text={`%${quest.requiredMinHpPercent}+ Can (${player.currentHealth}/${minHpReq})`} isMet={hpOk} /> : null}
+              {quest.requiredSupplyGold > 0 ? <RequirementBadge text={`${quest.requiredSupplyGold} Altın Teçhizat Masrafı (${player.gold}/${quest.requiredSupplyGold})`} isMet={goldOk} /> : null}
             </Row>
           </>
         ) : null}
@@ -482,7 +478,7 @@ function AdventureCard({ adventure, player, isAnyTaskRunning, onStart, onClaim }
     dugme = (
       <Surface radius={6} color={color(0xff1b2e1e)} borderColor={HealthGreen} borderWidth={1} style={{ alignSelf: 'stretch', paddingHorizontal: 10, paddingVertical: 8 }}>
         <T size={12} color={HealthGreen} weight="semibold">
-          ✅ Bugünlük Sefer Tamamlandı (Yarın Yenilenir)
+          Bugünlük Sefer Tamamlandı (Yarın Yenilenir)
         </T>
       </Surface>
     );
@@ -490,18 +486,18 @@ function AdventureCard({ adventure, player, isAnyTaskRunning, onStart, onClaim }
     dugme = (
       <Btn onPress={onClaim} color={HealthGreen} contentColor={Color.White} radius={8} style={{ alignSelf: 'stretch' }}>
         <T weight="bold" color={Color.White} align="center">
-          {`Ganimeti Topla (+${adventure.rewardMaterialCount} ${adventure.rewardMaterialName}, +${adventure.rewardGold} 🪙)`}
+          {`Ganimeti Topla (+${adventure.rewardMaterialCount} ${adventure.rewardMaterialName}, +${adventure.rewardGold} Altın)`}
         </T>
       </Btn>
     );
   } else if (adventure.isRunning) {
     dugme = (
       <T size={12} color={AmberGold}>
-        ⏳ Sefer devam ediyor, karakterin vahşi diyarlarda iz sürüyor...
+        Sefer devam ediyor, karakterin vahşi diyarlarda iz sürüyor...
       </T>
     );
   } else {
-    const metin = isAnyTaskRunning ? '⏳ Başka Bir Görevdesin (Tek Görev Limiti)' : !allAdvRequirementsMet ? 'Hazırlıklar Yetersiz' : `Av Seferini Başlat (${adventure.durationSeconds} sn)`;
+    const metin = isAnyTaskRunning ? 'Başka Bir Görevdesin (Tek Görev Limiti)' : !allAdvRequirementsMet ? 'Hazırlıklar Yetersiz' : `Av Seferini Başlat (${adventure.durationSeconds} sn)`;
     const etkin = allAdvRequirementsMet && !isAnyTaskRunning;
     dugme = (
       <Btn onPress={onStart} disabled={!etkin} color={AmberGold} contentColor={DarkBg} disabledColor={DarkSurfaceCard} disabledContentColor={TextMuted} radius={8} style={{ alignSelf: 'stretch' }}>
@@ -530,7 +526,7 @@ function AdventureCard({ adventure, player, isAnyTaskRunning, onStart, onClaim }
 
           <Surface radius={6} color={DarkSurfaceCard} label={`Ödül: ${adventure.rewardGold} Altın, ${adventure.rewardExp} EXP`} style={{ paddingHorizontal: 8, paddingVertical: 4 }}>
             <T size={11} color={AmberGold}>
-              {`🪙 ${adventure.rewardGold} • 📖 ${adventure.rewardExp} EXP`}
+              {`${adventure.rewardGold} Altın • ${adventure.rewardExp} EXP`}
             </T>
           </Surface>
         </Row>
@@ -546,7 +542,7 @@ function AdventureCard({ adventure, player, isAnyTaskRunning, onStart, onClaim }
         <Surface radius={6} color={color(0xff1e281f)} borderColor={alpha(HealthGreen, 0.6)} borderWidth={1} style={{ alignSelf: 'stretch' }}>
           <Row justify="between" wrap gap={6} style={{ paddingHorizontal: 10, paddingVertical: 6 }} label={`Teçhizat Gücüne Bağlı Şans: %${dynamicChance} Başarı İhtimali`}>
             <T size={12} color={TextLight}>
-              🎯 Teçhizat Gücüne Bağlı Şans:
+              Teçhizat Gücüne Bağlı Şans:
             </T>
             <T size={12} weight="bold" color={HealthGreen}>
               {`%${dynamicChance} Başarı İhtimali`}
@@ -566,7 +562,7 @@ function AdventureCard({ adventure, player, isAnyTaskRunning, onStart, onClaim }
             label={`Garantili Zanaat Malzemesi: +${adventure.rewardMaterialCount} ${adventure.rewardMaterialName}`}
           >
             <T size={11} color={TextMuted}>
-              💎 Garantili Zanaat Malzemesi:
+              Garantili Zanaat Malzemesi:
             </T>
             <T size={12} weight="bold" color={FamePurple}>
               {`+${adventure.rewardMaterialCount} ${adventure.rewardMaterialName}`}
@@ -578,16 +574,16 @@ function AdventureCard({ adventure, player, isAnyTaskRunning, onStart, onClaim }
 
         {/* Sefer Koşulları & Hazırlık Gereksinimleri */}
         <T size={11} weight="bold" color={TextGold}>
-          📋 Sefer Hazırlığı & Gereksinimler:
+          Sefer Hazırlığı & Gereksinimler:
         </T>
         <Spacer h={4} />
         <Row wrap gap={6} style={{ alignSelf: 'stretch', rowGap: 4 }}>
           <RequirementBadge text={`Sv. ${adventure.requiredLevel}+`} isMet={levelOk} />
-          <RequirementBadge text={`❤️ %${adventure.requiredMinHpPercent}+ Can (${player.currentHealth}/${minHpReq})`} isMet={hpOk} />
-          {adventure.requiredMinArmor > 0 ? <RequirementBadge text={`🛡️ ${adventure.requiredMinArmor} Zırh (${player.totalStats.armor}/${adventure.requiredMinArmor})`} isMet={armorOk} /> : null}
-          {adventure.requiredMinDamage > 0 ? <RequirementBadge text={`⚔️ ${adventure.requiredMinDamage} Hasar (${player.totalStats.damage}/${adventure.requiredMinDamage})`} isMet={damageOk} /> : null}
-          {adventure.requiredSupplyGold > 0 ? <RequirementBadge text={`🪙 ${adventure.requiredSupplyGold} Kazı Masrafı (${player.gold}/${adventure.requiredSupplyGold})`} isMet={goldOk} /> : null}
-          {adventure.requiredSupplyItemName != null ? <RequirementBadge text={`🌿 1x ${adventure.requiredSupplyItemName}`} isMet={supplyOk} /> : null}
+          <RequirementBadge text={`%${adventure.requiredMinHpPercent}+ Can (${player.currentHealth}/${minHpReq})`} isMet={hpOk} />
+          {adventure.requiredMinArmor > 0 ? <RequirementBadge text={`${adventure.requiredMinArmor} Zırh (${player.totalStats.armor}/${adventure.requiredMinArmor})`} isMet={armorOk} /> : null}
+          {adventure.requiredMinDamage > 0 ? <RequirementBadge text={`${adventure.requiredMinDamage} Hasar (${player.totalStats.damage}/${adventure.requiredMinDamage})`} isMet={damageOk} /> : null}
+          {adventure.requiredSupplyGold > 0 ? <RequirementBadge text={`${adventure.requiredSupplyGold} Altın Kazı Masrafı (${player.gold}/${adventure.requiredSupplyGold})`} isMet={goldOk} /> : null}
+          {adventure.requiredSupplyItemName != null ? <RequirementBadge text={`1x ${adventure.requiredSupplyItemName}`} isMet={supplyOk} /> : null}
         </Row>
 
         <Spacer h={12} />
@@ -681,7 +677,7 @@ function CraftingRecipeCard({ recipe, player, onInspect, onCraft }) {
 
         <Row justify="between" wrap gap={6} style={{ alignSelf: 'stretch' }}>
           <T size={12} color={hasGold ? HealthGreen : HealthRed} weight="semibold" label={`${hasGold ? 'Yeterli' : 'Yetersiz'}, Altın: ${player.gold} / ${recipe.requiredGold}`}>
-            {`🪙 Altın: ${player.gold} / ${recipe.requiredGold}`}
+            {`Altın: ${player.gold} / ${recipe.requiredGold}`}
           </T>
           <T size={12} color={ok ? HealthGreen : HealthRed} weight="semibold" label={`${ok ? 'Yeterli' : 'Yetersiz'}, ${recipe.requiredMaterialName}: ${curMatCount}/${recipe.requiredMaterialCount}`}>
             {`${recipe.requiredMaterialName}: ${curMatCount}/${recipe.requiredMaterialCount}`}
@@ -693,7 +689,7 @@ function CraftingRecipeCard({ recipe, player, onInspect, onCraft }) {
         {/* Dövme Butonu */}
         <Btn onPress={onCraft} disabled={!canCraft} color={AmberGold} contentColor={DarkBg} disabledColor={DarkSurfaceCard} disabledContentColor={TextMuted} radius={8} style={{ alignSelf: 'stretch' }}>
           <T weight="bold" color={canCraft ? DarkBg : TextMuted} align="center">
-            {canCraft ? `🔨 Ocağında Döv ve Kuşan (${recipe.requiredGold} 🪙)` : 'Eksik Malzeme veya Altın'}
+            {canCraft ? `Ocağında Döv ve Kuşan (${recipe.requiredGold} Altın)` : 'Eksik Malzeme veya Altın'}
           </T>
         </Btn>
       </Column>
@@ -706,7 +702,7 @@ function OzelNitelik({ trait }) {
   return (
     <Surface radius={6} color={color(0xff2b1b36)} borderColor={FamePurple} borderWidth={1} pad={8} style={{ alignSelf: 'stretch' }}>
       <T size={12} weight="bold" color={FamePurple}>
-        {`${trait.icon} 2. Özel Nitelik: ${trait.name}`}
+        {`2. Özel Nitelik: ${trait.name}`}
       </T>
       <Spacer h={2} />
       <T size={11} color={alpha(TextLight, 0.95)}>
@@ -787,18 +783,18 @@ export function getDefaultQuestProgressText(quest) {
   if (quest.progressText != null) return quest.progressText;
   const t = quest.title;
   const d = quest.description;
-  if (containsIgnoreCase(t, 'Kereste') || containsIgnoreCase(d, 'kütük')) return '🪓 Dağdan akıtılan ağır kütük ve kereste sallarına nehir boyu muhafızlık ediyorsun...';
-  if (containsIgnoreCase(t, 'Körük') || containsIgnoreCase(t, 'Kömür')) return '🔥 Demirci ocağı için maden kömürü ve ağır körükleri taşıyorsun...';
-  if (containsIgnoreCase(t, 'Sığır')) return '🐂 Sazlık balçıklarında kayıp sığırın ayak izlerini sürüyorsun...';
-  if (containsIgnoreCase(t, 'İskele')) return '⚓ İskele boyunda gece ayazında pusudaki su korsanlarını kolluyorsun...';
-  if (containsIgnoreCase(t, 'Baskın') || containsIgnoreCase(t, 'Eşkıya')) return "⚔️ Kargı Boğazı'nda kılıcın kınında hazır, eşkıya artıklarını dağıtıyorsun...";
-  if (containsIgnoreCase(t, 'Değirmen')) return '⚙️ Su değirmeninin dev çarkına dolanan balçık ve kütükleri temizliyorsun...';
-  if (containsIgnoreCase(t, 'Gözetleme') || containsIgnoreCase(t, 'Meşale')) return '🔥 Gözetleme kulesinde rüzgara karşı nöbet tutup işaret ateşini harlıyorsun...';
-  if (containsIgnoreCase(t, 'Kiremit')) return '🐗 Kiremit ocağındaki çamur çukurlarında yaban domuzlarını kovalıyorsun...';
-  if (containsIgnoreCase(t, 'Hasır')) return '🌾 Derin sazlıklarda hasır biçen köylüleri bataklık yılanlarından koruyorsun...';
-  if (containsIgnoreCase(t, 'Cevher')) return '⛏️ Tuz çölü mağaralarında kazmayla demir ve tuz filizi çıkarıyorsun...';
-  if (containsIgnoreCase(t, 'Kervan')) return '🛡️ Tozlu yolda kervan arabalarının yanında kılıç elde ilerliyorsun...';
-  return `⏳ [${quest.title}] Karakterin görevi icra ediyor, adımlarını dikkatle atıyor...`;
+  if (containsIgnoreCase(t, 'Kereste') || containsIgnoreCase(d, 'kütük')) return 'Dağdan akıtılan ağır kütük ve kereste sallarına nehir boyu muhafızlık ediyorsun...';
+  if (containsIgnoreCase(t, 'Körük') || containsIgnoreCase(t, 'Kömür')) return 'Demirci ocağı için maden kömürü ve ağır körükleri taşıyorsun...';
+  if (containsIgnoreCase(t, 'Sığır')) return 'Sazlık balçıklarında kayıp sığırın ayak izlerini sürüyorsun...';
+  if (containsIgnoreCase(t, 'İskele')) return 'İskele boyunda gece ayazında pusudaki su korsanlarını kolluyorsun...';
+  if (containsIgnoreCase(t, 'Baskın') || containsIgnoreCase(t, 'Eşkıya')) return "Kargı Boğazı'nda kılıcın kınında hazır, eşkıya artıklarını dağıtıyorsun...";
+  if (containsIgnoreCase(t, 'Değirmen')) return 'Su değirmeninin dev çarkına dolanan balçık ve kütükleri temizliyorsun...';
+  if (containsIgnoreCase(t, 'Gözetleme') || containsIgnoreCase(t, 'Meşale')) return 'Gözetleme kulesinde rüzgara karşı nöbet tutup işaret ateşini harlıyorsun...';
+  if (containsIgnoreCase(t, 'Kiremit')) return 'Kiremit ocağındaki çamur çukurlarında yaban domuzlarını kovalıyorsun...';
+  if (containsIgnoreCase(t, 'Hasır')) return 'Derin sazlıklarda hasır biçen köylüleri bataklık yılanlarından koruyorsun...';
+  if (containsIgnoreCase(t, 'Cevher')) return 'Tuz çölü mağaralarında kazmayla demir ve tuz filizi çıkarıyorsun...';
+  if (containsIgnoreCase(t, 'Kervan')) return 'Tozlu yolda kervan arabalarının yanında kılıç elde ilerliyorsun...';
+  return `[${quest.title}] Karakterin görevi icra ediyor, adımlarını dikkatle atıyor...`;
 }
 
 export function QuestCompletionDialog({ result, onDismiss }) {
@@ -813,9 +809,7 @@ export function QuestCompletionDialog({ result, onDismiss }) {
     <Dialog onDismiss={onDismiss} style={{ backgroundColor: DarkSurfaceCard, borderColor: AmberGold, borderWidth: 2, borderRadius: 16, padding: 0 }}>
       <Scroll style={{ flexGrow: 0, flexShrink: 1 }}>
         <Column align="center" pad={18} style={{ alignSelf: 'stretch' }}>
-          <T size={32} hidden>
-            📜
-          </T>
+          
           <Spacer h={4} />
           <T heading size={17} weight="bold" color={AmberGold}>
             SÖZLEŞME TAMAMLANDI
@@ -829,7 +823,7 @@ export function QuestCompletionDialog({ result, onDismiss }) {
           {/* Rapor Metni */}
           <Surface radius={10} color={alpha(DarkBg, 0.85)} borderColor={alpha(AmberGold, 0.4)} borderWidth={1} pad={12} style={{ alignSelf: 'stretch' }}>
             <T size={11} weight="bold" color={AmberGoldDark}>
-              📖 Sözleşme Raporu:
+              Sözleşme Raporu:
             </T>
             <Spacer h={4} />
             <T size={12} color={alpha(TextLight, 0.95)} lineHeight={17}>
@@ -847,18 +841,18 @@ export function QuestCompletionDialog({ result, onDismiss }) {
 
           <Row gap={8} align="stretch" style={{ alignSelf: 'stretch' }}>
             <Surface radius={8} color={DarkSurface} borderColor={alpha(AmberGold, 0.5)} borderWidth={1} align="center" pad={6} style={{ flex: 1 }} label={`+${result.goldEarned} Altın`}>
-              <T size={16}>💰</T>
+              
               <T size={11} weight="bold" color={AmberGold}>{`+${result.goldEarned} Altın`}</T>
             </Surface>
 
             <Surface radius={8} color={DarkSurface} borderColor={alpha(color(0xff64b5f6), 0.5)} borderWidth={1} align="center" pad={6} style={{ flex: 1 }} label={`+${result.expEarned} EXP`}>
-              <T size={16}>⭐</T>
+              
               <T size={11} weight="bold" color={color(0xff90caf9)}>{`+${result.expEarned} EXP`}</T>
             </Surface>
 
             {result.fameEarned > 0 ? (
               <Surface radius={8} color={DarkSurface} borderColor={alpha(HealthGreen, 0.5)} borderWidth={1} align="center" pad={6} style={{ flex: 1 }} label={`+${result.fameEarned} Şöhret`}>
-                <T size={16}>🏛️</T>
+                
                 <T size={11} weight="bold" color={HealthGreen}>{`+${result.fameEarned} Şöhret`}</T>
               </Surface>
             ) : null}
@@ -870,12 +864,10 @@ export function QuestCompletionDialog({ result, onDismiss }) {
               <Spacer h={10} />
               <Surface radius={10} color={alpha(AmberGoldDark, 0.25)} borderColor={AmberGold} borderWidth={1.5} style={{ alignSelf: 'stretch' }}>
                 <Row gap={10} pad={10}>
-                  <T size={24} hidden>
-                    📜
-                  </T>
+                  
                   <Column style={{ flexShrink: 1 }}>
                     <T size={11} weight="bold" color={AmberGold}>
-                      🎁 ÖZEL KADİM GANİMET!
+                      ÖZEL KADİM GANİMET!
                     </T>
                     <T size={12} weight="bold" color={Color.White}>
                       {result.droppedScroll.name}
@@ -894,9 +886,7 @@ export function QuestCompletionDialog({ result, onDismiss }) {
               <Spacer h={8} />
               <Surface radius={8} color={DarkSurface} borderColor={color(result.droppedEquipment.rarity.colorHex)} borderWidth={1} style={{ alignSelf: 'stretch' }}>
                 <Row gap={8} pad={8}>
-                  <T size={18} hidden>
-                    🛡️
-                  </T>
+                  
                   <Column style={{ flexShrink: 1 }}>
                     <T size={12} weight="bold" color={color(result.droppedEquipment.rarity.colorHex)}>
                       {`Eşya: ${result.droppedEquipment.name}`}

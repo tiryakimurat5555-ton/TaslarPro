@@ -36,7 +36,7 @@ export function LevelUpDialog({ event, onDismiss }) {
       title={
         <Column align="center" style={{ alignSelf: 'stretch' }}>
           <T heading weight="extrabold" size={20} color={TextGold}>
-            🎉 SEVİYE ATLADIN! 🎉
+            SEVİYE ATLADIN!
           </T>
           <Spacer h={4} />
           <Surface radius={6} color={alpha(AmberGoldDark, 0.25)} borderColor={AmberGold} borderWidth={1}>
@@ -54,17 +54,17 @@ export function LevelUpDialog({ event, onDismiss }) {
           <Spacer h={4} />
           <Surface radius={8} color={DarkSurfaceCard} borderColor={DarkBorder} borderWidth={1} style={{ alignSelf: 'stretch' }}>
             <Column pad={12} gap={6}>
-              <StatBonusRow icon="❤️" label="Maksimum Can" bonus={`+${event.healthGained}`} extra={`(Yeni: ${event.newMaxHealth})`} color={HealthGreen} />
-              <StatBonusRow icon="⚔️" label="Saldırı Hasarı" bonus={`+${event.damageGained}`} extra="" color={AmberGold} />
-              <StatBonusRow icon="🛡️" label="Zırh & Koruma" bonus={`+${event.armorGained}`} extra="" color={ExpBlue} />
-              <StatBonusRow icon="⚡" label="Hız & Çeviklik" bonus={`+${event.speedGained}`} extra="" color={TextGold} />
+              <StatBonusRow icon="" label="Maksimum Can" bonus={`+${event.healthGained}`} extra={`(Yeni: ${event.newMaxHealth})`} color={HealthGreen} />
+              <StatBonusRow icon="" label="Saldırı Hasarı" bonus={`+${event.damageGained}`} extra="" color={AmberGold} />
+              <StatBonusRow icon="" label="Zırh & Koruma" bonus={`+${event.armorGained}`} extra="" color={ExpBlue} />
+              <StatBonusRow icon="" label="Hız & Çeviklik" bonus={`+${event.speedGained}`} extra="" color={TextGold} />
             </Column>
           </Surface>
           <Spacer h={4} />
           <Surface radius={6} color={DarkBg} style={{ alignSelf: 'stretch' }}>
             <Row pad={8} justify="between">
               <T size={11} color={TextMuted}>
-                📖 Sonraki Seviye:
+                Sonraki Seviye:
               </T>
               <T size={11} weight="bold" color={ExpBlue}>
                 {`${event.nextLevelExp} EXP gerekli`}

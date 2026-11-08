@@ -19,7 +19,7 @@ const O = process.argv[3] || '/tmp/claude-0/ekran'; fs.mkdirSync(O, { recursive:
   for (const sekme of ['Ev', 'Arena', 'Bölge', 'Görevler', 'Çanta']) { await tik(sekme); await s.waitForTimeout(500); await adim('4-' + sekme); }
 
   const yaz = async (ad) => { console.log('\n##', ad, (await et()).slice(0,40).map(x=>x.slice(0,60)).join(' | ')); console.log('duyuru:', (await s.evaluate(()=>window.__duyurular.splice(0).slice(-6).join(' // '))).slice(0,600)); if (h.length) console.log('HATALAR:', h.splice(0).slice(0,5).join('\n')); await s.screenshot({ path: `${O}/${ad}.png` }); };
-  await tik('Arena'); await tik('⚔️ KURADAKİ RAKİPLE'); for (let i=0;i<40;i++){ await s.waitForTimeout(3000); const l=(await et()).join('|'); if (/ZAFER|YENİLGİ|Zafer|Yenilgi|Mağlubiyet|Galibiyet/.test(l) && !/Hamle \d+: .*$/.test('')) { if (!(await s.evaluate(()=>!!document.querySelector('[aria-label*="Can durumu"]')))) break; } } await yaz('5-dovus');
+  await tik('Arena'); await tik('KURADAKİ RAKİPLE'); for (let i=0;i<40;i++){ await s.waitForTimeout(3000); const l=(await et()).join('|'); if (/ZAFER|YENİLGİ|Zafer|Yenilgi|Mağlubiyet|Galibiyet/.test(l) && !/Hamle \d+: .*$/.test('')) { if (!(await s.evaluate(()=>!!document.querySelector('[aria-label*="Can durumu"]')))) break; } } await yaz('5-dovus');
   const kapat = (await et()).find(x => /Kapat|Tamam|Devam|Arenadan|Zafer|Ayrıl/.test(x)); console.log('kapat:', kapat); if (kapat) await tik(kapat);
   await yaz('5b-dovus-sonrasi');
   await tik('Bölge'); await tik('Demirci Vorn'); await s.waitForTimeout(500); await yaz('6-demirci');

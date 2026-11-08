@@ -57,7 +57,7 @@ function createAestheticHeadwear() {
                 valueInGold: gold,
                 description: desc,
                 armorCategory: ArmorCategory.MISC_HEADGEAR,
-                specialTrait: new EquipmentSpecialTrait({id: `trait_head_str_${i}`, name: 'Sokak Refleksi', description: 'Yakın temasta çevikliği artırır.', icon: '🥊'}),
+                specialTrait: new EquipmentSpecialTrait({id: `trait_head_str_${i}`, name: 'Sokak Refleksi', description: 'Yakın temasta çevikliği artırır.', icon: ''}),
                 isAestheticUnarmed: true
             })
         )
@@ -93,7 +93,7 @@ function createAestheticHeadwear() {
                 valueInGold: gold,
                 description: desc,
                 armorCategory: ArmorCategory.MISC_HEADGEAR,
-                specialTrait: new EquipmentSpecialTrait({id: `trait_head_pir_${i}`, name: 'Güverte Çalımı', description: 'Rakibin hamlesini boşa çıkarmayı kolaylaştırır.', icon: '🏴‍☠️'}),
+                specialTrait: new EquipmentSpecialTrait({id: `trait_head_pir_${i}`, name: 'Güverte Çalımı', description: 'Rakibin hamlesini boşa çıkarmayı kolaylaştırır.', icon: ''}),
                 isAestheticUnarmed: true
             })
         )
@@ -129,7 +129,7 @@ function createAestheticHeadwear() {
                 valueInGold: gold,
                 description: desc,
                 armorCategory: ArmorCategory.MISC_HEADGEAR,
-                specialTrait: new EquipmentSpecialTrait({id: `trait_head_roy_${i}`, name: 'Asil Bakış', description: 'Hasmın gardındaki açıkların daha çabuk fark edilmesini sağlar.', icon: '👑'}),
+                specialTrait: new EquipmentSpecialTrait({id: `trait_head_roy_${i}`, name: 'Asil Bakış', description: 'Hasmın gardındaki açıkların daha çabuk fark edilmesini sağlar.', icon: ''}),
                 isAestheticUnarmed: true
             })
         )
@@ -164,7 +164,7 @@ function createAestheticHeadwear() {
                 valueInGold: gold,
                 description: desc,
                 armorCategory: ArmorCategory.MISC_HEADGEAR,
-                specialTrait: new EquipmentSpecialTrait({id: `trait_head_sth_${i}`, name: 'Çöl Serabı', description: 'Adımları rüzgar gibi hafifleterek darbelerden sıyırır.', icon: '☀️'}),
+                specialTrait: new EquipmentSpecialTrait({id: `trait_head_sth_${i}`, name: 'Çöl Serabı', description: 'Adımları rüzgar gibi hafifleterek darbelerden sıyırır.', icon: ''}),
                 isAestheticUnarmed: true
             })
         )
@@ -208,7 +208,7 @@ function createAestheticTops() {
                 valueInGold: gold,
                 description: desc,
                 armorCategory: ArmorCategory.LIGHT_ARMOR,
-                specialTrait: new EquipmentSpecialTrait({id: `trait_top_str_${i}`, name: 'Çıplak Ten Dayanıklılığı', description: 'Kenetlenmelerde sürtünmeyi avantaja çevirir.', icon: '🥋'}),
+                specialTrait: new EquipmentSpecialTrait({id: `trait_top_str_${i}`, name: 'Çıplak Ten Dayanıklılığı', description: 'Kenetlenmelerde sürtünmeyi avantaja çevirir.', icon: ''}),
                 isAestheticUnarmed: true
             })
         )
@@ -244,7 +244,7 @@ function createAestheticTops() {
                 valueInGold: gold,
                 description: desc,
                 armorCategory: ArmorCategory.LIGHT_ARMOR,
-                specialTrait: new EquipmentSpecialTrait({id: `trait_top_pir_${i}`, name: 'Korsan Çalımı', description: 'Yakın temasta esneklik sağlayarak darbelerin şiddetini kırar.', icon: '⚓'}),
+                specialTrait: new EquipmentSpecialTrait({id: `trait_top_pir_${i}`, name: 'Korsan Çalımı', description: 'Yakın temasta esneklik sağlayarak darbelerin şiddetini kırar.', icon: ''}),
                 isAestheticUnarmed: true
             })
         )
@@ -280,7 +280,7 @@ function createAestheticTops() {
                 valueInGold: gold,
                 description: desc,
                 armorCategory: ArmorCategory.LIGHT_ARMOR,
-                specialTrait: new EquipmentSpecialTrait({id: `trait_top_roy_${i}`, name: 'Kraliyet Heybeti', description: 'Yakın boğuşmada rakibin moralini bozar.', icon: '💎'}),
+                specialTrait: new EquipmentSpecialTrait({id: `trait_top_roy_${i}`, name: 'Kraliyet Heybeti', description: 'Yakın boğuşmada rakibin moralini bozar.', icon: ''}),
                 isAestheticUnarmed: true
             })
         )
@@ -315,7 +315,7 @@ function createAestheticTops() {
                 valueInGold: gold,
                 description: desc,
                 armorCategory: ArmorCategory.LIGHT_ARMOR,
-                specialTrait: new EquipmentSpecialTrait({id: `trait_top_sth_${i}`, name: 'Güneşin Dokunuşu', description: 'Çevik sıyrılışlarda hasmın gözünü kamaştırır.', icon: '🌟'}),
+                specialTrait: new EquipmentSpecialTrait({id: `trait_top_sth_${i}`, name: 'Güneşin Dokunuşu', description: 'Çevik sıyrılışlarda hasmın gözünü kamaştırır.', icon: ''}),
                 isAestheticUnarmed: true
             })
         )
@@ -359,7 +359,7 @@ function createAestheticBottoms() {
                 valueInGold: gold,
                 description: desc,
                 armorCategory: ArmorCategory.PANTS,
-                specialTrait: new EquipmentSpecialTrait({id: `trait_bot_str_${i}`, name: 'Sokak Çelmesi', description: 'Bacak çelmeleri ve süpürmelerde dengeyi korur.', icon: '🦵'}),
+                specialTrait: new EquipmentSpecialTrait({id: `trait_bot_str_${i}`, name: 'Sokak Çelmesi', description: 'Bacak çelmeleri ve süpürmelerde dengeyi korur.', icon: ''}),
                 isAestheticUnarmed: true
             })
         )
@@ -395,7 +395,7 @@ function createAestheticBottoms() {
                 valueInGold: gold,
                 description: desc,
                 armorCategory: ArmorCategory.PANTS,
-                specialTrait: new EquipmentSpecialTrait({id: `trait_bot_pir_${i}`, name: 'Dalga Salınımı', description: 'Zeminde kaymadan ani yön değiştirmeyi sağlar.', icon: '🌊'}),
+                specialTrait: new EquipmentSpecialTrait({id: `trait_bot_pir_${i}`, name: 'Dalga Salınımı', description: 'Zeminde kaymadan ani yön değiştirmeyi sağlar.', icon: ''}),
                 isAestheticUnarmed: true
             })
         )
@@ -431,7 +431,7 @@ function createAestheticBottoms() {
                 valueInGold: gold,
                 description: desc,
                 armorCategory: ArmorCategory.PANTS,
-                specialTrait: new EquipmentSpecialTrait({id: `trait_bot_roy_${i}`, name: 'Saray Süzülüşü', description: 'Zarif adımlarla rakibin vuruş açısından sıyrılmayı sağlar.', icon: '✨'}),
+                specialTrait: new EquipmentSpecialTrait({id: `trait_bot_roy_${i}`, name: 'Saray Süzülüşü', description: 'Zarif adımlarla rakibin vuruş açısından sıyrılmayı sağlar.', icon: ''}),
                 isAestheticUnarmed: true
             })
         )
@@ -466,7 +466,7 @@ function createAestheticBottoms() {
                 valueInGold: gold,
                 description: desc,
                 armorCategory: ArmorCategory.PANTS,
-                specialTrait: new EquipmentSpecialTrait({id: `trait_bot_sth_${i}`, name: 'Çöl Rüzgarı', description: 'Bacakların havada dönerek yaptığı darbeleri hızlandırır.', icon: '🌪️'}),
+                specialTrait: new EquipmentSpecialTrait({id: `trait_bot_sth_${i}`, name: 'Çöl Rüzgarı', description: 'Bacakların havada dönerek yaptığı darbeleri hızlandırır.', icon: ''}),
                 isAestheticUnarmed: true
             })
         )
@@ -510,7 +510,7 @@ function createAestheticFootwear() {
                 valueInGold: gold,
                 description: desc,
                 armorCategory: ArmorCategory.BOOTS,
-                specialTrait: new EquipmentSpecialTrait({id: `trait_foot_str_${i}`, name: 'Kum Tutuşu', description: 'Zeminde kaymayı önleyerek dengeyi sabitler.', icon: '🦶'}),
+                specialTrait: new EquipmentSpecialTrait({id: `trait_foot_str_${i}`, name: 'Kum Tutuşu', description: 'Zeminde kaymayı önleyerek dengeyi sabitler.', icon: ''}),
                 isAestheticUnarmed: true
             })
         )
@@ -546,7 +546,7 @@ function createAestheticFootwear() {
                 valueInGold: gold,
                 description: desc,
                 armorCategory: ArmorCategory.BOOTS,
-                specialTrait: new EquipmentSpecialTrait({id: `trait_foot_pir_${i}`, name: 'Güverte Çevikliği', description: 'Sıçrayış ve kaçınma hızını artırır.', icon: '⛵'}),
+                specialTrait: new EquipmentSpecialTrait({id: `trait_foot_pir_${i}`, name: 'Güverte Çevikliği', description: 'Sıçrayış ve kaçınma hızını artırır.', icon: ''}),
                 isAestheticUnarmed: true
             })
         )
@@ -582,7 +582,7 @@ function createAestheticFootwear() {
                 valueInGold: gold,
                 description: desc,
                 armorCategory: ArmorCategory.BOOTS,
-                specialTrait: new EquipmentSpecialTrait({id: `trait_foot_roy_${i}`, name: 'Sessiz Adımlar', description: 'Rakibin ayak seslerini duymasını engeller.', icon: '🩰'}),
+                specialTrait: new EquipmentSpecialTrait({id: `trait_foot_roy_${i}`, name: 'Sessiz Adımlar', description: 'Rakibin ayak seslerini duymasını engeller.', icon: ''}),
                 isAestheticUnarmed: true
             })
         )
@@ -617,7 +617,7 @@ function createAestheticFootwear() {
                 valueInGold: gold,
                 description: desc,
                 armorCategory: ArmorCategory.BOOTS,
-                specialTrait: new EquipmentSpecialTrait({id: `trait_foot_sth_${i}`, name: 'Kum Dansı', description: 'Kumda batmadan akıcı adımlarla süzülmeyi sağlar.', icon: '👡'}),
+                specialTrait: new EquipmentSpecialTrait({id: `trait_foot_sth_${i}`, name: 'Kum Dansı', description: 'Kumda batmadan akıcı adımlarla süzülmeyi sağlar.', icon: ''}),
                 isAestheticUnarmed: true
             })
         )
@@ -661,7 +661,7 @@ function createAestheticGlovesAndBracers() {
                 valueInGold: gold,
                 description: desc,
                 armorCategory: ArmorCategory.GLOVES,
-                specialTrait: new EquipmentSpecialTrait({id: `trait_glv_str_${i}`, name: 'Sert Yumruk', description: 'Çıplak el darbelerinin kemik kırma gücünü artırır.', icon: '🥊'}),
+                specialTrait: new EquipmentSpecialTrait({id: `trait_glv_str_${i}`, name: 'Sert Yumruk', description: 'Çıplak el darbelerinin kemik kırma gücünü artırır.', icon: ''}),
                 isAestheticUnarmed: true
             })
         )
@@ -697,7 +697,7 @@ function createAestheticGlovesAndBracers() {
                 valueInGold: gold,
                 description: desc,
                 armorCategory: ArmorCategory.GLOVES,
-                specialTrait: new EquipmentSpecialTrait({id: `trait_glv_pir_${i}`, name: 'Demir Pençe', description: 'Rakibin kıyafetini yırtarak tutuş gücü sağlar.', icon: '🦅'}),
+                specialTrait: new EquipmentSpecialTrait({id: `trait_glv_pir_${i}`, name: 'Demir Pençe', description: 'Rakibin kıyafetini yırtarak tutuş gücü sağlar.', icon: ''}),
                 isAestheticUnarmed: true
             })
         )
@@ -733,7 +733,7 @@ function createAestheticGlovesAndBracers() {
                 valueInGold: gold,
                 description: desc,
                 armorCategory: ArmorCategory.GLOVES,
-                specialTrait: new EquipmentSpecialTrait({id: `trait_glv_roy_${i}`, name: 'Asil Dokunuş', description: 'Hassas eklem noktalarına yapılan vuruşların etkisini artırır.', icon: '✨'}),
+                specialTrait: new EquipmentSpecialTrait({id: `trait_glv_roy_${i}`, name: 'Asil Dokunuş', description: 'Hassas eklem noktalarına yapılan vuruşların etkisini artırır.', icon: ''}),
                 isAestheticUnarmed: true
             })
         )
@@ -768,7 +768,7 @@ function createAestheticGlovesAndBracers() {
                 valueInGold: gold,
                 description: desc,
                 armorCategory: ArmorCategory.GLOVES,
-                specialTrait: new EquipmentSpecialTrait({id: `trait_glv_sth_${i}`, name: 'Yılan Kıvraklığı', description: 'Kilit ve kavrama hamlelerinde rakibin gardını aşar.', icon: '🐍'}),
+                specialTrait: new EquipmentSpecialTrait({id: `trait_glv_sth_${i}`, name: 'Yılan Kıvraklığı', description: 'Kilit ve kavrama hamlelerinde rakibin gardını aşar.', icon: ''}),
                 isAestheticUnarmed: true
             })
         )

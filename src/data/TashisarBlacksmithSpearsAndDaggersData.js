@@ -25,7 +25,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_01',
                 name: 'Menzil Kilidi',
                 description: 'Hasmı yaklaşamadan uzaktan karşılar.',
-                icon: '🔱'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -45,7 +45,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_02',
                 name: 'Hücum Temreni',
                 description: 'Hücum anında delici darbe gücünü artırır.',
-                icon: '🐎'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -65,7 +65,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_03',
                 name: 'Kalkan Çengeli',
                 description: 'Hasmın kalkanını aşağı çekerek gardını bozar.',
-                icon: '🪓'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -85,7 +85,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_04',
                 name: 'Durdurucu Kanat',
                 description: 'Geri tepme sarsıntısını sönümleyerek denge sağlar.',
-                icon: '🐗'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -105,7 +105,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_05',
                 name: 'Tırtıklı Temren',
                 description: 'Hızlı delici vuruşlarla peş peşe hasar verir.',
-                icon: '⚡'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -125,7 +125,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_06',
                 name: 'Üçlü Kıstırma',
                 description: 'Düşmanın hamlelerini üç noktadan kilitler.',
-                icon: '🔱'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -145,7 +145,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_07',
                 name: 'Rüzgar Gönderi',
                 description: 'Delici vuruşlarda zırh aralıklarına sızar.',
-                icon: '💨'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -165,7 +165,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_08',
                 name: 'Safer İntizamı',
                 description: 'Saldırı hızını ve isabet oranını artırır.',
-                icon: '🚩'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -185,7 +185,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_09',
                 name: 'Çifte Tehdit',
                 description: 'Hem kesici hem delici hasar uygular.',
-                icon: '⚔️'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -205,7 +205,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_10',
                 name: 'Ayaz Sisi',
                 description: 'Darbe anında hasmın hareketini yavaşlatır.',
-                icon: '❄️'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -225,7 +225,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_11',
                 name: 'Cam Temren',
                 description: 'Zırhı parçalayan keskin saplama.',
-                icon: '🖤'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -245,7 +245,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_12',
                 name: 'Gedik Diken',
                 description: 'Gelen hücumları durdurup hasarı geri yansıtır.',
-                icon: '🏰'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -265,7 +265,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_13',
                 name: 'Zırh Delen',
                 description: 'Zırh korumasını büyük oranda delip geçer.',
-                icon: '💎'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -285,7 +285,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_14',
                 name: 'Köz Batışı',
                 description: 'Saplandığı noktada içten yanmalı hasar bırakır.',
-                icon: '🔥'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -305,7 +305,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_15',
                 name: 'Buz Çatalı',
                 description: 'Düşmanın gardını dondurarak bloke etmesini engeller.',
-                icon: '🧊'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -325,7 +325,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_16',
                 name: 'Şahin Hamlesi',
                 description: 'Kritik vuruş şansını önemli ölçüde artırır.',
-                icon: '🦅'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -345,7 +345,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_17',
                 name: 'Şövalye Darbesi',
                 description: 'Hücum gücünü ve savunma dayanıklılığını besler.',
-                icon: '🛡️'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -365,7 +365,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_18',
                 name: 'Kara Zehir',
                 description: 'Hasmın canını zamanla tüketen toksin.',
-                icon: '🧪'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -385,7 +385,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_19',
                 name: 'Şimşek Oku',
                 description: 'Darbe anında elektrik akımı sıçratır.',
-                icon: '⚡'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -405,7 +405,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_20',
                 name: 'Kaplan Pençesi',
                 description: 'Seri vuruşlarla peş peşe kritik hasar indirir.',
-                icon: '🐅'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -425,7 +425,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_21',
                 name: 'Lav Damlası',
                 description: 'Vurulan hedefi erimiş lavla kavurur.',
-                icon: '🌋'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -445,7 +445,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_22',
                 name: 'Titan Menzili',
                 description: 'Uzak mesafeden inanılmaz delici kuvvet uygular.',
-                icon: '🗿'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -465,7 +465,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_23',
                 name: 'Görünmez Saplama',
                 description: 'Düşmanın sıyrılma şansını tamamen yok eder.',
-                icon: '🌑'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -485,7 +485,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_24',
                 name: 'Cehennem Kancası',
                 description: 'Kalkan bloklarını eriterek zırhı aşar.',
-                icon: '🔥'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -505,7 +505,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_25',
                 name: 'Hisar İradesi',
                 description: 'Dövüşçüye yüksek zırh ve hasar kazandırır.',
-                icon: '🏰'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -525,7 +525,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_26',
                 name: 'Kan Bağı',
                 description: 'Verilen delici hasarın bir kısmını cana dönüştürür.',
-                icon: '🩸'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -545,7 +545,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_27',
                 name: 'Yıldız İğnesi',
                 description: 'Zırhı tamamen yok sayan saf delici hasar.',
-                icon: '✨'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -565,7 +565,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_28',
                 name: 'Buzul Fırtınası',
                 description: 'Hasmın saldırı hızını ve hareketini dondurur.',
-                icon: '🌨️'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -585,7 +585,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_29',
                 name: 'Ruh Delici',
                 description: 'Doğrudan hasmın iç direncini yıkar.',
-                icon: '☠️'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -605,7 +605,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_30',
                 name: 'Gök Çatalı',
                 description: 'Üç noktadan hedefe yıldırım indirir.',
-                icon: '🌩️'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -625,7 +625,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_31',
                 name: 'Alev Dili',
                 description: 'Kavurucu alevle zırh katmanlarını yok eder.',
-                icon: '🐉'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -645,7 +645,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_32',
                 name: 'Boyut Atlama',
                 description: 'Mesafe tanımaksızın ani kritik vuruş uygular.',
-                icon: '⏳'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -665,7 +665,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_33',
                 name: 'Arenanın Hükmü',
                 description: 'Can %30 altındayken hasarı %30 katlar.',
-                icon: '🏆'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -685,7 +685,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_34',
                 name: 'Gökdelen Saplaması',
                 description: 'Ağır hedefleri tek darbede yere serer.',
-                icon: '🏛️'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -705,7 +705,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_35',
                 name: 'Mutlak Donma',
                 description: 'Düşmanın tepki verme hızını sıfıra yaklaştırır.',
-                icon: '🧊'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -725,7 +725,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_36',
                 name: 'Araf Közü',
                 description: 'Fiziksel savunmaları aşan içsel hasar.',
-                icon: '🔥'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -745,7 +745,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_37',
                 name: 'Kasırga Burgusu',
                 description: 'Burgu gibi dönerek zırhı delip geçer.',
-                icon: '🌪️'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -765,7 +765,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_38',
                 name: 'Büyü Yırtığı',
                 description: 'Mistik korumaları un ufak eder.',
-                icon: '🔮'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -785,7 +785,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_39',
                 name: 'Girdap Çekimi',
                 description: 'Hasmı savurarak sıyrılma şansını sıfırlar.',
-                icon: '🌊'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -805,7 +805,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_40',
                 name: 'Muzaffer Gönder',
                 description: 'Tüm dövüş niteliklerini belirgin şekilde besler.',
-                icon: '👑'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -825,7 +825,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_41',
                 name: 'Mahşer Deleni',
                 description: 'Zırhı sıvılaştıran muazzam delici güç.',
-                icon: '🌋'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 3
@@ -845,7 +845,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_42',
                 name: 'Ebedi Kırağı',
                 description: 'Düşmanın kan akışını durdurup dondurur.',
-                icon: '🏔️'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 3
@@ -865,7 +865,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_43',
                 name: 'Gök Gazabı',
                 description: 'Darbe anında zincirleme yıldırım patlatır.',
-                icon: '⚡'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 3
@@ -885,7 +885,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_44',
                 name: 'Kızıl İğne',
                 description: 'Arenayı kavuran alev dalgaları fışkırtır.',
-                icon: '🐉'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 3
@@ -905,7 +905,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_45',
                 name: 'Ecel İğnesi',
                 description: 'Can çalma ve hasmın tüm savunmalarını yıkma.',
-                icon: '☠️'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 3
@@ -925,7 +925,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_46',
                 name: 'Tekillik İtişi',
                 description: 'Düşmanın gardını ve zırhını çökerterek ezer.',
-                icon: '🌌'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 3
@@ -945,7 +945,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_47',
                 name: 'Kader Saplaması',
                 description: 'Kaçınılmaz ve zırh tanımaz kritik vuruş.',
-                icon: '⏳'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 3
@@ -965,7 +965,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_48',
                 name: 'İlk Şafak',
                 description: 'Tüm karanlık güçleri ve zırhları dağıtır.',
-                icon: '☀️'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 3
@@ -985,7 +985,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_49',
                 name: 'Kızıl Süvari',
                 description: 'Vurulan her kritik darbede hasarı ikiye katlar.',
-                icon: '🩸'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 3
@@ -1005,7 +1005,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_spn_50',
                 name: 'Kraliyet Gönderi',
                 description: 'Arenada mutlak üstünlük ve zafer sağlar.',
-                icon: '🏰'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 3
@@ -1030,7 +1030,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_01',
                 name: 'Çizme Hamlesi',
                 description: 'Ani ve seri saplamalarla kritik isabet şansını artırır.',
-                icon: '🔪'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -1050,7 +1050,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_02',
                 name: 'İğne Temren',
                 description: 'Zırhın koruyucu katmanlarını delip geçer.',
-                icon: '🗡️'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -1070,7 +1070,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_03',
                 name: 'Süvari Sürati',
                 description: 'Saldırı hızını belirgin şekilde yükseltir.',
-                icon: '🐎'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -1090,7 +1090,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_04',
                 name: 'Engerek Çentiği',
                 description: 'Kritik vuruşlarda kanama bırakır.',
-                icon: '🐍'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -1110,7 +1110,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_05',
                 name: 'Gölge Sinsisi',
                 description: 'Düşmanın görüşünü şaşırtıp sıyrılma şansı verir.',
-                icon: '🌑'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -1130,7 +1130,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_06',
                 name: 'Çifte Kesik',
                 description: 'Seri saldırılarla hasarı katlar.',
-                icon: '⚔️'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -1150,7 +1150,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_07',
                 name: 'Çakal Pençesi',
                 description: 'Kritik vuruş hasarını artırır.',
-                icon: '🐺'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -1170,7 +1170,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_08',
                 name: 'Kızıl Zehir',
                 description: 'Hedefin kanına zehirli yanma aşılar.',
-                icon: '🩸'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -1190,7 +1190,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_09',
                 name: 'Yaylı Fırlama',
                 description: 'Dövüşün ilk hamlelerinde yüksek hız sağlar.',
-                icon: '⚡'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -1210,7 +1210,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_10',
                 name: 'Pala Saptırması',
                 description: 'Yakın darbeleri saptırarak sıyrılma verir.',
-                icon: '🛡️'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -1230,7 +1230,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_11',
                 name: 'Ayaz Uyuşması',
                 description: 'Düşmanın karşı saldırı hızını yavaşlatır.',
-                icon: '❄️'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -1250,7 +1250,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_12',
                 name: 'İpek Kesiği',
                 description: 'Hasımdan durdurulamaz kan fışkırtır.',
-                icon: '🖤'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 1
@@ -1270,7 +1270,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_13',
                 name: 'Kaya Yarığı',
                 description: 'Düşmanın zırhını kırarak hasar verir.',
-                icon: '🪨'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -1290,7 +1290,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_14',
                 name: 'Ejderha Sıcağı',
                 description: 'Kritik darbelerde alev patlaması yapar.',
-                icon: '🔥'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -1310,7 +1310,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_15',
                 name: 'Buz İğnesi',
                 description: 'Düşmanın atak reflekslerini dondurur.',
-                icon: '🧊'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -1330,7 +1330,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_16',
                 name: 'Kanca Saplama',
                 description: 'Kalkan arkasındaki hedeflere hasar iletir.',
-                icon: '🦅'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -1350,7 +1350,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_17',
                 name: 'Casusluk Mührü',
                 description: 'Kritik şansını ve sıyrılma kabiliyetini besler.',
-                icon: '🗝️'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -1370,7 +1370,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_18',
                 name: 'Çifte Zehir',
                 description: 'Hasıma peş peşe zehirli darbeler indirir.',
-                icon: '🐍'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -1390,7 +1390,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_19',
                 name: 'Yıldırım Hamlesi',
                 description: 'Saldırı hızını tavan yaptırır.',
-                icon: '⚡'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -1410,7 +1410,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_20',
                 name: 'Boğaz Keneti',
                 description: 'Kritik vuruş hasarını katlar.',
-                icon: '🐺'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -1430,7 +1430,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_21',
                 name: 'Lav Püskürmesi',
                 description: 'Zırhı eriten içten yanmalı hasar.',
-                icon: '🌋'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -1450,7 +1450,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_22',
                 name: 'Titan Kırışı',
                 description: 'Fiziksel hasarı devasa oranda artırır.',
-                icon: '🗿'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -1470,7 +1470,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_23',
                 name: 'Zifiri Saplama',
                 description: 'Hasmın savunma reflekslerini köreltir.',
-                icon: '🌑'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -1490,7 +1490,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_24',
                 name: 'Araf İğnesi',
                 description: 'Zırhı tamamen yok sayan saf delici vuruş.',
-                icon: '🔥'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -1510,7 +1510,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_25',
                 name: 'Han Hamlesi',
                 description: 'Dövüşçünün kritik ve hızını zirveye taşır.',
-                icon: '👑'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -1530,7 +1530,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_26',
                 name: 'Kan Sömürüsü',
                 description: 'Vurulan her kritik darbede can çeker.',
-                icon: '🩸'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -1550,7 +1550,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_27',
                 name: 'Yıldız Tozu',
                 description: 'Kritik isabeti ve atak hızını uçurur.',
-                icon: '✨'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -1570,7 +1570,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_28',
                 name: 'Ayaz Kesisi',
                 description: 'Hasmın kaslarını kasıp dondurur.',
-                icon: '🌨️'
+                icon: ''
             }),
             maxSockets: 2,
             unlockedSockets: 2
@@ -1590,7 +1590,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_29',
                 name: 'Kemik Sızlatıcı',
                 description: 'Düşmanın direncini sıfıra indirir.',
-                icon: '☠️'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -1610,7 +1610,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_30',
                 name: 'Şimşek Dansı',
                 description: 'Ardışık elektrik darbeleriyle düşmanı sersemletir.',
-                icon: '🌩️'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -1630,7 +1630,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_31',
                 name: 'Ejderha Isırığı',
                 description: 'Kavurucu zırh eritici hasar uygular.',
-                icon: '🐉'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -1650,7 +1650,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_32',
                 name: 'Gölge Adımı',
                 description: 'Sıyrılma şansını ve ani kritik atağı artırır.',
-                icon: '⏳'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -1670,7 +1670,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_33',
                 name: 'Arenanın Şehveti',
                 description: 'Düşman canı azaldıkça hasarı katlanır.',
-                icon: '🩸'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -1690,7 +1690,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_34',
                 name: 'Titan Dansı',
                 description: 'Hançer olmasına rağmen ağır hasar indirir.',
-                icon: '👊'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -1710,7 +1710,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_35',
                 name: 'Kristal Donuş',
                 description: 'Düşmanın hareketini felç eder.',
-                icon: '🧊'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -1730,7 +1730,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_36',
                 name: 'Ruh Yakan',
                 description: 'Zırhı tamamen aşan doğrudan can hasarı.',
-                icon: '🔥'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -1750,7 +1750,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_37',
                 name: 'Kasırga Hızı',
                 description: 'Atak hızını tavan yaptırır ve darbe ıskalatmaz.',
-                icon: '🌪️'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -1770,7 +1770,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_38',
                 name: 'Büyü Delici',
                 description: 'Büyücülerin manevi kalkanlarını parçalar.',
-                icon: '🔮'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -1790,7 +1790,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_39',
                 name: 'Hortum Dansı',
                 description: 'Düşmanın dengesini tamamen yok eder.',
-                icon: '🌀'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -1810,7 +1810,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_40',
                 name: 'Garnizon Suikasti',
                 description: 'Kritik şansını ve saldırı gücünü zirveye taşır.',
-                icon: '👑'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 2
@@ -1830,7 +1830,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_41',
                 name: 'Mahşer Kıvılcımı',
                 description: 'Muazzam hasar ve zırh eritme.',
-                icon: '🌋'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 3
@@ -1850,7 +1850,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_42',
                 name: 'Ebedi Ayaz',
                 description: 'Düşmanın kan akışını anında dondurur.',
-                icon: '🏔️'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 3
@@ -1870,7 +1870,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_43',
                 name: 'Işık Hızı',
                 description: 'Hasmı göz açıp kapayıncaya kadar biçer.',
-                icon: '⚡'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 3
@@ -1890,7 +1890,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_44',
                 name: 'Ejderha Pençesi',
                 description: 'Arenayı alev fırtınasına çeviren kritik darbe.',
-                icon: '🐉'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 3
@@ -1910,7 +1910,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_45',
                 name: 'Ruh Tırpanı',
                 description: 'Can çalma ve mutlak zırh delme.',
-                icon: '☠️'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 3
@@ -1930,7 +1930,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_46',
                 name: 'Tekillik Dansı',
                 description: 'Fizik yasalarını aşan akıl almaz hız ve hasar.',
-                icon: '🌌'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 3
@@ -1950,7 +1950,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_47',
                 name: 'Zaman Yırtığı',
                 description: 'Kaçınılmaz ve engellenemez kritik infaz.',
-                icon: '⏳'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 3
@@ -1970,7 +1970,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_48',
                 name: 'İlk Kıvılcım',
                 description: 'Tüm savunmaları sıfırlayan mutlak yakış.',
-                icon: '☀️'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 3
@@ -1990,7 +1990,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_49',
                 name: 'Kara Mahşer',
                 description: 'Vurulan her kritik darbede hasarı ikiye katlar.',
-                icon: '☄️'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 3
@@ -2010,7 +2010,7 @@ export const TashisarBlacksmithSpearsAndDaggersData = {
                 id: 'trait_tash_dg_50',
                 name: 'Kraliyet Gölgesi',
                 description: 'Arenada mutlak üstünlük ve kusursuz infaz gücü.',
-                icon: '🏰'
+                icon: ''
             }),
             maxSockets: 3,
             unlockedSockets: 3

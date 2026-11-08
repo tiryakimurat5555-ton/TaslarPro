@@ -694,47 +694,44 @@ export function Field({ value, onChange, label, placeholder, maxLength, singleLi
 // Görseller
 // ---------------------------------------------------------------------------
 const IKONLAR = {
-  Home: '🏠',
-  Shield: '🛡️',
-  Settings: '⚙️',
-  Refresh: '🔄',
-  PlayArrow: '▶️',
-  MusicNote: '🎵',
+  Home: '',
+  Shield: '',
+  Settings: '',
+  Refresh: '',
+  PlayArrow: '',
+  MusicNote: '',
   Menu: '☰',
-  Explore: '🧭',
-  Close: '✖️',
-  SportsKabaddi: '🤼',
+  Explore: '',
+  Close: '',
+  SportsKabaddi: '',
   ArrowBack: '←',
   ArrowForward: '→',
-  Backpack: '🎒',
-  Inventory: '🎒',
-  Map: '🗺️',
-  List: '📜',
-  Assignment: '📜',
-  Star: '⭐',
-  Check: '✔️',
-  Info: 'ℹ️',
-  Lock: '🔒',
-  VolumeUp: '🔊',
-  VolumeOff: '🔇',
-  Person: '👤',
-  Favorite: '❤️',
+  Backpack: '',
+  Inventory: '',
+  Map: '',
+  List: '',
+  Assignment: '',
+  Star: '',
+  Check: '',
+  Info: '',
+  Lock: '',
+  VolumeUp: '',
+  VolumeOff: '',
+  Person: '',
+  Favorite: '',
   Add: '＋',
   Remove: '－',
-  Delete: '🗑️',
-  ExitToApp: '🚪',
+  Delete: '',
+  ExitToApp: '',
   KeyboardArrowDown: '▾',
   KeyboardArrowUp: '▴',
   ExpandMore: '▾',
   ExpandLess: '▴',
 };
 /** Icons.Default.X / Icons.AutoMirrored.Filled.X → <Ikon name="X" />. Dekoratiftir. */
-export function Ikon({ name, size = 20, color, style }) {
-  return (
-    <Text accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={[{ fontSize: size * 0.9, color: color || TextLight, lineHeight: size * 1.15 }, style]}>
-      {IKONLAR[name] || name || '•'}
-    </Text>
-  );
+// Murat isteğiyle (8 Kasım) oyundaki emojiler kaldırıldı; simgeler artık hiçbir şey çizmez.
+export function Ikon() {
+  return null;
 }
 
 export function Img({ source, style, resizeMode = 'cover', label }) {

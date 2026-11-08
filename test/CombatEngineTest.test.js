@@ -418,7 +418,7 @@ test('testConditionalEquipmentBalanceComparison', () => {
   }
 
   console.log('================================================================');
-  console.log(`📊 KOŞULLU EKİPMAN DENGE TESTİ SONUÇLARI (${runs} Maç Simülasyonu)`);
+  console.log(`KOŞULLU EKİPMAN DENGE TESTİ SONUÇLARI (${runs} Maç Simülasyonu)`);
   console.log('================================================================');
   console.log('1. STANDART TEÇHİZATLI OYUNCU (Demir Kılıç + Demir Göğüslük):');
   console.log(`   • ${midEnemy.name} (Sv. ${midEnemy.level} Orta Gladyatör) Karşısında Kazanma Oranı: %${kt.idiv(stdVsMidWins * 100, runs)}`);

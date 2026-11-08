@@ -106,7 +106,7 @@ test('testActiveBuffStatIntegrationWithPlayer', () => {
   const kudretBuff = new ActiveBuffEffect({
     id: 'buff_test_kudret',
     name: 'Kudret Özü',
-    icon: '💪',
+    icon: '',
     description: '+10 Hasar, +5 Zırh, +4 Hız, +%6 Kritik',
     bonusDamage: 10,
     bonusArmor: 5,
@@ -133,7 +133,7 @@ test('testCombatEngineWithOffensiveAndDefensiveBuffs', () => {
       new ActiveBuffEffect({
         id: 'buff_combat_test_oil',
         name: 'Zehirli Kara Merhem',
-        icon: '🧪',
+        icon: '',
         description: 'Zehir ve koruma',
         poisonChancePercent: 100, // Her vuruşta kesin zehir testi
         poisonDamagePerHit: 15,
@@ -171,8 +171,8 @@ test('testCombatEngineWithOffensiveAndDefensiveBuffs', () => {
 
 test('testBuffDurationDecayLogic', () => {
   const initialBuffs = [
-    new ActiveBuffEffect({ id: 'buff_1', name: 'Geçici Yağ', icon: '🍯', description: '1 dövüş', remainingBattles: 1 }),
-    new ActiveBuffEffect({ id: 'buff_2', name: 'Uzun Süreli Tentür', icon: '🧪', description: '2 dövüş', remainingBattles: 2 }),
+    new ActiveBuffEffect({ id: 'buff_1', name: 'Geçici Yağ', icon: '', description: '1 dövüş', remainingBattles: 1 }),
+    new ActiveBuffEffect({ id: 'buff_2', name: 'Uzun Süreli Tentür', icon: '', description: '2 dövüş', remainingBattles: 2 }),
   ];
 
   // 1. Dövüş sonrası:

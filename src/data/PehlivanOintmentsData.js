@@ -23,7 +23,7 @@ const allOintments = [
         buffEffect: new ActiveBuffEffect({
             id: 'buff_pehlivan_zeytin',
             name: 'Zeytinyağı Kayganlığı',
-            icon: '🏺',
+            icon: '',
             description: 'Er meydanında tutuşları kaydırır (+5 Dayanıklılık, +3 Kaçınma).',
             bonusArmor: 5,
             bonusDodgeChance: 3,
@@ -45,7 +45,7 @@ const allOintments = [
         buffEffect: new ActiveBuffEffect({
             id: 'buff_pehlivan_kafur',
             name: 'Kafur Sıcaklığı',
-            icon: '🔥',
+            icon: '',
             description: 'Adeleleri ısıtır (+6 Güç, +3 Hız).',
             bonusDamage: 6,
             bonusSpeed: 3,
@@ -67,7 +67,7 @@ const allOintments = [
         buffEffect: new ActiveBuffEffect({
             id: 'buff_pehlivan_boga_iligi',
             name: 'Boğa Mukavemeti',
-            icon: '🐂',
+            icon: '',
             description: 'Kaburga direncini artırır (+8 Güç, +4 Dayanıklılık).',
             bonusDamage: 8,
             bonusArmor: 4,
@@ -89,7 +89,7 @@ const allOintments = [
         buffEffect: new ActiveBuffEffect({
             id: 'buff_pehlivan_dag_kecisi',
             name: 'Çevik Paça',
-            icon: '🐐',
+            icon: '',
             description: 'Dalış ve tırpan savuşturmasını kolaylaştırır (+6 Hız, +4 Kaçınma).',
             bonusSpeed: 6,
             bonusDodgeChance: 4,
@@ -111,7 +111,7 @@ const allOintments = [
         buffEffect: new ActiveBuffEffect({
             id: 'buff_pehlivan_nane',
             name: 'Geniş Ciğer',
-            icon: '🌬️',
+            icon: '',
             description: 'Nefes kapasitesini yükseltir (+6 Dayanıklılık).',
             bonusArmor: 6,
             remainingBattles: 2
@@ -132,7 +132,7 @@ const allOintments = [
         buffEffect: new ActiveBuffEffect({
             id: 'buff_pehlivan_susam',
             name: 'Kravat Sıyrılışı',
-            icon: '💧',
+            icon: '',
             description: 'Kilitlerden kurtulma esnekliği (+5 Hız, +3 Kaçınma).',
             bonusSpeed: 5,
             bonusDodgeChance: 3,
@@ -154,7 +154,7 @@ const allOintments = [
         buffEffect: new ActiveBuffEffect({
             id: 'buff_pehlivan_kurt',
             name: 'Kurt Dalışı',
-            icon: '🐺',
+            icon: '',
             description: 'Kurnazlık ve kritik kündeyi tetikler (+6 Kritik, +4 Hız).',
             bonusCritChance: 6,
             bonusSpeed: 4,
@@ -176,7 +176,7 @@ const allOintments = [
         buffEffect: new ActiveBuffEffect({
             id: 'buff_pehlivan_biberiye',
             name: 'Sert Boyun',
-            icon: '🌶️',
+            icon: '',
             description: 'El enseye karşı boyun mukavemeti (+5 Dayanıklılık, +4 Güç).',
             bonusArmor: 5,
             bonusDamage: 4,
@@ -198,7 +198,7 @@ const allOintments = [
         buffEffect: new ActiveBuffEffect({
             id: 'buff_pehlivan_corek_otu',
             name: 'Dinç Beden',
-            icon: '🌱',
+            icon: '',
             description: 'Genel kondisyon ve sağlık yenilenmesi (+4 Dayanıklılık).',
             bonusArmor: 4,
             remainingBattles: 3
@@ -219,7 +219,7 @@ const allOintments = [
         buffEffect: new ActiveBuffEffect({
             id: 'buff_pehlivan_sakiz',
             name: 'Kaya Kavrayışı',
-            icon: '🌲',
+            icon: '',
             description: 'Kasnak ve paça tutuşunda üstün kavrama (+7 Güç, +4 Kritik).',
             bonusDamage: 7,
             bonusCritChance: 4,
@@ -241,7 +241,7 @@ const allOintments = [
         buffEffect: new ActiveBuffEffect({
             id: 'buff_pehlivan_demir_otu',
             name: 'Çelik İskelet',
-            icon: '🛡️',
+            icon: '',
             description: 'Yere çarpma hasarını emer (+8 Dayanıklılık).',
             bonusArmor: 8,
             remainingBattles: 2
@@ -262,7 +262,7 @@ const allOintments = [
         buffEffect: new ActiveBuffEffect({
             id: 'buff_pehlivan_zencefil',
             name: 'Künde Ateşi',
-            icon: '🍯',
+            icon: '',
             description: 'Bel kuvveti ve çevik yaylanma (+6 Güç, +4 Hız).',
             bonusDamage: 6,
             bonusSpeed: 4,
@@ -284,7 +284,7 @@ const allOintments = [
         buffEffect: new ActiveBuffEffect({
             id: 'buff_pehlivan_lavanta',
             name: 'Asil Odak',
-            icon: '🌹',
+            icon: '',
             description: 'Zihni sakinleştirir, hamleleri netleştirir (+5 Hız, +5 Dayanıklılık).',
             bonusSpeed: 5,
             bonusArmor: 5,
@@ -306,7 +306,7 @@ const allOintments = [
         buffEffect: new ActiveBuffEffect({
             id: 'buff_pehlivan_tuz',
             name: 'Ayık Duyu',
-            icon: '🧂',
+            icon: '',
             description: 'Sersemliğe karşı direnç (+4 Dayanıklılık, +4 Kaçınma).',
             bonusArmor: 4,
             bonusDodgeChance: 4,
@@ -328,7 +328,7 @@ const allOintments = [
         buffEffect: new ActiveBuffEffect({
             id: 'buff_pehlivan_orkide',
             name: 'Tükenmez Soluk',
-            icon: '🌸',
+            icon: '',
             description: 'Uzun boğuşma dayanıklılığı (+7 Dayanıklılık, +3 Güç).',
             bonusArmor: 7,
             bonusDamage: 3,
@@ -350,7 +350,7 @@ const allOintments = [
         buffEffect: new ActiveBuffEffect({
             id: 'buff_pehlivan_defne',
             name: 'Zafer Sezgisi',
-            icon: '🌿',
+            icon: '',
             description: 'Karşı hamle zamanlaması (+6 Kritik, +4 Kaçınma).',
             bonusCritChance: 6,
             bonusDodgeChance: 4,
@@ -372,7 +372,7 @@ const allOintments = [
         buffEffect: new ActiveBuffEffect({
             id: 'buff_pehlivan_ardic',
             name: 'Ayı Mengensi',
-            icon: '🪵',
+            icon: '',
             description: 'Kaburga mengenesinde ezici baskı (+8 Güç).',
             bonusDamage: 8,
             remainingBattles: 2
@@ -393,7 +393,7 @@ const allOintments = [
         buffEffect: new ActiveBuffEffect({
             id: 'buff_pehlivan_ari_sutu',
             name: 'Çelik Lifler',
-            icon: '🐝',
+            icon: '',
             description: 'Yüksek can yenileme ve kas gerginliği (+5 Güç, +5 Dayanıklılık).',
             bonusDamage: 5,
             bonusArmor: 5,
@@ -415,7 +415,7 @@ const allOintments = [
         buffEffect: new ActiveBuffEffect({
             id: 'buff_pehlivan_hardal',
             name: 'Zırhlı Bel',
-            icon: '🩹',
+            icon: '',
             description: 'Bel omurga koruması ve savurma gücü (+6 Dayanıklılık, +5 Güç).',
             bonusArmor: 6,
             bonusDamage: 5,
@@ -437,7 +437,7 @@ const allOintments = [
         buffEffect: new ActiveBuffEffect({
             id: 'buff_pehlivan_kehribar',
             name: 'Başpehlivanın Bereketi',
-            icon: '👑',
+            icon: '',
             description: 'Er meydanı şampiyonluğu aurası (+6 Güç, +6 Dayanıklılık, +5 Hız, +5 Kritik).',
             bonusDamage: 6,
             bonusArmor: 6,
