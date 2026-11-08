@@ -52,6 +52,16 @@ sahneleri "olduğu gibi taşı". Görünen ad "Diyarın Kaderi", slug/EAS projes
   `_otomatikKayitKur`: player/dayState/leagueState/rooms/enemies değişince en geç 1,5 sn içinde kaydeder (zamanlayıcı kuruluyken
   yeniden kurulmaz); quests/adventures saniyede bir yenilendiği için yalnız durum imzası (id + başladı/bitti/alındı) değişince.
   Oyun başlamadan (startNewGame / loadGame / ilk autoSave öncesi) yazmaz. App arka plana geçince `kaydiHemenYaz()`.
+- Arena sesleri (8 Kasım, Murat: "1v1 için ElevenLabs ile temaya uygun efektler, desibelleri ayarla"): 16 ses, ElevenLabs
+  eleven_text_to_sound_v2 (akış "Diyarın Kaderi arena sesleri"). Bu ortam elevenlabsusercontent.com'a erişemez: bağlantılar
+  `.sesler/liste.txt`'e yazılıp gönderilir, `.github/workflows/sesleri-indir.yml` ham dosyaları `.sesler/ham/`'a indirir;
+  `bash araclar/arena-sesleri-isle.sh` sessizliği kırpar, LUFS eşitler (vuruş -14, kanama -18, sıyrılma -17, kritik/nakavt -12,
+  seyirci tepkisi -15, döngü -20), -2 dB tepe sınırı, 128k m4a → `assets/ses/arena/`. Tablo `src/audio/ArenaSesleri.js`
+  (silahVurusSesi: kılıç/gürz/balta/hançer-mızrak/ok/asa; hamleSesleri: CombatEvent'e göre kritik+seyirci coşkusu, blok,
+  sıyrılma, kanama ("KAN KAYBI"), nakavt+zafer/yenilgi, beraberlik). SoundManager: ortam kanalı playAmbience/stopAmbience
+  (efektte yarıya kısılır), playSfx 4. parametre düzey, seyirci ayarları (isCrowdEnabled, crowdVolume; Ayarlar ekranında).
+  Yalnız 1v1 (GameViewModel.startCombat): seyirci dövüş başında başlar, dismissCombatModal'da söner; efekt çalar, 450 ms sonra
+  metin gelir; aralık = efekt + harf/30 sn, en az 4,5 en çok 7 sn (eskiden 3 sn). Tarayıcı taklidi m4a'yı çalmaz (dize kaynak).
   Tarayıcı taklidi CSS ile çizdiği için bu tür Yoga yükseklik hatalarını göstermez; pencerelerde Scroll kullanırken dikkat.
 
 ## İki Sancak (arşivde: yollar artık arsiv/iki-sancak/ altında)
