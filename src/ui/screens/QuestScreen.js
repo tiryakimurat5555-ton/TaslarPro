@@ -3,7 +3,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import * as kt from '../../kt.js';
 import { StarterContent } from '../../data/StarterContent.js';
 import { QuestType } from '../../domain/model.js';
-import { Column, Row, Box, Surface, Card, Spacer, T, Btn, OutlinedBtn, Divider, Scroll, Tabs, Progress, AlertDialog, Dialog, useFlow, announce } from '../kit.js';
+import { Column, Row, Box, Surface, Card, Spacer, T, Btn, OutlinedBtn, Divider, Scroll, Tabs, Progress, AlertDialog, Dialog, useFlow, announce, Gorsel, GorselRozet } from '../kit.js';
+import { esyaGorseli, gorevGorseli, hammaddeGorseli, maceraGorseli, nadirlikRengi, nitelikGorseli } from '../gorsel-esleme.js';
 import {
   AmberGold,
   AmberGoldDark,
@@ -23,6 +24,18 @@ import {
   color,
 } from '../theme.js';
 
+const ExpMavisi = color(0xff90caf9);
+
+/** Simge + yanındaki öğe (yalnız görsel; simge VoiceOver'dan gizli, metin olduğu gibi okunur). */
+function Ikonlu({ gorsel, renk = AmberGold, boyut = 18, gap = 6, children, style }) {
+  return (
+    <Row gap={gap} style={style}>
+      <Gorsel ad={gorsel} boyut={boyut} renk={renk} />
+      {children}
+    </Row>
+  );
+}
+
 export function QuestScreen({ viewModel, onNavigateToArena, modifier }) {
   const player = useFlow(viewModel.player);
   const quests = useFlow(viewModel.quests);
@@ -38,7 +51,9 @@ export function QuestScreen({ viewModel, onNavigateToArena, modifier }) {
   const activeAdventures = useMemo(() => adventures.filter((it) => !it.isClaimed), [adventures]);
 
   const sekmeBasliklari = [
-    <T
+    <Column align="center" gap={3}>
+      <Gorsel ad="tomar" boyut={22} renk={selectedSubTab === 0 ? AmberGold : TextMuted} />
+      <T
       label={`Sözleşmeler sekmesi, ${activeQuests.length} adet aktif görev mevcut`}
       size={13}
       lines={1}
@@ -47,8 +62,11 @@ export function QuestScreen({ viewModel, onNavigateToArena, modifier }) {
       align="center"
     >
       {`Sözleşmeler (${activeQuests.length})`}
-    </T>,
-    <T
+      </T>
+    </Column>,
+    <Column align="center" gap={3}>
+      <Gorsel ad="arbalet" boyut={22} renk={selectedSubTab === 1 ? AmberGold : TextMuted} />
+      <T
       label={`Efsanevi Av ve Zanaat sekmesi, ${activeAdventures.length} aktif macera ve dövülebilir efsanevi ekipmanlar`}
       size={13}
       lines={1}
@@ -57,7 +75,8 @@ export function QuestScreen({ viewModel, onNavigateToArena, modifier }) {
       align="center"
     >
       {`Efsanevi Av & Zanaat (${activeAdventures.length})`}
-    </T>,
+      </T>
+    </Column>,
   ];
 
   let liste;
@@ -67,13 +86,18 @@ export function QuestScreen({ viewModel, onNavigateToArena, modifier }) {
       <>
         <Card color={DarkSurface} radius={12} borderColor={AmberGoldDark} style={{ alignSelf: 'stretch' }}>
           <Column pad={16}>
-            <T style={Typography.labelSmall} color={AmberGold}>
-              SÖZLEŞMELER & GÖREVLER
-            </T>
-            <Spacer h={4} />
-            <T heading style={Typography.titleLarge} color={TextGold} weight="bold">
-              Muhafızlık ve Canavar Avları
-            </T>
+            <Row gap={12} style={{ alignSelf: 'stretch' }}>
+              <GorselRozet ad="tomar" boyut={48} />
+              <Column style={{ flex: 1 }}>
+                <T style={Typography.labelSmall} color={AmberGold}>
+                  SÖZLEŞMELER & GÖREVLER
+                </T>
+                <Spacer h={4} />
+                <T heading style={Typography.titleLarge} color={TextGold} weight="bold">
+                  Muhafızlık ve Canavar Avları
+                </T>
+              </Column>
+            </Row>
             <Spacer h={6} />
             <T style={Typography.bodyMedium} color={alpha(TextLight, 0.85)}>
               Savaşçılar sadece arenada kılıç sallamaz; kasaba esnafının ve tüccarların güvenliğini sağlayarak altın ve deneyim temin ederler. Boşta beklemektense karakterini bir sefere gönderebilirsin.
@@ -81,14 +105,16 @@ export function QuestScreen({ viewModel, onNavigateToArena, modifier }) {
           </Column>
         </Card>
 
-        <T heading style={Typography.titleMedium} color={TextLight} weight="bold">
-          {`Mevcut Sözleşmeler (${activeQuests.length})`}
-        </T>
+        <Ikonlu gorsel="bagli-tomar" boyut={22}>
+          <T heading style={Typography.titleMedium} color={TextLight} weight="bold">
+            {`Mevcut Sözleşmeler (${activeQuests.length})`}
+          </T>
+        </Ikonlu>
 
         {activeQuests.length === 0 ? (
           <Card color={DarkSurface} radius={12} borderColor={alpha(HealthGreen, 0.6)} style={{ alignSelf: 'stretch' }}>
             <Column align="center" pad={24} style={{ alignSelf: 'stretch' }}>
-              
+              <GorselRozet ad="kupa" boyut={60} renk={HealthGreen} zemin={alpha(HealthGreen, 0.14)} />
               <Spacer h={10} />
               <T style={Typography.titleMedium} color={AmberGold} weight="bold" align="center">
                 Günün Tüm Sözleşmeleri Tamamlandı!
@@ -127,13 +153,18 @@ export function QuestScreen({ viewModel, onNavigateToArena, modifier }) {
       <>
         <Card color={DarkSurface} radius={12} borderColor={AmberGoldDark} style={{ alignSelf: 'stretch' }}>
           <Column pad={16}>
-            <T style={Typography.labelSmall} color={AmberGold}>
-              EFSANEVİ AVLAR & DEMİRCİ ZANAAT OCAĞI
-            </T>
-            <Spacer h={4} />
-            <T heading style={Typography.titleLarge} color={TextGold} weight="bold">
-              Vahşi Doğa Seferleri ve Koşullu Başyapıtlar
-            </T>
+            <Row gap={12} style={{ alignSelf: 'stretch' }}>
+              <GorselRozet ad="arbalet" boyut={48} />
+              <Column style={{ flex: 1 }}>
+                <T style={Typography.labelSmall} color={AmberGold}>
+                  EFSANEVİ AVLAR & DEMİRCİ ZANAAT OCAĞI
+                </T>
+                <Spacer h={4} />
+                <T heading style={Typography.titleLarge} color={TextGold} weight="bold">
+                  Vahşi Doğa Seferleri ve Koşullu Başyapıtlar
+                </T>
+              </Column>
+            </Row>
             <Spacer h={6} />
             <T style={Typography.bodyMedium} color={alpha(TextLight, 0.85)}>
               Karakterini tehlikeli canavar inlerine ve gizemli kraterlere göndererek nadide zanaat malzemeleri topla. Bu seferlerdeki başarı şansın, donandığın zırhın, silahının gücüne ve seviyene göre dinamik olarak hesaplanır! Topladığın parçalarla 2. özel yeteneğe sahip efsanevi ekipmanlar dövebilirsin.
@@ -144,9 +175,11 @@ export function QuestScreen({ viewModel, onNavigateToArena, modifier }) {
         {/* Malzeme Kesesi Durumu */}
         <Card color={DarkSurfaceCard} radius={10} borderColor={DarkBorder} style={{ alignSelf: 'stretch' }}>
           <Column pad={12}>
-            <T heading style={Typography.titleSmall} weight="bold" color={TextGold}>
-              Malzeme Kesesi
-            </T>
+            <Ikonlu gorsel="heybe" boyut={20}>
+              <T heading style={Typography.titleSmall} weight="bold" color={TextGold}>
+                Malzeme Kesesi
+              </T>
+            </Ikonlu>
             <Spacer h={8} />
             <Row gap={10} align="stretch" style={{ alignSelf: 'stretch' }}>
               <Surface
@@ -156,14 +189,17 @@ export function QuestScreen({ viewModel, onNavigateToArena, modifier }) {
                 borderColor={wolfPeltCount > 0 ? HealthGreen : DarkBorder}
                 borderWidth={1}
                 pad={8}
-                style={{ flex: 1 }}
+                style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8 }}
               >
-                <T size={11} color={TextMuted}>
-                  Ak Kurt Postu
-                </T>
-                <T size={14} weight="bold" color={wolfPeltCount > 0 ? HealthGreen : TextLight}>
-                  {`${wolfPeltCount} Adet`}
-                </T>
+                <GorselRozet ad="kurt" boyut={34} renk={wolfPeltCount > 0 ? HealthGreen : TextMuted} zemin={alpha(wolfPeltCount > 0 ? HealthGreen : TextMuted, 0.14)} />
+                <Column style={{ flexShrink: 1 }}>
+                  <T size={11} color={TextMuted}>
+                    Ak Kurt Postu
+                  </T>
+                  <T size={14} weight="bold" color={wolfPeltCount > 0 ? HealthGreen : TextLight}>
+                    {`${wolfPeltCount} Adet`}
+                  </T>
+                </Column>
               </Surface>
               <Surface
                 label={`Göktaşı Filizi: ${oreCount} Adet`}
@@ -172,28 +208,33 @@ export function QuestScreen({ viewModel, onNavigateToArena, modifier }) {
                 borderColor={oreCount > 0 ? AmberGold : DarkBorder}
                 borderWidth={1}
                 pad={8}
-                style={{ flex: 1 }}
+                style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8 }}
               >
-                <T size={11} color={TextMuted}>
-                  Göktaşı Filizi
-                </T>
-                <T size={14} weight="bold" color={oreCount > 0 ? AmberGold : TextLight}>
-                  {`${oreCount} Adet`}
-                </T>
+                <GorselRozet ad="kristal" boyut={34} renk={oreCount > 0 ? AmberGold : TextMuted} zemin={alpha(oreCount > 0 ? AmberGold : TextMuted, 0.14)} />
+                <Column style={{ flexShrink: 1 }}>
+                  <T size={11} color={TextMuted}>
+                    Göktaşı Filizi
+                  </T>
+                  <T size={14} weight="bold" color={oreCount > 0 ? AmberGold : TextLight}>
+                    {`${oreCount} Adet`}
+                  </T>
+                </Column>
               </Surface>
             </Row>
           </Column>
         </Card>
 
         {/* Efsanevi Seferler Başlığı */}
-        <T heading style={Typography.titleMedium} color={TextLight} weight="bold">
-          {`Vahşi Doğa & Canavar Seferleri (${activeAdventures.length})`}
-        </T>
+        <Ikonlu gorsel="kurt" boyut={22}>
+          <T heading color={TextLight} weight="bold" style={[Typography.titleMedium, { flexShrink: 1 }]}>
+            {`Vahşi Doğa & Canavar Seferleri (${activeAdventures.length})`}
+          </T>
+        </Ikonlu>
 
         {activeAdventures.length === 0 ? (
           <Card color={DarkSurface} radius={12} borderColor={alpha(HealthGreen, 0.6)} style={{ alignSelf: 'stretch' }}>
             <Column align="center" pad={20} style={{ alignSelf: 'stretch' }}>
-              
+              <GorselRozet ad="kamp-atesi" boyut={56} renk={HealthGreen} zemin={alpha(HealthGreen, 0.14)} />
               <Spacer h={8} />
               <T style={Typography.titleSmall} color={AmberGold} weight="bold" align="center">
                 Bugünkü Tüm Seferler Tamamlandı!
@@ -219,9 +260,11 @@ export function QuestScreen({ viewModel, onNavigateToArena, modifier }) {
 
         {/* Demirci Zanaat Ocağı Başlığı */}
         <Spacer h={10} />
-        <T heading style={Typography.titleMedium} color={TextGold} weight="bold">
-          Demirci Başyapıtları (Koşullu Ekipmanlar)
-        </T>
+        <Ikonlu gorsel="ors" boyut={22}>
+          <T heading color={TextGold} weight="bold" style={[Typography.titleMedium, { flexShrink: 1 }]}>
+            Demirci Başyapıtları (Koşullu Ekipmanlar)
+          </T>
+        </Ikonlu>
 
         {craftingRecipes.map((recipe) => (
           <CraftingRecipeCard
@@ -255,7 +298,7 @@ export function QuestScreen({ viewModel, onNavigateToArena, modifier }) {
   );
 }
 
-function RequirementBadge({ text, isMet }) {
+function RequirementBadge({ text, isMet, gorsel }) {
   return (
     <Surface
       label={(isMet ? 'Karşılandı: ' : 'Eksik: ') + text}
@@ -263,8 +306,9 @@ function RequirementBadge({ text, isMet }) {
       color={isMet ? color(0xff162b1a) : color(0xff2e1919)}
       borderColor={isMet ? alpha(HealthGreen, 0.8) : alpha(HealthRed, 0.8)}
       borderWidth={1}
-      style={{ paddingHorizontal: 6, paddingVertical: 3 }}
+      style={{ paddingHorizontal: 6, paddingVertical: 3, flexDirection: 'row', alignItems: 'center', gap: 4 }}
     >
+      {gorsel ? <Gorsel ad={gorsel} boyut={14} renk={isMet ? HealthGreen : HealthRed} /> : null}
       <T size={11} weight="semibold" color={isMet ? HealthGreen : HealthRed}>
         {(isMet ? '✓ ' : '✗ ') + text}
       </T>
@@ -279,9 +323,11 @@ function SureIlerleme({ baslik, bittiMetni, elapsedSeconds, durationSeconds, isF
   return (
     <Column style={{ alignSelf: 'stretch' }}>
       <Row justify="between" style={{ alignSelf: 'stretch' }}>
-        <T size={11} color={TextMuted}>
-          {baslik}
-        </T>
+        <Ikonlu gorsel="kum-saati" boyut={14} gap={4} renk={TextMuted}>
+          <T size={11} color={TextMuted}>
+            {baslik}
+          </T>
+        </Ikonlu>
         <T size={11} color={isFinished ? HealthGreen : AmberGold}>
           {isFinished ? bittiMetni : `Kalan: ${remaining}s`}
         </T>
@@ -312,29 +358,42 @@ function QuestCard({ quest, player, isAnyTaskRunning, onStart, onClaim, onHunt }
     let dugme;
     if (quest.isClaimed) {
       dugme = (
-        <Surface radius={6} color={color(0xff1b2e1e)} borderColor={HealthGreen} borderWidth={1} style={{ alignSelf: 'stretch', paddingHorizontal: 10, paddingVertical: 8 }}>
-          <T size={12} color={HealthGreen} weight="semibold">
+        <Surface radius={6} color={color(0xff1b2e1e)} borderColor={HealthGreen} borderWidth={1} style={{ alignSelf: 'stretch', paddingHorizontal: 10, paddingVertical: 8, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <Gorsel ad="kupa" boyut={18} renk={HealthGreen} />
+          <T size={12} color={HealthGreen} weight="semibold" style={{ flexShrink: 1 }}>
             Bugünlük Sözleşme Tamamlandı (Yarın Yenilenir)
           </T>
         </Surface>
       );
     } else if (quest.isFinished) {
       dugme = (
-        <Btn onPress={onClaim} color={HealthGreen} contentColor={Color.White} radius={8} style={{ alignSelf: 'stretch' }}>
+        <Btn onPress={onClaim} color={HealthGreen} contentColor={Color.White} radius={8} style={{ alignSelf: 'stretch' }} gorsel="hediye">
           <T weight="bold" color={Color.White} align="center">{`Ödülleri Al (+${quest.rewardGold} Altın, +${quest.rewardExp} EXP)`}</T>
         </Btn>
       );
     } else if (quest.isRunning) {
       dugme = (
-        <T size={12} color={AmberGold}>
-          {quest.progressText ?? getDefaultQuestProgressText(quest)}
-        </T>
+        <Ikonlu gorsel="kum-saati" boyut={18} gap={8} style={{ alignSelf: 'stretch' }}>
+          <T size={12} color={AmberGold} style={{ flex: 1 }}>
+            {quest.progressText ?? getDefaultQuestProgressText(quest)}
+          </T>
+        </Ikonlu>
       );
     } else {
       const metin = isAnyTaskRunning ? 'Başka Bir Görevdesin (Tek Görev Limiti)' : !allRequirementsMet ? 'Gereksinimler Karşılanmadı' : `Sözleşmeyi Başlat (${quest.durationSeconds} sn)`;
       const etkin = allRequirementsMet && !isAnyTaskRunning;
       dugme = (
-        <Btn onPress={onStart} disabled={!etkin} color={AmberGold} contentColor={DarkBg} disabledColor={DarkSurfaceCard} disabledContentColor={TextMuted} radius={8} style={{ alignSelf: 'stretch' }}>
+        <Btn
+          onPress={onStart}
+          disabled={!etkin}
+          color={AmberGold}
+          contentColor={DarkBg}
+          disabledColor={DarkSurfaceCard}
+          disabledContentColor={TextMuted}
+          radius={8}
+          style={{ alignSelf: 'stretch' }}
+          gorsel={isAnyTaskRunning ? 'kum-saati' : !allRequirementsMet ? 'kilit' : 'patika'}
+        >
           <T weight="bold" color={etkin ? DarkBg : TextMuted} align="center">
             {metin}
           </T>
@@ -355,7 +414,7 @@ function QuestCard({ quest, player, isAnyTaskRunning, onStart, onClaim, onHunt }
   } else {
     // Canavar Avı Eylemi
     eylem = (
-      <Btn onPress={onHunt} color={HealthRed} contentColor={Color.White} radius={8} style={{ alignSelf: 'stretch' }}>
+      <Btn onPress={onHunt} color={HealthRed} contentColor={Color.White} radius={8} style={{ alignSelf: 'stretch' }} gorsel="capraz-kilic">
         <T weight="bold" color={Color.White}>
           Yaratığı Arenada Avla
         </T>
@@ -367,6 +426,7 @@ function QuestCard({ quest, player, isAnyTaskRunning, onStart, onClaim, onHunt }
     <Card color={DarkSurface} radius={10} borderColor={DarkBorder} borderWidth={1} style={{ alignSelf: 'stretch' }}>
       <Column pad={14}>
         <Row justify="between" style={{ alignSelf: 'stretch' }} gap={8}>
+          <GorselRozet ad={gorevGorseli(quest)} boyut={44} renk={quest.type === QuestType.MONSTER_HUNT ? HealthRed : AmberGold} zemin={alpha(quest.type === QuestType.MONSTER_HUNT ? HealthRed : AmberGold, 0.14)} />
           <Column label={kartEtiketi} heading style={{ flex: 1 }}>
             <T weight="bold" color={TextGold} size={16}>
               {quest.title}
@@ -376,13 +436,15 @@ function QuestCard({ quest, player, isAnyTaskRunning, onStart, onClaim, onHunt }
                 {quest.type.title}
               </T>
               {quest.chainId != null ? (
-                <Surface radius={4} color={alpha(FamePurple, 0.2)} borderColor={FamePurple} borderWidth={1} style={{ paddingHorizontal: 5, paddingVertical: 1 }}>
+                <Surface radius={4} color={alpha(FamePurple, 0.2)} borderColor={FamePurple} borderWidth={1} style={{ paddingHorizontal: 5, paddingVertical: 1, flexDirection: 'row', alignItems: 'center', gap: 3 }}>
+                  <Gorsel ad="kontrol-listesi" boyut={12} renk={FamePurple} />
                   <T size={10} weight="bold" color={FamePurple}>
                     {`Aşama ${quest.chainStep}/${quest.maxChainSteps}`}
                   </T>
                 </Surface>
               ) : quest.isRumorQuest ? (
-                <Surface radius={4} color={alpha(AmberGold, 0.2)} borderColor={AmberGold} borderWidth={1} style={{ paddingHorizontal: 5, paddingVertical: 1 }}>
+                <Surface radius={4} color={alpha(AmberGold, 0.2)} borderColor={AmberGold} borderWidth={1} style={{ paddingHorizontal: 5, paddingVertical: 1, flexDirection: 'row', alignItems: 'center', gap: 3 }}>
+                  <Gorsel ad="fisilti" boyut={12} renk={AmberGold} />
                   <T size={10} weight="bold" color={AmberGold}>
                     Han Söylentisi
                   </T>
@@ -390,7 +452,8 @@ function QuestCard({ quest, player, isAnyTaskRunning, onStart, onClaim, onHunt }
               ) : null}
             </Row>
           </Column>
-          <Surface radius={6} color={DarkSurfaceCard} label={`Ödül: ${quest.rewardGold} Altın, ${quest.rewardExp} EXP`} style={{ paddingHorizontal: 8, paddingVertical: 4 }}>
+          <Surface radius={6} color={DarkSurfaceCard} label={`Ödül: ${quest.rewardGold} Altın, ${quest.rewardExp} EXP`} style={{ paddingHorizontal: 8, paddingVertical: 4, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            <Gorsel ad={nitelikGorseli('altin')} boyut={15} renk={AmberGold} />
             <T size={11} color={AmberGold}>
               {`${quest.rewardGold} Altın • ${quest.rewardExp} EXP`}
             </T>
@@ -411,8 +474,9 @@ function QuestCard({ quest, player, isAnyTaskRunning, onStart, onClaim, onHunt }
               color={color(0xff38260e)}
               borderColor={AmberGold}
               borderWidth={1}
-              style={{ alignSelf: 'flex-start', paddingHorizontal: 8, paddingVertical: 3 }}
+              style={{ alignSelf: 'flex-start', paddingHorizontal: 8, paddingVertical: 3, flexDirection: 'row', alignItems: 'center', gap: 4 }}
             >
+              <Gorsel ad="zar" boyut={14} renk={AmberGold} />
               <T size={11} weight="bold" color={AmberGold}>
                 {`%${quest.successChancePercent} Başarı Şansı (Riskli Keşif)`}
               </T>
@@ -423,9 +487,11 @@ function QuestCard({ quest, player, isAnyTaskRunning, onStart, onClaim, onHunt }
         {quest.rewardItem != null ? (
           <>
             <Spacer h={6} />
-            <T size={12} weight="bold" color={FamePurple}>
-              {`Özel Ödül: ${quest.rewardItem.name}`}
-            </T>
+            <Ikonlu gorsel="hediye" boyut={16} renk={FamePurple}>
+              <T size={12} weight="bold" color={FamePurple} style={{ flexShrink: 1 }}>
+                {`Özel Ödül: ${quest.rewardItem.name}`}
+              </T>
+            </Ikonlu>
           </>
         ) : null}
 
@@ -433,16 +499,18 @@ function QuestCard({ quest, player, isAnyTaskRunning, onStart, onClaim, onHunt }
         {hasRequirements ? (
           <>
             <Spacer h={8} />
-            <T size={11} weight="bold" color={TextGold}>
-              Görev Koşulları:
-            </T>
+            <Ikonlu gorsel="kontrol-listesi" boyut={15} gap={5}>
+              <T size={11} weight="bold" color={TextGold}>
+                Görev Koşulları:
+              </T>
+            </Ikonlu>
             <Spacer h={4} />
             <Row wrap gap={6} style={{ alignSelf: 'stretch', rowGap: 4 }}>
-              {quest.requiredLevel > 1 ? <RequirementBadge text={`Sv. ${quest.requiredLevel}+`} isMet={levelOk} /> : null}
-              {quest.requiredMinArmor > 0 ? <RequirementBadge text={`${quest.requiredMinArmor} Zırh (${player.totalStats.armor}/${quest.requiredMinArmor})`} isMet={armorOk} /> : null}
-              {quest.requiredMinDamage > 0 ? <RequirementBadge text={`${quest.requiredMinDamage} Hasar (${player.totalStats.damage}/${quest.requiredMinDamage})`} isMet={damageOk} /> : null}
-              {quest.requiredMinHpPercent > 0 ? <RequirementBadge text={`%${quest.requiredMinHpPercent}+ Can (${player.currentHealth}/${minHpReq})`} isMet={hpOk} /> : null}
-              {quest.requiredSupplyGold > 0 ? <RequirementBadge text={`${quest.requiredSupplyGold} Altın Teçhizat Masrafı (${player.gold}/${quest.requiredSupplyGold})`} isMet={goldOk} /> : null}
+              {quest.requiredLevel > 1 ? <RequirementBadge text={`Sv. ${quest.requiredLevel}+`} isMet={levelOk} gorsel={nitelikGorseli('seviye')} /> : null}
+              {quest.requiredMinArmor > 0 ? <RequirementBadge text={`${quest.requiredMinArmor} Zırh (${player.totalStats.armor}/${quest.requiredMinArmor})`} isMet={armorOk} gorsel={nitelikGorseli('zirh')} /> : null}
+              {quest.requiredMinDamage > 0 ? <RequirementBadge text={`${quest.requiredMinDamage} Hasar (${player.totalStats.damage}/${quest.requiredMinDamage})`} isMet={damageOk} gorsel={nitelikGorseli('hasar')} /> : null}
+              {quest.requiredMinHpPercent > 0 ? <RequirementBadge text={`%${quest.requiredMinHpPercent}+ Can (${player.currentHealth}/${minHpReq})`} isMet={hpOk} gorsel={nitelikGorseli('can')} /> : null}
+              {quest.requiredSupplyGold > 0 ? <RequirementBadge text={`${quest.requiredSupplyGold} Altın Teçhizat Masrafı (${player.gold}/${quest.requiredSupplyGold})`} isMet={goldOk} gorsel={nitelikGorseli('altin')} /> : null}
             </Row>
           </>
         ) : null}
@@ -476,15 +544,16 @@ function AdventureCard({ adventure, player, isAnyTaskRunning, onStart, onClaim }
   let dugme;
   if (adventure.isClaimed) {
     dugme = (
-      <Surface radius={6} color={color(0xff1b2e1e)} borderColor={HealthGreen} borderWidth={1} style={{ alignSelf: 'stretch', paddingHorizontal: 10, paddingVertical: 8 }}>
-        <T size={12} color={HealthGreen} weight="semibold">
+      <Surface radius={6} color={color(0xff1b2e1e)} borderColor={HealthGreen} borderWidth={1} style={{ alignSelf: 'stretch', paddingHorizontal: 10, paddingVertical: 8, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+        <Gorsel ad="kupa" boyut={18} renk={HealthGreen} />
+        <T size={12} color={HealthGreen} weight="semibold" style={{ flexShrink: 1 }}>
           Bugünlük Sefer Tamamlandı (Yarın Yenilenir)
         </T>
       </Surface>
     );
   } else if (adventure.isFinished) {
     dugme = (
-      <Btn onPress={onClaim} color={HealthGreen} contentColor={Color.White} radius={8} style={{ alignSelf: 'stretch' }}>
+      <Btn onPress={onClaim} color={HealthGreen} contentColor={Color.White} radius={8} style={{ alignSelf: 'stretch' }} gorsel="hediye">
         <T weight="bold" color={Color.White} align="center">
           {`Ganimeti Topla (+${adventure.rewardMaterialCount} ${adventure.rewardMaterialName}, +${adventure.rewardGold} Altın)`}
         </T>
@@ -492,15 +561,27 @@ function AdventureCard({ adventure, player, isAnyTaskRunning, onStart, onClaim }
     );
   } else if (adventure.isRunning) {
     dugme = (
-      <T size={12} color={AmberGold}>
-        Sefer devam ediyor, karakterin vahşi diyarlarda iz sürüyor...
-      </T>
+      <Ikonlu gorsel="kum-saati" boyut={18} gap={8} style={{ alignSelf: 'stretch' }}>
+        <T size={12} color={AmberGold} style={{ flex: 1 }}>
+          Sefer devam ediyor, karakterin vahşi diyarlarda iz sürüyor...
+        </T>
+      </Ikonlu>
     );
   } else {
     const metin = isAnyTaskRunning ? 'Başka Bir Görevdesin (Tek Görev Limiti)' : !allAdvRequirementsMet ? 'Hazırlıklar Yetersiz' : `Av Seferini Başlat (${adventure.durationSeconds} sn)`;
     const etkin = allAdvRequirementsMet && !isAnyTaskRunning;
     dugme = (
-      <Btn onPress={onStart} disabled={!etkin} color={AmberGold} contentColor={DarkBg} disabledColor={DarkSurfaceCard} disabledContentColor={TextMuted} radius={8} style={{ alignSelf: 'stretch' }}>
+      <Btn
+        onPress={onStart}
+        disabled={!etkin}
+        color={AmberGold}
+        contentColor={DarkBg}
+        disabledColor={DarkSurfaceCard}
+        disabledContentColor={TextMuted}
+        radius={8}
+        style={{ alignSelf: 'stretch' }}
+        gorsel={isAnyTaskRunning ? 'kum-saati' : !allAdvRequirementsMet ? 'kilit' : 'patika'}
+      >
         <T weight="bold" color={etkin ? DarkBg : TextMuted} align="center">
           {metin}
         </T>
@@ -513,7 +594,7 @@ function AdventureCard({ adventure, player, isAnyTaskRunning, onStart, onClaim }
       <Column pad={14}>
         <Row justify="between" gap={8} style={{ alignSelf: 'stretch' }}>
           <Row label={kartEtiketi} heading gap={8} style={{ flex: 1 }}>
-            <T size={22}>{adventure.icon}</T>
+            <GorselRozet ad={maceraGorseli(adventure)} boyut={44} renk={HealthRed} zemin={alpha(HealthRed, 0.14)} />
             <Column style={{ flexShrink: 1 }}>
               <T weight="bold" color={TextGold} size={16}>
                 {adventure.title}
@@ -524,7 +605,8 @@ function AdventureCard({ adventure, player, isAnyTaskRunning, onStart, onClaim }
             </Column>
           </Row>
 
-          <Surface radius={6} color={DarkSurfaceCard} label={`Ödül: ${adventure.rewardGold} Altın, ${adventure.rewardExp} EXP`} style={{ paddingHorizontal: 8, paddingVertical: 4 }}>
+          <Surface radius={6} color={DarkSurfaceCard} label={`Ödül: ${adventure.rewardGold} Altın, ${adventure.rewardExp} EXP`} style={{ paddingHorizontal: 8, paddingVertical: 4, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            <Gorsel ad={nitelikGorseli('altin')} boyut={15} renk={AmberGold} />
             <T size={11} color={AmberGold}>
               {`${adventure.rewardGold} Altın • ${adventure.rewardExp} EXP`}
             </T>
@@ -541,9 +623,11 @@ function AdventureCard({ adventure, player, isAnyTaskRunning, onStart, onClaim }
         {/* Dinamik Başarı Şansı Rozeti (Donanım Gücü) */}
         <Surface radius={6} color={color(0xff1e281f)} borderColor={alpha(HealthGreen, 0.6)} borderWidth={1} style={{ alignSelf: 'stretch' }}>
           <Row justify="between" wrap gap={6} style={{ paddingHorizontal: 10, paddingVertical: 6 }} label={`Teçhizat Gücüne Bağlı Şans: %${dynamicChance} Başarı İhtimali`}>
-            <T size={12} color={TextLight}>
-              Teçhizat Gücüne Bağlı Şans:
-            </T>
+            <Ikonlu gorsel="hedef-tahtasi" boyut={16} gap={5} renk={HealthGreen}>
+              <T size={12} color={TextLight}>
+                Teçhizat Gücüne Bağlı Şans:
+              </T>
+            </Ikonlu>
             <T size={12} weight="bold" color={HealthGreen}>
               {`%${dynamicChance} Başarı İhtimali`}
             </T>
@@ -561,9 +645,11 @@ function AdventureCard({ adventure, player, isAnyTaskRunning, onStart, onClaim }
             style={{ paddingHorizontal: 10, paddingVertical: 6 }}
             label={`Garantili Zanaat Malzemesi: +${adventure.rewardMaterialCount} ${adventure.rewardMaterialName}`}
           >
-            <T size={11} color={TextMuted}>
-              Garantili Zanaat Malzemesi:
-            </T>
+            <Ikonlu gorsel={hammaddeGorseli(adventure.rewardMaterialName)} boyut={16} gap={5} renk={FamePurple}>
+              <T size={11} color={TextMuted}>
+                Garantili Zanaat Malzemesi:
+              </T>
+            </Ikonlu>
             <T size={12} weight="bold" color={FamePurple}>
               {`+${adventure.rewardMaterialCount} ${adventure.rewardMaterialName}`}
             </T>
@@ -573,17 +659,19 @@ function AdventureCard({ adventure, player, isAnyTaskRunning, onStart, onClaim }
         <Spacer h={8} />
 
         {/* Sefer Koşulları & Hazırlık Gereksinimleri */}
-        <T size={11} weight="bold" color={TextGold}>
-          Sefer Hazırlığı & Gereksinimler:
-        </T>
+        <Ikonlu gorsel="kontrol-listesi" boyut={15} gap={5}>
+          <T size={11} weight="bold" color={TextGold}>
+            Sefer Hazırlığı & Gereksinimler:
+          </T>
+        </Ikonlu>
         <Spacer h={4} />
         <Row wrap gap={6} style={{ alignSelf: 'stretch', rowGap: 4 }}>
-          <RequirementBadge text={`Sv. ${adventure.requiredLevel}+`} isMet={levelOk} />
-          <RequirementBadge text={`%${adventure.requiredMinHpPercent}+ Can (${player.currentHealth}/${minHpReq})`} isMet={hpOk} />
-          {adventure.requiredMinArmor > 0 ? <RequirementBadge text={`${adventure.requiredMinArmor} Zırh (${player.totalStats.armor}/${adventure.requiredMinArmor})`} isMet={armorOk} /> : null}
-          {adventure.requiredMinDamage > 0 ? <RequirementBadge text={`${adventure.requiredMinDamage} Hasar (${player.totalStats.damage}/${adventure.requiredMinDamage})`} isMet={damageOk} /> : null}
-          {adventure.requiredSupplyGold > 0 ? <RequirementBadge text={`${adventure.requiredSupplyGold} Altın Kazı Masrafı (${player.gold}/${adventure.requiredSupplyGold})`} isMet={goldOk} /> : null}
-          {adventure.requiredSupplyItemName != null ? <RequirementBadge text={`1x ${adventure.requiredSupplyItemName}`} isMet={supplyOk} /> : null}
+          <RequirementBadge text={`Sv. ${adventure.requiredLevel}+`} isMet={levelOk} gorsel={nitelikGorseli('seviye')} />
+          <RequirementBadge text={`%${adventure.requiredMinHpPercent}+ Can (${player.currentHealth}/${minHpReq})`} isMet={hpOk} gorsel={nitelikGorseli('can')} />
+          {adventure.requiredMinArmor > 0 ? <RequirementBadge text={`${adventure.requiredMinArmor} Zırh (${player.totalStats.armor}/${adventure.requiredMinArmor})`} isMet={armorOk} gorsel={nitelikGorseli('zirh')} /> : null}
+          {adventure.requiredMinDamage > 0 ? <RequirementBadge text={`${adventure.requiredMinDamage} Hasar (${player.totalStats.damage}/${adventure.requiredMinDamage})`} isMet={damageOk} gorsel={nitelikGorseli('hasar')} /> : null}
+          {adventure.requiredSupplyGold > 0 ? <RequirementBadge text={`${adventure.requiredSupplyGold} Altın Kazı Masrafı (${player.gold}/${adventure.requiredSupplyGold})`} isMet={goldOk} gorsel={nitelikGorseli('altin')} /> : null}
+          {adventure.requiredSupplyItemName != null ? <RequirementBadge text={`1x ${adventure.requiredSupplyItemName}`} isMet={supplyOk} gorsel="sifali-ot" /> : null}
         </Row>
 
         <Spacer h={12} />
@@ -609,6 +697,7 @@ function AdventureCard({ adventure, player, isAnyTaskRunning, onStart, onClaim }
 function CraftingRecipeCard({ recipe, player, onInspect, onCraft }) {
   const eq = recipe.resultItem;
   const rarityColor = color(eq.rarity.colorHex);
+  const rozetRengi = nadirlikRengi(eq.rarity);
 
   const hasGold = player.gold >= recipe.requiredGold;
   const curMatCount = player.getMaterialCount(recipe.requiredMaterialId);
@@ -627,7 +716,7 @@ function CraftingRecipeCard({ recipe, player, onInspect, onCraft }) {
             gap={8}
             style={{ flex: 1 }}
           >
-            <T size={22}>{eq.categoryIcon}</T>
+            <GorselRozet ad={esyaGorseli(eq)} boyut={44} kare renk={rozetRengi} kenar={rozetRengi} zemin={alpha(rozetRengi, 0.14)} />
             <Column style={{ flexShrink: 1 }}>
               <T weight="bold" color={rarityColor} size={16}>
                 {eq.name}
@@ -638,7 +727,7 @@ function CraftingRecipeCard({ recipe, player, onInspect, onCraft }) {
             </Column>
           </Row>
 
-          <OutlinedBtn onPress={onInspect} label={`İncele, ${eq.name}`} radius={6} style={{ paddingHorizontal: 10, paddingVertical: 4 }}>
+          <OutlinedBtn onPress={onInspect} label={`İncele, ${eq.name}`} radius={6} style={{ paddingHorizontal: 10, paddingVertical: 4 }} gorsel="bilgi" textSize={12}>
             <T size={12} color={TextGold}>
               İncele
             </T>
@@ -653,9 +742,11 @@ function CraftingRecipeCard({ recipe, player, onInspect, onCraft }) {
         <Spacer h={8} />
 
         {/* Temel İstatistikler */}
-        <T size={12} weight="semibold" color={AmberGold}>
-          {eq.stats.toStatSummary()}
-        </T>
+        <Ikonlu gorsel="kas" boyut={16} style={{ alignSelf: 'stretch' }}>
+          <T size={12} weight="semibold" color={AmberGold} style={{ flex: 1 }}>
+            {eq.stats.toStatSummary()}
+          </T>
+        </Ikonlu>
 
         {/* 2. ÖZEL NİTELİK ROZETİ */}
         {eq.specialTrait != null ? (
@@ -670,24 +761,40 @@ function CraftingRecipeCard({ recipe, player, onInspect, onCraft }) {
         <Spacer h={8} />
 
         {/* Gereksinimler (Altın & Malzemeler) */}
-        <T size={11} weight="bold" color={TextGold}>
-          Zanaat İçin Gerekenler:
-        </T>
+        <Ikonlu gorsel="kontrol-listesi" boyut={15} gap={5}>
+          <T size={11} weight="bold" color={TextGold}>
+            Zanaat İçin Gerekenler:
+          </T>
+        </Ikonlu>
         <Spacer h={4} />
 
         <Row justify="between" wrap gap={6} style={{ alignSelf: 'stretch' }}>
+          <Ikonlu gorsel={nitelikGorseli('altin')} boyut={16} gap={4} renk={hasGold ? HealthGreen : HealthRed}>
           <T size={12} color={hasGold ? HealthGreen : HealthRed} weight="semibold" label={`${hasGold ? 'Yeterli' : 'Yetersiz'}, Altın: ${player.gold} / ${recipe.requiredGold}`}>
             {`Altın: ${player.gold} / ${recipe.requiredGold}`}
           </T>
+          </Ikonlu>
+          <Ikonlu gorsel={hammaddeGorseli(recipe.requiredMaterialName)} boyut={16} gap={4} renk={ok ? HealthGreen : HealthRed}>
           <T size={12} color={ok ? HealthGreen : HealthRed} weight="semibold" label={`${ok ? 'Yeterli' : 'Yetersiz'}, ${recipe.requiredMaterialName}: ${curMatCount}/${recipe.requiredMaterialCount}`}>
             {`${recipe.requiredMaterialName}: ${curMatCount}/${recipe.requiredMaterialCount}`}
           </T>
+          </Ikonlu>
         </Row>
 
         <Spacer h={12} />
 
         {/* Dövme Butonu */}
-        <Btn onPress={onCraft} disabled={!canCraft} color={AmberGold} contentColor={DarkBg} disabledColor={DarkSurfaceCard} disabledContentColor={TextMuted} radius={8} style={{ alignSelf: 'stretch' }}>
+        <Btn
+          onPress={onCraft}
+          disabled={!canCraft}
+          color={AmberGold}
+          contentColor={DarkBg}
+          disabledColor={DarkSurfaceCard}
+          disabledContentColor={TextMuted}
+          radius={8}
+          style={{ alignSelf: 'stretch' }}
+          gorsel={canCraft ? 'ors' : 'kilit'}
+        >
           <T weight="bold" color={canCraft ? DarkBg : TextMuted} align="center">
             {canCraft ? `Ocağında Döv ve Kuşan (${recipe.requiredGold} Altın)` : 'Eksik Malzeme veya Altın'}
           </T>
@@ -701,9 +808,11 @@ function CraftingRecipeCard({ recipe, player, onInspect, onCraft }) {
 function OzelNitelik({ trait }) {
   return (
     <Surface radius={6} color={color(0xff2b1b36)} borderColor={FamePurple} borderWidth={1} pad={8} style={{ alignSelf: 'stretch' }}>
-      <T size={12} weight="bold" color={FamePurple}>
-        {`2. Özel Nitelik: ${trait.name}`}
-      </T>
+      <Ikonlu gorsel="buyu-girdap" boyut={16} renk={FamePurple}>
+        <T size={12} weight="bold" color={FamePurple} style={{ flexShrink: 1 }}>
+          {`2. Özel Nitelik: ${trait.name}`}
+        </T>
+      </Ikonlu>
       <Spacer h={2} />
       <T size={11} color={alpha(TextLight, 0.95)}>
         {trait.description}
@@ -717,13 +826,14 @@ function OzelNitelik({ trait }) {
  */
 function CraftedItemDetailDialog({ item, onDismiss }) {
   const rarityColor = color(item.rarity.colorHex);
+  const rozetRengi = nadirlikRengi(item.rarity);
   return (
     <AlertDialog
       onDismiss={onDismiss}
       containerColor={DarkSurface}
       title={
         <Row gap={8} heading label={`${item.name}, ${item.slot.displayName} • ${item.rarity.displayName} • Sv. ${item.requiredLevel}`}>
-          <T size={22}>{item.categoryIcon}</T>
+          <GorselRozet ad={esyaGorseli(item)} boyut={48} kare renk={rozetRengi} kenar={rozetRengi} zemin={alpha(rozetRengi, 0.14)} />
           <Column style={{ flexShrink: 1 }}>
             <T size={18} weight="bold" color={rarityColor}>
               {item.name}
@@ -740,9 +850,11 @@ function CraftedItemDetailDialog({ item, onDismiss }) {
             {item.description}
           </T>
           <Divider color={DarkBorder} />
-          <T size={12} weight="bold" color={TextGold}>
-            Nitelik Bonusları:
-          </T>
+          <Ikonlu gorsel="kas" boyut={16}>
+            <T size={12} weight="bold" color={TextGold}>
+              Nitelik Bonusları:
+            </T>
+          </Ikonlu>
           <T size={13} weight="semibold" color={AmberGold}>
             {item.stats.toStatSummary()}
           </T>
@@ -750,7 +862,7 @@ function CraftedItemDetailDialog({ item, onDismiss }) {
         </Column>
       }
       confirm={
-        <Btn onPress={onDismiss} color={AmberGold} contentColor={DarkBg}>
+        <Btn onPress={onDismiss} color={AmberGold} contentColor={DarkBg} gorsel="kapi">
           <T weight="bold" color={DarkBg}>
             Kapat
           </T>
@@ -809,8 +921,8 @@ export function QuestCompletionDialog({ result, onDismiss }) {
     <Dialog onDismiss={onDismiss} style={{ backgroundColor: DarkSurfaceCard, borderColor: AmberGold, borderWidth: 2, borderRadius: 16, padding: 0 }}>
       <Scroll style={{ flexGrow: 0, flexShrink: 1 }}>
         <Column align="center" pad={18} style={{ alignSelf: 'stretch' }}>
-          
-          <Spacer h={4} />
+          <GorselRozet ad="kupa" boyut={64} kenar={alpha(AmberGold, 0.6)} />
+          <Spacer h={8} />
           <T heading size={17} weight="bold" color={AmberGold}>
             SÖZLEŞME TAMAMLANDI
           </T>
@@ -822,9 +934,11 @@ export function QuestCompletionDialog({ result, onDismiss }) {
 
           {/* Rapor Metni */}
           <Surface radius={10} color={alpha(DarkBg, 0.85)} borderColor={alpha(AmberGold, 0.4)} borderWidth={1} pad={12} style={{ alignSelf: 'stretch' }}>
-            <T size={11} weight="bold" color={AmberGoldDark}>
-              Sözleşme Raporu:
-            </T>
+            <Ikonlu gorsel="acik-kitap" boyut={15} gap={5} renk={AmberGoldDark}>
+              <T size={11} weight="bold" color={AmberGoldDark}>
+                Sözleşme Raporu:
+              </T>
+            </Ikonlu>
             <Spacer h={4} />
             <T size={12} color={alpha(TextLight, 0.95)} lineHeight={17}>
               {`"${result.narrative}"`}
@@ -834,25 +948,27 @@ export function QuestCompletionDialog({ result, onDismiss }) {
           <Spacer h={12} />
 
           {/* Kazanılan Ödüller */}
-          <T size={12} weight="bold" color={AmberGold} style={{ alignSelf: 'flex-start' }}>
-            Kazanılan Ödüller:
-          </T>
+          <Ikonlu gorsel="hediye" boyut={16} style={{ alignSelf: 'flex-start' }}>
+            <T size={12} weight="bold" color={AmberGold}>
+              Kazanılan Ödüller:
+            </T>
+          </Ikonlu>
           <Spacer h={6} />
 
           <Row gap={8} align="stretch" style={{ alignSelf: 'stretch' }}>
             <Surface radius={8} color={DarkSurface} borderColor={alpha(AmberGold, 0.5)} borderWidth={1} align="center" pad={6} style={{ flex: 1 }} label={`+${result.goldEarned} Altın`}>
-              
+              <Gorsel ad={nitelikGorseli('altin')} boyut={22} renk={AmberGold} />
               <T size={11} weight="bold" color={AmberGold}>{`+${result.goldEarned} Altın`}</T>
             </Surface>
 
             <Surface radius={8} color={DarkSurface} borderColor={alpha(color(0xff64b5f6), 0.5)} borderWidth={1} align="center" pad={6} style={{ flex: 1 }} label={`+${result.expEarned} EXP`}>
-              
-              <T size={11} weight="bold" color={color(0xff90caf9)}>{`+${result.expEarned} EXP`}</T>
+              <Gorsel ad={nitelikGorseli('tecrube')} boyut={22} renk={ExpMavisi} />
+              <T size={11} weight="bold" color={ExpMavisi}>{`+${result.expEarned} EXP`}</T>
             </Surface>
 
             {result.fameEarned > 0 ? (
               <Surface radius={8} color={DarkSurface} borderColor={alpha(HealthGreen, 0.5)} borderWidth={1} align="center" pad={6} style={{ flex: 1 }} label={`+${result.fameEarned} Şöhret`}>
-                
+                <Gorsel ad={nitelikGorseli('sohret')} boyut={22} renk={HealthGreen} />
                 <T size={11} weight="bold" color={HealthGreen}>{`+${result.fameEarned} Şöhret`}</T>
               </Surface>
             ) : null}
@@ -864,7 +980,7 @@ export function QuestCompletionDialog({ result, onDismiss }) {
               <Spacer h={10} />
               <Surface radius={10} color={alpha(AmberGoldDark, 0.25)} borderColor={AmberGold} borderWidth={1.5} style={{ alignSelf: 'stretch' }}>
                 <Row gap={10} pad={10}>
-                  
+                  <GorselRozet ad="bagli-tomar" boyut={44} kenar={AmberGold} />
                   <Column style={{ flexShrink: 1 }}>
                     <T size={11} weight="bold" color={AmberGold}>
                       ÖZEL KADİM GANİMET!
@@ -886,7 +1002,14 @@ export function QuestCompletionDialog({ result, onDismiss }) {
               <Spacer h={8} />
               <Surface radius={8} color={DarkSurface} borderColor={color(result.droppedEquipment.rarity.colorHex)} borderWidth={1} style={{ alignSelf: 'stretch' }}>
                 <Row gap={8} pad={8}>
-                  
+                  <GorselRozet
+                    ad={esyaGorseli(result.droppedEquipment)}
+                    boyut={40}
+                    kare
+                    renk={nadirlikRengi(result.droppedEquipment.rarity)}
+                    kenar={nadirlikRengi(result.droppedEquipment.rarity)}
+                    zemin={alpha(nadirlikRengi(result.droppedEquipment.rarity), 0.14)}
+                  />
                   <Column style={{ flexShrink: 1 }}>
                     <T size={12} weight="bold" color={color(result.droppedEquipment.rarity.colorHex)}>
                       {`Eşya: ${result.droppedEquipment.name}`}
@@ -903,15 +1026,17 @@ export function QuestCompletionDialog({ result, onDismiss }) {
           {result.intelUnlockedText != null ? (
             <>
               <Spacer h={8} />
-              <T size={11} color={AmberGold} weight="semibold">
-                {result.intelUnlockedText}
-              </T>
+              <Ikonlu gorsel="fisilti" boyut={16} style={{ alignSelf: 'stretch' }}>
+                <T size={11} color={AmberGold} weight="semibold" style={{ flex: 1 }}>
+                  {result.intelUnlockedText}
+                </T>
+              </Ikonlu>
             </>
           ) : null}
 
           <Spacer h={14} />
 
-          <Btn onPress={onDismiss} color={AmberGold} contentColor={DarkBg} radius={10} style={{ alignSelf: 'stretch', minHeight: 42 }}>
+          <Btn onPress={onDismiss} color={AmberGold} contentColor={DarkBg} radius={10} style={{ alignSelf: 'stretch', minHeight: 42 }} gorsel="canta" textSize={13}>
             <T weight="bold" size={13} color={DarkBg}>
               Ödülleri Çantaya Al ve Ayrıl
             </T>

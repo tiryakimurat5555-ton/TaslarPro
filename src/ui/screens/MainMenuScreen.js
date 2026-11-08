@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { R } from '../../R.js';
 import { SoundManager } from '../../audio/SoundManager.js';
-import { Box, Column, Row, Spacer, T, Btn, OutlinedBtn, Ikon, Img, Gradient, AlertDialog } from '../kit.js';
+import { Box, Column, Row, Spacer, T, Btn, OutlinedBtn, Gorsel, GorselRozet, Img, Gradient, AlertDialog } from '../kit.js';
 import { AmberGold, AmberGoldDark, AmberGoldLight, DarkBg, DarkSurface, TextGold, TextLight, TextMuted, HealthGreen, HealthRed, Color, alpha, color } from '../theme.js';
 
 // Kotlin'deki altın-kırmızı gradyan fırçası metne uygulanamadığı için: altın yazı + koyu bordo gölge
@@ -69,6 +69,12 @@ export function MainMenuScreen({ viewModel, onStartNewGame, onContinueGame, onOp
         <Column fill align="center" justify="between" style={{ paddingHorizontal: 24, paddingVertical: 20 }}>
           {/* 1. ÜST KISIM: OYUN ADI */}
           <Column heading align="center" label="Oyun Başlığı: Silahşör, Diyarın Kaderi" style={{ alignSelf: 'stretch', paddingTop: 28 }}>
+            {/* Arma: defne çelengi içinde çapraz kılıçlar (görsel, VoiceOver'dan gizli) */}
+            <View style={{ width: 112, height: 112, alignItems: 'center', justifyContent: 'center', marginBottom: 10 }} pointerEvents="none">
+              <View style={{ position: 'absolute', width: 112, height: 112, borderRadius: 56, backgroundColor: alpha(color(0xff8b0000), 0.28), borderWidth: 2, borderColor: alpha(BASLIK_RENGI, 0.7) }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
+              <Gorsel ad="defne" boyut={104} renk={alpha(BASLIK_RENGI, 0.55)} style={{ position: 'absolute', top: 4, left: 4 }} />
+              <Gorsel ad="capraz-kilic" boyut={60} renk={BASLIK_RENGI} />
+            </View>
             <T size={38} weight="black" letterSpacing={4} align="center" color={BASLIK_RENGI} style={BASLIK_GOLGESI}>
               SİLAHŞÖR
             </T>
@@ -86,7 +92,7 @@ export function MainMenuScreen({ viewModel, onStartNewGame, onContinueGame, onOp
           <Column gap={14} align="center" style={{ alignSelf: 'stretch' }}>
             {/* YENİ OYUN BUTONU */}
             <Btn label="Yeni Oyun Başlat" onPress={yeniOyun} color={AmberGold} contentColor={DarkBg} radius={12} style={{ alignSelf: 'stretch', height: 52 }}>
-              <Ikon name="PlayArrow" size={24} color={DarkBg} />
+              <Gorsel ad="kilic-cekme" boyut={24} renk={DarkBg} />
               <T size={16} weight="bold" letterSpacing={1} color={DarkBg}>
                 YENİ OYUN
               </T>
@@ -95,7 +101,7 @@ export function MainMenuScreen({ viewModel, onStartNewGame, onContinueGame, onOp
             {/* DEVAM ET BUTONU (Sadece Kayıt Varsa Görünür) */}
             {hasSave ? (
               <Btn label="Kayıtlı oyuna devam et" onPress={devamEt} color={HealthGreen} contentColor={Color.White} radius={12} style={{ alignSelf: 'stretch', height: 52 }}>
-                <Ikon name="Refresh" size={22} color={Color.White} />
+                <Gorsel ad="acik-kitap" boyut={22} renk={Color.White} />
                 <T size={15} weight="bold" letterSpacing={1} color={Color.White}>
                   DEVAM ET (Kayıttan Yükle)
                 </T>
@@ -104,7 +110,7 @@ export function MainMenuScreen({ viewModel, onStartNewGame, onContinueGame, onOp
 
             {/* AYARLAR BUTONU */}
             <OutlinedBtn label="Ses ve Oyun Ayarları" onPress={onOpenSettings} borderColor={AmberGoldDark} borderWidth={1.5} contentColor={TextGold} radius={12} style={{ alignSelf: 'stretch', height: 50 }}>
-              <Ikon name="Settings" size={20} color={AmberGold} />
+              <Gorsel ad="ayarlar" boyut={20} renk={AmberGold} />
               <T size={14} weight="semibold" letterSpacing={1} color={TextGold}>
                 AYARLAR (SES & MÜZİK)
               </T>
@@ -125,6 +131,7 @@ export function MainMenuScreen({ viewModel, onStartNewGame, onContinueGame, onOp
         <AlertDialog
           onDismiss={() => setShowOverwriteDialog(false)}
           containerColor={DarkSurface}
+          icon={<GorselRozet ad="tomar" boyut={52} renk={HealthRed} zemin={alpha(HealthRed, 0.14)} />}
           title={
             <T heading color={TextGold} weight="bold" size={18}>
               Kayıtlı Oyun Bulunuyor
@@ -139,6 +146,7 @@ export function MainMenuScreen({ viewModel, onStartNewGame, onContinueGame, onOp
             <Btn
               color={HealthRed}
               contentColor={Color.White}
+              gorsel="alev"
               onPress={() => {
                 setShowOverwriteDialog(false);
                 Promise.resolve(viewModel.startNewGame(true)).then(() => onStartNewGame());
@@ -150,7 +158,7 @@ export function MainMenuScreen({ viewModel, onStartNewGame, onContinueGame, onOp
             </Btn>
           }
           dismiss={
-            <OutlinedBtn onPress={() => setShowOverwriteDialog(false)}>
+            <OutlinedBtn gorsel="kapi" onPress={() => setShowOverwriteDialog(false)}>
               <T color={TextGold}>Vazgeç</T>
             </OutlinedBtn>
           }

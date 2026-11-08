@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 import * as kt from '../../kt.js';
 import { R } from '../../R.js';
 import { SoundManager } from '../../audio/SoundManager.js';
-import { Screen, Column, Row, Surface, Card, Spacer, T, Btn, OutlinedBtn, IconBtn, Ikon, Toggle, Slider, Scroll } from '../kit.js';
-import { AmberGold, DarkBg, DarkBorder, DarkSurface, DarkSurfaceCard, TextGold, TextLight, alpha } from '../theme.js';
+import { Screen, Column, Row, Surface, Card, Spacer, T, Btn, OutlinedBtn, IconBtn, Toggle, Slider, Scroll, Gorsel } from '../kit.js';
+import { AmberGold, DarkBg, DarkBorder, DarkSurface, DarkSurfaceCard, TextGold, TextLight, TextMuted, alpha } from '../theme.js';
 
 /** (v * 100).toInt() — kayan nokta hatası 28,999.. gibi değer vermesin */
 function yuzde(v) {
@@ -22,8 +22,9 @@ export function SettingsScreen({ onNavigateBack, modifier }) {
       {/* Üst çubuk (TopAppBar) */}
       <Row color={DarkSurface} gap={8} style={{ alignSelf: 'stretch', paddingHorizontal: 8, paddingVertical: 6, minHeight: 56 }}>
         <IconBtn label="Geri dön, ana menüye döner" onPress={onNavigateBack}>
-          <Ikon name="ArrowBack" color={AmberGold} size={22} />
+          <Gorsel ad="patika" boyut={22} renk={AmberGold} />
         </IconBtn>
+        <Gorsel ad="ayarlar" boyut={22} renk={AmberGold} />
         <T heading color={TextGold} weight="bold" size={20}>
           Oyun Ayarları
         </T>
@@ -35,7 +36,7 @@ export function SettingsScreen({ onNavigateBack, modifier }) {
           <Column pad={16}>
             <Row justify="between" style={{ alignSelf: 'stretch' }}>
               <Row gap={8}>
-                <Ikon name="MusicNote" color={AmberGold} />
+                <Gorsel ad="lir" boyut={24} renk={AmberGold} />
                 <T heading size={16} weight="bold" color={TextGold}>
                   Arka Plan Müziği
                 </T>
@@ -79,7 +80,7 @@ export function SettingsScreen({ onNavigateBack, modifier }) {
           <Column pad={16}>
             <Row justify="between" style={{ alignSelf: 'stretch' }}>
               <Row gap={8}>
-                <Ikon name="VolumeUp" color={AmberGold} />
+                <Gorsel ad="boru" boyut={24} renk={AmberGold} />
                 <T heading size={16} weight="bold" color={TextGold}>
                   Ses Efektleri (SFX)
                 </T>
@@ -118,7 +119,7 @@ export function SettingsScreen({ onNavigateBack, modifier }) {
 
             <Spacer h={8} />
 
-            <OutlinedBtn onPress={() => SoundManager.playSfx(R.raw.dovusbasla)} disabled={!sfxEnabled} radius={8} style={{ alignSelf: 'stretch' }}>
+            <OutlinedBtn onPress={() => SoundManager.playSfx(R.raw.dovusbasla)} disabled={!sfxEnabled} radius={8} style={{ alignSelf: 'stretch' }} gorsel="kilic-carpisma" gorselRenk={sfxEnabled ? AmberGold : alpha(AmberGold, 0.4)}>
               <T color={sfxEnabled ? AmberGold : alpha(AmberGold, 0.4)}>Efekt Sesini Test Et</T>
             </OutlinedBtn>
           </Column>
@@ -127,9 +128,12 @@ export function SettingsScreen({ onNavigateBack, modifier }) {
         {/* ERİŞİLEBİLİRLİK & BİLGİ KARTI */}
         <Card color={DarkSurfaceCard} radius={12} borderColor={DarkBorder} borderWidth={1} style={{ alignSelf: 'stretch' }}>
           <Column pad={16}>
-            <T heading weight="bold" size={14} color={TextGold}>
-              Ses & Erişilebilirlik Hakkında
-            </T>
+            <Row gap={8}>
+              <Gorsel ad="bilgi" boyut={20} renk={AmberGold} />
+              <T heading weight="bold" size={14} color={TextGold} style={{ flexShrink: 1 }}>
+                Ses & Erişilebilirlik Hakkında
+              </T>
+            </Row>
             <Spacer h={6} />
             <T size={12} color={alpha(TextLight, 0.85)} lineHeight={18}>
               Oyun içi müzikler ve ses efektleri VoiceOver ve TalkBack ekran okuyucularıyla tam uyumludur. Dövüş naraları, dükkan kapıları, zar ve ödül sesleri görsel öğelere ek olarak anlık işitsel geri bildirim sağlar.
@@ -139,11 +143,19 @@ export function SettingsScreen({ onNavigateBack, modifier }) {
 
         <Spacer h={12} />
 
-        <Btn onPress={onNavigateBack} color={AmberGold} contentColor={DarkBg} radius={10} style={{ alignSelf: 'stretch', minHeight: 46 }}>
+        <Btn onPress={onNavigateBack} color={AmberGold} contentColor={DarkBg} radius={10} style={{ alignSelf: 'stretch', minHeight: 46 }} gorsel="patika" gorselRenk={DarkBg} textSize={15}>
           <T weight="bold" size={15} color={DarkBg}>
             Ayarları Kaydet ve Geri Dön
           </T>
         </Btn>
+
+        {/* Simge lisansı (CC BY 3.0 atıf zorunluluğu) */}
+        <Row gap={8} align="start" style={{ alignSelf: 'stretch', paddingHorizontal: 4 }}>
+          <Gorsel ad="tuy-kalem" boyut={16} renk={TextMuted} style={{ marginTop: 1 }} />
+          <T size={11} color={TextMuted} lineHeight={16} style={{ flex: 1 }}>
+            Simgeler: game-icons.net, CC BY 3.0 lisansıyla. Çizerler: Lorc, Delapouite, Skoll, Sbed, Carl Olsen, Caro Asercion, Cathelineau, Darkzaitzev, Faithtoken, Lucasms, Sparker, Willdabeast, Zeromancer.
+          </T>
+        </Row>
       </Scroll>
     </Screen>
   );
