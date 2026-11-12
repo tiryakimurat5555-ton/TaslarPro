@@ -1,2 +1,0 @@
-dron https://elevenlabsusercontent.com/database/workspace/c6890a9e7d7c47f7a13c4c65b132fa4f/content_generation/3ikUAGBnYm061bIbEzsW/xGw3u9tO9gphs0K3PxNJ/content.mp3?Expires=1794528000&KeyName=assets-cdn-key-1&Signature=CqUee2BIzgAJFeDsWiOyXXzTiuA=
-kurek https://elevenlabsusercontent.com/database/workspace/c6890a9e7d7c47f7a13c4c65b132fa4f/content_generation/MgmCFqUkOulOCCoEhnch/BZKwTVP7LmSadMVP4927/content.mp3?Expires=1794528000&KeyName=assets-cdn-key-1&Signature=eVv5dTbCRML7YbrMu9Wu0EDT7HU=
