@@ -386,11 +386,10 @@ function ayarOgeleri(ayar, degistir) {
     {
       id: 'kip',
       etiket: `Oynama biçimi: ${kipAdi[ayar.kip]}. Değiştir`,
-      ipucu: 'Oyunun kendi sesi, görerek ve VoiceOver arasında geçer.',
+      ipucu: "Oyunun kendi sesi, görerek ve VoiceOver arasında geçer. VoiceOver açıkken hangisi seçili olursa olsun düğmeli VoiceOver düzeni kullanılır; VoiceOver'ı kapatınca seçtiğin biçime dönülür.",
       sec: () => {
         const y = kipler[(kipler.indexOf(ayar.kip) + 1) % kipler.length];
         degistir({ kip: y });
-        Ses.ayarla({ kip: y });
         Ses.hemen(`Oynama biçimi: ${kipAdi[y]}.`);
         return 'sessiz';
       },
@@ -1532,6 +1531,14 @@ class HataSiniri extends React.Component {
 
 // ---------------- Uygulama ----------------
 export default function App() {
+  const [voAcik, setVoAcik] = useState(false);
+  useEffect(() => {
+    AccessibilityInfo.isScreenReaderEnabled()
+      .then((a) => setVoAcik(!!a))
+      .catch(() => {});
+    const abone = AccessibilityInfo.addEventListener('screenReaderChanged', (a) => setVoAcik(!!a));
+    return () => abone && abone.remove && abone.remove();
+  }, []);
   const [ekran, setEkran] = useState('yukleniyor');
   const [ayar, setAyar] = useState(VARSAYILAN_AYAR);
   const [kayit, setKayit] = useState(null);
@@ -1580,7 +1587,7 @@ export default function App() {
       setKayit(kk);
       GORUNUM.kontrast = !!a.kontrast;
       GORUNUM.buyukYazi = !!a.buyukYazi;
-      if (a.kip) Ses.ayarla({ kip: a.kip, hiz: a.hiz });
+      if (a.kip) Ses.ayarla({ hiz: a.hiz });
       if (kk && kk.yedektenGeldi) setTimeout(() => Ses.soyle('Son kayıt okunamadı; araştırman en son yedekten açılacak. Birkaç dakikalık ilerleme kaybolmuş olabilir.', 4), 1500);
       setEkran(a.kip ? 'menu' : 'kip');
     })();
@@ -1619,7 +1626,22 @@ export default function App() {
     setEkran('oyun');
   };
 
-  const kip = ayar.kip || 'kendi';
+  // VoiceOver açıkken oyunun dokunma hareketleri çalışmaz (VoiceOver dokunuşları kendisi alır; Kayıp Okyanus'ta da böyleydi).
+  // Bu yüzden VoiceOver açık olduğu sürece seçilen biçim ne olursa olsun düğmeli VoiceOver düzeni kullanılır;
+  // VoiceOver kapanınca seçilen biçime dönülür.
+  const secilenKip = ayar.kip || 'kendi';
+  const kip = voAcik && secilenKip !== 'voiceover' ? 'voiceover' : secilenKip;
+  const oncekiKip = useRef(null);
+  useEffect(() => {
+    if (!ayar.kip) return;
+    Ses.ayarla({ kip });
+    const once = oncekiKip.current;
+    oncekiKip.current = kip;
+    if (secilenKip === 'voiceover' || once === kip) return;
+    if (kip === 'voiceover')
+      setTimeout(() => Ses.soyle("VoiceOver açık olduğu için düğmeli düzene geçildi. Menüler ve oyun ekranı VoiceOver ile kullanılır. Oyunun kendi sesiyle hareketlerle oynamak istersen VoiceOver'ı kapat; oyun kendiliğinden hareketli düzene döner.", 4), 600);
+    else if (once) setTimeout(() => Ses.hemen('VoiceOver kapandı; hareketli düzene dönüldü.'), 400);
+  }, [kip, ayar.kip]);
   let icerik = null;
   if (ekran === 'yukleniyor') icerik = <View style={{ flex: 1 }} />;
   else if (ekran === 'kip') icerik = <KipSecim sec={kipSec} />;

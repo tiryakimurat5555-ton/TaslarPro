@@ -147,6 +147,10 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   Testler: `bun araclar/dayaniklilik-testi.js [n]` (bozuk kayıt + metin denetimi; 400/400), oyun-testi Performans ve Bozuk metin satırı
   (KAYIT_YAZ=dosya kaydı yazar), `node araclar/web-deneme/menu-tara.cjs <web> <kayit.json> kendi|voiceover` (bütün menüleri gezer:
   210 sayfa, 1829 satır, sorun 0). Telefonda doğrulanmadı.
+- VoiceOver odağı (12 Kasım, Murat "VoiceOver menü açıldığında menüye odaklanamıyor, Kayıp Okyanus'ta da olmuştu" dedi; kendi ses
+  kipindeyken VoiceOver açıktı): App voAcik (screenReaderChanged); VoiceOver açıkken seçilen kip ne olursa olsun etkin kip 'voiceover'
+  (düğmeli düzen + VoiceListe), kapanınca seçilene döner, geçişler duyurulur. VoiceListe açılınca AccessibilityInfo.setAccessibilityFocus
+  (250 ve 700 ms) başlığa ya da alt menüden dönülünce onu açan satıra (onOdak basılınca). Telefonda doğrulanmadı.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

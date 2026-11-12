@@ -11,7 +11,7 @@
 //
 // Öğe: { id, etiket (yazı ya da işlev), ipucu, sec () => 'sessiz' | undefined, ikincil }
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Animated, Easing, Pressable } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Animated, Easing, Pressable, AccessibilityInfo, findNodeHandle } from 'react-native';
 import { useJestler } from './jestler.js';
 import * as Ses from './ses.js';
 import * as Efekt from './efekt.js';
@@ -226,12 +226,30 @@ function SesliListeIc({ baslik, giris, ogeler, onGeri, rehberAcik = true, ilkOda
 const SesliListeRef = forwardRef(SesliListeIc);
 
 // VoiceOver ile oynarken: aynı öğeler VoiceOver'ın kendi düğmeleri; Z hareketi (geri kaçış) geri götürür
-function VoiceListe({ baslik, giris, ogeler, onGeri }) {
+// Liste açılınca VoiceOver odağı listeye taşınır (yoksa odak kapanan ekranda kalır, listeye gidilemez):
+// alt menüden dönülünce onu açan satıra, yoksa başlığa.
+function VoiceListe({ baslik, giris, ogeler, onGeri, ilkOdak = 0, onOdak }) {
   const [, yenile] = useState(0);
+  const baslikRef = useRef(null);
+  const satirRef = useRef([]);
+  useEffect(() => {
+    const odakla = () => {
+      const hedef = (ilkOdak > 0 && satirRef.current[ilkOdak]) || baslikRef.current || satirRef.current[0];
+      const n = hedef && findNodeHandle(hedef);
+      if (n) AccessibilityInfo.setAccessibilityFocus(n);
+    };
+    // VoiceOver ekran değişimini işledikten sonra odaklanmak için iki deneme
+    const z1 = setTimeout(odakla, 250);
+    const z2 = setTimeout(odakla, 700);
+    return () => {
+      clearTimeout(z1);
+      clearTimeout(z2);
+    };
+  }, []);
   return (
     <View style={[st.kap, ...g_('kap')]} accessibilityViewIsModal onAccessibilityEscape={onGeri}>
       {baslik ? (
-        <Text style={st.baslik} accessibilityRole="header">
+        <Text ref={baslikRef} style={st.baslik} accessibilityRole="header">
           {baslik}
         </Text>
       ) : null}
@@ -241,10 +259,12 @@ function VoiceListe({ baslik, giris, ogeler, onGeri }) {
           oge.sec ? (
             <Pressable
               key={oge.id || String(i)}
+              ref={(r) => (satirRef.current[i] = r)}
               accessibilityRole="button"
               accessibilityLabel={metinAl(oge.etiket)}
               accessibilityHint={oge.ipucu ? metinAl(oge.ipucu) : undefined}
               onPress={() => {
+                if (onOdak) onOdak(i);
                 oge.sec();
                 yenile((v) => v + 1);
               }}
@@ -253,7 +273,7 @@ function VoiceListe({ baslik, giris, ogeler, onGeri }) {
               <Text style={[st.satirYazi, ...g_('satirYazi')]}>{metinAl(oge.etiket)}</Text>
             </Pressable>
           ) : (
-            <View key={oge.id || String(i)} style={[st.satir, ...g_('satir'), st.ikincil, ...g_('ikincil')]} accessible accessibilityLabel={metinAl(oge.etiket) + (oge.ipucu ? '. ' + metinAl(oge.ipucu) : '')}>
+            <View key={oge.id || String(i)} ref={(r) => (satirRef.current[i] = r)} style={[st.satir, ...g_('satir'), st.ikincil, ...g_('ikincil')]} accessible accessibilityLabel={metinAl(oge.etiket) + (oge.ipucu ? '. ' + metinAl(oge.ipucu) : '')}>
               <Text style={[st.satirYazi, ...g_('satirYazi')]}>{metinAl(oge.etiket)}</Text>
             </View>
           )
