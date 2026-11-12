@@ -8,7 +8,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { View, Text, Pressable, StyleSheet, AccessibilityInfo, AppState } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GLView } from 'expo-gl';
 import * as Haptics from 'expo-haptics';
 import { setAudioModeAsync, setIsAudioActiveAsync } from 'expo-audio';
@@ -509,6 +509,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
   menuRef.current = menu.ust;
   // Açık menü listesi: sahadaki tek dokunma katmanı menü açıkken dokunuşları buna iletir
   const listeRef = useRef(null);
+  const kenar = useSafeAreaInsets();
   const menuye = () => (menuRef.current ? listeRef.current : null);
   const [, yenile] = useState(0);
   const [altyazi, setAltyazi] = useState('');
@@ -1434,9 +1435,8 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
   return (
     <View style={{ flex: 1, backgroundColor: '#0d1626' }}>
       {ayar.grafik !== 'kapali' && <GLView style={StyleSheet.absoluteFill} onContextCreate={glHazir} accessible={false} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden />}
-      <SafeAreaView
-        style={{ flex: 1 }}
-        edges={['top', 'bottom', 'left', 'right']}
+      <View
+        style={{ flex: 1, paddingTop: kenar.top, paddingBottom: kenar.bottom, paddingLeft: kenar.left, paddingRight: kenar.right }}
         accessibilityElementsHidden={!!menu.ust}
         importantForAccessibility={menu.ust ? 'no-hide-descendants' : 'auto'}
       >
@@ -1520,9 +1520,13 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
             )}
           </>
         )}
-      </SafeAreaView>
+      </View>
 
-      {menu.ust && <View style={[st.menuOrt, { zIndex: 10 }]}>{menuIcerigi()}</View>}
+      {menu.ust && (
+        <View style={[st.menuOrt, { zIndex: 10 }]} pointerEvents={jestli ? 'none' : 'auto'}>
+          {menuIcerigi()}
+        </View>
+      )}
       {/* Hareketle oynarken tek dokunma katmanı: sahada ve menüde bütün dokunuşlar buradan geçer (en üstte, hep kurulu) */}
       {jestli && (
         <View

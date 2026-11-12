@@ -233,6 +233,45 @@ function seritGeo(yari, x0, x1, adim, yKaydir = 0) {
 
 const renkKarisim = (a, b, t) => new THREE.Color(a).lerp(new THREE.Color(b), t);
 
+// Kayıp Okyanus'tan (telefonda çalıştığı doğrulanmış): expo-gl bağlamını three.js'e uydurur.
+// 1) Bazı sürümlerde bağlam özellikleri boş döner; three.js bunu okuyup hata verir.
+// 2) three.js (r163 ve sonrası) WebGL 1 bağlamlarını genel WebGLRenderingContext türüne bakarak reddeder; expo-gl bağlamı
+//    WebGL 2 işlevlerini sağladığı halde bu denetime takılabildiği için denetim sırasında bu ad geçici olarak gizlenir.
+function cizerOlustur(gl, tuval) {
+  try {
+    const ozellik = gl.getContextAttributes && gl.getContextAttributes();
+    if (!ozellik) throw new Error('bos');
+  } catch (e) {
+    try {
+      gl.getContextAttributes = () => ({
+        alpha: true,
+        antialias: false,
+        depth: true,
+        stencil: false,
+        premultipliedAlpha: true,
+        preserveDrawingBuffer: false,
+        powerPreference: 'default',
+        failIfMajorPerformanceCaveat: false,
+      });
+    } catch (e2) {}
+  }
+  const kok = globalThis;
+  const eski = kok.WebGLRenderingContext;
+  let gizlendi = false;
+  try {
+    kok.WebGLRenderingContext = undefined;
+    gizlendi = true;
+  } catch (e) {}
+  try {
+    return new THREE.WebGLRenderer({ canvas: tuval, context: gl, antialias: false, alpha: false });
+  } finally {
+    if (gizlendi) {
+      try {
+        kok.WebGLRenderingContext = eski;
+      } catch (e) {}
+    }
+  }
+}
 export function sahneKur(gl, d, secenek = {}) {
   // Düşük grafik (Aşama 7, zayıf cihazlar): hayvanlar daha yakından çizilir, sis daha yakın
   const DUSUK = !!secenek.dusuk;
@@ -249,7 +288,7 @@ export function sahneKur(gl, d, secenek = {}) {
     removeEventListener() {},
     getContext: () => gl,
   };
-  const ciz = new THREE.WebGLRenderer({ canvas: tuval, context: gl, antialias: false });
+  const ciz = cizerOlustur(gl, tuval);
   ciz.setPixelRatio(1);
   ciz.setSize(genislik, yukseklik, false);
 

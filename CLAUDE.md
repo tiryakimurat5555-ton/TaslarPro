@@ -156,6 +156,10 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   Oyun kökünde en üstte (zIndex 20) hep kurulu; menü açıkken (menuOrt zIndex 10) dokunuşları listeRef'e iletir (surukle, kaydir, dokun,
   ciftDokun, uzunBas); oyun içi Liste'ler disaridanJest (SesliListe kendi katmanını kurmaz). Ana menü/kip seçimi listeleri kendi katmanlı.
   3B tanı: 8 sn'de GLView bağlamı ya da sahne kurulmazsa hata kayıtlarına yazılır (Murat'ın görüntülerinde 3B alan boş, lacivertti).
+  Murat'ın hata kaydı "Üç boyutlu sahne kurulmadı" (bağlam oluşuyor, sahneKur atıyor) → sahne.js cizerOlustur Kayıp Okyanus'tan
+  (getContextAttributes yedeği + WebGLRenderer kurulurken globalThis.WebGLRenderingContext gizlenir; three r163+ WebGL 1 reddi).
+  Menü telefonda konuşup görünmüyordu: oyun ekranındaki SafeAreaView kaldırıldı (useSafeAreaInsets dolgusu), menü katmanı
+  pointerEvents none (Kayıp Okyanus gibi). Web taklidinde useSafeAreaInsets 47/34.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

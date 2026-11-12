@@ -47,6 +47,8 @@ export function StatusBar() {
 export function SafeAreaProvider(p) {
   return <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>{p.children}</div>;
 }
+// iPhone'daki gibi kenar boşlukları (çentik ve alt çubuk)
+export const useSafeAreaInsets = () => ({ top: 47, bottom: 34, left: 0, right: 0 });
 export function SafeAreaView(p) {
   return <div style={{ display: 'flex', flexDirection: 'column', flex: '1 1 0%', overflow: 'auto' }}>{p.children}</div>;
 }
