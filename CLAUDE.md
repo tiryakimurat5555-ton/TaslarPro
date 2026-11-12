@@ -59,7 +59,13 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   içindeyken Araca bin; Yerler araçla sürülür. İki parmak çift dokunuş = Fotoğraf çek.
 - İtibar (sayılar oyuncuya söylenmez): yeni tür 8, birey 2, davranış 2 (nadir 6), nadir davranışın iyi fotoğrafı 5, tanıklık 4-6, ilk ses 3.
 - Sesler: mevcut ElevenLabs sesleri (aslan, leopar, sirtlan, timsah, gergedan, domuz, kartal, yilan) + bu oturumda üretilenler (fil,
-  zebra, suaygiri, manda, ceylan, zurafa; akış "Vahşi Yaşam sesleri"). Ortam: savan; nehir ve sulak alanda ortam_bataklik.
+  zebra, suaygiri, manda, ceylan, zurafa; akış "Vahşi Yaşam sesleri").
+  Ortam (12 Kasım, Murat "ortam sesleri çok kısa, döngüde sağdan soldan atlıyor, rahatsız ediyor" dedi): eski 1-2 sn'den kurulmuş
+  rastgele yönlü 24 sn döngüler silindi. Yeni: ElevenLabs add_flow_node model_parameters {duration_seconds 30, loop true,
+  prompt_influence 0.5} + run_flow_nodes (generate_in_flow süre almaz) → ortam_gunduz, ortam_gece (cırcır böcekleri), ortam_nehir.
+  `araclar/ortam-dongu.py`: kanal gücü eşitlenir, son 1,5 sn başa çapraz geçiş (28,5 sn kesintisiz), -22 LUFS. App ortamSec:
+  nehir/sulak/gölet kıyısı → nehir, akşam ve gece → gece, yoksa gündüz; bölge ve gün evresi değişince. efekt.js ortamBaslat
+  eskisini 2 sn'de kısıp yenisini 2 sn'de açar.
   Ayak sesi her 1,5 m; foto 'etkinles', gözlem seçilince hayvan yönünden sonar.
 - Testler: `bun araclar/oyun-testi.js [gün]` (bot gözlemler, yürür, kaydı yükler; nüfus raporu).
   Tarayıcı: `bash araclar/web-deneme/yap.sh /tmp/claude-0/web && NODE_PATH=/opt/npm-tools/node_modules node araclar/web-deneme/dene.cjs /tmp/claude-0/web /tmp/claude-0/ekran`

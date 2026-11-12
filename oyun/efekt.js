@@ -95,30 +95,59 @@ export function yonlu(taban, kim, hedef, ses = 1, duyma = 45) {
   return true;
 }
 
-// Haritanın ortam sesi: sürekli döngü
+// Haritanın ortam sesi: sürekli döngü. Bölge ya da gün değişince eskisi 2 saniyede kısılır, yenisi yavaşça açılır.
+const GECIS_MS = 2000;
+let gecisSayac = null;
+function sesiKaydir(p, bas, son, sure, bitince) {
+  const t0 = Date.now();
+  const t = setInterval(() => {
+    const k = Math.min(1, (Date.now() - t0) / sure);
+    try {
+      p.volume = bas + (son - bas) * k;
+    } catch (e) {}
+    if (k >= 1) {
+      clearInterval(t);
+      if (bitince) bitince();
+    }
+  }, 50);
+  return t;
+}
 export function ortamBaslat(ad) {
   if (ortamAdi === ad && ortamOynatici) return;
-  ortamDurdur();
   const k = SESLER[ad];
+  ortamDurdur(true);
   if (!k) return;
   try {
-    ortamOynatici = createAudioPlayer(k, { keepAudioSessionActive: true });
-    ortamOynatici.loop = true;
-    ortamOynatici.volume = durum.acik ? durum.ortam : 0;
-    ortamOynatici.play();
+    const p = createAudioPlayer(k, { keepAudioSessionActive: true });
+    p.loop = true;
+    p.volume = 0;
+    p.play();
+    ortamOynatici = p;
     ortamAdi = ad;
+    gecisSayac = sesiKaydir(p, 0, durum.acik ? durum.ortam : 0, GECIS_MS);
   } catch (e) {
     ortamOynatici = null;
   }
 }
-export function ortamDurdur() {
-  if (!ortamOynatici) return;
-  try {
-    ortamOynatici.pause();
-    ortamOynatici.release();
-  } catch (e) {}
+export function ortamDurdur(yavas) {
+  if (gecisSayac) clearInterval(gecisSayac);
+  gecisSayac = null;
+  const p = ortamOynatici;
   ortamOynatici = null;
   ortamAdi = null;
+  if (!p) return;
+  const kapat = () => {
+    try {
+      p.pause();
+      p.release();
+    } catch (e) {}
+  };
+  if (!yavas) return kapat();
+  let v = 0;
+  try {
+    v = p.volume;
+  } catch (e) {}
+  sesiKaydir(p, v, 0, GECIS_MS, kapat);
 }
 
 export function birak() {

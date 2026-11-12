@@ -325,8 +325,10 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir, sahadaBildir }) {
 
   const ortamSec = () => {
     if (ayarRef.current.ortam === false) return Efekt.ortamDurdur();
+    // Nehir, sulak alan ve gölet kıyısında su; başka yerde gündüz ya da gece savanı (30 sn'lik kesintisiz döngüler)
     const b = M.bolgeBul(d.oyuncu.x, d.oyuncu.y);
-    Efekt.ortamBaslat(b === 'sulak' || b === 'nehir' ? 'ortam_bataklik' : 'ortam_savan');
+    if (b === 'sulak' || b === 'nehir' || b === 'golet') Efekt.ortamBaslat('ortam_nehir');
+    else Efekt.ortamBaslat(M.geceMi(d.k.dk) || M.gunEvresi(d.k.dk) === 'aksam' ? 'ortam_gece' : 'ortam_gunduz');
   };
 
   useEffect(() => {
@@ -398,6 +400,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir, sahadaBildir }) {
         Efekt.cal('hata', 0.6);
         return;
       case 'bolge':
+      case 'zaman':
         ortamSec();
         return;
       default:
