@@ -247,9 +247,31 @@ function panOlaylari(p) {
   };
 }
 
+// Dokunma yanıtlayıcısı (useJestler): fare ile taklit edilir; window.__parmak parmak sayısını verir
+function yanitlayiciOlaylari(p) {
+  if (!p.onResponderGrant) return {};
+  return {
+    onMouseDown: (e) => {
+      const r = e.currentTarget.getBoundingClientRect();
+      const parmak = window.__parmak || 1;
+      const olay = (x, y, t) => ({ nativeEvent: { locationX: x - r.left, locationY: y - r.top, pageX: x, pageY: y, timestamp: t, touches: new Array(parmak).fill({ pageX: x, pageY: y }) } });
+      p.onResponderGrant(olay(e.clientX, e.clientY, e.timeStamp));
+      p.onResponderStart && p.onResponderStart(olay(e.clientX, e.clientY, e.timeStamp));
+      const tasi = (m) => p.onResponderMove && p.onResponderMove(olay(m.clientX, m.clientY, m.timeStamp));
+      const birak = (m) => {
+        window.removeEventListener('mousemove', tasi);
+        window.removeEventListener('mouseup', birak);
+        p.onResponderRelease && p.onResponderRelease({ nativeEvent: { touches: [], timestamp: m.timeStamp } });
+      };
+      window.addEventListener('mousemove', tasi);
+      window.addEventListener('mouseup', birak);
+    },
+  };
+}
+
 const View = React.forwardRef(function View(p, ref) {
   return (
-    <div ref={ref} style={{ ...css(p.style, true), ...dokunma(p) }} {...erisim(p)} {...panOlaylari(p)}>
+    <div ref={ref} style={{ ...css(p.style, true), ...dokunma(p) }} {...erisim(p)} {...panOlaylari(p)} {...yanitlayiciOlaylari(p)}>
       {p.children}
     </div>
   );

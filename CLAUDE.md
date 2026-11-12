@@ -11,7 +11,18 @@ app.json portrait + açılışta lockAsync(PORTRAIT_UP). Oyun ekranı yukarıdan
 satırı, 3B görüntü, altyazı, 3×3 eylem ızgarası (her biri %32 × 54), en altta hareket alanı (165 yüksek; VoiceOver kipinde 4 düğmelik
 satır). Kip seçimi üst yarı görerek, alt yarı sesle. Sahne dikeyde fov 74, görüntü merkezi %14 yukarı, kamera 1,35 kat geri ve yüksek.
 Tarayıcı denemesi 390×844. Kayıp Okyanus (ayrı depo tiryakimurat5555-ton/kayip-okyanus) tam ekran dokunma hareketleriyle oynanır
-(tek parmak sürükle yüz/dön, dokun tarif, çift dokun fotoğraf, iki parmak çift dokun menü); bu oyuna o denetim düzeni henüz uygulanmadı.
+(tek parmak sürükle yüz/dön, dokun tarif, çift dokun fotoğraf, iki parmak çift dokun menü).
+KAYIP OKYANUS DENETİMİ (12 Kasım, Murat "isterim" dedi): VoiceOver kipi dışında (kendi ve görerek) sahada düğme yok; bütün ekran
+`oyun/jestler.js` (Kayıp Okyanus'tan aynen, useJestler, dokunmaBekle) katmanı. Tek parmak sürükle = yürü/dön (araçta sür; olcekle 90 px
+tam, ölü bölge 0,12), dokun = gözlenen hayvanın tarifi ya da Etrafı tara (+ rota), uzun bas = durum + alet, çift dokun = aletin kullanımı,
+iki parmak sağa/sola kaydır = alet değiştir (ALETLER: Dürbün = gozlemBaslat, Fotoğraf makinesi, Ses kayıt cihazı, Yaklaşma),
+iki parmak yukarı = araca bin/in (uzaksa araca yürü), aşağı = dur + gözlemi bitir, iki parmak dokun = sus, iki parmak çift dokun = menü.
+Sahadayken App `sahada` true olur ve Gezgin kapanır (iki dokunma katmanı çakışmasın; Kayıp Okyanus'ta da tek katman). Menü/panellerde
+Gezgin VoiceOver gibi çalışır; iki parmak çift dokunuş (sihirli eylem) bir önceki sayfaya döner (menüde sahaya). Menüye Etrafı tara,
+Araca bin/in/git, Dur ve gözlemi bitir, Alet değiştir eklendi. Ekranda yalnız durum kutusu, altyazı ve hareket ipucu yazısı görünür.
+VoiceOver kipinde eski düğmeli dikey düzen kalır. Tarayıcıda hareket denemesi: `araclar/web-deneme/jest-dene.cjs` (window.__parmak
+parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa içinde olay gönderir, başsız tarayıcı yavaş).
+`dene.cjs` düğmeli düzene göreydi (görerek kip artık hareketli; VoiceOver kipini denemek için uyarlanmalı).
 
 ## Murat ile çalışma
 - Murat'ın yalnızca iPhone'u var; kodu elle düzenleyemez. Bütün dosyaları ben yazar, depoya gönderirim.

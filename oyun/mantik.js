@@ -1335,7 +1335,7 @@ export function aracaBin(d) {
   d.aracHiz = 0;
   Object.assign(d.oyuncu, { x: d.k.arac.x, y: d.k.arac.y, yon: d.k.arac.yon });
   d.rota = null;
-  olay(d, 'arac', 'Araca bindin. Hareket alanıyla sür. Hayvanlar araçtaki insandan daha az ürker.', 3, { bindi: true });
+  olay(d, 'arac', 'Araca bindin. Hayvanlar araçtaki insandan daha az ürker.', 3, { bindi: true });
 }
 export function aractanIn(d) {
   if (!d.k.aracta) return;

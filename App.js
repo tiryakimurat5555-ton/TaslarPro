@@ -17,6 +17,7 @@ import * as Efekt from './oyun/efekt.js';
 import { sahneKur } from './oyun/sahne.js';
 import { TURLER, TUR_SIRASI, YERLER, DAVRANISLAR, EVRELER, KISILIKLER } from './oyun/veri.js';
 import { Gezgin, Katman, Okunur, Sayfa, DogrudanAlan, useOdak, useSihirliEylem } from './oyun/gezgin.js';
+import { useJestler } from './oyun/jestler.js';
 
 const OYUN_ADI = 'Vahşi Yaşam';
 const AYAR_ANAHTAR = 'vahsi-yasam-ayar-v1';
@@ -36,6 +37,20 @@ const R = {
 };
 
 const KipBaglam = createContext('kendi');
+// Sahadaki aletler (Kayıp Okyanus'taki gibi iki parmakla sağa/sola kaydırarak değişir, çift dokunuş kullanır)
+const ALETLER = [
+  { id: 'durbun', ad: 'Dürbün', ipucu: 'Çift dokununca sıradaki hayvanı gözlemlersin.', kullan: (d) => M.gozlemBaslat(d) },
+  { id: 'kamera', ad: 'Fotoğraf makinesi', ipucu: 'Çift dokununca gözlediğin hayvanın fotoğrafını çekersin.', kullan: (d) => M.fotografCek(d) },
+  { id: 'ses', ad: 'Ses kayıt cihazı', ipucu: 'Çift dokununca 6 saniye kayıt yapıp sesleri çözümlersin.', kullan: (d) => M.sesKaydiBaslat(d) },
+  { id: 'yaklas', ad: 'Yaklaşma', ipucu: 'Çift dokununca gözlediğin hayvana ürkütmeden yaklaşırsın.', kullan: (d) => M.yaklas(d) },
+];
+const OLU_BOLGE = 0.12;
+const TAM_SURUKLEME = 90; // bu kadar piksel sürükleyince tam hız
+function olcekle(piksel) {
+  const v = Math.max(-1, Math.min(1, piksel / TAM_SURUKLEME));
+  if (Math.abs(v) < OLU_BOLGE) return 0;
+  return Math.sign(v) * ((Math.abs(v) - OLU_BOLGE) / (1 - OLU_BOLGE));
+}
 const KALICI_OLAYLAR = ['tanimlandi', 'yeniTur', 'yeniDavranis', 'foto', 'tanik', 'sesKayit', 'saldiri'];
 
 function titret(tur, ayar) {
@@ -159,16 +174,17 @@ function AnaMenu({ kayitVar, kayitOzet, devam, yeni, ayarlar, nasil }) {
 const NASIL = [
   'Amaç: Afrika savanındaki hayvanları gözlemlemek, her bireyi tanımlayıp kimlik numarasıyla kaydetmek, davranışlarını belgelemek, fotoğraflarını çekmek ve seslerini kaydetmek. Avlanma ya da savaş yoktur; hayvanları rahatsız etmeden izlersin.',
   'Telefonu dik tut ve kulaklık tak. Hayvanlar bulundukları yönden ses verir: soldaki sol kulaktan, arkadaki boğuk gelir, uzaktaki kısık duyulur.',
-  'Hareket: ekranın en altındaki hareket alanına parmağını koyup kaydır. Yukarı ileri, aşağı geri, sağa ve sola döndürür. Araçtayken aynı alanla sürersin.',
-  'Gözlemle: dürbünle görebildiğin en yakın hayvanı seçer; her basışta sıradakine geçer. Bir hayvanı birkaç saniye izleyince tanımlanır ve kimlik numarası alır, örneğin Zebra 3. Yeni davranışları izledikçe ansiklopedine kaydedilir.',
-  'Yaklaş: seçili hayvana ürkütmeden yürür ve güvenli izleme mesafesinde durur. Çok yaklaşırsan hayvanlar kaçar. Fil, manda, su aygırı, gergedan ve aslan gibi tehlikeli hayvanlar önce uyarır; geri çekilmezsen sana doğru hamle yapar.',
-  'Fotoğraf çek: seçili hayvanı fotoğraflar. İyi bir fotoğraf için yeterince yakın ama ürkütmeyecek kadar uzak ol. Nadir davranışların fotoğrafı çok değerlidir.',
-  'Ses kaydı: 6 saniye çevreyi dinler. Analiz hangi türün, hangi yönden, ne kadar uzaktan ve ne tür bir ses çıkardığını söyler: iletişim, alarm, bölge ya da yavru çağrısı.',
+  'Sahada her şey Kayıp Okyanus gibi dokunma hareketleriyle yapılır, düğme yoktur. Tek parmakla sürükle: yukarı ileri yürür, aşağı geri gider, sağa ve sola döndürür; araçtayken sürersin. Dokun: çevreni ya da izlediğin hayvanı anlatır. Uzun bas: durumunu söyler. Çift dokun: elindeki aleti kullanır. İki parmakla sağa ya da sola kaydır: alet değiştirir. Aletler dürbün, fotoğraf makinesi, ses kayıt cihazı ve yaklaşmadır.',
+  'İki parmakla yukarı kaydır: araca biner ya da inersin; araç uzaktaysa yanına yürürsün. İki parmakla aşağı kaydır: otomatik yürüyüşü durdurur ve gözlemi bitirir. İki parmakla dokun: konuşmayı susturur. İki parmakla iki kez dokun: menüyü açar. Yerler, Arşiv, Etrafı tara ve Ayarlar menüdedir.',
+  'Dürbün: görebildiğin en yakın hayvanı seçer; her kullanışta sıradakine geçer. Bir hayvanı birkaç saniye izleyince tanımlanır ve kimlik numarası alır, örneğin Zebra 3. Yeni davranışları izledikçe ansiklopedine kaydedilir.',
+  'Yaklaşma: seçili hayvana ürkütmeden yürür ve güvenli izleme mesafesinde durur. Çok yaklaşırsan hayvanlar kaçar. Fil, manda, su aygırı, gergedan ve aslan gibi tehlikeli hayvanlar önce uyarır; geri çekilmezsen sana doğru hamle yapar.',
+  'Fotoğraf makinesi: seçili hayvanı fotoğraflar. İyi bir fotoğraf için yeterince yakın ama ürkütmeyecek kadar uzak ol. Nadir davranışların fotoğrafı çok değerlidir.',
+  'Ses kayıt cihazı: 6 saniye çevreyi dinler. Analiz hangi türün, hangi yönden, ne kadar uzaktan ve ne tür bir ses çıkardığını söyler: iletişim, alarm, bölge ya da yavru çağrısı.',
   'Hayvanlar seni zamanla tanır. Uzaktan, sakin ve sık izlediğin bireyler sana alışır ve daha az kaçar. Araçtan izlemek hayvanları yayadan daha az ürkütür.',
   'Zaman oyun açıkken akar, oyun kapalıyken durur. Bir gün 48 dakika sürer. Gündüz otçullar otlar, akşam ve gece yırtıcılar avlanır. Gece dürbünle görüş kısalır.',
-  'Yerler düğmesi seni gölete, nehir geçitlerine, kayalığa, mağara girişine, ağaçlığa, sulak alana ya da araca götürür. Nehir yalnızca iki geçitten geçilir. Neredeyim konumunu, Etrafı tara çevrendeki hayvanları söyler. Saat yönleri: 12 tam önün, 3 sağın, 6 arkan, 9 solun.',
+  'Menüdeki Yerler seni gölete, nehir geçitlerine, kayalığa, mağara girişine, ağaçlığa, sulak alana ya da araca götürür. Nehir yalnızca iki geçitten geçilir. Menüdeki Neredeyim konumunu, Etrafı tara çevrendeki hayvanları söyler. Saat yönleri: 12 tam önün, 3 sağın, 6 arkan, 9 solun.',
   'Arşiv: keşfettiğin türler, tanımladığın bireyler ve aileleri, fotoğrafların, ses kayıtların ve tanık olduğun olaylar birbirine bağlı olarak saklanır. Oyun kendini otomatik kaydeder.',
-  'Sesle oynarken oyun VoiceOver gibi çalışır: dokunduğun ya da parmağını gezdirdiğin öğeyi okur, sağa sola kaydırınca sonraki ve önceki öğeye geçer, ekranın herhangi bir yerine iki kez dokununca seçili öğe çalışır. İki parmakla bir kez dokunmak konuşmayı susturur, iki parmakla iki kez dokunmak fotoğraf çeker. Üç parmakla yukarı ya da aşağı kaydırmak sayfayı kaydırır.',
+  'Menülerde oyun VoiceOver gibi çalışır: dokunduğun ya da parmağını gezdirdiğin öğeyi okur, sağa sola kaydırınca sonraki ve önceki öğeye geçer, ekranın herhangi bir yerine iki kez dokununca seçili öğe çalışır. İki parmakla bir kez dokunmak konuşmayı susturur, iki parmakla iki kez dokunmak bir önceki sayfaya döner. Üç parmakla yukarı ya da aşağı kaydırmak sayfayı kaydırır. VoiceOver ile oynarken sahada düğmeler vardır.',
 ];
 
 function Nasil({ geri }) {
@@ -278,7 +294,7 @@ function Yarat({ bitti, iptal }) {
 }
 
 // ---------------- Oyun ----------------
-function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
+function Oyun({ arastirmaci, ayar, cikis, ayarDegistir, sahadaBildir }) {
   const kip = useContext(KipBaglam);
   const dRef = useRef(null);
   if (!dRef.current) dRef.current = M.dunyaOlustur(arastirmaci);
@@ -295,6 +311,13 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
   const ayarRef = useRef(ayar);
   ayarRef.current = ayar;
   panelRef.current = panel;
+  // VoiceOver dışında sahada bütün ekran dokunma hareketleriyle oynanır (Kayıp Okyanus gibi); menüde oyunun gezgini çalışır
+  const jestli = kip !== 'voiceover';
+  const aletRef = useRef(0);
+  useEffect(() => {
+    if (sahadaBildir) sahadaBildir(jestli && !panel);
+  }, [panel, jestli]);
+  useEffect(() => () => sahadaBildir && sahadaBildir(false), []);
 
   const kaydet = useCallback(() => {
     AsyncStorage.setItem(KAYIT_ANAHTAR, JSON.stringify(M.kayitHazirla(d.k))).catch(() => {});
@@ -320,7 +343,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     if (k.egitim === 0) {
       k.egitim = 1;
       Ses.soyle(
-        `${M.zamanSozu(k.dk)}. Afrika savanındaki küçük araştırma istasyonundasın. Yanında bir arazi aracı, dürbün, fotoğraf makinesi ve ses kayıt cihazı var. İlk görevin: göletin çevresindeki hayvanları gözlemle. Yerler düğmesinden Gölet'i seç ya da Araca bin.`,
+        `${M.zamanSozu(k.dk)}. Afrika savanındaki küçük araştırma istasyonundasın. Yanında bir arazi aracı, dürbün, fotoğraf makinesi ve ses kayıt cihazı var. İlk görevin: göletin çevresindeki hayvanları gözlemle.${kip === 'voiceover' ? " Yerler düğmesinden Gölet'i seç ya da Araca bin." : ' Tek parmakla sürükleyerek yürürsün. Dokununca çevreni anlatırım, çift dokununca elindeki dürbünü kullanırsın. İki parmakla iki kez dokununca menü açılır; Yerler menüsünden Gölet\'i seçebilirsin.'}`,
         3
       );
     } else Ses.soyle(`${M.zamanSozu(k.dk)}. ${M.konumOzeti(d)}`, 3);
@@ -488,8 +511,12 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     setTopuz(null);
   }, []);
 
+  // Menüde iki parmakla çift dokunuş bir önceki sayfaya döner (Kayıp Okyanus'taki gibi)
   useSihirliEylem(() => {
-    if (!panelRef.current) M.fotografCek(d);
+    const p = panelRef.current;
+    if (!p) M.fotografCek(d);
+    else if (p === 'menu') panelKapat();
+    else panelAc('menu', 'Menü.');
   });
 
   const adimAt = (ileri, don, sure) => {
@@ -500,6 +527,66 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
   const k = d.k;
   const gb = M.gozlenen(d);
   const aracYakin = M.aracYakinMi(d);
+  const alet = ALETLER[aletRef.current];
+
+  const aracIslemi = () => {
+    if (k.aracta) M.aractanIn(d);
+    else if (M.aracYakinMi(d)) M.aracaBin(d);
+    else M.yerGit(d, 'arac');
+  };
+  const durVeBitir = () => {
+    const vardi = d.rota || d.yaklasId || M.gozlenen(d);
+    M.dur(d);
+    M.gozlemBitir(d);
+    Ses.hemen(vardi ? 'Durdun, gözlem bitti.' : 'Zaten duruyorsun.');
+  };
+  const sahaJest = useJestler(
+    {
+      onSurukle: (mod, dx, dy) => {
+        if (panelRef.current) return;
+        if (mod === 'tek') {
+          adimBitis.current = 0;
+          girdi.current = { ileri: olcekle(-dy), don: olcekle(dx) };
+        }
+      },
+      onSurukleBitti: () => {
+        girdi.current = { ileri: 0, don: 0 };
+      },
+      onKaydir: (yon, parmak) => {
+        if (panelRef.current || parmak < 2) return;
+        if (yon === 'sag' || yon === 'sol') {
+          aletRef.current = (aletRef.current + (yon === 'sag' ? 1 : ALETLER.length - 1)) % ALETLER.length;
+          const a = ALETLER[aletRef.current];
+          Efekt.cal('odak', 0.6);
+          Ses.hemen(`${a.ad}. ${a.ipucu}`);
+          yenile((x) => x + 1);
+        } else if (yon === 'yukari') aracIslemi();
+        else durVeBitir();
+      },
+      onDokun: (parmak) => {
+        if (panelRef.current) return;
+        if (parmak >= 2) return Ses.sus();
+        const b = M.gozlenen(d);
+        let m = b ? `${M.gozlemTarifi(d, b)}.` : M.etrafiTara(d);
+        if (d.rota) m += ` ${d.rota.ad} yolundasın, ${M.saatSozu(M.saatYonu(d.oyuncu, d.rota))}, ${M.metreSozu(M.mesafe(d.oyuncu, d.rota))}.`;
+        Ses.hemen(m);
+      },
+      onCiftDokun: (parmak) => {
+        if (panelRef.current) return;
+        if (parmak >= 2) {
+          Efekt.cal('etkinles', 0.5);
+          panelAc('menu', 'Menü. Zaman durdu.');
+          return;
+        }
+        ALETLER[aletRef.current].kullan(d);
+      },
+      onUzunBas: () => {
+        if (panelRef.current) return;
+        Ses.hemen(`${M.durumOzeti(d)} Elindeki alet: ${ALETLER[aletRef.current].ad}.`);
+      },
+    },
+    { dokunmaBekle: true }
+  );
 
   const panelAc = (p, soz) => {
     if (!panelRef.current) kaydet();
@@ -522,6 +609,46 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         accessibilityElementsHidden={!!panel}
         importantForAccessibility={panel ? 'no-hide-descendants' : 'auto'}
       >
+        {jestli ? (
+          <>
+            <View style={st.ust} pointerEvents="none">
+              <View style={st.hud}>
+                <View style={st.satir}>
+                  <Text style={st.hudAd} numberOfLines={1}>
+                    {k.ad} · {M.gunNo(k.dk)}. gün {M.saatMetni(k.dk)}
+                  </Text>
+                  <Text style={st.hudKucuk} numberOfLines={1}>
+                    itibar {k.itibar}
+                  </Text>
+                </View>
+                <Text style={st.hudKucuk} numberOfLines={1}>
+                  {M.bolgeAdi(d.oyuncu.x, d.oyuncu.y)}
+                  {k.aracta ? ' · araçta' : ''} · Alet: {alet.ad}
+                </Text>
+                {gb && (
+                  <Text style={st.hudHedef} numberOfLines={2}>
+                    {M.gozlemTarifi(d, gb)}
+                  </Text>
+                )}
+                {d.sesKayit && <Text style={st.hudHedef}>Ses kaydı sürüyor…</Text>}
+              </View>
+            </View>
+            <View style={{ flex: 1 }} pointerEvents="none" />
+            <View style={st.altyaziKap} pointerEvents="none">
+              {!!altyazi && (
+                <Text style={st.altyazi} numberOfLines={4}>
+                  {altyazi}
+                </Text>
+              )}
+              <Text style={st.jestIpucu}>
+                Sürükle: yürü · Dokun: anlat · Uzun bas: durum · Çift dokun: {alet.ad.toLocaleLowerCase('tr-TR')}
+                {'\n'}İki parmak sağa/sola: alet · yukarı: araç · aşağı: dur · iki parmak çift dokun: menü
+              </Text>
+            </View>
+            <View style={StyleSheet.absoluteFill} {...sahaJest} accessible accessibilityLabel="Saha. Tek parmakla sürükleyerek yürü, dokununca çevre anlatılır, iki parmakla iki kez dokununca menü açılır." />
+          </>
+        ) : (
+          <>
         <View style={st.ust}>
           <Dugme etiket={`Durum. ${M.durumOzeti(d)}`} onEtkin={() => Ses.hemen(M.durumOzeti(d))} stil={st.hud}>
             <View style={st.satir}>
@@ -620,6 +747,8 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
             )}
           </DogrudanAlan>
         )}
+          </>
+        )}
       </SafeAreaView>
 
       {panel && (
@@ -631,8 +760,34 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
                   <>
                     <Baslik>Menü</Baslik>
                     <Dugme etiket="Sahaya dön" onEtkin={panelKapat} stil={st.buyukDugme} />
-                    <Dugme etiket="Durumumu oku" onEtkin={() => Ses.hemen(M.durumOzeti(d))} />
+                    <Dugme etiket="Etrafı tara" onEtkin={() => Ses.hemen(M.etrafiTara(d))} />
                     <Dugme etiket="Neredeyim" onEtkin={() => Ses.hemen(M.konumOzeti(d))} />
+                    <Dugme etiket="Durumumu oku" onEtkin={() => Ses.hemen(M.durumOzeti(d))} />
+                    {jestli && (
+                      <>
+                        <Dugme
+                          etiket={k.aracta ? 'Araçtan in' : aracYakin ? 'Araca bin' : 'Araca git'}
+                          onEtkin={() => {
+                            setPanel(null);
+                            aracIslemi();
+                          }}
+                        />
+                        {(d.rota || d.yaklasId || gb) && (
+                          <Dugme
+                            etiket="Dur ve gözlemi bitir"
+                            onEtkin={() => {
+                              setPanel(null);
+                              durVeBitir();
+                            }}
+                          />
+                        )}
+                        <Dugme etiket={`Alet: ${alet.ad}. Değiştir`} ipucu="Sahada iki parmakla sağa ya da sola kaydırarak da değişir" onEtkin={() => {
+                          aletRef.current = (aletRef.current + 1) % ALETLER.length;
+                          Ses.hemen(`${ALETLER[aletRef.current].ad}. ${ALETLER[aletRef.current].ipucu}`);
+                          yenile((x) => x + 1);
+                        }} />
+                      </>
+                    )}
                     <Dugme etiket="Yerler" onEtkin={() => panelAc('yerler', 'Yerler.')} />
                     <Dugme etiket="Arşiv" onEtkin={() => panelAc('arsiv', 'Arşiv.')} />
                     <Dugme etiket="Nasıl oynanır" onEtkin={() => panelAc('nasil', null)} />
@@ -898,6 +1053,7 @@ export default function App() {
   const [kayit, setKayit] = useState(null);
   const [arastirmaci, setArastirmaci] = useState(null);
   const [oyunAnahtar, setOyunAnahtar] = useState(0);
+  const [sahada, setSahada] = useState(false); // sahada dokunma hareketleri çalışır, oyunun gezgini kapanır
 
   useEffect(() => {
     setAudioModeAsync({ playsInSilentMode: true, interruptionMode: 'mixWithOthers', shouldPlayInBackground: false })
@@ -995,6 +1151,7 @@ export default function App() {
         arastirmaci={arastirmaci}
         ayar={ayar}
         ayarDegistir={ayarDegistir}
+        sahadaBildir={setSahada}
         cikis={() => {
           setKayit(M.kayitHazirla(arastirmaci));
           setEkran('menu');
@@ -1005,7 +1162,7 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <KipBaglam.Provider value={ayar.kip || 'kendi'}>
-        <Gezgin acik={ayar.kip === 'kendi'} titresim={() => titret('hafif', ayar)}>
+        <Gezgin acik={ayar.kip === 'kendi' && !sahada} titresim={() => titret('hafif', ayar)}>
           <View style={{ flex: 1, backgroundColor: R.zemin }}>
             <StatusBar style="light" />
             {ekran === 'oyun' || ekran === 'kip' ? icerik : <SafeAreaView style={{ flex: 1 }}>{icerik}</SafeAreaView>}
@@ -1048,6 +1205,7 @@ const st = StyleSheet.create({
   baglamSatir: { flexDirection: 'row', gap: 6 },
   baglamDugme: { flex: 1, backgroundColor: '#33381f', borderColor: '#6b6a2e', paddingVertical: 10 },
   altyaziKap: { paddingHorizontal: 8, paddingBottom: 6, minHeight: 4 },
+  jestIpucu: { color: 'rgba(255,255,255,0.75)', fontSize: 12, textAlign: 'center', marginTop: 6, backgroundColor: 'rgba(0,0,0,0.35)', borderRadius: 8, padding: 6, marginBottom: 6 },
   altyazi: { color: '#fff', backgroundColor: 'rgba(0,0,0,0.6)', padding: 8, borderRadius: 8, fontSize: 14 },
   izgara: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, paddingHorizontal: 8, justifyContent: 'space-between' },
   eylem: { width: '32%', height: 54, paddingHorizontal: 4, paddingVertical: 4, alignItems: 'center', backgroundColor: 'rgba(31,35,32,0.9)' },
