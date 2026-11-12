@@ -54,6 +54,44 @@ function aracModeli() {
   return g;
 }
 
+// ---- Aşama 8: tekne, dron, saha kampı ----
+function tekneModeli() {
+  const g = new THREE.Group();
+  parca(g, new THREE.BoxGeometry(1.3, 0.45, 4.0), '#7a5a3a', 0, 0.12, 0); // gövde
+  parca(g, new THREE.BoxGeometry(1.1, 0.1, 3.6), '#5a4028', 0, 0.36, 0); // iç
+  parca(g, new THREE.BoxGeometry(0.9, 0.38, 0.9), '#7a5a3a', 0, 0.12, -2.2, 0, Math.PI / 4, 0); // burun
+  parca(g, new THREE.BoxGeometry(1.25, 0.08, 0.3), '#a08060', 0, 0.42, 0.9); // oturak
+  parca(g, new THREE.CylinderGeometry(0.04, 0.04, 2.4, 5), '#c8b080', 0.8, 0.5, 0.2, 0.3, 0, 1.2); // kürek
+  return g;
+}
+function dronModeli() {
+  const g = new THREE.Group();
+  parca(g, new THREE.BoxGeometry(0.4, 0.15, 0.4), '#e8e8e8', 0, 0, 0);
+  const pervaneler = [];
+  [-1, 1].forEach((sx) =>
+    [-1, 1].forEach((sz) => {
+      parca(g, new THREE.BoxGeometry(0.06, 0.05, 0.5), '#333', sx * 0.22, 0, sz * 0.22, 0, (sx * sz * Math.PI) / 4, 0);
+      pervaneler.push(parca(g, new THREE.BoxGeometry(0.42, 0.02, 0.05), '#555', sx * 0.38, 0.08, sz * 0.38));
+    })
+  );
+  parca(g, new THREE.BoxGeometry(0.12, 0.1, 0.12), '#222', 0, -0.12, -0.12); // kamera
+  g.userData.pervaneler = pervaneler;
+  g.scale.setScalar(2.2);
+  return g;
+}
+function kampModeli() {
+  const g = new THREE.Group();
+  const cadir = parca(g, new THREE.ConeGeometry(1.6, 1.8, 4), '#6b7a3a', 0, 0.9, 0);
+  cadir.rotation.y = Math.PI / 4;
+  parca(g, new THREE.BoxGeometry(0.7, 0.9, 0.05), '#2a2a20', 0, 0.45, -1.13); // kapı
+  parca(g, new THREE.BoxGeometry(1.2, 0.05, 0.8), '#1f2a4a', 2.3, 0.9, 0, -0.6, 0, 0); // güneş paneli
+  parca(g, new THREE.CylinderGeometry(0.04, 0.04, 0.9, 5), '#555', 2.3, 0.45, 0.3);
+  parca(g, new THREE.BoxGeometry(2.2, 1.3, 1.8), '#7d6f4a', -2.6, 0.65, 0.5); // gözlem saklanağı
+  parca(g, new THREE.BoxGeometry(1.4, 0.25, 0.06), '#1a1a14', -2.6, 0.95, -0.42); // gözetleme yarığı
+  parca(g, new THREE.CylinderGeometry(0.35, 0.4, 0.15, 8), '#3a3028', 0.6, 0.08, 2.4); // ateş yeri
+  return g;
+}
+
 // ---- Hayvanlar ----
 function gozler(g, b, x, y, z, renk = '#1a1a1a') {
   parca(g, new THREE.BoxGeometry(0.07 * b, 0.07 * b, 0.04 * b), renk, -x * b, y * b, z * b);
@@ -477,6 +515,15 @@ export function sahneKur(gl, d, secenek = {}) {
   sahne.add(arac);
   const insan = insanModeli('#8a8058');
   sahne.add(insan);
+  const tekne = tekneModeli();
+  tekne.visible = false;
+  sahne.add(tekne);
+  const dron = dronModeli();
+  dron.visible = false;
+  sahne.add(dron);
+  const kamp = kampModeli();
+  kamp.visible = false;
+  sahne.add(kamp);
 
   // Hayvanlar: gerektikçe kurulur (doğumlar sonradan eklenir)
   const modeller = new Map();
@@ -654,8 +701,23 @@ export function sahneKur(gl, d, secenek = {}) {
       arac.position.set(k.arac.x, 0, R(k.arac.y));
       arac.rotation.y = -k.arac.yon;
       insan.visible = !k.aracta;
-      insan.position.set(o.x, 0, R(o.y));
+      insan.position.set(o.x, k.teknede ? -0.35 : 0, R(o.y));
       insan.rotation.y = -o.yon;
+      // Aşama 8: tekne (teknedeyken araştırmacı oturur), dron (uçarken 10 metrede), saha kampı
+      tekne.visible = !!(k.ekipman && k.ekipman.tekne);
+      if (tekne.visible) {
+        tekne.position.set(k.tekne.x, -0.1 + Math.sin(d.zaman * 1.3) * 0.04, R(k.tekne.y));
+        tekne.rotation.y = -k.tekne.yon;
+        tekne.rotation.z = Math.sin(d.zaman * 0.9) * 0.03;
+      }
+      dron.visible = !!d.dron;
+      if (d.dron) {
+        const yukselis = Math.min(1, Math.hypot(d.dron.x - o.x, d.dron.y - o.y) / 8);
+        dron.position.set(d.dron.x, 1.5 + yukselis * 9, R(d.dron.y));
+        dron.userData.pervaneler.forEach((p, i) => (p.rotation.y = d.zaman * 40 * (i % 2 ? 1 : -1)));
+      }
+      kamp.visible = !!k.kamp;
+      if (k.kamp) kamp.position.set(k.kamp.x, 0, R(k.kamp.y));
 
       // Mağara: kamera tünelin içinde, fener ışığıyla
       magaraGrup.visible = !!k.magara;

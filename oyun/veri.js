@@ -36,6 +36,7 @@ export const YERLER = [
   { id: 'agaclik', ad: 'Akasya ağaçlığı', x: 30, y: 100, tarif: 'Kuzeyde sık akasya ağaçları. Filler ve zürafalar burada beslenir.' },
   { id: 'dogOtlak', ad: 'Doğu otlakları', x: 95, y: 0, tarif: 'Uçsuz bucaksız açık çayırlar. Zebralar burada otlar.' },
   { id: 'galeri', ad: 'Galeri ormanı', x: 140, y: -82, tarif: 'Nehrin doğu kıyısı boyunca uzanan sık, gölgeli bir orman şeridi. Babunlar, maymunlar ve orman kuşları burada yaşar.' },
+  { id: 'iskele', ad: 'İskele', x: 22, y: nehirY(22) + 7, tarif: 'Nehrin kuzey kıyısında küçük ahşap bir iskele. Araştırma teknesi burada bağlanır.' },
   { id: 'termitler', ad: 'Termit tepeleri', x: -140, y: -40, tarif: 'Batı otlaklarında boyu insanı aşan termit tepeleri. Eski tepelerde firavunfareleri ve yerdomuzu yuvaları var.' },
 ];
 export const GALERI = { x0: 100, x1: 190, derinlik: 36 }; // nehrin kuzey kıyısında orman şeridi
@@ -85,6 +86,8 @@ export const DAVRANISLAR = {
   tuzaktaKaldi: { fiil: 'bir tel tuzağa takılmış, çırpınıyor', ad: 'Tel tuzağa takılma', nadir: true },
   gocEdiyor: { fiil: 'sürüsüyle göç ediyor', ad: 'Mevsimsel göç', nadir: true },
   nehirGeciyor: { fiil: 'göç sırasında nehri geçiyor', ad: 'Göçte nehir geçişi', nadir: true },
+  meydanOkuyor: { fiil: 'grubun liderine meydan okuyor', ad: 'Liderlik mücadelesi', nadir: true },
+  bolgeKoruyor: { fiil: 'bölgesinden rakip yırtıcıları kovalıyor', ad: 'Bölge savunması', nadir: true },
 };
 
 // Hayvan sesinin anlamı (ses analizi, karar 49 ve 87)

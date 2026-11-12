@@ -177,6 +177,26 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   (kaçış dalı, kovalayan avcı ve av, sahte saldırı), kosanlar(d, 55) (suda olan su canlısı hariç). App: en yakın 3 koşan, her biri
   1,85 sn'de bir Efekt.yonlu (KOSU_DUZEY). Sesler ElevenLabs 2 sn loop (pati ilk deneme çok kısık çıktı, prompt_influence 0.8 ile
   yeniden), sesleri-isle.sh UC_B'de (3B, 10 dosya). Bot 20 dk'da karelerin %6'sında koşu sesi var. jest-dene Doğa alt menüsünden geçer.
+- Aşama 8 genişleme (13 Kasım gece, Murat "geliştir genişlet" dedi; briften yapılmamış kararlar 24, 39, 41, 73, 83, 84; sayılar ÖNERİ).
+  `oyun/genisleme.js` (saf; M ve E'yi kullanır, merkez ve App onu çağırır; G.guncelle(d, dt) her karede, işleri 2 sn'de bir).
+  Genetik (mantik): birey baba, gen {h çeşitlilik, tasiyici}, dna, kalitsal, akrabalik; akrabalik(d,a,b) Wright katsayısı (4 kuşak);
+  doğumda babaSec (g.lider %75) + kalitim (h ortalama×(1-F), iki taşıyıcı → kalıtsal zayıflık, yavruyken günlük %5 ölüm; F≥0,125
+  kondisyon -0,15); göçmenler h 0,72-0,9. dışkı numunesi analizi G.dnaAnalizi (profil + baba doğrulama). G.popGenetik/genetikSatirlari
+  (en az 3 DNA; risk puanı), aileSatirlari (aile-<id> menüsü). Koruma projesi 'genetik' (3 DNA, translokasyon 8.000 → G.translokasyon
+  en riskli türe iki göçmen, yavru doğsun). Hâkimiyet: YIRTICI_GUC, varlık puanı bölge başına (kurakta su başı ×1,5), günlük hâkim
+  (eskinin 1,4 katı gerek), değişim mesajı; rekabet: iki yırtıcı grup 28 m'de → zayıf kaçar, güçlü 'bolgeKoruyor' (görülürse olay,
+  itibar 4); liderlik: aslan/zebra/impala günde %10 meydan (ayrılmış genç erkek ya da gocmenEkle göçebe), 14 sn 'meydanOkuyor',
+  kazanan g.lider, kaybeden disari, %40 yara. Dron (ekipman drone 9.000): alet 'dron' (aletlerAl ile yalnız sahipken), 110 m'ye
+  22 m/sn, 3 sn tarama 45 m (sürüler sayılır, turKaydi, haritaya, tel tuzak bulunur, leş, yangın), ürkekleri (kacis≥28) %25 ürkütür,
+  3 şarj istasyon/kampta dolar; 3B 'dron' sesi 1,7 sn'de bir. Tekne (7.000): k.tekne iskelede (YER 'iskele'), k.teknede: mantik
+  guncelle nehir boyunca (TEKNE_HIZ 2,6), kaçış ×0,55, kurek sesi 2,4 m'de; iki parmak yukarı/aracIslemi bin/in; yerGit 'tekne'.
+  Kamp (kampTakimi 3.000): Doğa'da kur/taşı (istasyondan ≥40 m, sudan uzak), kaçış ×0,6 (10 m), Dinlen menüsü (kamp ya da istasyon):
+  iki saat / 17:30 / 05:30; App dinlenRef karede 400 adım, d.dinleniyor (sahte saldırı yok), dokunuş bırakır, özet (OZET_TURLERI).
+  Harita: k.harita.gruplar {tur,x,y,sayi,dk,kaynak} gözlem/GPS/kamera tuzağı/dron; ana menüde Ekosistem haritası, hb-<bölge>
+  (otlak, gölet, hâkim, bilinen sürüler, tuzaklar, kamp, "Bu bölgeye yürü"). Sahne: tekne, dron (10 m'de, pervaneler), kamp modeli.
+  Kayıt: asama8Alanlari / asama8Onar (dunyaOlustur'da; bozuk harita/hâkimiyet atılır). Yardım "Genetik, bölgeler, dron, tekne ve kamp".
+  Sesler dron (3B), kurek. Testler: dayanıklılık 300/300 (Aşama 8 metinleri dahil), bot 6 gün, ekosistem 30 gün dengede,
+  menu-tara 198 sayfa iki kipte sorun 0, /tmp/claude-0/g8-dene.js 24 gün: rekabet ~5/gün, meydan nadir. Telefonda doğrulanmadı.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

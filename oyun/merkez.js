@@ -6,6 +6,7 @@ import { TURLER, TUR_SIRASI, DAVRANISLAR, ISTASYON, YARICAP, GOLET, nehirY, NEHI
 import * as M from './mantik.js';
 import * as E from './ekosistem.js';
 import * as K from './kesif.js';
+import * as G from './genisleme.js';
 import { KUCUKLER } from './kucukler.js';
 
 const lira = (n) => `${Math.round(n).toLocaleString('tr-TR')} lira`;
@@ -20,6 +21,10 @@ export const EKIPMANLAR = {
   tuzak: { ad: 'Kamera tuzağı', fiyat: 2500, adet: true, itibar: 20, arastirma: 'izlemeAgi', tarif: 'Kurduğun yerden geçen hayvanları gece gündüz kendiliğinden fotoğraflar.' },
   tasma: { ad: 'GPS tasması', fiyat: 4000, adet: true, itibar: 30, arastirma: 'hareketEkolojisi', tarif: 'Veterinerin tanımlı bir yetişkin hayvana takar; nerede olduğunu her an bilirsin.' },
   magaraTakimi: { ad: 'Mağara takımı', fiyat: 2500, itibar: 5, tarif: 'Kask, kafa lambası ve maske. Kayalığın kuzeyindeki mağaraya güvenle girersin.' },
+  // Aşama 8 (karar 24, 41)
+  kampTakimi: { ad: 'Saha kampı takımı', fiyat: 3000, itibar: 10, tarif: 'Çadır, gözlem saklanağı ve güneş paneli. Uzak bir yere kamp kurarsın: kamptayken hayvanlar seni daha az fark eder, orada dinlenir ve dronunu şarj edersin.' },
+  tekne: { ad: 'Araştırma teknesi', fiyat: 7000, itibar: 15, tarif: 'İskeleye bağlı küçük kürekli tekne. Nehir boyunca su aygırlarını, timsahları ve kıyı kuşlarını sessizce, yakından izlersin.' },
+  drone: { ad: 'Araştırma dronu', fiyat: 9000, itibar: 25, tarif: 'Baktığın yönde 110 metre öteye uçar, oradaki sürüleri sayar, leşleri ve tel tuzakları görür, hepsini ekosistem haritasına işler. Bataryası üç uçuşluk; istasyonda ya da kampta dolar. Alçaktan geçerken ürkek hayvanları ürkütebilir.' },
 };
 
 export const TESISLER = {
@@ -531,6 +536,7 @@ export function guncelle(d) {
       const yeniTur = !k.arsiv.turler[b.tur];
       M.turKaydi(d, b.tur);
       k.arsiv.fotolar.unshift({ id: k.sonrakiId++, bireyId: b.id, kod: M.taninmisMi(b) ? M.kod(b) : null, tur: b.tur, davranis: b.davranis, bolge: t.bolge, dk: k.dk, kalite: 'iyi', kaynak: 'tuzak' });
+      G.haritaIsle(k, k.gruplar.find((g) => g.id === b.grup), k.hayvanlar.filter((x) => x.grup === b.grup && !x.olu).length, 'kamera tuzağı');
       if (k.arsiv.fotolar.length > 300) k.arsiv.fotolar.length = 300;
       k.tuzakSayac = (k.tuzakSayac || 0) + 1;
       if (yeniTur) M.mesajEkle(k, `Kamera tuzağı (${t.bolge}) yeni bir tür yakaladı: ${TURLER[b.tur].ad}.`, 'bilgi');
@@ -758,9 +764,9 @@ function numuneSonucu(d, n) {
       if (b && b.hastalik && b.hastalik.id === v.hastalik) b.teshis = v.hastalik;
       teshisKaydet(d, v.hastalik, v.tur, 'dışkı');
       const h = E.HASTALIKLAR[v.hastalik];
-      return `${ad}: ${h.ad} teşhis edildi (${h.etken}). ${h.tedavi ? 'Veteriner tedavi edebilir.' : 'Tedavisi yok; leşleri yok edilerek yayılması yavaşlatılabilir.'}`;
+      return `${ad}: ${h.ad} teşhis edildi (${h.etken}). ${h.tedavi ? 'Veteriner tedavi edebilir.' : 'Tedavisi yok; leşleri yok edilerek yayılması yavaşlatılabilir.'}${G.dnaAnalizi(d, b)}`;
     }
-    return `${ad}: parazit ya da hastalık bulgusu yok. Kondisyonu ${E.kondisyonSozu(v.kondisyon)}; beslenmesi ${v.kondisyon > 0.55 ? 'yeterli' : 'yetersiz, besin azlığı var'}.`;
+    return `${ad}: parazit ya da hastalık bulgusu yok. Kondisyonu ${E.kondisyonSozu(v.kondisyon)}; beslenmesi ${v.kondisyon > 0.55 ? 'yeterli' : 'yetersiz, besin azlığı var'}.${G.dnaAnalizi(d, b)}`;
   }
   if (n.tip === 'les') {
     const tur = kucuk2(M.SOZ[v.tur]);
@@ -1028,6 +1034,27 @@ export const KORUMA = [
     odul: { itibar: 20, fon: 7000 },
     sonuc: 'Bölgede zehirlenme vakası görülmedi; akbaba sayısı artmaya başladı.',
   },
+  {
+    id: 'genetik',
+    ad: 'Genetik çeşitliliği koruma',
+    tarif: 'Küçük ve yalıtılmış popülasyonlarda akraba hayvanlar çiftleşir; genetik çeşitlilik azalır, kalıtsal hastalıklar artar. DNA ile en riskli türü bulup başka bir koruma alanından birey getirmek (translokasyon).',
+    adimlar: [
+      { metin: 'Bir türün en az 3 bireyinden DNA profili çıkar (tanımlı bireylerden dışkı numunesi)', tamam: (k) => TUR_SIRASI.some((t) => k.hayvanlar.filter((b) => b.tur === t && b.dna).length >= 3) },
+      {
+        metin: 'Riskli türe başka bir popülasyondan iki birey getirt (8.000 lira)',
+        tamam: (k) => !!k.koruma.translokasyon,
+        eylem: {
+          etiket: 'Translokasyonu başlat, 8.000 lira',
+          ucret: 8000,
+          gerek: (k) => (TUR_SIRASI.some((t) => k.hayvanlar.filter((b) => b.tur === t && b.dna).length >= 3) ? null : 'Önce bir türün en az 3 bireyinden DNA profili çıkarmalısın.'),
+          yap: (k) => ((k.koruma.translokasyonIste = true), 'Translokasyon ekibi yola çıktı. Genetik açıdan en riskli türden iki birey birkaç saat içinde getirilecek; Mesajlar bölümünden haber alacaksın.'),
+        },
+      },
+      { metin: 'Getirilen bireylerden birinin yavrusu doğsun', tamam: (k) => !!k.koruma.translokasyon && k.hayvanlar.some((b) => b.dogumDk > k.koruma.translokasyon.dk && (k.koruma.translokasyon.idler.includes(b.anne) || k.koruma.translokasyon.idler.includes(b.baba))) },
+    ],
+    odul: { itibar: 25, fon: 12000 },
+    sonuc: 'Getirilen bireylerin yavruları sağlıklı doğdu; popülasyonun genetik çeşitliliği arttı. Çalışman koruma genetiği dergisinde yayımlandı.',
+  }
 ];
 export function korumaBaslat(k, id) {
   const p = KORUMA.find((x) => x.id === id);

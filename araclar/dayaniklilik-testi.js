@@ -7,6 +7,7 @@ import * as Mz from '../oyun/merkez.js';
 import * as K from '../oyun/kesif.js';
 import * as B from '../oyun/betimleme.js';
 import * as Eg from '../oyun/egitim.js';
+import * as G from '../oyun/genisleme.js';
 
 const deneme = +(process.argv[2] || 200);
 const KOTU = /undefined|NaN|\[object|null\b|  |\.\.(?!\.)| ,|^ /;
@@ -20,6 +21,7 @@ function oynat(d, adim) {
   for (let i = 0; i < adim; i++) {
     M.guncelle(d, 0.1, { ileri: i % 50 < 25 ? 1 : 0, don: i % 70 < 10 ? 0.5 : 0 });
     Mz.guncelle(d);
+    G.guncelle(d, 0.1);
     for (const o of M.olaylariAl(d)) metinDenetle(o.metin, o.tur);
     if (i % 60 === 0) {
       metinDenetle(B.betimle(d, 'Dürbün'), 'betimleme');
@@ -30,6 +32,20 @@ function oynat(d, adim) {
       metinDenetle(M.durumOzeti(d), 'durum');
       metinDenetle(M.etrafiTara(d), 'etraf');
       metinDenetle(M.konumOzeti(d), 'konum');
+      // Aşama 8
+      d.k.ekipman.drone = d.k.ekipman.tekne = d.k.ekipman.kampTakimi = true;
+      metinDenetle(G.dronBaslat(d), 'dron');
+      metinDenetle(G.kampKur(d), 'kamp');
+      metinDenetle(G.haritaOzeti(d), 'harita');
+      G.haritaBolgeleri(d).forEach((x) => G.haritaBolgeSatirlari(d, x.id).forEach((m) => metinDenetle(m, 'harita bölgesi')));
+      G.hakimiyetSatirlari(d).forEach((m) => metinDenetle(m, 'hâkimiyet'));
+      const b0 = d.k.hayvanlar.find((b) => !b.olu);
+      if (b0) {
+        b0.dna = true;
+        G.aileSatirlari(d, b0).forEach((x) => metinDenetle(x.metin, 'aile'));
+        G.genetikSatirlari(d, b0.tur).forEach((m) => metinDenetle(m, 'genetik'));
+        metinDenetle(G.dnaAnalizi(d, b0).trim(), 'dna');
+      }
     }
   }
   d.k.mesajlar.forEach((m) => metinDenetle(m.metin, 'mesaj'));

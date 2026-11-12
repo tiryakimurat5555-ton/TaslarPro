@@ -19,10 +19,11 @@ import * as M from './oyun/mantik.js';
 import * as Mz from './oyun/merkez.js';
 import * as E from './oyun/ekosistem.js';
 import * as K from './oyun/kesif.js';
+import * as G from './oyun/genisleme.js';
 import { KUCUKLER, KUCUK_SIRASI, GRUPLAR, MAGARA_ODALARI } from './oyun/kucukler.js';
 import * as Efekt from './oyun/efekt.js';
 import { sahneKur } from './oyun/sahne.js';
-import { TURLER, TUR_SIRASI, YERLER, DAVRANISLAR, EVRELER } from './oyun/veri.js';
+import { TURLER, TUR_SIRASI, YERLER, DAVRANISLAR, EVRELER, BOLGE_ADLARI } from './oyun/veri.js';
 import { useJestler } from './oyun/jestler.js';
 import { Liste, useMenuYigini, altMenu, sayfali, RENK, GORUNUM } from './oyun/SesliListe.js';
 import * as B from './oyun/betimleme.js';
@@ -67,8 +68,11 @@ const ALETLER = [
   { id: 'kamera', ad: 'Fotoğraf makinesi', ipucu: 'Çift dokununca gözlediğin hayvanın fotoğrafını çekersin.', kullan: (d) => M.fotografCek(d) },
   { id: 'ses', ad: 'Ses kayıt cihazı', ipucu: 'Çift dokununca 6 saniye kayıt yapıp sesleri çözümlersin.', kullan: (d) => M.sesKaydiBaslat(d) },
   { id: 'yaklas', ad: 'Yaklaşma', ipucu: 'Çift dokununca gözlediğin hayvana ürkütmeden yaklaşırsın.', kullan: (d) => M.yaklas(d) },
+  { id: 'dron', ad: 'Araştırma dronu', gerek: 'drone', ipucu: 'Çift dokununca dron baktığın yönde 110 metre öteye uçar, oradaki hayvanları sayıp haritaya işler ve geri döner.', kullan: (d) => { const m = G.dronBaslat(d); if (m) M.olay(d, 'hata', m, 3); } },
   { id: 'ara', ad: 'Büyüteç ve fener', ipucu: 'Çift dokununca yakındaki küçük canlıları ararsın: böcekler, kuşlar, kurbağalar, sürüngenler. Hemen ardından fotoğraf makinesiyle fotoğrafını çekebilirsin.', kullan: (d) => K.kucukAra(d) },
 ];
+// Elindeki aletler: dron yalnızca satın alınınca listeye girer
+const aletlerAl = (k) => ALETLER.filter((a) => !a.gerek || (k.ekipman && k.ekipman[a.gerek]));
 const OLU_BOLGE = 0.12;
 let tamSurukleme = 90; // bu kadar piksel sürükleyince tam hız (Ayarlar > Kontroller > Hassasiyet)
 function olcekle(piksel) {
@@ -188,6 +192,19 @@ const YARDIM = [
       'Hayvanlar yaşlanır, yavrular büyür, genç erkekler sürüden ayrılır. Hastalanan ya da yaralanan hayvanlar dürbünde belirti gösterir: topallama, zayıflık, tüy dökülmesi.',
       'Menüde Doğa bölümündeki Numune ve veteriner satırından su, dışkı ve leş numunesi alırsın; Çevredeki bitkiler bölümünden bitki inceler, yaprak ve tohum numunesi alırsın. Numuneler istasyona dönünce laboratuvarda analiz edilir.',
       'Veterinerin yaralı ve hasta hayvanları tedavi eder, şarbonlu leşleri yakar. Rehabilitasyon alanı kurulunca ağır yaralı ve yetim hayvanlar bakılıp doğaya geri bırakılır. Sağlıklı hayvana dokunulmaz, vahşi hayvan beslenmez.',
+    ],
+  },
+  {
+    id: 'genisleme',
+    baslik: 'Genetik, bölgeler, dron, tekne ve kamp',
+    satirlar: [
+      'Genetik: tanımlı bir hayvanın dışkı numunesini laboratuvarda inceletince DNA profili çıkar: genetik çeşitliliği, kalıtsal hastalık geni taşıyıp taşımadığı ve babası. Bir türün en az üç bireyinin DNA’sı varsa tür sayfasında popülasyon raporu ve yok olma riski okunur.',
+      'Aile ağacı: Arşiv, Bireyler bölümünde bir hayvanın sayfasından anne, baba, kardeş, yavru ve torunlarına gidersin. Akraba hayvanların yavruları zayıf doğabilir; iki taşıyıcı ebeveynin yavrularının bir kısmı kalıtsal zayıflıkla doğar.',
+      'Bölge hâkimiyeti: aslanlar, sırtlanlar, leoparlar, yaban köpekleri ve çitalar bölgeler için yarışır. Karşılaşınca güçlü olan zayıfı kovalar. Hangi bölgenin kimde olduğu Ekosistem raporunda ve haritada yazar. Aslan, zebra ve impala sürülerinde zaman zaman yeni bir erkek lidere meydan okur.',
+      'Ekosistem haritası: ana menüde. Bölgeler yakından uzağa sıralıdır; her bölgede otlak durumu, hâkim yırtıcı ve bildiğin sürüler, bilginin ne zaman ve nasıl geldiğiyle birlikte yazar: gözlem, dron, kamera tuzağı ya da GPS.',
+      'Dron: araştırma merkezinden alınır, aletler arasına girer. Çift dokununca baktığın yönde 110 metre öteye uçar, oradaki hayvanları sayar, leşleri ve tel tuzakları görür, geri döner. Pervane sesi dronun olduğu yerden gelir. Üç uçuşluk batarya istasyonda ya da kampta dolar.',
+      'Tekne: iskelede bağlıdır. Yanına gidip iki parmakla yukarı kaydırınca binersin; tek parmakla sürükleyerek nehir boyunca kürek çekersin. Hayvanlar tekneyi daha az fark eder ama su aygırları tehlikelidir. İki parmakla yukarı kaydırınca karaya çıkarsın.',
+      'Saha kampı: kamp takımıyla Doğa bölümünden kurulur. Kamptayken hayvanlar seni daha az fark eder. Kampta ya da istasyonda ana menüden Dinlen seçilince zaman hızla akar; uyanınca olanlar özetlenir.',
     ],
   },
   {
@@ -685,8 +702,38 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         ortamSec();
         adimDizisi('magara', 4);
         return;
+      case 'meydan':
+      case 'rekabet': {
+        const b = M.birey(d, o.id);
+        if (b) Efekt.yonlu(TURLER[b.tur].ses, d.oyuncu, b, 1, 120);
+        titret('orta', ayarRef.current);
+        return;
+      }
+      case 'dronRapor':
+        Efekt.cal('odak', 0.5);
+        return;
       default:
     }
+  };
+
+  // Dinlenme (Aşama 8, kamp ya da istasyon): zaman hızla akar, dünya parça parça hesaplanır
+  const dinlenRef = useRef(null);
+  const dinlenBaslat = (hedef) => {
+    dinlenRef.current = { hedef, ozet: [], bas: d.k.dk };
+    d.dinleniyor = true;
+    girdi.current = { ileri: 0, don: 0 };
+    seyir.current = false;
+    Ses.hemen(`Dinleniyorsun. ${M.saatMetni(hedef)} kadar zaman hızla akacak. Ekrana dokunursan dinlenmeyi bırakırsın.`);
+  };
+  const dinlenBitir = (yarim) => {
+    const r = dinlenRef.current;
+    dinlenRef.current = null;
+    d.dinleniyor = false;
+    if (!r) return;
+    const sure = Math.round((d.k.dk - r.bas) / 60);
+    const ozet = r.ozet.length ? ` Sen dinlenirken: ${r.ozet.slice(0, 6).join(' ')}` : ' Sen dinlenirken önemli bir şey olmadı.';
+    Ses.soyle(`${yarim ? 'Dinlenmeyi bıraktın' : 'Dinlendin'}. ${M.zamanSozu(d.k.dk)}; yaklaşık ${sure} saat geçti.${ozet}`, 4);
+    kaydet();
   };
 
   // Zemine göre adım sesi: her zeminin 4 farklı adımı sırayla karışık çalınır (aynı ses art arda gelmez)
@@ -716,6 +763,8 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     let egitimSayac = -5; // giriş konuşması bitsin
     let sesAltyaziSon = 0;
     const kosuSesi = new Map(); // hayvan kimliği → son koşu sesi zamanı
+    let dronSesSon = 0;
+    let kurekYol = 0;
     let kareSira = 0;
     let kareBirikim = 0;
     let ortamSayac = 3;
@@ -730,11 +779,30 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         adimBitis.current = 0;
         girdi.current = { ileri: 0, don: 0 };
       }
+      if (dinlenRef.current && !menuRef.current) {
+        // Dinlenme: her karede 20 oyun dakikası hesaplanır (gerçekte yaklaşık 2 saat başına 6 kare)
+        const r = dinlenRef.current;
+        try {
+          for (let i = 0; i < 400 && d.k.dk < r.hedef; i++) {
+            M.guncelle(d, 0.1, {});
+            if (i % 5 === 0) Mz.guncelle(d);
+            G.guncelle(d, 0.1);
+            for (const o of M.olaylariAl(d)) if (G.dinlenmeOzetiSec(o) && r.ozet.length < 12 && !r.ozet.includes(o.metin)) r.ozet.push(o.metin);
+          }
+        } catch (e) {
+          hataKaydet(e, 'dinlenme');
+          dinlenRef.current.hedef = 0;
+        }
+        if (d.k.dk >= r.hedef) dinlenBitir(false);
+        raf = requestAnimationFrame(dongu);
+        return;
+      }
       if (!menuRef.current) {
         let sonuc = { yurudu: 0 };
         try {
           sonuc = M.guncelle(d, dt, girdi.current);
           Mz.guncelle(d);
+          G.guncelle(d, dt);
         } catch (e) {
           if (hataKaydet(e, 'oyun döngüsü')) Ses.soyle('Oyunda beklenmedik bir hata oldu. Hata kaydedildi; Ayarlar, Hata kayıtları bölümünden bana okuyabilirsin. Oyun sürüyor.', 4);
         }
@@ -784,6 +852,16 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
             Efekt.yonlu(M.KOSU_SESI[b.tur], d.oyuncu, b, KOSU_DUZEY[M.KOSU_SESI[b.tur]], 55);
           }
           if (kosuSesi.size > 60) kosuSesi.clear();
+        }
+        // Dronun pervane sesi uçtuğu yerden gelir; teknede kürek sesi
+        if (d.dron && a.efekt !== false && simdi - dronSesSon > 1700) {
+          dronSesSon = simdi;
+          Efekt.yonlu('dron', d.oyuncu, d.dron, 0.75, 160);
+        }
+        kurekYol += sonuc.kurek || 0;
+        if (kurekYol > 2.4) {
+          kurekYol = 0;
+          Efekt.cal('kurek', 0.5);
         }
         // Dönüş tıkırtısı (Kayıp Okyanus'taki gibi): 30 derecede bir tık, ana yönlerde güçlü; hedef önüne gelince ayrı ses
         if (a.donusTiki !== false && !d.k.magara) {
@@ -887,7 +965,9 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
   const k = d.k;
   const gb = M.gozlenen(d);
   const aracYakin = M.aracYakinMi(d);
-  const alet = ALETLER[aletRef.current];
+  const aletler = aletlerAl(d.k);
+  if (aletRef.current >= aletler.length) aletRef.current = 0;
+  const alet = aletler[aletRef.current];
 
   const menuAc = (id, soz) => {
     if (!menuRef.current) kaydet();
@@ -901,6 +981,12 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     if (soz) Ses.soyle(soz, 3);
   };
   const aracIslemi = () => {
+    if (k.teknede) return void G.tekneden(d);
+    if (G.tekneYakin(d) && !M.aracYakinMi(d)) {
+      const m = G.tekneyeBin(d);
+      if (m) Ses.hemen(m);
+      return;
+    }
     if (k.aracta) M.aractanIn(d);
     else if (M.aracYakinMi(d)) M.aracaBin(d);
     else M.yerGit(d, 'arac');
@@ -915,7 +1001,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
   };
   const aletSec = (i) => {
     aletRef.current = i;
-    const a = ALETLER[i];
+    const a = aletlerAl(d.k)[i];
     Efekt.cal('odak', 0.6);
     Ses.hemen(`${a.ad}. ${a.ipucu}`);
     yenile((x) => x + 1);
@@ -956,11 +1042,15 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
           return;
         }
         if (parmak < 2) return;
-        if (yon === 'sag' || yon === 'sol') aletSec((aletRef.current + (yon === 'sag' ? 1 : ALETLER.length - 1)) % ALETLER.length);
+        if (yon === 'sag' || yon === 'sol') {
+          const n = aletlerAl(d.k).length;
+          aletSec((aletRef.current + (yon === 'sag' ? 1 : n - 1)) % n);
+        }
         else if (yon === 'yukari') aracIslemi();
         else durVeBitir();
       },
       onDokun: (parmak, konum) => {
+        if (dinlenRef.current) return void dinlenBitir(true);
         if (menuRef.current) {
           const L = menuye();
           if (L) L.dokun(parmak, konum);
@@ -984,7 +1074,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
           menuAc('ana');
           return;
         }
-        const al = ALETLER[aletRef.current];
+        const al = aletlerAl(d.k)[aletRef.current] || ALETLER[0];
         if (d.k.magara && (al.id === 'durbun' || al.id === 'yaklas')) K.kucukAra(d);
         else al.kullan(d);
       },
@@ -994,7 +1084,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
           if (L) L.uzunBas(konum);
           return;
         }
-        Ses.hemen(B.betimle(d, ALETLER[aletRef.current].ad));
+        Ses.hemen(B.betimle(d, (aletlerAl(d.k)[aletRef.current] || ALETLER[0]).ad));
       },
     },
     { dokunmaBekle: true }
@@ -1047,12 +1137,16 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
           },
         });
       if (d.rota || d.yaklasId || gb) ogeler.push({ id: 'dur', etiket: 'Dur ve gözlemi bitir', sec: kapatVe(durVeBitir) });
+      if (k.teknede) ogeler.push({ id: 'tekneIn', etiket: 'Tekneden in, karaya çık', sec: kapatVe(() => G.tekneden(d)) });
+      else if (G.tekneYakin(d)) ogeler.push({ id: 'tekneBin', etiket: 'Tekneye bin', sec: kapatVe(() => G.tekneyeBin(d)) });
+      if (G.dinlenebilirMi(d)) ogeler.push(altMenu('dinlen', `Dinlen: ${k.kamp && M.mesafe(d.oyuncu, k.kamp) < 10 ? 'saha kampında' : 'istasyonda'}`, menu.ac));
       if (Eg.egitimSuruyor(k)) ogeler.push({ id: 'egitim', etiket: Eg.adimMetni(k, kip), ipucu: 'Eğitimin sıradaki adımı.' });
       const ok = Mz.okunmamis(k);
       ogeler.push(
         { id: 'betimle', etiket: 'Çevreyi betimle', ipucu: 'Işık, hava, zemin, önündeki engel, yakındaki yerler, sesler ve hayvanlar.', sec: () => (Ses.hemen(B.betimle(d, alet.ad)), 'sessiz') },
         altMenu('cevre', `Görüş alanındaki hayvanlar: ${M.gorunurler(d).length}`, menu.ac),
         altMenu('yerler', 'Yerler ve yolculuk', menu.ac),
+        altMenu('harita', `Ekosistem haritası. ${G.haritaOzeti(d)}`, menu.ac),
         { id: 'arac', etiket: k.aracta ? 'Araçtan in' : aracYakin ? 'Araca bin' : `Araca git: ${yerTarifi(k.arac)}`, sec: kapatVe(aracIslemi) },
         altMenu('alet', `Alet: ${alet.ad}. Değiştir`, menu.ac),
         altMenu('doga', 'Doğa: ekosistem, bitkiler, numune, küçük canlılar', menu.ac),
@@ -1062,6 +1156,40 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       );
       return <Liste key="ana" ref={listeRef} disaridanJest={jestli} kip={kip} baslik="Menü" giris={`${M.saatMetni(k.dk)}, ${M.bolgeAdi(d.oyuncu.x, d.oyuncu.y)}.`} ogeler={ogeler} onGeri={geri} {...menu.odak('ana')} />;
     }
+    if (u === 'harita') {
+      const ogeler = [bilgi('ozet', G.haritaOzeti(d)), ...G.hakimiyetSatirlari(d).map((m, i) => bilgi('h' + i, m))];
+      G.haritaBolgeleri(d).forEach((x) => ogeler.push(altMenu('hb-' + x.id, `${x.ad}, ${yerTarifi(x.p)}`, menu.ac)));
+      return liste(u, 'Ekosistem haritası', ogeler, 'Bölgeler yakından uzağa sıralı.');
+    }
+    if (u.startsWith('hb-')) {
+      const id = u.slice(3);
+      const p = G.BOLGE_MERKEZ[id];
+      if (!p) return liste(u, 'Bölge', [bilgi('yok', 'Bölge bulunamadı.')]);
+      const ogeler = G.haritaBolgeSatirlari(d, id).map((m, i) => bilgi('s' + i, m));
+      if (!k.teknede && !k.magara)
+        ogeler.push({
+          id: 'git',
+          etiket: `Bu bölgeye ${k.aracta ? 'sür' : 'yürü'}`,
+          sec: kapatVe(() => {
+            d.rota = { x: p.x, y: p.y, ad: BOLGE_ADLARI[id], yakin: 8 };
+            d.yaklasId = null;
+            M.olay(d, 'rota', `${BOLGE_ADLARI[id]} yönüne ${k.aracta ? 'sürüyorsun' : 'yürüyorsun'}. ${M.BuyukHarf(yerTarifi(p))}.`, 3);
+          }),
+        });
+      return liste(u, BOLGE_ADLARI[id], ogeler);
+    }
+    if (u === 'dinlen') {
+      const sec = (tur, ad) => ({
+        id: tur,
+        etiket: ad,
+        sec: () => {
+          menu.kapat();
+          dinlenBaslat(G.dinlenmeHedefi(k, tur));
+          return 'sessiz';
+        },
+      });
+      return liste(u, 'Dinlen', [sec('iki', 'İki saat dinlen'), sec('aksam', 'Akşama kadar dinlen, saat 17:30'), sec('sabah', 'Sabaha kadar uyu, saat 05:30')], 'Dinlenirken zaman hızla akar; savanda olanlar uyanınca özetlenir. Ekrana dokunursan dinlenmeyi bırakırsın.');
+    }
     if (u === 'doga') {
       const ogeler = [
         altMenu('ekosistem', `Ekosistem: ${E.MEVSIM_ADI[E.takvim(M.gunNo(k.dk)).mevsim]}, ${k.eko.yagmurVar ? 'yağmur yağıyor' : 'hava ' + E.HAVA_ADI[k.eko.hava.tur]}`, menu.ac),
@@ -1069,6 +1197,17 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         altMenu('bitkiler', `Çevredeki bitkiler: ${Mz.cevredekiBitkiler(d).length}`, menu.ac),
         altMenu('numune', `Numune ve veteriner${k.numuneKutusu.length ? `: kutuda ${k.numuneKutusu.length} numune` : ''}`, menu.ac),
       ];
+      if (G.kampVar(k))
+        ogeler.push({
+          id: 'kampKur',
+          etiket: k.kamp ? `Saha kampını buraya taşı; şu an ${k.kamp.bolge}, ${yerTarifi(k.kamp)}` : 'Saha kampını buraya kur',
+          sec: () => {
+            const m = G.kampKur(d);
+            if (m) Ses.hemen(m);
+            else menu.kapat();
+            return 'sessiz';
+          },
+        });
       const sahaVar = k.stok.tuzak || k.tuzaklar.length || k.stok.tasma || k.gpsli.length;
       if (sahaVar) ogeler.push(altMenu('saha', `Saha ekipmanı: ${k.tuzaklar.length} kamera tuzağı kurulu, ${k.gpsli.length} tasmalı hayvan`, menu.ac));
       return liste(u, 'Doğa', ogeler);
@@ -1100,6 +1239,8 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     if (u === 'yerler') {
       const ogeler = [];
       if (!k.aracta) ogeler.push({ id: 'arac', etiket: `Arazi aracı, ${yerTarifi(k.arac)}`, sec: kapatVe(() => M.yerGit(d, 'arac')) });
+      if (k.kamp) ogeler.push({ id: 'kamp', etiket: `Saha kampı, ${k.kamp.bolge}, ${yerTarifi(k.kamp)}`, sec: kapatVe(() => M.yerGit(d, 'kamp')) });
+      if (G.tekneVar(k) && !k.teknede) ogeler.push({ id: 'tekne', etiket: `Tekne, ${yerTarifi(k.tekne)}`, ipucu: 'Teknenin bağlı olduğu kıyıya yürürsün; yanına varınca iki parmakla yukarı kaydırıp binersin.', sec: kapatVe(() => M.yerGit(d, 'tekne')) });
       YERLER.forEach((y) => ogeler.push({ id: y.id, etiket: `${y.ad}, ${yerTarifi(y)}`, ipucu: y.tarif, sec: kapatVe(() => M.yerGit(d, y.id)) }));
       Mz.gpsListesi(d)
         .filter((b) => !b.olu && d.hayvanMap.has(b.id))
@@ -1119,7 +1260,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       return liste(
         u,
         'Alet seç',
-        ALETLER.map((a, i) => ({ id: a.id, etiket: `${a.ad}${i === aletRef.current ? ', elinde' : ''}`, ipucu: a.ipucu, sec: () => (aletSec(i), menu.geri(), 'sessiz') }))
+        aletlerAl(k).map((a, i) => ({ id: a.id, etiket: `${a.ad}${i === aletRef.current ? ', elinde' : ''}`, ipucu: a.ipucu, sec: () => (aletSec(i), menu.geri(), 'sessiz') }))
       );
     }
     if (u === 'saha') {
@@ -1265,6 +1406,10 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         );
         ogeler.push(bilgi('dv', kayit.davranislar.length ? `Kaydedilen davranışlar: ${kayit.davranislar.map((x) => kucuk(M.davranisAdi(x)) + (DAVRANISLAR[x] && DAVRANISLAR[x].nadir ? ' (nadir)' : '')).join(', ')}.` : 'Henüz davranış kaydı yok.'));
       }
+      if (kayit) {
+        G.genetikSatirlari(d, tur).forEach((m, i) => ogeler.push(bilgi('gen' + i, m)));
+        if (!k.koruma.genRapor && M.taninanBireyler(k, tur).filter((b) => b.dna).length >= G.GENETIK_ESIK) k.koruma.genRapor = true;
+      }
       M.taninanBireyler(k, tur).forEach((b) => ogeler.push(altMenu('birey-' + b.id, `${M.bireyAdi(b)}, ${b.cinsiyet === 'erkek' ? 'erkek' : 'dişi'} ${EVRELER[b.evre]}`, menu.ac)));
       return liste(u, t.ad, ogeler);
     }
@@ -1276,6 +1421,12 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       const s = sayfali('bireyler', tum, menu);
       if (s.sayfa) return liste(s.sayfa.anahtar, s.sayfa.baslik, s.sayfa.ogeler);
       return liste(u, 'Tanımlanan bireyler', s.ogeler.length ? s.ogeler : [bilgi('bos', 'Henüz tanımlanmış birey yok. Bir hayvanı dürbünle birkaç saniye izle.')]);
+    }
+    if (u.startsWith('aile-')) {
+      const b = M.kayitliBirey(d, Number(u.slice(5)));
+      if (!b) return liste(u, 'Aile ağacı', [bilgi('yok', 'Kayıt bulunamadı.')]);
+      const ogeler = G.aileSatirlari(d, b).map((x, i) => (x.bireyId && x.bireyId !== b.id ? altMenu('birey-' + x.bireyId, x.metin, menu.ac) : bilgi('a' + i, x.metin)));
+      return liste(u, `${M.BuyukHarf(M.bireyAdi(b))}: aile ağacı`, ogeler);
     }
     if (u.startsWith('birey-')) {
       const b = M.kayitliBirey(d, Number(u.slice(6)));
@@ -1291,11 +1442,12 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       if (k.gpsli.includes(b.id)) ogeler.push(bilgi('gps', `GPS: ${Mz.gpsTarifi(d, b)}.`));
       if (ab.olum) ogeler.push(bilgi('olum', `Ölüm kaydı: ${ab.olum}.`));
       if (b.gecmis && b.gecmis.length) ogeler.push(bilgi('gecmis', `Yaşam kaydı: ${b.gecmis.map((x) => `${zamanKisa(x.dk)}, ${x.metin}`).join('. ')}.`));
-      const anne = M.birey(d, b.anne);
-      if (anne && M.taninmisMi(anne)) ogeler.push(altMenu('birey-' + anne.id, `Annesi: ${M.bireyAdi(anne)}`, menu.ac));
-      k.hayvanlar.filter((x) => x.anne === b.id && M.taninmisMi(x)).forEach((y) => ogeler.push(altMenu('birey-' + y.id, `Yavrusu: ${M.bireyAdi(y)}`, menu.ac)));
+      // Aile ağacı ve genetik (Aşama 8, karar 39 ve 83)
+      ogeler.push(altMenu('aile-' + b.id, 'Aile ağacı: anne, baba, kardeşler, yavrular', menu.ac));
+      ogeler.push(bilgi('dna', b.dna ? `Genetik: çeşitlilik ${G.cesitlilikSozu(b.gen.h)}${b.gen.tasiyici ? ', kalıtsal zayıflık geni taşıyor' : ', bilinen kalıtsal hastalık geni yok'}${b.kalitsal ? ', kendisi kalıtsal zayıflık taşıyor' : ''}.` : 'Genetik: DNA profili yok. Dışkı numunesi alıp laboratuvarda inceletirsen genetik profili ve babası ortaya çıkar.'));
+      const aileSet = new Set([b.anne, b.baba, ...k.hayvanlar.filter((x) => x.anne === b.id).map((x) => x.id)]);
       k.hayvanlar
-        .filter((x) => x.grup === b.grup && x.id !== b.id && M.taninmisMi(x) && !x.olu && x.id !== b.anne && x.anne !== b.id)
+        .filter((x) => x.grup === b.grup && x.id !== b.id && M.taninmisMi(x) && !x.olu && !aileSet.has(x.id))
         .forEach((x) => ogeler.push(altMenu('birey-' + x.id, `Grup arkadaşı: ${M.bireyAdi(x)}`, menu.ac)));
       const fotolar = k.arsiv.fotolar.filter((f) => f.bireyId === b.id);
       if (fotolar.length) ogeler.push(bilgi('foto', `${fotolar.length} fotoğraf: ${fotolar.slice(0, 5).map((f) => `${kucuk(M.davranisAdi(f.davranis))}, ${f.kalite}`).join('; ')}.`));
@@ -1353,6 +1505,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       // Keşfedilen türlerin bölgedeki tahmini sayısı (istasyonun kayıtlarından)
       const sayilar = TUR_SIRASI.filter((t) => k.arsiv.turler[t]).map((t) => `${kucuk(M.SOZ[t])} ${k.hayvanlar.filter((b) => !b.olu && b.tur === t).length}`);
       if (sayilar.length) ogeler.push(bilgi('nufus', `Bölgedeki tahmini sayılar: ${sayilar.join(', ')}.`));
+      G.hakimiyetSatirlari(d).forEach((m, i) => ogeler.push(bilgi('hak' + i, m)));
       return liste(u, 'Ekosistem raporu', ogeler);
     }
     if (u === 'bitkiler') {
@@ -1523,7 +1676,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
           {!jestli && (
             <View style={st.baglamSatir}>
               <Dugme etiket="Çevreyi betimle" ipucu="Işık, hava, zemin, önündeki engel, yakındaki yerler, sesler ve hayvanlar" onEtkin={() => Ses.hemen(B.betimle(d))} stil={st.baglamDugme} />
-              <Dugme etiket={k.aracta ? 'Araçtan in' : aracYakin ? 'Araca bin' : 'Araca git'} onEtkin={aracIslemi} stil={st.baglamDugme} />
+              <Dugme etiket={k.teknede ? 'Tekneden in' : G.tekneYakin(d) && !aracYakin ? 'Tekneye bin' : k.aracta ? 'Araçtan in' : aracYakin ? 'Araca bin' : 'Araca git'} onEtkin={aracIslemi} stil={st.baglamDugme} />
               {(d.rota || d.yaklasId || gb) && <Dugme etiket="Dur ve gözlemi bitir" onEtkin={durVeBitir} stil={st.baglamDugme} />}
             </View>
           )}

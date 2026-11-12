@@ -10,7 +10,7 @@ GIRDI=${1:-.sesler/ham}
 CIKTI=assets/efekt
 GECICI=$(mktemp -d)
 mkdir -p "$CIKTI"
-UC_B="kurt tilki domuz ayi yilan akrep sirtlan timsah leopar kartal aslan gergedan dustu fil zebra suaygiri manda ceylan zurafa gnu cita impala yabankopegi babun kosu_toynak kosu_hafif kosu_agir kosu_pati"
+UC_B="kurt tilki domuz ayi yilan akrep sirtlan timsah leopar kartal aslan gergedan dustu fil zebra suaygiri manda ceylan zurafa gnu cita impala yabankopegi babun kosu_toynak kosu_hafif kosu_agir kosu_pati dron"
 hedef() {
   case "$1" in
     ortam_*) echo -26 ;;
