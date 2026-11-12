@@ -132,8 +132,22 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   Koruma projeleri; arşivde Küçük canlılar (gruplara göre); Yardım "Küçük canlılar, mağara, afetler ve koruma". VoiceOver kipinde
   mağarada hareket satırı Geri dön / İlerle / Odayı anlat / Mağaradan çık. Sesler: gnu, cita, impala, yabankopegi, babun (3B), yarasa,
   ortam_magara (-24), ortam_yangin. Kayıt ~100 KB. Ekosistem testi 50 gün ~4,5 dk.
-- Sıradaki: Aşama 7 uçtan uca erişilebilirlik ve kalite testleri (ekran okuyucu, sesli betimleme, kontrol özelleştirme, düşük performanslı
-  cihaz, çevrim dışı dayanıklılık). Murat "devam" derse.
+- Aşama 7 erişilebilirlik ve kalite (12 Kasım gece, Murat "devam" dedi; sayılar ÖNERİ). `oyun/betimleme.js` (saf): betimle(d, alet)
+  ışık, hava/rüzgâr, zemin (bölgeye göre), önündeki engel 12 m (onSozu), yakın yer işaretleri 80 m, duyulan sesler, dürbünle görülenler,
+  gözlenen; mağarada oda; kisaBetimle bölgeye girince (ayar otoBetimle). Uzun bas ve ana menü "Çevreyi betimle" (VO bağlam düğmesi de).
+  `oyun/egitim.js`: ADIMLAR 8 (betimle, gölet, gözlemle, tanımla, foto, ses, küçük canlı, görev), metin kipe göre (hareket/vo),
+  k.egitim 1..8, 99 bitti; App 1,2 sn'de bir egitimDenetle; Ayarlar'dan baştan başlatılır. Zorluk (mantik ZORLUK_ALANLARI, k.zorluk,
+  zorlukCarpani kolay/normal/zor): tehlike (kaçış, kolayda sahte saldırı yok), kesif (dürbün, küçük canlı), afet [0.25,1,1.6]
+  (yangın, sel, tel tuzak), ekonomi gider [0.6,1,1.3] destek [1.4,1,0.8], arastirma süreleri [0.5,1,1.5]. LOD: 130 m'den uzak gruplar
+  0,3 sn'de bir güncellenir. kayitOnar(k) kayittanYukle'de bozuk alanları onarır (k.onarim duyurulur); yedek 'vahsi-yasam-yedek-v1'
+  5 dk'da bir, ana kayıt okunamazsa yedekten açılır; hata günlüğü 'vahsi-yasam-hata-v1' (döngü try/catch + HataSiniri). Ayarlar
+  grupları: Ses ve konuşma (ortam düzeyi, ses altyazısı, otomatik betimleme), Kontroller (hassasiyet, sürekli yürüme, büyük düğme,
+  sol el), Görünüm ve grafik (yüksek kontrast, büyük yazı: SesliListe GORUNUM; grafik yuksek/dusuk/kapali: düşükte yarı kare,
+  CIZIM 70, kapalıda GLView yok), Zorluk, Eğitim, Hata kayıtları. Sesli komut: Expo Go'da konuşma tanıma yok, iOS Sesle Denetim önerilir.
+  Testler: `bun araclar/dayaniklilik-testi.js [n]` (bozuk kayıt + metin denetimi; 400/400), oyun-testi Performans ve Bozuk metin satırı
+  (KAYIT_YAZ=dosya kaydı yazar), `node araclar/web-deneme/menu-tara.cjs <web> <kayit.json> kendi|voiceover` (bütün menüleri gezer:
+  210 sayfa, 1829 satır, sorun 0). Telefonda doğrulanmadı.
+- Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)
 - Dosyalar: `oyun/veri.js` (HARITALAR 5, HAYVANLAR 20 (her haritada 3 tür + lider), SILAHLAR 11, ZIRHLAR, YETENEKLER 4, IKSIR),

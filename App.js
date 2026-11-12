@@ -24,12 +24,34 @@ import * as Efekt from './oyun/efekt.js';
 import { sahneKur } from './oyun/sahne.js';
 import { TURLER, TUR_SIRASI, YERLER, DAVRANISLAR, EVRELER } from './oyun/veri.js';
 import { useJestler } from './oyun/jestler.js';
-import { Liste, useMenuYigini, altMenu, sayfali, RENK } from './oyun/SesliListe.js';
+import { Liste, useMenuYigini, altMenu, sayfali, RENK, GORUNUM } from './oyun/SesliListe.js';
+import * as B from './oyun/betimleme.js';
+import * as Eg from './oyun/egitim.js';
 
 const OYUN_ADI = 'Vahşi Yaşam';
 const AYAR_ANAHTAR = 'vahsi-yasam-ayar-v1';
 const KAYIT_ANAHTAR = 'vahsi-yasam-kayit-v1';
-const VARSAYILAN_AYAR = { kip: null, hiz: 1.0, titresim: true, rehber: true, efekt: true, efektKis: true, ortam: true };
+const YEDEK_ANAHTAR = 'vahsi-yasam-yedek-v1'; // 5 dakikada bir alınan yedek (bozuk kayda karşı)
+const HATA_ANAHTAR = 'vahsi-yasam-hata-v1'; // son 20 hata (Ayarlar > Hata kayıtları)
+const VARSAYILAN_AYAR = {
+  kip: null, hiz: 1.0, titresim: true, rehber: true, efekt: true, efektKis: true, ortam: true,
+  // Aşama 7: kontrol özelleştirme ve erişilebilirlik (karar 31, 32)
+  grafik: 'yuksek', hassasiyet: 'orta', surekliYuru: false, buyukDugme: false, solEl: false, kontrast: false, buyukYazi: false,
+  sesAltyazi: false, ortamDuzey: 'orta', otoBetimle: true,
+};
+const ORTAM_DUZEY = { dusuk: 0.2, orta: 0.35, yuksek: 0.5 };
+const HASSASIYET = { dusuk: 130, orta: 90, yuksek: 60 }; // tam hız için sürükleme (piksel)
+
+// ---------- Hata kayıtları (Aşama 7, çevrim dışı dayanıklılık): Murat'ın bana okuyabilmesi için ----------
+const HATALAR = [];
+function hataKaydet(e, yer) {
+  const m = String((e && e.message) || e).slice(0, 200);
+  if (HATALAR.some((h) => h.mesaj === m && h.yer === yer)) return false;
+  HATALAR.unshift({ zaman: new Date().toISOString().slice(0, 16).replace('T', ' '), yer, mesaj: m, yigin: String((e && e.stack) || '').split('\n').slice(1, 3).join(' ').slice(0, 200) });
+  if (HATALAR.length > 20) HATALAR.length = 20;
+  AsyncStorage.setItem(HATA_ANAHTAR, JSON.stringify(HATALAR)).catch(() => {});
+  return true;
+}
 const ADLAR = ['Defne', 'Kaan', 'Ada', 'Deniz', 'Ilgaz', 'Elif', 'Atlas', 'Zeynep', 'Toprak', 'Yağmur', 'Mert', 'Selin'];
 
 const KipBaglam = createContext('kendi');
@@ -44,9 +66,9 @@ const ALETLER = [
   { id: 'ara', ad: 'Büyüteç ve fener', ipucu: 'Çift dokununca yakındaki küçük canlıları ararsın: böcekler, kuşlar, kurbağalar, sürüngenler. Hemen ardından fotoğraf makinesiyle fotoğrafını çekebilirsin.', kullan: (d) => K.kucukAra(d) },
 ];
 const OLU_BOLGE = 0.12;
-const TAM_SURUKLEME = 90; // bu kadar piksel sürükleyince tam hız
+let tamSurukleme = 90; // bu kadar piksel sürükleyince tam hız (Ayarlar > Kontroller > Hassasiyet)
 function olcekle(piksel) {
-  const v = Math.max(-1, Math.min(1, piksel / TAM_SURUKLEME));
+  const v = Math.max(-1, Math.min(1, piksel / tamSurukleme));
   if (Math.abs(v) < OLU_BOLGE) return 0;
   return Math.sign(v) * ((Math.abs(v) - OLU_BOLGE) / (1 - OLU_BOLGE));
 }
@@ -71,9 +93,9 @@ function Dugme({ etiket, ipucu, onEtkin, stil, devre }) {
       accessibilityLabel={etiket}
       accessibilityHint={ipucu}
       accessibilityState={{ disabled: !!devre }}
-      style={({ pressed }) => [st.dugme, stil, devre && st.dugmeDevre, pressed && st.dugmeBasili]}
+      style={({ pressed }) => [st.dugme, GORUNUM.kontrast && st.dugmeK, stil, devre && st.dugmeDevre, pressed && st.dugmeBasili]}
     >
-      <Text style={st.dugmeYazi} numberOfLines={3}>
+      <Text style={[st.dugmeYazi, GORUNUM.kontrast && st.dugmeYaziK, GORUNUM.buyukYazi && st.dugmeYaziB]} numberOfLines={3}>
         {etiket}
       </Text>
     </Pressable>
@@ -101,7 +123,7 @@ const YARDIM = [
     satirlar: [
       'Telefonu dik tut ve kulaklık tak. Hayvanlar bulundukları yönden ses verir: soldaki sol kulaktan, arkadaki boğuk, uzaktaki kısık duyulur.',
       'Tek parmakla sürükle: yukarı ileri yürür, aşağı geri gider, sağa ve sola döndürür. Araçtayken sürersin.',
-      'Dokun: izlediğin hayvanı ya da çevreni anlatır. Uzun bas: durumunu ve elindeki aleti söyler.',
+      'Dokun: izlediğin hayvanı ya da çevredeki hayvanları anlatır. Uzun bas: çevreni ayrıntılı betimler: ışık, hava, zemin, önündeki engel, yakındaki yerler, duyulan sesler ve hayvanlar.',
       'Çift dokun: elindeki aleti kullanır. İki parmakla sağa ya da sola kaydır: alet değiştirir. Aletler dürbün, fotoğraf makinesi, ses kayıt cihazı ve yaklaşmadır.',
       'İki parmakla yukarı kaydır: araca biner ya da inersin; araç uzaktaysa yanına yürürsün. İki parmakla aşağı kaydır: durur ve gözlemi bitirirsin.',
       'İki parmakla dokun: konuşmayı susturur. İki parmakla iki kez dokun: menüyü açar.',
@@ -160,6 +182,18 @@ const YARDIM = [
       'Hayvanlar yaşlanır, yavrular büyür, genç erkekler sürüden ayrılır. Hastalanan ya da yaralanan hayvanlar dürbünde belirti gösterir: topallama, zayıflık, tüy dökülmesi.',
       'Menüdeki Numune ve veteriner bölümünden su, dışkı ve leş numunesi alırsın; Çevredeki bitkiler bölümünden bitki inceler, yaprak ve tohum numunesi alırsın. Numuneler istasyona dönünce laboratuvarda analiz edilir.',
       'Veterinerin yaralı ve hasta hayvanları tedavi eder, şarbonlu leşleri yakar. Rehabilitasyon alanı kurulunca ağır yaralı ve yetim hayvanlar bakılıp doğaya geri bırakılır. Sağlıklı hayvana dokunulmaz, vahşi hayvan beslenmez.',
+    ],
+  },
+  {
+    id: 'erisim',
+    baslik: 'Erişilebilirlik ve ayarlar',
+    satirlar: [
+      'Çevreyi betimle: sahada uzun bas ya da menüdeki Çevreyi betimle satırını seç. Ayarlar, Görünüm bölümündeki Otomatik betimleme açıkken yeni bir bölgeye girince çevre kısaca anlatılır.',
+      'Ayarlar, Kontroller: sürükleme hassasiyeti, sürekli yürüme (bir kez ileri sürükleyip bırakınca yürümeye devam edersin, iki parmakla aşağı kaydırınca durursun), yön rehberi, titreşim; VoiceOver ile oynarken büyük düğmeler ve sol el düzeni.',
+      'Ayarlar, Görünüm ve grafik: grafik yüksek, düşük ya da kapalı. Kapalıyken görüntü hiç çizilmez, pil çok az harcanır, oyun tamamen sesle oynanır. Yüksek kontrast, büyük yazı ve hayvan seslerinin yazıyla gösterilmesi de burada.',
+      'Ayarlar, Zorluk: keşif, hayvan davranışı ve tehlike, ekonomi, araştırma ve afetler ayrı ayrı kolay, normal ya da zor yapılabilir.',
+      'Eğitimi Ayarlar bölümünden yeniden başlatabilirsin. Oyun 20 saniyede bir ve önemli olaylarda kendiliğinden kaydeder; 5 dakikada bir ayrıca yedek alır. Kayıt bozulursa yedekten açılır.',
+      'Bir hata olursa oyun durmaz; hata Ayarlar, Hata kayıtları bölümüne yazılır. Bana o satırları okuyabilirsin.',
     ],
   },
   {
@@ -229,6 +263,114 @@ function KipSecim({ sec }) {
 }
 
 // ---------------- Ayar ve yardım listeleri (hem ana menüde hem oyun menüsünde) ----------------
+// Ayarlar menüsü (gruplu): Ses ve konuşma, Kontroller, Görünüm, oyun içinde Zorluk ve eğitim, Hata kayıtları
+function ayarSayfasi(menu, ayar, degistir, k, yenile) {
+  const u = menu.ust;
+  if (!u || !(u === 'ayarlar' || u.startsWith('ay-'))) return null;
+  const durum = (a) => (ayar[a] ? 'açık' : 'kapalı');
+  const ac = (anahtar, ad, sonra) => {
+    const yeni = !ayar[anahtar];
+    degistir({ [anahtar]: yeni });
+    if (sonra) sonra(yeni);
+    Ses.hemen(`${ad} ${yeni ? 'açık' : 'kapalı'}`);
+    return 'sessiz';
+  };
+  const dongu = (anahtar, ad, secenekler, adlar, sonra) => {
+    const y = secenekler[(secenekler.indexOf(ayar[anahtar]) + 1) % secenekler.length];
+    degistir({ [anahtar]: y });
+    if (sonra) sonra(y);
+    Ses.hemen(`${ad}: ${adlar[y]}`);
+    return 'sessiz';
+  };
+  if (u === 'ayarlar') {
+    const ogeler = [
+      altMenu('ay-ses', 'Ses ve konuşma', menu.ac),
+      altMenu('ay-kontrol', 'Kontroller', menu.ac),
+      altMenu('ay-gorunum', 'Görünüm ve grafik', menu.ac),
+    ];
+    if (k) {
+      ogeler.push(altMenu('ay-zorluk', 'Zorluk', menu.ac));
+      ogeler.push({
+        id: 'egitim',
+        etiket: Eg.egitimSuruyor(k) ? `Eğitim sürüyor: ${k.egitim}. adım. Baştan başlat` : 'Eğitimi yeniden başlat',
+        ipucu: 'Temel hareketleri öğreten kısa rehberli görevler.',
+        sec: () => {
+          Eg.egitimBaslat(k);
+          Ses.hemen('Eğitim yeniden başladı. Menüden çıkınca ilk adımı söyleyeceğim.');
+          yenile();
+          return 'sessiz';
+        },
+      });
+    }
+    ogeler.push(altMenu('ay-hata', `Hata kayıtları: ${HATALAR.length}`, menu.ac, 'Oyunda bir hata olursa burada yazar. Bana okuyabilirsin.'));
+    return { baslik: 'Ayarlar', ogeler };
+  }
+  if (u === 'ay-ses') return { baslik: 'Ses ve konuşma', ogeler: ayarOgeleri(ayar, degistir) };
+  if (u === 'ay-kontrol') {
+    const hAdi = { dusuk: 'düşük, uzun sürükleme', orta: 'orta', yuksek: 'yüksek, kısa sürükleme' };
+    return {
+      baslik: 'Kontroller',
+      ogeler: [
+        { id: 'hassas', etiket: `Sürükleme hassasiyeti: ${hAdi[ayar.hassasiyet]}. Değiştir`, ipucu: 'Tam hızla yürümek için parmağını ne kadar kaydırman gerektiği.', sec: () => dongu('hassasiyet', 'Sürükleme hassasiyeti', ['dusuk', 'orta', 'yuksek'], hAdi) },
+        { id: 'seyir', etiket: `Sürekli yürüme: ${durum('surekliYuru')}. Değiştir`, ipucu: 'Açıkken bir kez ileri sürükleyip bırakınca yürümeye devam edersin; iki parmakla aşağı kaydırınca durursun. Parmağını uzun süre basılı tutmak zor geliyorsa kullan.', sec: () => ac('surekliYuru', 'Sürekli yürüme') },
+        { id: 'rehber', etiket: `Yön rehberi: ${durum('rehber')}. Değiştir`, ipucu: 'Bir yere ya da hayvana giderken yönünü ve uzaklığını aralıklarla söyler.', sec: () => ac('rehber', 'Yön rehberi') },
+        { id: 'buyuk', etiket: `Büyük düğmeler: ${durum('buyukDugme')}. Değiştir`, ipucu: 'VoiceOver ile oynarken sahadaki düğmeleri büyütür.', sec: () => ac('buyukDugme', 'Büyük düğmeler') },
+        { id: 'solel', etiket: `Hareket düğmeleri sol el için: ${durum('solEl')}. Değiştir`, ipucu: 'VoiceOver ile oynarken alttaki hareket düğmelerinin sırasını çevirir.', sec: () => ac('solEl', 'Sol el düzeni') },
+        { id: 'titresim', etiket: `Titreşim: ${durum('titresim')}. Değiştir`, sec: () => ac('titresim', 'Titreşim') },
+        { id: 'sesli', etiket: 'Sesli komutlar hakkında', ipucu: 'Bilgi.', sec: () => (Ses.hemen('Sesli komutla oynamak için telefonun konuşma tanıması gerekir. Expo Go bu özelliği desteklemiyor; oyun ileride ayrı bir uygulama olarak yayımlanırsa eklenebilir. Şimdilik VoiceOver kipinde iOS\'un Sesle Denetim özelliğiyle düğmelere sesle basabilirsin.'), 'sessiz') },
+      ],
+    };
+  }
+  if (u === 'ay-gorunum') {
+    const gAdi = { yuksek: 'yüksek', dusuk: 'düşük, pil dostu', kapali: 'kapalı, yalnızca ses' };
+    return {
+      baslik: 'Görünüm ve grafik',
+      ogeler: [
+        { id: 'grafik', etiket: `Grafik: ${gAdi[ayar.grafik]}. Değiştir`, ipucu: 'Düşük grafik yavaş telefonlarda akıcılığı artırır. Kapalıyken üç boyutlu görüntü hiç çizilmez; pil çok daha az harcanır, oyun tamamen sesle oynanır. Oyuna yeniden girince geçerli olur.', sec: () => dongu('grafik', 'Grafik', ['yuksek', 'dusuk', 'kapali'], gAdi) },
+        { id: 'kontrast', etiket: `Yüksek kontrast: ${durum('kontrast')}. Değiştir`, ipucu: 'Siyah zemin, beyaz yazı ve sarı odak.', sec: () => ac('kontrast', 'Yüksek kontrast', (y) => (GORUNUM.kontrast = y)) },
+        { id: 'yazi', etiket: `Büyük yazı: ${durum('buyukYazi')}. Değiştir`, sec: () => ac('buyukYazi', 'Büyük yazı', (y) => (GORUNUM.buyukYazi = y)) },
+        { id: 'altyazi', etiket: `Hayvan seslerini yazıyla göster: ${durum('sesAltyazi')}. Değiştir`, ipucu: 'İşitme engelliler için: duyulan her hayvan sesi türü ve yönüyle altyazıda yazılır.', sec: () => ac('sesAltyazi', 'Ses altyazıları') },
+        { id: 'betimle', etiket: `Otomatik betimleme: ${durum('otoBetimle')}. Değiştir`, ipucu: 'Yeni bir bölgeye girince çevreyi kısaca betimler.', sec: () => ac('otoBetimle', 'Otomatik betimleme') },
+      ],
+    };
+  }
+  if (u === 'ay-zorluk' && k) {
+    return {
+      baslik: 'Zorluk',
+      ogeler: Object.entries(M.ZORLUK_ALANLARI).map(([alan, z]) => ({
+        id: alan,
+        etiket: `${z.ad}: ${M.ZORLUK_ADI[M.zorluk(k, alan)]}. Değiştir`,
+        ipucu: z.tarif,
+        sec: () => {
+          const l = ['kolay', 'normal', 'zor'];
+          k.zorluk[alan] = l[(l.indexOf(M.zorluk(k, alan)) + 1) % 3];
+          Ses.hemen(`${z.ad}: ${M.ZORLUK_ADI[k.zorluk[alan]]}. ${z.tarif}`);
+          yenile();
+          return 'sessiz';
+        },
+      })),
+    };
+  }
+  if (u === 'ay-hata') {
+    const ogeler = HATALAR.map((h, i) => ({ id: 'h' + i, etiket: `${h.zaman}, ${h.yer}: ${h.mesaj}. ${h.yigin}` }));
+    if (!ogeler.length) ogeler.push({ id: 'yok', etiket: 'Kayıtlı hata yok.' });
+    else
+      ogeler.push({
+        id: 'sil',
+        etiket: 'Hata kayıtlarını sil',
+        sec: () => {
+          HATALAR.length = 0;
+          AsyncStorage.removeItem(HATA_ANAHTAR).catch(() => {});
+          Ses.hemen('Hata kayıtları silindi.');
+          yenile();
+          return 'sessiz';
+        },
+      });
+    return { baslik: 'Hata kayıtları', ogeler };
+  }
+  return null;
+}
+
 function ayarOgeleri(ayar, degistir) {
   const kipAdi = { kendi: 'oyunun kendi sesi', voiceover: 'VoiceOver', gorerek: 'görerek' };
   const ac = (anahtar, ad, sonra) => {
@@ -275,16 +417,26 @@ function ayarOgeleri(ayar, degistir) {
         return 'sessiz';
       },
     },
-    { id: 'titresim', etiket: `Titreşim: ${durum('titresim')}. Değiştir`, sec: () => ac('titresim', 'Titreşim') },
     { id: 'efekt', etiket: `Ses efektleri: ${durum('efekt')}. Değiştir`, ipucu: 'Hayvan sesleri ve ayak sesleri.', sec: () => ac('efekt', 'Ses efektleri', (y) => Efekt.efektAyarla({ acik: y })) },
-    { id: 'ortam', etiket: `Ortam sesi: ${durum('ortam')}. Değiştir`, ipucu: 'Savanın rüzgâr, böcek ve nehir sesleri.', sec: () => ac('ortam', 'Ortam sesi', (y) => Efekt.efektAyarla({ ortam: y ? 0.35 : 0 })) },
+    { id: 'ortam', etiket: `Ortam sesi: ${durum('ortam')}. Değiştir`, ipucu: 'Savanın rüzgâr, böcek ve nehir sesleri.', sec: () => ac('ortam', 'Ortam sesi', (y) => Efekt.efektAyarla({ ortam: y ? ORTAM_DUZEY[ayar.ortamDuzey] || 0.35 : 0 })) },
+    {
+      id: 'ortamDuzey',
+      etiket: `Ortam sesi düzeyi: ${{ dusuk: 'düşük', orta: 'orta', yuksek: 'yüksek' }[ayar.ortamDuzey] || 'orta'}. Değiştir`,
+      sec: () => {
+        const l = ['dusuk', 'orta', 'yuksek'];
+        const y = l[(l.indexOf(ayar.ortamDuzey) + 1) % 3];
+        degistir({ ortamDuzey: y });
+        Efekt.efektAyarla({ ortam: ayar.ortam !== false ? ORTAM_DUZEY[y] : 0 });
+        Ses.hemen(`Ortam sesi düzeyi ${{ dusuk: 'düşük', orta: 'orta', yuksek: 'yüksek' }[y]}`);
+        return 'sessiz';
+      },
+    },
     {
       id: 'efektKis',
       etiket: `Efektleri konuşmayla karıştırma: ${durum('efektKis')}. Değiştir`,
       ipucu: 'Açıkken oyun konuşurken efekt çalmaz; ses dalgalanmasını önler.',
       sec: () => ac('efektKis', 'Efektleri konuşmayla karıştırma', (y) => Efekt.efektAyarla({ kis: y })),
     },
-    { id: 'rehber', etiket: `Yön rehberi: ${durum('rehber')}. Değiştir`, ipucu: 'Bir yere ya da hayvana giderken yönünü ve uzaklığını aralıklarla söyler.', sec: () => ac('rehber', 'Yön rehberi') },
   ];
 }
 // Yardım menüsü: konular alt menü, her satır okunur
@@ -304,23 +456,8 @@ function AnaMenu({ kip, kayit, devam, yeni, ayar, ayarDegistir }) {
   const y = yardimListesi(menu, '');
   if (y) return <Liste key={menu.ust} kip={kip} baslik={y.baslik} ogeler={y.ogeler} onGeri={menu.geri} {...menu.odak(menu.ust)} />;
   if (menu.ust === 'yardim') return <Liste key="yardim" kip={kip} baslik="Nasıl oynanır" ogeler={[...yardimKonulari(menu, ''), geriOgesi(menu.geri)]} onGeri={menu.geri} {...menu.odak('yardim')} />;
-  if (menu.ust === 'ayarlar')
-    return (
-      <Liste
-        key="ayarlar"
-        kip={kip}
-        baslik="Ayarlar"
-        ogeler={[
-          ...ayarOgeleri(ayar, (d) => {
-            ayarDegistir(d);
-            yenile((x) => x + 1);
-          }),
-          geriOgesi(menu.geri),
-        ]}
-        onGeri={menu.geri}
-        {...menu.odak('ayarlar')}
-      />
-    );
+  const ay = ayarSayfasi(menu, ayar, (d) => (ayarDegistir(d), yenile((x) => x + 1)), null, () => yenile((x) => x + 1));
+  if (ay) return <Liste key={menu.ust} kip={kip} baslik={ay.baslik} ogeler={[...ay.ogeler, geriOgesi(menu.geri)]} onGeri={menu.geri} {...menu.odak(menu.ust)} />;
   if (menu.ust === 'adlar')
     return (
       <Liste
@@ -368,6 +505,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
   const girdi = useRef({ ileri: 0, don: 0 });
   const adimBitis = useRef(0);
   const menu = useMenuYigini();
+  globalThis.__oyunMenu = menu; // denemeler için (araclar/web-deneme/menu-tara.cjs)
   const menuRef = useRef(null);
   menuRef.current = menu.ust;
   const [, yenile] = useState(0);
@@ -378,9 +516,22 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
   const jestli = kip !== 'voiceover';
   const aletRef = useRef(0);
 
+  const sonYedek = useRef(Date.now());
   const kaydet = useCallback(() => {
-    AsyncStorage.setItem(KAYIT_ANAHTAR, JSON.stringify(M.kayitHazirla(d.k))).catch(() => {});
+    try {
+      const ham = JSON.stringify(M.kayitHazirla(d.k));
+      AsyncStorage.setItem(KAYIT_ANAHTAR, ham).catch((e) => hataKaydet(e, 'kayıt'));
+      // 5 dakikada bir yedek: ana kayıt bozulursa oyun bundan açılır
+      if (Date.now() - sonYedek.current > 5 * 60 * 1000) {
+        sonYedek.current = Date.now();
+        AsyncStorage.setItem(YEDEK_ANAHTAR, ham).catch(() => {});
+      }
+    } catch (e) {
+      hataKaydet(e, 'kayıt hazırlama');
+    }
   }, []);
+  const seyir = useRef(false); // sürekli yürüme (Ayarlar > Kontroller)
+  tamSurukleme = HASSASIYET[ayar.hassasiyet] || 90;
 
   const ortamSec = () => {
     if (ayarRef.current.ortam === false) return Efekt.ortamDurdur();
@@ -406,16 +557,15 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     });
     const k = d.k;
     if (k.egitim === 0) {
-      k.egitim = 1;
+      Eg.egitimBaslat(k);
       Ses.soyle(
-        `${M.zamanSozu(k.dk)}. Afrika savanındaki küçük araştırma istasyonundasın. Yanında bir arazi aracı, dürbün, fotoğraf makinesi ve ses kayıt cihazı var. İlk görevin: göletin çevresindeki hayvanları gözlemle.${
-          kip === 'voiceover'
-            ? " Yerler düğmesinden Gölet'i seç ya da Araca bin."
-            : " Tek parmakla sürükleyerek yürürsün. Dokununca çevreni anlatırım, çift dokununca elindeki dürbünü kullanırsın. İki parmakla iki kez dokununca menü açılır; menüdeki Yerler'den Gölet'i seçebilirsin."
-        }`,
+        `${M.zamanSozu(k.dk)}. Afrika savanındaki küçük araştırma istasyonuna hoş geldin. Bağımsız bir doğa araştırmacısısın: hayvanları rahatsız etmeden izleyecek, her bireyi tanıyacak, savanın sırlarını çözeceksin. Yanında bir arazi aracı, dürbün, fotoğraf makinesi ve ses kayıt cihazı var.${
+          kip === 'voiceover' ? '' : ' Tek parmakla sürükleyerek yürürsün; yukarı ileri, sağa ve sola döner.'
+        } Kısa bir eğitimle başlayalım.`,
         3
       );
-    } else Ses.soyle(`${M.zamanSozu(k.dk)}. ${M.konumOzeti(d)}${Mz.okunmamis(k) ? ` ${Mz.okunmamis(k)} okunmamış mesajın var.` : ''}`, 3);
+    } else if (k.onarim && k.onarim.length) Ses.soyle(`Kayıtta bazı bozuk değerler bulundu ve onarıldı: ${k.onarim.slice(0, 4).join(', ')}. ${M.konumOzeti(d)}`, 3);
+    else Ses.soyle(`${M.zamanSozu(k.dk)}. ${M.konumOzeti(d)}${Mz.okunmamis(k) ? ` ${Mz.okunmamis(k)} okunmamış mesajın var.` : ''}`, 3);
     const alt = AppState.addEventListener('change', (s) => {
       if (s !== 'active') kaydet();
     });
@@ -430,6 +580,14 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
   useEffect(() => {
     ortamSec();
   }, [ayar.ortam]);
+  useEffect(() => {
+    if (ayar.grafik === 'kapali' && sahneRef.current) {
+      try {
+        sahneRef.current.birak();
+      } catch (e) {}
+      sahneRef.current = null;
+    }
+  }, [ayar.grafik]);
 
   const efektCal = (o) => {
     const b = o.id ? M.birey(d, o.id) : null;
@@ -527,6 +685,10 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     let adimYol = 0;
     let adimSira = false;
     let gokSayac = 8;
+    let egitimSayac = -5; // giriş konuşması bitsin
+    let sesAltyaziSon = 0;
+    let kareSira = 0;
+    let kareBirikim = 0;
     let ortamSayac = 3;
     let calisiyor = true;
     let raf;
@@ -540,9 +702,24 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         girdi.current = { ileri: 0, don: 0 };
       }
       if (!menuRef.current) {
-        const sonuc = M.guncelle(d, dt, girdi.current);
-        Mz.guncelle(d);
+        let sonuc = { yurudu: 0 };
+        try {
+          sonuc = M.guncelle(d, dt, girdi.current);
+          Mz.guncelle(d);
+        } catch (e) {
+          if (hataKaydet(e, 'oyun döngüsü')) Ses.soyle('Oyunda beklenmedik bir hata oldu. Hata kaydedildi; Ayarlar, Hata kayıtları bölümünden bana okuyabilirsin. Oyun sürüyor.', 4);
+        }
         const a = ayarRef.current;
+        if (sonuc.carpti && seyir.current) {
+          seyir.current = false;
+          girdi.current = { ileri: 0, don: 0 };
+        }
+        egitimSayac += dt;
+        if (egitimSayac > 1.2) {
+          egitimSayac = 0;
+          const m = Eg.egitimDenetle(d, a.kip);
+          if (m) Ses.soyle(m, 3);
+        }
         if (sonuc.carpti && simdi - carpmaSon > 1500) {
           carpmaSon = simdi;
           titret('hafif', a);
@@ -570,6 +747,18 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         for (const o of M.olaylariAl(d)) {
           if (sahneRef.current) sahneRef.current.efekt(o);
           efektCal(o);
+          // İşitme engelliler için hayvan sesleri altyazıda (Ayarlar > Görünüm)
+          if (o.tur === 'hayvanSesi' && a.sesAltyazi && simdi - sesAltyaziSon > 2500) {
+            const b = M.birey(d, o.id);
+            if (b) {
+              sesAltyaziSon = simdi;
+              setAltyazi(`🔊 ${M.SOZ[b.tur]} sesi, ${M.saatSozu(M.saatYonu(d.oyuncu, b))}, ${M.metreSozu(M.mesafe(d.oyuncu, b))}`);
+            }
+          }
+          if (o.tur === 'bolge' && a.otoBetimle && a.kip !== 'gorerek') {
+            const kb = B.kisaBetimle(d);
+            if (kb) Ses.soyle(kb, 1);
+          }
           if (o.tur === 'tehdit') titret('kotu', a);
           else if (o.tur === 'saldiri') titret('agir', a);
           else if (['yeniTur', 'tanimlandi', 'yeniDavranis', 'analizBitti', 'gorevBitti'].includes(o.tur)) titret('iyi', a);
@@ -594,10 +783,16 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         }
       }
       if (sahneRef.current && !menuRef.current) {
-        try {
-          sahneRef.current.kare(dt);
-        } catch (e) {
-          sahneRef.current = null;
+        kareSira++;
+        kareBirikim += dt;
+        if (ayarRef.current.grafik !== 'dusuk' || kareSira % 2 === 0) {
+          try {
+            sahneRef.current.kare(kareBirikim);
+          } catch (e) {
+            hataKaydet(e, 'üç boyutlu çizim');
+            sahneRef.current = null;
+          }
+          kareBirikim = 0;
         }
       }
       hudSayac += dt;
@@ -617,8 +812,9 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
 
   const glHazir = useCallback((gl) => {
     try {
-      sahneRef.current = sahneKur(gl, d);
+      sahneRef.current = sahneKur(gl, d, { dusuk: ayarRef.current.grafik === 'dusuk' });
     } catch (e) {
+      hataKaydet(e, 'üç boyutlu sahne kurulumu');
       sahneRef.current = null;
     }
   }, []);
@@ -650,7 +846,9 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     else M.yerGit(d, 'arac');
   };
   const durVeBitir = () => {
-    const vardi = d.rota || d.yaklasId || M.gozlenen(d);
+    const vardi = d.rota || d.yaklasId || M.gozlenen(d) || seyir.current;
+    seyir.current = false;
+    girdi.current = { ileri: 0, don: 0 };
     M.dur(d);
     M.gozlemBitir(d);
     Ses.hemen(vardi ? 'Durdun, gözlem bitti.' : 'Zaten duruyorsun.');
@@ -673,6 +871,12 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         }
       },
       onSurukleBitti: () => {
+        if (ayarRef.current.surekliYuru && girdi.current.ileri > 0.5 && !d.k.magara) {
+          seyir.current = true;
+          girdi.current = { ileri: girdi.current.ileri, don: 0 };
+          Ses.hemen('Yürümeye devam ediyorsun. Durmak için iki parmakla aşağı kaydır.');
+          return;
+        }
         girdi.current = { ileri: 0, don: 0 };
       },
       onKaydir: (yon, parmak) => {
@@ -709,7 +913,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       },
       onUzunBas: () => {
         if (menuRef.current) return;
-        Ses.hemen(`${M.durumOzeti(d)} Elindeki alet: ${ALETLER[aletRef.current].ad}.`);
+        Ses.hemen(B.betimle(d, ALETLER[aletRef.current].ad));
       },
     },
     { dokunmaBekle: true }
@@ -742,7 +946,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     if (yardim) return liste(u, yardim.baslik, yardim.ogeler.slice(0, -1));
     if (u === 'ana') {
       const ogeler = [
-        { id: 'saha', etiket: 'Sahaya dön', sec: () => (menuKapat(), 'sessiz') },
+        { id: 'sahayaDon', etiket: 'Sahaya dön', sec: () => (menuKapat(), 'sessiz') },
         bilgi('durum', `Durum: ${M.durumOzeti(d)}`),
         altMenu('cevre', `Görüş alanındaki hayvanlar: ${M.gorunurler(d).length}`, menu.ac),
         altMenu('yerler', 'Yerler ve yolculuk', menu.ac),
@@ -753,6 +957,8 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         altMenu('numune', `Numune ve veteriner${k.numuneKutusu.length ? `: kutuda ${k.numuneKutusu.length} numune` : ''}`, menu.ac),
         { id: 'ara', etiket: 'Küçük canlı ara', ipucu: 'Böcek, kuş, kurbağa, sürüngen ve küçük memelileri arar.', sec: kapatVe(() => K.kucukAra(d)) },
       ];
+      ogeler.splice(2, 0, { id: 'betimle', etiket: 'Çevreyi betimle', ipucu: 'Işık, hava, zemin, önündeki engel, yakındaki yerler, sesler ve hayvanlar.', sec: () => (Ses.hemen(B.betimle(d, alet.ad)), 'sessiz') });
+      if (Eg.egitimSuruyor(k)) ogeler.splice(1, 0, { id: 'egitim', etiket: Eg.adimMetni(k, kip), ipucu: 'Eğitimin sıradaki adımı.' });
       if (k.magara) ogeler.splice(1, 0, altMenu('magara', `Mağaradasın: ${MAGARA_ODALARI[k.magara.oda].ad}`, menu.ac));
       else if (K.magaraYakin(d))
         ogeler.splice(1, 0, {
@@ -1185,23 +1391,15 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       ogeler.push(bilgi('odul', `Ödül: ${Mz.liraSozu(p.odul.fon)} fon ve bilimsel itibar.`));
       return liste(u, p.ad, ogeler);
     }
-    if (u === 'ayarlar') {
-      return liste(
-        u,
-        'Ayarlar',
-        ayarOgeleri(ayar, (x) => {
-          ayarDegistir(x);
-          yenile((v) => v + 1);
-        })
-      );
-    }
+    const ay = ayarSayfasi(menu, ayar, (x) => (ayarDegistir(x), yenile((v) => v + 1)), k, () => yenile((v) => v + 1));
+    if (ay) return liste(u, ay.baslik, ay.ogeler);
     if (u === 'yardim') return liste(u, 'Nasıl oynanır', yardimKonulari(menu, 'o'));
     return liste(u, 'Menü', []);
   };
 
   return (
     <View style={{ flex: 1, backgroundColor: '#0d1626' }}>
-      <GLView style={StyleSheet.absoluteFill} onContextCreate={glHazir} accessible={false} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden />
+      {ayar.grafik !== 'kapali' && <GLView style={StyleSheet.absoluteFill} onContextCreate={glHazir} accessible={false} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden />}
       <SafeAreaView
         style={{ flex: 1 }}
         edges={['top', 'bottom', 'left', 'right']}
@@ -1209,7 +1407,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         importantForAccessibility={menu.ust ? 'no-hide-descendants' : 'auto'}
       >
         <View style={st.ust} pointerEvents={jestli ? 'none' : 'auto'}>
-          <View style={st.hud} accessible accessibilityLabel={`Durum. ${M.durumOzeti(d)}`}>
+          <View style={[st.hud, ayar.kontrast && st.hudK]} accessible accessibilityLabel={`Durum. ${M.durumOzeti(d)}`}>
             <View style={st.satir}>
               <Text style={st.hudAd} numberOfLines={1}>
                 {k.ad} · {M.gunNo(k.dk)}. gün {M.saatMetni(k.dk)}
@@ -1232,6 +1430,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
           </View>
           {!jestli && (
             <View style={st.baglamSatir}>
+              <Dugme etiket="Çevreyi betimle" ipucu="Işık, hava, zemin, önündeki engel, yakındaki yerler, sesler ve hayvanlar" onEtkin={() => Ses.hemen(B.betimle(d))} stil={st.baglamDugme} />
               <Dugme etiket={k.aracta ? 'Araçtan in' : aracYakin ? 'Araca bin' : 'Araca git'} onEtkin={aracIslemi} stil={st.baglamDugme} />
               {(d.rota || d.yaklasId || gb) && <Dugme etiket="Dur ve gözlemi bitir" onEtkin={durVeBitir} stil={st.baglamDugme} />}
             </View>
@@ -1257,32 +1456,32 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
           <>
             <View style={st.izgara}>
               {k.magara ? (
-                <Dugme etiket="Küçük canlı ara" ipucu="Fenerle mağaradaki canlıları arar" onEtkin={() => K.kucukAra(d)} stil={[st.eylem, st.ana]} />
+                <Dugme etiket="Küçük canlı ara" ipucu="Fenerle mağaradaki canlıları arar" onEtkin={() => K.kucukAra(d)} stil={[st.eylem, ayar.buyukDugme && st.eylemBuyuk, st.ana]} />
               ) : (
-                <Dugme etiket="Gözlemle" ipucu="Dürbünle sıradaki hayvanı seçer ve izler" onEtkin={() => M.gozlemBaslat(d)} stil={[st.eylem, st.ana]} />
+                <Dugme etiket="Gözlemle" ipucu="Dürbünle sıradaki hayvanı seçer ve izler" onEtkin={() => M.gozlemBaslat(d)} stil={[st.eylem, ayar.buyukDugme && st.eylemBuyuk, st.ana]} />
               )}
-              <Dugme etiket="Yaklaş" ipucu="Seçili hayvana ürkütmeden yaklaşır" onEtkin={() => M.yaklas(d)} stil={st.eylem} />
-              <Dugme etiket="Fotoğraf çek" onEtkin={() => M.fotografCek(d)} stil={st.eylem} />
-              <Dugme etiket={d.sesKayit ? 'Kayıt sürüyor' : 'Ses kaydı'} devre={!!d.sesKayit} ipucu="6 saniye dinler ve sesleri çözümler" onEtkin={() => M.sesKaydiBaslat(d)} stil={st.eylem} />
-              <Dugme etiket="Etrafı tara" onEtkin={() => Ses.hemen(Mz.kuleTaramasi(d) || M.etrafiTara(d))} stil={st.eylem} />
-              <Dugme etiket="Neredeyim" onEtkin={() => Ses.hemen(M.konumOzeti(d))} stil={st.eylem} />
-              <Dugme etiket="Yerler" onEtkin={() => menuAc('yerler')} stil={st.eylem} />
-              <Dugme etiket="Merkez" ipucu="Araştırma merkezi: mesajlar, görevler, araştırmalar" onEtkin={() => menuAc('merkez')} stil={st.eylem} />
-              <Dugme etiket="Menü" onEtkin={() => menuAc('ana')} stil={st.eylem} />
+              <Dugme etiket="Yaklaş" ipucu="Seçili hayvana ürkütmeden yaklaşır" onEtkin={() => M.yaklas(d)} stil={[st.eylem, ayar.buyukDugme && st.eylemBuyuk]} />
+              <Dugme etiket="Fotoğraf çek" onEtkin={() => M.fotografCek(d)} stil={[st.eylem, ayar.buyukDugme && st.eylemBuyuk]} />
+              <Dugme etiket={d.sesKayit ? 'Kayıt sürüyor' : 'Ses kaydı'} devre={!!d.sesKayit} ipucu="6 saniye dinler ve sesleri çözümler" onEtkin={() => M.sesKaydiBaslat(d)} stil={[st.eylem, ayar.buyukDugme && st.eylemBuyuk]} />
+              <Dugme etiket="Etrafı tara" onEtkin={() => Ses.hemen(Mz.kuleTaramasi(d) || M.etrafiTara(d))} stil={[st.eylem, ayar.buyukDugme && st.eylemBuyuk]} />
+              <Dugme etiket="Neredeyim" onEtkin={() => Ses.hemen(M.konumOzeti(d))} stil={[st.eylem, ayar.buyukDugme && st.eylemBuyuk]} />
+              <Dugme etiket="Yerler" onEtkin={() => menuAc('yerler')} stil={[st.eylem, ayar.buyukDugme && st.eylemBuyuk]} />
+              <Dugme etiket="Merkez" ipucu="Araştırma merkezi: mesajlar, görevler, araştırmalar" onEtkin={() => menuAc('merkez')} stil={[st.eylem, ayar.buyukDugme && st.eylemBuyuk]} />
+              <Dugme etiket="Menü" onEtkin={() => menuAc('ana')} stil={[st.eylem, ayar.buyukDugme && st.eylemBuyuk]} />
             </View>
             {k.magara ? (
-              <View style={st.voSatir}>
-                <Dugme etiket="Geri dön" onEtkin={() => K.magaraGeri(d)} stil={st.voDugme} />
-                <Dugme etiket="İlerle" onEtkin={() => K.magaraIlerle(d)} stil={st.voDugme} />
-                <Dugme etiket="Odayı anlat" onEtkin={() => Ses.hemen(K.odaTarifi(k))} stil={st.voDugme} />
-                <Dugme etiket="Mağaradan çık" onEtkin={() => K.magaradanCik(d)} stil={st.voDugme} />
+              <View style={[st.voSatir, ayar.solEl && { flexDirection: 'row-reverse' }]}>
+                <Dugme etiket="Geri dön" onEtkin={() => K.magaraGeri(d)} stil={[st.voDugme, ayar.buyukDugme && st.voBuyuk]} />
+                <Dugme etiket="İlerle" onEtkin={() => K.magaraIlerle(d)} stil={[st.voDugme, ayar.buyukDugme && st.voBuyuk]} />
+                <Dugme etiket="Odayı anlat" onEtkin={() => Ses.hemen(K.odaTarifi(k))} stil={[st.voDugme, ayar.buyukDugme && st.voBuyuk]} />
+                <Dugme etiket="Mağaradan çık" onEtkin={() => K.magaradanCik(d)} stil={[st.voDugme, ayar.buyukDugme && st.voBuyuk]} />
               </View>
             ) : (
-            <View style={st.voSatir}>
-              <Dugme etiket="Sola dön" onEtkin={() => adimAt(k.aracta ? 0.5 : 0, -1, k.aracta ? 900 : 360)} stil={st.voDugme} />
-              <Dugme etiket={k.aracta ? 'İleri sür' : 'İleri yürü'} ipucu={k.aracta ? 'Bir süre ileri sürer' : 'Yaklaşık 4 metre ilerler'} onEtkin={() => adimAt(1, 0, k.aracta ? 1500 : 900)} stil={st.voDugme} />
-              <Dugme etiket="Sağa dön" onEtkin={() => adimAt(k.aracta ? 0.5 : 0, 1, k.aracta ? 900 : 360)} stil={st.voDugme} />
-              <Dugme etiket="Geri git" onEtkin={() => adimAt(-1, 0, 800)} stil={st.voDugme} />
+            <View style={[st.voSatir, ayar.solEl && { flexDirection: 'row-reverse' }]}>
+              <Dugme etiket="Sola dön" onEtkin={() => adimAt(k.aracta ? 0.5 : 0, -1, k.aracta ? 900 : 360)} stil={[st.voDugme, ayar.buyukDugme && st.voBuyuk]} />
+              <Dugme etiket={k.aracta ? 'İleri sür' : 'İleri yürü'} ipucu={k.aracta ? 'Bir süre ileri sürer' : 'Yaklaşık 4 metre ilerler'} onEtkin={() => adimAt(1, 0, k.aracta ? 1500 : 900)} stil={[st.voDugme, ayar.buyukDugme && st.voBuyuk]} />
+              <Dugme etiket="Sağa dön" onEtkin={() => adimAt(k.aracta ? 0.5 : 0, 1, k.aracta ? 900 : 360)} stil={[st.voDugme, ayar.buyukDugme && st.voBuyuk]} />
+              <Dugme etiket="Geri git" onEtkin={() => adimAt(-1, 0, 800)} stil={[st.voDugme, ayar.buyukDugme && st.voBuyuk]} />
             </View>
             )}
           </>
@@ -1295,6 +1494,40 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       {menu.ust && <View style={st.menuOrt}>{menuIcerigi()}</View>}
     </View>
   );
+}
+
+// ---------------- Hata sınırı: oyun ekranı çökerse uygulama kapanmaz ----------------
+class HataSiniri extends React.Component {
+  constructor(p) {
+    super(p);
+    this.state = { hata: null };
+  }
+  static getDerivedStateFromError(hata) {
+    return { hata };
+  }
+  componentDidCatch(hata) {
+    hataKaydet(hata, 'ekran');
+    Ses.hemen('Oyun ekranında bir hata oldu. Araştırman en son kaydedildiği hâliyle duruyor. Ana menüye dönmek için ekrandaki tek düğmeye dokun.');
+  }
+  render() {
+    if (!this.state.hata) return this.props.children;
+    return (
+      <View style={{ flex: 1, padding: 24, paddingTop: 80, gap: 20, backgroundColor: '#000' }}>
+        <Text style={{ color: '#fff', fontSize: 22 }} accessibilityRole="header">
+          Bir hata oldu
+        </Text>
+        <Text style={{ color: '#fff', fontSize: 17 }}>{String(this.state.hata && this.state.hata.message).slice(0, 200)}</Text>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Ana menüye dön"
+          onPress={() => this.props.cikis()}
+          style={{ backgroundColor: '#FFD400', padding: 24, borderRadius: 14, alignItems: 'center' }}
+        >
+          <Text style={{ color: '#000', fontSize: 22, fontWeight: '800' }}>Ana menüye dön</Text>
+        </Pressable>
+      </View>
+    );
+  }
 }
 
 // ---------------- Uygulama ----------------
@@ -1318,21 +1551,46 @@ export default function App() {
         const ham = await AsyncStorage.getItem(AYAR_ANAHTAR);
         if (ham) a = { ...VARSAYILAN_AYAR, ...JSON.parse(ham) };
       } catch (e) {}
-      let kk = null;
       try {
-        const ham = await AsyncStorage.getItem(KAYIT_ANAHTAR);
-        if (ham) kk = M.kayittanYukle(JSON.parse(ham));
+        const h = await AsyncStorage.getItem(HATA_ANAHTAR);
+        if (h) HATALAR.push(...JSON.parse(h).slice(0, 20));
       } catch (e) {}
+      // Kayıt bozuksa yedekten aç (çevrim dışı dayanıklılık)
+      let kk = null;
+      let ham = null;
+      try {
+        ham = await AsyncStorage.getItem(KAYIT_ANAHTAR);
+        if (ham) kk = M.kayittanYukle(JSON.parse(ham));
+      } catch (e) {
+        hataKaydet(e, 'kayıt okuma');
+      }
+      if (ham && !kk) {
+        try {
+          const y = await AsyncStorage.getItem(YEDEK_ANAHTAR);
+          if (y) kk = M.kayittanYukle(JSON.parse(y));
+          if (kk) {
+            kk.yedektenGeldi = true;
+            AsyncStorage.setItem(KAYIT_ANAHTAR, y).catch(() => {});
+          }
+        } catch (e) {
+          hataKaydet(e, 'yedek okuma');
+        }
+      }
       setAyar(a);
       setKayit(kk);
+      GORUNUM.kontrast = !!a.kontrast;
+      GORUNUM.buyukYazi = !!a.buyukYazi;
       if (a.kip) Ses.ayarla({ kip: a.kip, hiz: a.hiz });
+      if (kk && kk.yedektenGeldi) setTimeout(() => Ses.soyle('Son kayıt okunamadı; araştırman en son yedekten açılacak. Birkaç dakikalık ilerleme kaybolmuş olabilir.', 4), 1500);
       setEkran(a.kip ? 'menu' : 'kip');
     })();
   }, []);
 
   useEffect(() => {
-    Efekt.efektAyarla({ acik: ayar.efekt !== false, kis: ayar.efektKis !== false, ortam: ayar.ortam !== false ? 0.35 : 0 });
-  }, [ayar.efekt, ayar.efektKis, ayar.ortam]);
+    Efekt.efektAyarla({ acik: ayar.efekt !== false, kis: ayar.efektKis !== false, ortam: ayar.ortam !== false ? ORTAM_DUZEY[ayar.ortamDuzey] || 0.35 : 0 });
+  }, [ayar.efekt, ayar.efektKis, ayar.ortam, ayar.ortamDuzey]);
+  GORUNUM.kontrast = !!ayar.kontrast;
+  GORUNUM.buyukYazi = !!ayar.buyukYazi;
 
   const ayarDegistir = useCallback((deg) => {
     setAyar((a) => {
@@ -1383,16 +1641,17 @@ export default function App() {
     );
   else if (ekran === 'oyun')
     icerik = (
-      <Oyun
-        key={oyunAnahtar}
-        arastirmaci={arastirmaci}
-        ayar={ayar}
-        ayarDegistir={ayarDegistir}
-        cikis={() => {
-          setKayit(M.kayitHazirla(arastirmaci));
-          setEkran('menu');
-        }}
-      />
+      <HataSiniri key={oyunAnahtar} cikis={() => setEkran('menu')}>
+        <Oyun
+          arastirmaci={arastirmaci}
+          ayar={ayar}
+          ayarDegistir={ayarDegistir}
+          cikis={() => {
+            setKayit(M.kayitHazirla(arastirmaci));
+            setEkran('menu');
+          }}
+        />
+      </HataSiniri>
     );
 
   return (
@@ -1415,6 +1674,12 @@ const st = StyleSheet.create({
   dugmeBasili: { opacity: 0.7 },
   dugmeDevre: { opacity: 0.45 },
   dugmeYazi: { color: RENK.yazi, fontSize: 14, fontWeight: '600', textAlign: 'center' },
+  dugmeK: { backgroundColor: '#000000', borderColor: '#FFFFFF', borderWidth: 2 },
+  dugmeYaziK: { color: '#FFFFFF' },
+  dugmeYaziB: { fontSize: 18 },
+  eylemBuyuk: { height: 78 },
+  voBuyuk: { height: 92 },
+  hudK: { backgroundColor: '#000000', borderWidth: 2, borderColor: '#FFFFFF' },
   kipKap: { flex: 1, padding: 18, paddingTop: 60, gap: 12 },
   kipSatir: { flex: 1, flexDirection: 'column', gap: 12 },
   kipYari: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 },

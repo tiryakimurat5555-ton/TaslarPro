@@ -16,6 +16,9 @@ import { useJestler } from './jestler.js';
 import * as Ses from './ses.js';
 import * as Efekt from './efekt.js';
 
+// Görünüm ayarları (Aşama 7, karar 31): yüksek kontrast ve büyük yazı. App ayarlardan değiştirir.
+export const GORUNUM = { kontrast: false, buyukYazi: false };
+const g_ = (ad) => [GORUNUM.kontrast ? kst[ad] : null, GORUNUM.buyukYazi ? byz[ad] : null];
 export const RENK = {
   zemin: '#15171a',
   kutu: '#23281f',
@@ -182,10 +185,10 @@ function SesliListeIc({ baslik, giris, ogeler, onGeri, rehberAcik = true, ilkOda
   }));
 
   return (
-    <Animated.View style={[st.kap, { opacity: belir, transform: [{ translateY: belir.interpolate({ inputRange: [0, 1], outputRange: [10, 0] }) }] }]}>
+    <Animated.View style={[st.kap, ...g_('kap'), { opacity: belir, transform: [{ translateY: belir.interpolate({ inputRange: [0, 1], outputRange: [10, 0] }) }] }]}>
       {ust}
-      {baslik ? <Text style={st.baslik}>{baslik}</Text> : null}
-      {giris ? <Text style={st.giris}>{giris}</Text> : null}
+      {baslik ? <Text style={[st.baslik, ...g_('baslik')]}>{baslik}</Text> : null}
+      {giris ? <Text style={[st.giris, ...g_('giris')]}>{giris}</Text> : null}
       <View
         style={st.liste}
         onLayout={(e) => {
@@ -209,9 +212,9 @@ function SesliListeIc({ baslik, giris, ogeler, onGeri, rehberAcik = true, ilkOda
                 const { y, height } = e.nativeEvent.layout;
                 satirlar.current[i] = { y, h: height };
               }}
-              style={[st.satir, oge.ikincil && st.ikincil, i === odak && st.odakli, i === odak && { transform: [{ scale: nabiz }] }]}
+              style={[st.satir, ...g_('satir'), oge.ikincil && st.ikincil, ...(oge.ikincil ? g_('ikincil') : []), i === odak && st.odakli, ...(i === odak ? g_('odakli') : []), i === odak && { transform: [{ scale: nabiz }] }]}
             >
-              <Text style={[st.satirYazi, i === odak && st.odakliYazi]}>{metinAl(oge.etiket)}</Text>
+              <Text style={[st.satirYazi, ...g_('satirYazi'), i === odak && st.odakliYazi, ...(i === odak ? g_('odakliYazi') : [])]}>{metinAl(oge.etiket)}</Text>
             </Animated.View>
           ))}
         </ScrollView>
@@ -226,7 +229,7 @@ const SesliListeRef = forwardRef(SesliListeIc);
 function VoiceListe({ baslik, giris, ogeler, onGeri }) {
   const [, yenile] = useState(0);
   return (
-    <View style={st.kap} accessibilityViewIsModal onAccessibilityEscape={onGeri}>
+    <View style={[st.kap, ...g_('kap')]} accessibilityViewIsModal onAccessibilityEscape={onGeri}>
       {baslik ? (
         <Text style={st.baslik} accessibilityRole="header">
           {baslik}
@@ -245,13 +248,13 @@ function VoiceListe({ baslik, giris, ogeler, onGeri }) {
                 oge.sec();
                 yenile((v) => v + 1);
               }}
-              style={({ pressed }) => [st.satir, oge.ikincil && st.ikincil, pressed && st.odakli]}
+              style={({ pressed }) => [st.satir, ...g_('satir'), oge.ikincil && st.ikincil, pressed && st.odakli, ...(pressed ? g_('odakli') : [])]}
             >
-              <Text style={st.satirYazi}>{metinAl(oge.etiket)}</Text>
+              <Text style={[st.satirYazi, ...g_('satirYazi')]}>{metinAl(oge.etiket)}</Text>
             </Pressable>
           ) : (
-            <View key={oge.id || String(i)} style={[st.satir, st.ikincil]} accessible accessibilityLabel={metinAl(oge.etiket) + (oge.ipucu ? '. ' + metinAl(oge.ipucu) : '')}>
-              <Text style={st.satirYazi}>{metinAl(oge.etiket)}</Text>
+            <View key={oge.id || String(i)} style={[st.satir, ...g_('satir'), st.ikincil, ...g_('ikincil')]} accessible accessibilityLabel={metinAl(oge.etiket) + (oge.ipucu ? '. ' + metinAl(oge.ipucu) : '')}>
+              <Text style={[st.satirYazi, ...g_('satirYazi')]}>{metinAl(oge.etiket)}</Text>
             </View>
           )
         )}
@@ -262,6 +265,8 @@ function VoiceListe({ baslik, giris, ogeler, onGeri }) {
 
 // kip: 'kendi' | 'gorerek' | 'voiceover'
 export const Liste = forwardRef(function Liste(p, ref) {
+  // Denemeler için: son çizilen liste (menü taraması, araclar/web-deneme/menu-tara.cjs)
+  globalThis.__sonListe = { baslik: p.baslik, giris: p.giris, ogeler: p.ogeler };
   if (p.kip === 'voiceover') return <VoiceListe {...p} />;
   return <SesliListeRef ref={ref} {...p} rehberAcik={p.kip !== 'gorerek'} />;
 });
@@ -289,7 +294,7 @@ export function useMenuYigini(baslangic = []) {
 }
 
 export function altMenu(id, etiket, ac, ipucu) {
-  return { id, etiket, ipucu: ipucu || 'Alt menü. Açmak için seç; geri dönmek için iki parmakla çift dokun.', sec: () => (ac(id), 'sessiz') };
+  return { id, etiket, alt: true, ipucu: ipucu || 'Alt menü. Açmak için seç; geri dönmek için iki parmakla çift dokun.', sec: () => (ac(id), 'sessiz') };
 }
 
 // Uzun listeyi sayfa alt menülerine böler (Kayıp Okyanus sayfali)
@@ -328,4 +333,23 @@ const st = StyleSheet.create({
   odakli: { borderColor: RENK.vurgu, backgroundColor: RENK.kutuOdak },
   satirYazi: { color: RENK.yazi, fontSize: 19, lineHeight: 25 },
   odakliYazi: { color: '#FFFFFF', fontWeight: '600' },
+});
+
+// Yüksek kontrast: siyah zemin, beyaz yazı, sarı odak
+const kst = StyleSheet.create({
+  kap: { backgroundColor: '#000000' },
+  baslik: { color: '#FFFFFF' },
+  giris: { color: '#FFFFFF' },
+  satir: { backgroundColor: '#000000', borderColor: '#FFFFFF', borderWidth: 2 },
+  ikincil: { backgroundColor: '#000000', borderColor: '#BBBBBB' },
+  odakli: { backgroundColor: '#FFD400', borderColor: '#FFD400' },
+  satirYazi: { color: '#FFFFFF' },
+  odakliYazi: { color: '#000000', fontWeight: '800' },
+});
+// Büyük yazı
+const byz = StyleSheet.create({
+  baslik: { fontSize: 36 },
+  giris: { fontSize: 20 },
+  satir: { minHeight: 80 },
+  satirYazi: { fontSize: 25, lineHeight: 32 },
 });

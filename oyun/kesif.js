@@ -34,7 +34,7 @@ function kucukKaydet(d, id, metinOn = '') {
     return m;
   }
   a.sayi += 1;
-  const m = `${metinOn}${c.ad}. ${c.tarif.split('. ')[0]}.`;
+  const m = `${metinOn}${c.ad}. ${c.tarif.split('. ')[0].replace(/\.$/, '')}.`;
   M.olay(d, 'kucuk', m, 3);
   return m;
 }
@@ -64,6 +64,7 @@ export function kucukAra(d) {
   const liste = bulunabilirler({ bolge, oda, evre, mevsim: tk.mevsim, yagmur });
   let basari = oda ? 0.85 : 0.75;
   if (!oda && evre === 'gece' && !(k.ekipman.geceDurbunu || k.ekipman.termal)) basari = 0.5;
+  basari += M.zorlukCarpani(k, 'kesif', [0.12, 0, -0.1]);
   if (!liste.length || d.rng() > basari) {
     const m = oda ? 'Fenerinle kayaların çatlaklarına baktın ama bu kez bir şey göremedin.' : evre === 'gece' ? 'Karanlıkta otların arasına baktın; yalnızca cırcır böceklerini duyuyorsun.' : 'Otların ve taşların arasına baktın ama bu kez bir şey göremedin. Başka bir yerde ya da başka bir saatte dene.';
     M.olay(d, 'kucuk', m, 2);
@@ -149,7 +150,7 @@ export function tuzakKurulumu(d) {
   const k = d.k;
   const devriye = k.koruma && k.koruma.devriye;
   const mucadele = k.koruma && k.koruma.projeler && k.koruma.projeler.kacakMucadele && k.koruma.projeler.kacakMucadele.durum === 'tamam';
-  const sans = 0.3 * (devriye ? 0.35 : 1) * (mucadele ? 0.5 : 1);
+  const sans = 0.3 * (devriye ? 0.35 : 1) * (mucadele ? 0.5 : 1) * M.zorlukCarpani(k, 'afet', [0.25, 1, 1.5]);
   if (k.kacak.tuzaklar.length >= 4 || d.rng() > sans) return;
   const tur = OTCULLAR[Math.floor(d.rng() * OTCULLAR.length)];
   const h = TURLER[tur].habitat;

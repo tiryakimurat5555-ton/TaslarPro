@@ -9,6 +9,24 @@ import {
 import * as E from './ekosistem.js';
 
 export const KAYIT_SURUMU = 1;
+const LOD_UZAKLIK = 130; // bu uzaklığın ötesindeki gruplar seyrek güncellenir
+const LOD_ARALIK = 0.3; // saniye
+
+// ---------- Zorluk (karar 33): keşif, ekonomi, hayvan davranışı/tehlike, araştırma ve afetler ayrı ayrı ----------
+export const ZORLUK_ALANLARI = {
+  kesif: { ad: 'Keşif', tarif: 'Kolayda dürbünle daha uzağı görür, küçük canlıları daha kolay bulursun.' },
+  tehlike: { ad: 'Hayvan davranışı ve tehlike', tarif: 'Kolayda hayvanlar daha az ürker, tehlikeli hayvanlar yalnızca uyarır, hamle yapmaz.' },
+  ekonomi: { ad: 'Ekonomi', tarif: 'Kolayda giderler azalır, kurumların desteği artar.' },
+  arastirma: { ad: 'Araştırma', tarif: 'Kolayda analizler daha kısa sürer.' },
+  afet: { ad: 'Afetler', tarif: 'Yangın, sel, salgın ve kaçak avcı tuzakları. Kolayda çok seyrek, zorda daha sık.' },
+};
+export const ZORLUK_ADI = { kolay: 'kolay', normal: 'normal', zor: 'zor' };
+export const zorluk = (k, alan) => {
+  const z = k && k.zorluk && typeof k.zorluk === 'object' ? k.zorluk[alan] : null;
+  return z === 'kolay' || z === 'zor' ? z : 'normal';
+};
+// [kolay, normal, zor] değerlerinden seçer
+export const zorlukCarpani = (k, alan, degerler) => degerler[['kolay', 'normal', 'zor'].indexOf(zorluk(k, alan))];
 if (GOLET.su === undefined) GOLET.su = GOLET.r; // göletin o anki su yarıçapı (ekosistem.goletAyarla günceller)
 
 // Konuşmada kullanılan kısa tür adları
@@ -93,7 +111,7 @@ export const zamanSozu = (dk) => `${gunNo(dk)}. gün, saat ${saatMetni(dk)}, ${E
 export const geceMi = (dk) => gunEvresi(dk) === 'gece';
 // Dürbün menzili gün evresine ve ekipmana göre (gece görüş dürbünü, termal kamera; Aşama 4)
 export function durbunMenzili(dk, k) {
-  return Math.round(durbunTaban(dk, k) * (k && k.eko ? E.gorusCarpani(k.eko) : 1));
+  return Math.round(durbunTaban(dk, k) * (k && k.eko ? E.gorusCarpani(k.eko) : 1) * zorlukCarpani(k, 'kesif', [1.25, 1, 0.85]));
 }
 function durbunTaban(dk, k) {
   const e = (k && k.ekipman) || {};
@@ -180,6 +198,8 @@ export function arastirmaciOlustur(ad) {
     koruma: { projeler: {}, devriye: false, asi: false },
     asili: [],
     magara: null,
+    zorluk: { kesif: 'normal', tehlike: 'normal', ekonomi: 'normal', arastirma: 'normal', afet: 'normal' },
+    egitimV: 2,
   };
 }
 
@@ -687,6 +707,7 @@ export function kacisMesafesi(d, b) {
   if (d.k.aracta) m *= d.aracHiz > 4 ? 0.85 : 0.45; // araç içindeki insanı daha az tehdit sayarlar
   if (geceMi(d.k.dk)) m *= 0.8;
   if (b.evre === 'yavru') m *= 1.2;
+  m *= zorlukCarpani(d.k, 'tehlike', [0.7, 1, 1.2]);
   return Math.max(4, m);
 }
 function grupAlarm(d, g, kaynak, sure = 6, gecikme = 0) {
@@ -1162,6 +1183,7 @@ function gunlukEkosistem(d) {
   const tk = E.takvim(gun);
   E.havaUret(eko, gun, d.rng);
   eko.yagisBugun = 0;
+  eko.afetCarpani = zorlukCarpani(k, 'afet', [0.25, 1, 1.6]);
   E.yanginRiski(eko, d.kap, gun, d.rng);
   Object.keys(eko.yanik || {}).forEach((h) => {
     if (k.dk - eko.yanik[h] > 12 * 1440) delete eko.yanik[h];
@@ -1288,7 +1310,7 @@ function gunlukEkosistem(d) {
     haritadanCikar(d, ayrilanlar);
   }
   // Şarbon salgını: kurak mevsimde, su azaldığında (karar 28, 74)
-  if (!eko.salgin && tk.mevsim === 'kurak' && tk.mevsimGunu >= 5 && eko.golet < 0.45 && eko.sarbonYil !== tk.yil && d.rng() < 0.25) {
+  if (!eko.salgin && tk.mevsim === 'kurak' && tk.mevsimGunu >= 5 && eko.golet < 0.45 && eko.sarbonYil !== tk.yil && d.rng() < 0.25 * eko.afetCarpani) {
     const adaylar = k.gruplar.filter((g) => !g.goc && E.HASTALIKLAR.sarbon.turler.includes(g.tur));
     const g = adaylar[Math.floor(d.rng() * adaylar.length)];
     const u = g ? uyeler(d, g) : [];
@@ -1575,7 +1597,7 @@ function tehditGoster(d, b) {
     olay(d, 'tehdit', `Dikkat! ${ad} ${nasil}, seni uyarıyor. ${BuyukHarf(yerTarifi(d.oyuncu, b))}. Hemen geri çekil.`, 4, { id: b.id });
     return;
   }
-  if (d.zaman - b.uyardi > 3.5) {
+  if (d.zaman - b.uyardi > 3.5 && zorluk(d.k, 'tehlike') !== 'kolay') {
     // Sahte saldırı: hayvan birkaç metre atılır, sen geri sıçrarsın
     b.uyardi = d.zaman;
     b.sakin = d.zaman + 25;
@@ -2103,14 +2125,30 @@ export function guncelle(d, dt, girdi = {}) {
   sonuc.surdu = k.aracta ? yol : 0;
 
   // --- Hayvanlar ---
-  for (const g of k.gruplar) grupGuncelle(d, g, dt, dtDk);
+  // Ayrıntı düzeyi (Aşama 7, performans): oyuncudan uzak gruplar seyrek ama birikmiş süreyle güncellenir
+  if (!d.lod) d.lod = new Map();
+  const grupDt = new Map();
+  for (const g of k.gruplar) {
+    const uzak = !g.goc && !(g.plan === 'av' && g.av && g.av.evre === 'kovala') && (k.magara || Math.abs(g.x - o.x) > LOD_UZAKLIK || Math.abs(g.y - o.y) > LOD_UZAKLIK);
+    if (uzak) {
+      const birikim = (d.lod.get(g.id) || 0) + dt;
+      if (birikim < LOD_ARALIK) {
+        d.lod.set(g.id, birikim);
+        continue;
+      }
+      d.lod.set(g.id, 0);
+      grupDt.set(g.id, Math.min(0.5, birikim));
+    } else grupDt.set(g.id, dt);
+    const gdt = grupDt.get(g.id);
+    grupGuncelle(d, g, gdt, gdt * OYUN_DK_SN);
+  }
   const gMap = new Map(k.gruplar.map((g) => [g.id, g]));
   const sesOncesi = d.olaylar.length;
   for (const b of k.hayvanlar) {
     if (b.olu) continue;
     const g = gMap.get(b.grup);
-    if (!g) continue;
-    bireyGuncelle(d, b, g, dt);
+    if (!g || !grupDt.has(g.id)) continue;
+    bireyGuncelle(d, b, g, grupDt.get(g.id));
   }
   // Timsah pususu: su içen ava kıyıda saldırabilir (karar 102)
   for (const g of k.gruplar) {
@@ -2245,6 +2283,166 @@ export function sesTuruAdi(id) {
 }
 
 // ---------- Kayıt ----------
+// Bozuk ya da eksik değerleri onarır (çevrim dışı dayanıklılık, Aşama 7). Yapılan onarımları döndürür.
+const sayiMi = (v) => typeof v === 'number' && Number.isFinite(v);
+export function kayitOnar(k) {
+  const onarim = [];
+  if (k.gruplar && !Array.isArray(k.gruplar)) k.gruplar = null;
+  if (k.hayvanlar && !Array.isArray(k.hayvanlar)) k.hayvanlar = null;
+  if (!k.gruplar || !k.hayvanlar) {
+    if (k.gruplar || k.hayvanlar) onarim.push('nüfus yeniden kuruldu');
+    k.gruplar = null;
+    k.hayvanlar = null;
+  }
+  if (!sayiMi(k.dk) || k.dk < 0) {
+    k.dk = BASLANGIC_SAATI;
+    onarim.push('zaman');
+  }
+  if (!sayiMi(k.butce)) {
+    k.butce = 15000;
+    onarim.push('bütçe');
+  }
+  if (!sayiMi(k.itibar) || k.itibar < 0) {
+    k.itibar = 0;
+    onarim.push('itibar');
+  }
+  if (!k.oyuncu || !sayiMi(k.oyuncu.x) || !sayiMi(k.oyuncu.y) || !sayiMi(k.oyuncu.yon) || Math.hypot(k.oyuncu.x, k.oyuncu.y) > YARICAP) {
+    k.oyuncu = { x: 1, y: -2.5, yon: Math.PI / 2 };
+    onarim.push('oyuncu konumu');
+  }
+  if (!k.arac || !sayiMi(k.arac.x) || !sayiMi(k.arac.y) || !sayiMi(k.arac.yon)) {
+    k.arac = { ...ARAC_YERI };
+    k.aracta = false;
+    onarim.push('araç');
+  }
+  if (Array.isArray(k.gruplar)) {
+    k.gruplar = k.gruplar.filter((g) => g && TURLER[g.tur]);
+    k.gruplar.forEach((g) => {
+      if (!sayiMi(g.x) || !sayiMi(g.y)) {
+        Object.assign(g, { x: TURLER[g.tur].habitat.x, y: TURLER[g.tur].habitat.y, plan: null, hedef: null, goc: null });
+        onarim.push('grup konumu');
+      }
+      if (!sayiMi(g.susuzluk)) g.susuzluk = 0.3;
+      if (!sayiMi(g.aclik)) g.aclik = 0.3;
+    });
+  }
+  if (Array.isArray(k.hayvanlar)) {
+    const once = k.hayvanlar.length;
+    k.hayvanlar = k.hayvanlar.filter((b) => b && TURLER[b.tur] && sayiMi(b.id));
+    if (k.hayvanlar.length !== once) onarim.push('bozuk hayvan kaydı');
+    const gruplar = new Map((k.gruplar || []).map((g) => [g.id, g]));
+    k.hayvanlar.forEach((b) => {
+      if (!sayiMi(b.x) || !sayiMi(b.y)) {
+        const g = gruplar.get(b.grup);
+        b.x = g ? g.x : TURLER[b.tur].habitat.x;
+        b.y = g ? g.y : TURLER[b.tur].habitat.y;
+        onarim.push('hayvan konumu');
+      }
+      if (!b.ofs || !sayiMi(b.ofs.x) || !sayiMi(b.ofs.y)) b.ofs = { x: 0, y: 0 };
+      if (!sayiMi(b.yon)) b.yon = 0;
+      if (!sayiMi(b.alisma)) b.alisma = 0;
+      if (!sayiMi(b.kondisyon)) b.kondisyon = 0.7;
+      if (!sayiMi(b.yas)) b.yas = 0;
+      if (!EVRELER[b.evre]) b.evre = 'yetiskin';
+      if (!KISILIKLER[b.kisilik]) b.kisilik = 'sakin';
+      if (b.hastalik && !E.HASTALIKLAR[b.hastalik.id]) b.hastalik = null;
+      if (!sayiMi(b.sesSayac)) b.sesSayac = 10;
+    });
+    if (!k.gruplar || !k.gruplar.length) {
+      k.hayvanlar = null;
+      k.gruplar = null;
+      onarim.push('nüfus yeniden kuruldu');
+    }
+  }
+  if (k.eko && (!Array.isArray(k.eko.ot) || k.eko.ot.some((v) => !sayiMi(v)))) {
+    k.eko = null;
+    onarim.push('ekosistem yeniden kuruldu');
+  }
+  if (k.eko) {
+    ['islaklik', 'yesil', 'golet', 'alg', 'nehir'].forEach((a) => {
+      if (!sayiMi(k.eko[a])) {
+        k.eko[a] = 0.5;
+        onarim.push('ekosistem değeri');
+      }
+    });
+    const hv = k.eko.hava;
+    if (hv && (typeof hv !== 'object' || !E.HAVA_ADI[hv.tur] || !Array.isArray(hv.yagmur) || !sayiMi(hv.gun) || !sayiMi(hv.ruzgarYon) || !sayiMi(hv.ruzgarHiz) || !sayiMi(hv.sicaklik))) k.eko.hava = null;
+    if (!Array.isArray(k.eko.yaprak) || k.eko.yaprak.length !== k.eko.ot.length) k.eko.yaprak = k.eko.ot.map(() => 0.5);
+    if (!Array.isArray(k.eko.gocler)) k.eko.gocler = [];
+    if (!Array.isArray(k.eko.teshisler)) k.eko.teshisler = [];
+    if (!k.eko.yanan || typeof k.eko.yanan !== 'object') k.eko.yanan = {};
+    if (!k.eko.yanik || typeof k.eko.yanik !== 'object') k.eko.yanik = {};
+  }
+  ['fotolar', 'sesler', 'olaylar'].forEach((a) => {
+    if (!Array.isArray(k.arsiv[a])) {
+      k.arsiv[a] = [];
+      onarim.push('arşiv');
+    }
+    k.arsiv[a] = k.arsiv[a].filter((x) => x && typeof x === 'object' && sayiMi(x.dk));
+  });
+  k.arsiv.olaylar = k.arsiv.olaylar.filter((x) => typeof x.metin === 'string');
+  ['turler', 'bireyler', 'bitkiler', 'kucukler'].forEach((a) => {
+    if (!k.arsiv[a] || typeof k.arsiv[a] !== 'object' || Array.isArray(k.arsiv[a])) k.arsiv[a] = {};
+    Object.keys(k.arsiv[a]).forEach((id) => {
+      const v = k.arsiv[a][id];
+      if (!v || typeof v !== 'object') delete k.arsiv[a][id];
+    });
+  });
+  Object.values(k.arsiv.turler).forEach((t) => {
+    if (!Array.isArray(t.davranislar)) t.davranislar = [];
+    if (!sayiMi(t.gozlemSn)) t.gozlemSn = 0;
+    if (!sayiMi(t.ilkDk)) t.ilkDk = k.dk;
+    if (typeof t.ilkBolge !== 'string') t.ilkBolge = 'bilinmiyor';
+  });
+  Object.values(k.arsiv.bireyler).forEach((b) => {
+    if (!sayiMi(b.gozlemSn)) b.gozlemSn = 0;
+    if (!sayiMi(b.sonDk)) b.sonDk = k.dk;
+    if (!sayiMi(b.ilkDk)) b.ilkDk = k.dk;
+    if (typeof b.sonBolge !== 'string') b.sonBolge = 'bilinmiyor';
+  });
+  Object.values(k.arsiv.bitkiler).forEach((b) => {
+    if (!Array.isArray(b.evreler)) b.evreler = [];
+  });
+  Object.values(k.arsiv.kucukler).forEach((c) => {
+    if (!sayiMi(c.sayi)) c.sayi = 1;
+    if (typeof c.ilkBolge !== 'string') c.ilkBolge = 'bilinmiyor';
+  });
+  // Nesne listeleri: bozuk öğeler atılır
+  ['mesajlar', 'teklifler', 'tuzaklar', 'numuneler', 'numuneKutusu', 'lesler', 'rehab', 'personel'].forEach((a) => {
+    if (!Array.isArray(k[a])) k[a] = [];
+    k[a] = k[a].filter((x) => x && typeof x === 'object');
+  });
+  k.mesajlar = k.mesajlar.filter((m) => typeof m.metin === 'string');
+  k.lesler = k.lesler.filter((l) => sayiMi(l.x) && sayiMi(l.y) && TURLER[l.tur]);
+  k.tuzaklar = k.tuzaklar.filter((t) => sayiMi(t.x) && sayiMi(t.y));
+  k.rehab = k.rehab.filter((r) => r.b && TURLER[r.b.tur]);
+  k.personel = k.personel.filter((p) => typeof p.rol === 'string');
+  k.teklifler = k.teklifler.filter((t) => typeof t.metin === 'string' && sayiMi(t.hedef));
+  if (!k.zorluk || typeof k.zorluk !== 'object') k.zorluk = {};
+  if (!k.ekipman || typeof k.ekipman !== 'object' || Array.isArray(k.ekipman)) k.ekipman = {};
+  if (!k.stok || typeof k.stok !== 'object') k.stok = { tuzak: 0, tasma: 0 };
+  ['tuzak', 'tasma'].forEach((a) => {
+    if (!sayiMi(k.stok[a]) || k.stok[a] < 0) k.stok[a] = 0;
+  });
+  if (!Array.isArray(k.gpsli)) k.gpsli = [];
+  if (!Array.isArray(k.tesisler)) k.tesisler = [];
+  if (!k.sayac || typeof k.sayac !== 'object') k.sayac = {};
+  if (k.disari) {
+    k.disari.hayvanlar = (k.disari.hayvanlar || []).filter((b) => b && TURLER[b.tur]);
+    k.disari.gruplar = (k.disari.gruplar || []).filter((g) => g && TURLER[g.tur] && g.goc);
+  }
+  if (k.magara && !sayiMi(k.magara.oda)) k.magara = null;
+  // Tanınmış ölü hayvanlar nüfus listesinde birikmesin (arşiv kaydı kalır)
+  if (Array.isArray(k.hayvanlar)) {
+    const olu = k.hayvanlar.filter((b) => b.olu);
+    if (olu.length > 80) {
+      const sil = new Set(olu.sort((a, b) => a.olumDk - b.olumDk).slice(0, olu.length - 80));
+      k.hayvanlar = k.hayvanlar.filter((b) => !sil.has(b));
+    }
+  }
+  k.onarim = onarim;
+  return onarim;
+}
 export function kayitHazirla(k) {
   return JSON.parse(JSON.stringify(k));
 }
@@ -2261,6 +2459,13 @@ export function kayittanYukle(v) {
   if (!k.disari || !Array.isArray(k.disari.gruplar) || !Array.isArray(k.disari.hayvanlar)) k.disari = { gruplar: [], hayvanlar: [] };
   if (!k.koruma || typeof k.koruma !== 'object' || !k.koruma.projeler) k.koruma = { projeler: {}, devriye: false, asi: false };
   if (!Array.isArray(k.asili)) k.asili = [];
+  if (!k.zorluk || typeof k.zorluk !== 'object') k.zorluk = { ...bos.zorluk };
+  // Aşama 7'den önceki kayıtlarda rehberli eğitim gösterilmez
+  if (k.egitimV !== 2) {
+    k.egitimV = 2;
+    if (k.egitim > 0) k.egitim = 99;
+  }
+  kayitOnar(k);
   if (k.eko && typeof k.eko !== 'object') k.eko = null;
   ['tesisler', 'personel', 'teklifler', 'mesajlar', 'tuzaklar', 'gpsli', 'numuneKutusu', 'numuneler', 'rehab'].forEach((a) => {
     if (!Array.isArray(k[a])) k[a] = [];

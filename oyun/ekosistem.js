@@ -291,7 +291,7 @@ export function ekoAdim(eko, kap, gun, gunDk, dtDk, rng = Math.random) {
   const dkMutlak = (gun - 1) * 1440 + gunDk;
   yanginAdim(eko, kap, dkMutlak, dtDk, rng, olaylar);
   // Sel: büyük sağanakta nehir taşar, geçitler birkaç saat geçilmez
-  if (!eko.taskin && eko.nehir > 0.96 && eko.yagisBugun > 50 && !(eko.selSayisi >= 1)) {
+  if (!eko.taskin && eko.nehir > 0.96 && eko.yagisBugun > 50 && !(eko.selSayisi >= 1) && (eko.afetCarpani ?? 1) >= 0.5) {
     eko.taskin = true;
     eko.selSayisi = (eko.selSayisi || 0) + 1;
     eko.taskinBitis = dkMutlak + 6 * 60 + rng() * 6 * 60;
@@ -554,7 +554,7 @@ export function yanginRiski(eko, kap, gun, rng) {
     p = 0.45;
     neden = 'kuru otlara yıldırım düştü';
   }
-  if (rng() >= p) return;
+  if (rng() >= p * (eko.afetCarpani ?? 1)) return;
   const adaylar = [];
   for (let h = 0; h < eko.ot.length; h++) if (!kap.yanmaz[h] && eko.ot[h] > 0.45) adaylar.push(h);
   if (!adaylar.length) return;

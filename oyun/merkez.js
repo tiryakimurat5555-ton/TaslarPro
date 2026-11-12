@@ -219,10 +219,10 @@ export const personelKapasitesi = (k) => (tesisVar(k, 'konaklama') ? 6 : 2);
 export const tuzakKapasitesi = (k) => (M.personelVar(k, 'teknisyen') ? 6 : 3);
 export const analizKapasitesi = (k) => (tesisVar(k, 'gelismisLab') ? 2 : 1);
 export function gunlukGider(k) {
-  return 300 + (k.koruma && k.koruma.devriye ? 200 : 0) + k.personel.reduce((s, p) => s + PERSONEL[p.rol].maas, 0) + k.tesisler.reduce((s, t) => s + TESISLER[t].bakim, 0);
+  return Math.round(M.zorlukCarpani(k, 'ekonomi', [0.6, 1, 1.3]) * (300 + (k.koruma && k.koruma.devriye ? 200 : 0) + k.personel.reduce((s, p) => s + PERSONEL[p.rol].maas, 0) + k.tesisler.reduce((s, t) => s + TESISLER[t].bakim, 0)));
 }
 // İtibar arttıkça bilimsel kuruluşlar günlük destek verir (karar 61, 91)
-export const gunlukDestek = (k) => Math.min(2500, Math.floor(k.itibar / 10) * 100);
+export const gunlukDestek = (k) => Math.round(Math.min(2500, Math.floor(k.itibar / 10) * 100) * M.zorlukCarpani(k, 'ekonomi', [1.4, 1, 0.8]));
 export const okunmamis = (k) => k.mesajlar.filter((m) => !m.okundu).length;
 
 function kilitNedeni(k, oge) {
@@ -317,7 +317,7 @@ export function analizBaslat(k, id) {
   if (!dur.hazir) return dur.metin + '.';
   const suren = ARASTIRMALAR.filter((x) => k.arastirmalar[x.id] && k.arastirmalar[x.id].durum === 'analiz').length;
   if (suren >= analizKapasitesi(k)) return 'Laboratuvar dolu; süren analiz bitince başlatabilirsin.';
-  let sure = ANALIZ_DK;
+  let sure = ANALIZ_DK * M.zorlukCarpani(k, 'arastirma', [0.5, 1, 1.5]);
   if (M.personelVar(k, 'biyolog')) sure *= 0.6;
   if (tesisVar(k, 'gelismisLab')) sure *= 0.75;
   k.arastirmalar[id] = { durum: 'analiz', bitis: k.dk + sure };
@@ -808,7 +808,7 @@ function laboratuvarGuncelle(d) {
     .reverse()
     .forEach((n) => {
       if (bos <= 0 || n.durum !== 'sira') return;
-      let sure = NUMUNE_DK;
+      let sure = NUMUNE_DK * M.zorlukCarpani(k, 'arastirma', [0.5, 1, 1.5]);
       if (M.personelVar(k, 'biyolog')) sure *= 0.6;
       if (tesisVar(k, 'gelismisLab')) sure *= 0.75;
       if (n.tip === 'bitki' && M.personelVar(k, 'botanikUzmani')) sure *= 0.5;

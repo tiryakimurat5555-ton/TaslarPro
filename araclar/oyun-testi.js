@@ -19,10 +19,21 @@ let sonEylem = 0;
 const baslangicNufus = {};
 k.hayvanlar.forEach((b) => (baslangicNufus[b.tur] = (baslangicNufus[b.tur] || 0) + 1));
 
+const KOTU = /undefined|NaN|\[object|null\b|  |\.\.(?!\.)| ,/;
+const kotu = new Set();
+let sureTop = 0;
+let sureSayi = 0;
+let sureEnCok = 0;
 for (let t = 0; t < toplam; t += adim) {
+  const t0 = performance.now();
   M.guncelle(d, adim, {});
   Mz.guncelle(d);
+  const gecen = performance.now() - t0;
+  sureTop += gecen;
+  sureSayi++;
+  if (gecen > sureEnCok) sureEnCok = gecen;
   for (const o of M.olaylariAl(d)) {
+    if (o.metin && KOTU.test(o.metin)) kotu.add(o.metin.slice(0, 160));
     say(o.tur);
     if (o.metin && !ornekler[o.tur]) ornekler[o.tur] = o.metin;
     if (o.tur === 'tehdit') M.yerGit(d, 'istasyon'); // uyarılınca geri çekil
@@ -101,5 +112,10 @@ console.log(`Ekosistem: gölet ${k.eko.golet.toFixed(2)}, göç ${JSON.stringify
 console.log(`Aşama 6: küçük ${K.kucukSayisi(k)}, mağara ${k.arsiv.magara.odalar.length}, kaçak ${JSON.stringify(k.kacak.tuzaklar.length)} kalan ${k.kacak.bulunan} söküldü ${k.kacak.kurtarilan} kurtarıldı, koruma ${JSON.stringify(Object.fromEntries(Object.entries(k.koruma.projeler).map(([a, b]) => [a, b.durum])))}, yangın ${k.eko.yanginlar}`);
 console.log(`Bitti: ${M.zamanSozu(k.dk)}; itibar ${k.itibar}; tür ${Object.keys(k.arsiv.turler).length}; birey ${Object.keys(k.arsiv.bireyler).length}; foto ${k.arsiv.fotolar.length}; ses ${k.arsiv.sesler.length}; olay ${k.arsiv.olaylar.length}`);
 Object.entries(k.arsiv.turler).forEach(([t, v]) => console.log(`  ${t}: ${v.davranislar.join(', ')}`));
+console.log(`Performans: kare başına mantık ortalama ${(sureTop / sureSayi).toFixed(2)} ms, en çok ${sureEnCok.toFixed(1)} ms (hayvan ${k.hayvanlar.filter((b) => !b.olu).length})`);
+k.mesajlar.forEach((m) => KOTU.test(m.metin) && kotu.add(m.metin.slice(0, 160)));
+console.log(`Bozuk metin: ${kotu.size}`);
+[...kotu].slice(0, 10).forEach((m) => console.log('  ' + m));
+if (process.env.KAYIT_YAZ) require('fs').writeFileSync(process.env.KAYIT_YAZ, JSON.stringify(M.kayitHazirla(k)));
 console.log('Örnek metinler:');
 Object.entries(ornekler).forEach(([t, m]) => console.log(`  [${t}] ${m}`));

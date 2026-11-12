@@ -233,7 +233,10 @@ function seritGeo(yari, x0, x1, adim, yKaydir = 0) {
 
 const renkKarisim = (a, b, t) => new THREE.Color(a).lerp(new THREE.Color(b), t);
 
-export function sahneKur(gl, d) {
+export function sahneKur(gl, d, secenek = {}) {
+  // Düşük grafik (Aşama 7, zayıf cihazlar): hayvanlar daha yakından çizilir, sis daha yakın
+  const DUSUK = !!secenek.dusuk;
+  const CIZIM = DUSUK ? 70 : 120;
   const genislik = gl.drawingBufferWidth;
   const yukseklik = gl.drawingBufferHeight;
   const tuval = {
@@ -575,7 +578,7 @@ export function sahneKur(gl, d) {
       sahne.background.copy(gokRenk);
       sahne.fog.color.copy(gokRenk);
       sahne.fog.near = (20 + l * 50) * (1 - bulut * 0.5);
-      sahne.fog.far = (80 + l * 100) * (1 - bulut * 0.45);
+      sahne.fog.far = (80 + l * 100) * (1 - bulut * 0.45) * (DUSUK ? 0.6 : 1);
       // Zemin yağmurla yeşerir, kurakta sararır; gölet çekilir
       if (eko) {
         zemin.material.color.copy(kuruZemin).lerp(yesilZemin, Math.min(1, Math.max(0, (eko.yesil - 0.15) / 0.8)));
@@ -696,7 +699,7 @@ export function sahneKur(gl, d) {
       const lesVar = new Set(k.lesler.map((x) => x.bireyId));
       const goruldu = new Set();
       for (const b of k.hayvanlar) {
-        const uzak = Math.abs(b.x - o.x) > 120 || Math.abs(b.y - o.y) > 120;
+        const uzak = Math.abs(b.x - o.x) > CIZIM || Math.abs(b.y - o.y) > CIZIM;
         if (uzak || (b.olu && !lesVar.has(b.id))) {
           const mm0 = modeller.get(b.id);
           if (mm0) mm0.m.visible = false;
