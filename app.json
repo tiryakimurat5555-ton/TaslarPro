@@ -1,16 +1,16 @@
 {
   "expo": {
-    "name": "Diyarın Kaderi",
+    "name": "Vahşi Topraklar",
     "slug": "taslarpro",
     "owner": "murat5561",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "landscape",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#141210"
+      "backgroundColor": "#14161b"
     },
     "ios": {
       "supportsTablet": true,

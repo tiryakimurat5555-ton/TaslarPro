@@ -1,9 +1,10 @@
 # TaslarPro deposu — çalışma notları
 
-Depo artık **Diyarın Kaderi** için kullanılıyor (7 Kasım 2026): Bahtiyar'ın Android (Kotlin + Jetpack Compose) gladyatör
-RPG'si "Silahşör: Diyarın Kaderi"nin Expo'ya birebir taşınması. Murat: "MMORPG'nin yerine", "hepsi birden", 18+ eşlikçi
-sahneleri "olduğu gibi taşı". Görünen ad "Diyarın Kaderi", slug/EAS projesi aynı (taslarpro), dikey ekran.
-Önceki oyunlar: İki Sancak `arsiv/iki-sancak/` (App.js, oyun/, efektler, araçlar), Renkli Taşlar `arsiv/renkli-taslar/`.
+Depo artık **Vahşi Topraklar** için kullanılıyor (12 Kasım 2026): Murat "Taslarpro depomuzdaki oyunu tamamen sil, yerine
+Kayıp Okyanus'un karada geçen versiyonu gibi bir şey yap; amaç hayvanlarla savaşmak. Farklı haritalar, çeşitli hayvanlar,
+seviye sistemi, basitten güçlüye silahlar, hepsi 3B. ElevenLabs ile sesler üret. Bana bir şey sorma" dedi; sonra "sesler de 3B olacak".
+Görünen ad "Vahşi Topraklar", slug/EAS projesi aynı (taslarpro), yatay ekran. Diyarın Kaderi silindi (son hâli commit da1e9e1'de).
+Önceki oyunlar: İki Sancak `arsiv/iki-sancak/` (Vahşi Topraklar'ın altyapısı buradan alındı), Renkli Taşlar `arsiv/renkli-taslar/`.
 
 ## Murat ile çalışma
 - Murat'ın yalnızca iPhone'u var; kodu elle düzenleyemez. Bütün dosyaları ben yazar, depoya gönderirim.
@@ -13,56 +14,28 @@ sahneleri "olduğu gibi taşı". Görünen ad "Diyarın Kaderi", slug/EAS projes
 - Test edilmemiş bir özelliği çalışıyor diye sunma. Görüntü ve ses ancak Murat Expo Go'da denediğinde doğrulanır.
 - Murat'a belge verirken Claude Docs kullanma (VoiceOver ile erişilebilirliği kötü dedi); sade, başlıklı, tablo başlıklı HTML sayfası yap.
 
-## Diyarın Kaderi
-- Kotlin kaynağı depoda yok (Murat'ın gönderdiği DiyarinKaderi_Proje.zip). Taşıma kuralları: `src/TASIMA_KURALLARI.md`
-  (Kotlin → JS eşlemeleri; adlar Kotlin ile AYNI, İngilizce kalır; metinler birebir). Çalışma zamanı `src/kt.js`:
-  Data (data class: static T, defaults(), copy, register), defineEnum, MutableStateFlow, idiv, Random, koleksiyonlar, toJson/fromJson.
-- Dosyalar (Kotlin paketlerinin aynası): `src/domain/model.js` (tüm modeller), `src/domain/engine/*` (CombatEngine, DuoCombatEngine,
-  AestheticCombatEngine, LabyrinthGenerator, anlatım motorları, TextTemplateEngine), `src/data/*` (GameRepository: oyun durumu merkezi;
-  SaveManager: AsyncStorage 'diyarinkaderi-kayit-v1', açılışta initialize() ile belleğe alınır; dükkân/karakter/eşlikçi verileri),
-  `src/ui/viewmodel/GameViewModel.js` (getGameViewModel() tekil), `src/ui/screens/*`, `src/ui/kit.js` (Compose→RN bileşenleri, VoiceOver),
-  `src/ui/theme.js`, `src/audio/SoundManager.js` (expo-audio, keepAudioSessionActive, mixWithOthers; ayarlar 'diyarinkaderi-ses-v1'),
-  `src/R.js` (R.raw.x / R.drawable.x), `App.js` (MainActivity).
-- Sesler: `assets/ses/*.m4a` (Kotlin res/raw'dan AAC'ye sıkıştırıldı: müzik 56k, efekt 96k; 160 MB → 47 MB). Görsel `assets/gorsel/`.
-- VoiceOver: sekmeler "Ad, seçili, sekme 1 / 5"; dövüşte her hamle duyurulur; pencereler modal ve iki parmak Z ile kapanır;
-  düğme içeren kartlarda etiket başlıkta (iOS'ta etiketli kap içini gizler); dükkân satırı = bilgi düğmesi + "Satın Al: ad".
-- Bilinçli değişiklikler: ayarlar metninde "TalkBack" → "VoiceOver ve TalkBack"; boş çanta yuvaları VoiceOver'dan gizli;
-  hamle etiketinde hasar iki kez yazılmaz. Kotlin'den gelen tuhaflıklar korunur (ör. "Deneme'ın" eki, Estetik düelloda nesne yazdırma).
-- Testler: `bun test` (Kotlin testlerinin taşınmışı, 34 dosya 192 test; DeepCombat.. testExecutionTraitBonusDamage Kotlin'de de rastgele, ara sıra düşer).
-  Tarayıcı: `bash araclar/web-deneme/yap.sh /tmp/claude-0/web && NODE_PATH=/opt/npm-tools/node_modules node araclar/web-deneme/dene.cjs /tmp/claude-0/web /tmp/claude-0/ekran`
-  (yeni oyun → hikaye → isim → 5 sekme → dövüş → demirci → han → görev → gün → kayıttan devam).
-- Paket denetimi: `bun build index.js --outdir <geçici> --target=browser -e react -e react-native -e expo -e 'expo-*' -e '@react-native-async-storage/*' -e react-native-safe-area-context -e '*.m4a' -e '*.jpg' -e '*.png'`
-- 8 Kasım, Murat: "Görev ödülünü alınca VoiceOver hiç okumuyor". Sebep (Yoga): kit Scroll/LazyList `flex: 1` (taban 0) idi;
-  yüksekliği belirsiz pencere içinde 0 yüksekliğe iniyor, pencere boş ama modal kalıyordu. Artık flexGrow 1 + flexShrink 1 (taban auto).
-  Ayrıca kit Dialog: aynı anda tek üst düzey pencere (sıra; iOS iki Modal'ı birden sunamaz), pencere içindeki pencereler her zaman açılır.
-  8 Kasım, Murat: "emojileri kaldır". Tüm src/ ve test/ metinlerinden emojiler betikle silindi (Extended_Pictographic +
-  yanındaki tek boşluk; sayı/`}` ardındaki 🪙 → "Altın"; birim olarak kullanılan 🪙/👑 elle "Altın"/"Şöhret" yapıldı). İkon alanları
-  (icon, avatarIcon) artık boş dize; `${x.icon} ` kalıpları silindi; kit Ikon hiçbir şey çizmez. Silahsız gösteride kritik atış
-  artık '⚡' ile değil anlatım parçasıyla tanınır (GameViewModel KRITIK_ATIS_IPUCLARI). Kilitli arena sekmeleri "(Kilitli)" der.
-  Yeni metin yazarken emoji KULLANMA.
-- Görseller (8 Kasım, Murat: "görsel koyulacak yerlere görsel koy, butonları görselleştir, düzyazı bırakma; ekran okuyucudan
-  gizlenebilir"; seçim: oyun simgeleri). game-icons.net (CC BY 3.0; künye Ayarlar ekranının altında) 224 simge
-  `src/ui/gorseller.js` (üretim: `node araclar/gorsel-uret.cjs <game-icons klasörü> araclar/gorsel-secim.txt`; klasör:
-  `git clone --depth 1 https://github.com/game-icons/icons`). react-native-svg 15.16.0 (SDK 58). Kit: Gorsel, GorselRozet,
-  GorselBaslik, GorselDeger; Btn/Chip `gorsel` prop; Tabs başlığı { baslik, gorsel }. Hepsi VoiceOver'dan gizli, etiketler aynı.
-  Eşleme: `src/ui/gorsel-esleme.js` (esyaGorseli+nadirlikRengi, tasGorseli+tasRengi, npcGorseli, odaGorseli, arenaGorseli...).
-  Ortak eylem simgeleri: kapat/ayrıl 'kapi', satın al 'sikkeler', sat 'para-kesesi', yükselt 'yukselt', dinlen 'yatak',
-  dövüş 'capraz-kilic', yola çık 'patika', ödül 'hediye', kilitli 'kilit', incele 'bilgi'/'gozlemci'.
-- Otomatik kayıt (8 Kasım, Murat "yap"): Kotlin yalnız ad/gün/ev/altın-eşya anlarında kaydediyordu. Artık GameRepository
-  `_otomatikKayitKur`: player/dayState/leagueState/rooms/enemies değişince en geç 1,5 sn içinde kaydeder (zamanlayıcı kuruluyken
-  yeniden kurulmaz); quests/adventures saniyede bir yenilendiği için yalnız durum imzası (id + başladı/bitti/alındı) değişince.
-  Oyun başlamadan (startNewGame / loadGame / ilk autoSave öncesi) yazmaz. App arka plana geçince `kaydiHemenYaz()`.
-- Arena sesleri (8 Kasım, Murat: "1v1 için ElevenLabs ile temaya uygun efektler, desibelleri ayarla"): 16 ses, ElevenLabs
-  eleven_text_to_sound_v2 (akış "Diyarın Kaderi arena sesleri"). Bu ortam elevenlabsusercontent.com'a erişemez: bağlantılar
-  `.sesler/liste.txt`'e yazılıp gönderilir, `.github/workflows/sesleri-indir.yml` ham dosyaları `.sesler/ham/`'a indirir;
-  `bash araclar/arena-sesleri-isle.sh` sessizliği kırpar, LUFS eşitler (vuruş -14, kanama -18, sıyrılma -17, kritik/nakavt -12,
-  seyirci tepkisi -15, döngü -20), -2 dB tepe sınırı, 128k m4a → `assets/ses/arena/`. Tablo `src/audio/ArenaSesleri.js`
-  (silahVurusSesi: kılıç/gürz/balta/hançer-mızrak/ok/asa; hamleSesleri: CombatEvent'e göre kritik+seyirci coşkusu, blok,
-  sıyrılma, kanama ("KAN KAYBI"), nakavt+zafer/yenilgi, beraberlik). SoundManager: ortam kanalı playAmbience/stopAmbience
-  (efektte yarıya kısılır), playSfx 4. parametre düzey, seyirci ayarları (isCrowdEnabled, crowdVolume; Ayarlar ekranında).
-  Yalnız 1v1 (GameViewModel.startCombat): seyirci dövüş başında başlar, dismissCombatModal'da söner; efekt çalar, 450 ms sonra
-  metin gelir; aralık = efekt + harf/30 sn, en az 4,5 en çok 7 sn (eskiden 3 sn). Tarayıcı taklidi m4a'yı çalmaz (dize kaynak).
-  Tarayıcı taklidi CSS ile çizdiği için bu tür Yoga yükseklik hatalarını göstermez; pencerelerde Scroll kullanırken dikkat.
+## Vahşi Topraklar
+- Dosyalar: `oyun/veri.js` (HARITALAR 5, HAYVANLAR 20 (her haritada 3 tür + lider), SILAHLAR 11, ZIRHLAR, YETENEKLER 4, IKSIR),
+  `oyun/mantik.js` (saf mantık: avcı, hesapla, gerekenXp 60×sv^1.7, hayvanStat, hasar, dunyaOlustur(k, haritaId), guncelle,
+  tüccar satinAl, kampaDon, patronaGit, yön tarifleri), `oyun/sahne.js` (expo-gl + three: hayvan biçimleri dortayak/ayi/kedi/gergedan/
+  timsah/yilan/akrep/kus, bacak ve kanat hareketi, ağaç türleri cam/karcam/mese/olu/kaktus/saz/akasya, kamp, göller, silah modeli
+  silaha göre değişir, yayla ok uçar), `oyun/efekt.js`, `oyun/ses.js` ve `oyun/gezgin.js` (İki Sancak'tan aynen), `App.js`.
+- Haritalar (seviye): Yeşil Orman 1-7 (lider Boz Ayı sv8, kuzey), Kavurucu Çöl 7-13 (Dev Kum Akrebi sv14, doğu), Sisli Bataklık 12-18
+  (Yaşlı Timsah sv19, güney; göller geçilmez), Karlı Dağlar 17-24 (Kutup Ayısı sv25, batı), Altın Savan 22-30 (Aslan Kral sv30, kuzeydoğu).
+  Her harita yarıçap 110 m, ortada kamp (13 m, hayvan girmez, can hızlı dolar, Tüccar). Harita değişince Oyun yeniden kurulur (key).
+  Menü > Haritalar; kilitli olanlar seviyeyle açılır. Liderler 240 sn'de yeniden çıkar. Tilki ve gergedan sen saldırmadıkça saldırmaz.
+- Denge (Murat'a sorulmadan seçildi, "bana bir şey sorma" dedi; değiştirmek isterse öneri yapılır): bot testi
+  `bun araclar/oyun-testi.js 90` 65 dk'da sv 30, 0 ölüm (bot iksir ve yeteneği kusursuz kullanıyor).
+- Sesler (ElevenLabs eleven_text_to_sound_v2, akış "Vahşi Topraklar sesleri"): 12 hayvan, 6 silah, ıska, yaralı, düştü, altın, seviye,
+  5 ortam. Ham dosyalar `.sesler/ham/` (vahsi-sesler dalındaki indirme iş akışıyla alındı). `bash araclar/sesleri-isle.sh <ham>`:
+  LUFS eşitler, hayvanlar ve "dustu" 3B olur: 5 konum eşit güçlü pan + kulaklar arası 0,6 ms gecikme, arka sürüm alçak geçiren + yankı
+  (`ad_0..4`, `ad_0a..4a`, en çok 2,6 sn), `oyun/sesler.js`'i yazar. Bu bağlayıcı ElevenLabs'te en çok ~1-2 sn ses üretiyor; ortam sesleri
+  bu yüzden `python3 araclar/ortam-yap.py <ham> assets/efekt` ile 24 sn'lik döngüye çevrildi (süzülmüş gürültü rüzgârı + kısa sesin rastgele
+  yön ve zamanlarda tekrarları). Kırpılmış sentez sesler (adim, odak, sinir, sonar, kalp...) İki Sancak'tan.
+- 3B ses kullanımı: efekt.yonlu(ses, oyuncu, hayvan, düzey, duyma) uzaklığa göre (3/m)^0,85 kısar. Kovalayan en yakın 2 hayvan 2,5 sn'de
+  bir, gezinen en yakın 3 hayvandan biri 7-16 sn'de bir sesini çıkarır (40 m); hedef menzil dışındaysa sonar; hayvan ölünce yönünden
+  "dustu". Ortam döngüsü ayrı kanal (ses 0,35, Ayarlar > Ortam sesi). Telefonda doğrulanmadı.
+- Kayıt: AsyncStorage 'vahsi-avci-v1', ayarlar 'vahsi-ayar-v1'. araclar/web-deneme hâlâ Diyarın Kaderi'ne göre; Vahşi Topraklar'a uyarlanmadı.
 
 ## İki Sancak (arşivde: yollar artık arsiv/iki-sancak/ altında)
 - Tasarım kararları (6 Kasım, Murat): fantastik dünya, 4 sınıf (Savaşçı, Okçu, Büyücü, Rahip), deneme için seviye sınırı 30,
