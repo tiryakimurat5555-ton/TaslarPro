@@ -47,13 +47,19 @@ fs.mkdirSync(O, { recursive: true });
       await bekle(120);
     }
     let bulundu = false;
-    for (let i = 0; i < 40; i++) {
+    let yon = 120;
+    let onceki = '';
+    for (let i = 0; i < 60; i++) {
       const m = await sonSoz();
       if (m.includes(yazi) && !m.startsWith('Menü') ? m.split('. ').some((p) => p.startsWith(yazi)) || m.startsWith(yazi) : m.startsWith(yazi)) {
         bulundu = true;
         break;
       }
-      await kaydir(120, 0, 100, 400);
+      // Listenin sonuna geldiysek (aynı satır yineleniyor) geri yönde ara: başsız tarayıcıda kaydırma bazen iki satır atlar
+      const sira = m.match(/, (\d+) \/ (\d+)$/);
+      if (sira && sira[1] === sira[2] && yon > 0) yon = -120;
+      onceki = m;
+      await kaydir(yon, 0, yon > 0 ? 100 : 300, 400);
       await bekle(150);
     }
     if (!bulundu) return console.log('YOK:', yazi);
@@ -121,6 +127,18 @@ fs.mkdirSync(O, { recursive: true });
   await ciftDokun();
   await parmak(1);
   await bekle(800);
+  // Aşama 5: ekosistem raporu, bitkiler, numune
+  await menuSec('Ekosistem');
+  await yaz('8a-ekosistem', true);
+  await geri();
+  await menuSec('Çevredeki bitkiler');
+  await menuSec('Tanımadığın');
+  await yaz('8b-bitki', true);
+  await geri();
+  await menuSec('Numune ve veteriner');
+  await menuSec('Su numunesi al');
+  await yaz('8c-numune', true);
+  await geri();
   await menuSec('Araştırma merkezi');
   await yaz('9-merkez', true);
   await menuSec('Görevler');
@@ -143,7 +161,10 @@ fs.mkdirSync(O, { recursive: true });
   await menuSec('Arşiv');
   await menuSec('Ansiklopedi');
   await yaz('15-ansiklopedi', true);
-  await menuSec('Afrika Fili');
+  // İlk keşfedilen türün sayfası (hangi türün görüleceği rastgele)
+  await parmak(1);
+  await ciftDokun();
+  await bekle(500);
   await yaz('16-fil', true);
   await geri();
   await geri();
@@ -155,9 +176,19 @@ fs.mkdirSync(O, { recursive: true });
   await surukle(0, -120, 2500);
   const sonra = await s.evaluate(() => ({ x: window.__vahsiDunya.oyuncu.x, y: window.__vahsiDunya.oyuncu.y }));
   console.log('YÜRÜDÜ:', Math.hypot(sonra.x - once.x, sonra.y - once.y).toFixed(1), 'metre');
+  // Sağanak ve çekilmiş gölet görüntüsü (hava zorlanır)
+  await s.evaluate(() => {
+    const k = window.__vahsiDunya.k;
+    const dk = k.dk % 1440;
+    k.eko.hava.yagmur = [{ bas: dk - 5, bit: dk + 120, siddet: 1 }];
+    k.eko.golet = 0.25;
+    k.eko.yesil = 0.2;
+  });
+  await bekle(3000);
+  await yaz('19-saganak');
   const ozet = await s.evaluate(() => {
     const k = window.__vahsiDunya.k;
-    return { tur: Object.keys(k.arsiv.turler), birey: Object.keys(k.arsiv.bireyler).length, foto: k.arsiv.fotolar.length, butce: k.butce, ekipman: k.ekipman, gorev: k.teklifler.map((t) => t.durum) };
+    return { bitki: Object.keys(k.arsiv.bitkiler), numune: k.numuneKutusu.length, golet: k.eko.golet, hava: k.eko.hava.tur, tur: Object.keys(k.arsiv.turler), birey: Object.keys(k.arsiv.bireyler).length, foto: k.arsiv.fotolar.length, butce: k.butce, ekipman: k.ekipman, gorev: k.teklifler.map((t) => t.durum) };
   });
   console.log('ÖZET', JSON.stringify(ozet));
   if (h.length) console.log('HATALAR:', h.join('\n'));

@@ -74,6 +74,8 @@ export const DAVRANISLAR = {
   dogum: { fiil: 'yeni doğmuş yavrusuyla', ad: 'Doğum', nadir: true },
   bekliyor: { fiil: 'hareketsiz bekliyor', ad: 'Hareketsiz bekleme' },
   kolluyor: { fiil: 'çevreyi kolluyor', ad: 'Çevreyi gözetleme' },
+  gocEdiyor: { fiil: 'sürüsüyle göç ediyor', ad: 'Mevsimsel göç', nadir: true },
+  nehirGeciyor: { fiil: 'göç sırasında nehri geçiyor', ad: 'Göçte nehir geçişi', nadir: true },
 };
 
 // Hayvan sesinin anlamı (ses analizi, karar 49 ve 87)

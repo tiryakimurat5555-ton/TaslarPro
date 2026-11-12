@@ -402,6 +402,14 @@ export function sahneKur(gl, d) {
       parca(g, new THREE.BoxGeometry(4, 2.6, 3.2), '#f2f2ee', 10, 1.3, R(8));
       parca(g, new THREE.BoxGeometry(0.9, 0.25, 0.05), '#c83a3a', 10, 2.0, R(8) + 1.62);
       parca(g, new THREE.BoxGeometry(0.25, 0.9, 0.05), '#c83a3a', 10, 2.0, R(8) + 1.62);
+    } else if (id === 'rehab') {
+      // Rehabilitasyon alanı: çitle çevrili bölme ve gölgelik
+      for (let i = 0; i < 10; i++) {
+        const a = (i / 10) * Math.PI * 2;
+        parca(g, new THREE.CylinderGeometry(0.07, 0.07, 1.3, 5), '#7a5a3a', 1 + Math.sin(a) * 3, 0.65, R(9.5 + Math.cos(a) * 2.2));
+      }
+      parca(g, new THREE.TorusGeometry(2.6, 0.04, 4, 20), '#8a6a44', 1, 1.1, R(9.5), Math.PI / 2, 0, 0).scale.set(1.15, 0.85, 1);
+      parca(g, new THREE.BoxGeometry(2, 0.1, 1.4), '#5a6a3a', 1, 1.6, R(10.5));
     }
     sahne.add(g);
     return g;
@@ -444,6 +452,25 @@ export function sahneKur(gl, d) {
 
   const kamHedef = new THREE.Vector3();
   const kamKonum = new THREE.Vector3();
+  // Yağmur (Aşama 5): oyuncunun çevresinde düşen damla çizgileri
+  const DAMLA = 700;
+  const damlaKonum = new Float32Array(DAMLA * 6);
+  const damlaGeo = new THREE.BufferGeometry();
+  damlaGeo.setAttribute('position', new THREE.BufferAttribute(damlaKonum, 3));
+  const damlalar = new THREE.LineSegments(damlaGeo, new THREE.LineBasicMaterial({ color: '#c8d4e0', transparent: true, opacity: 0.55 }));
+  damlalar.frustumCulled = false;
+  damlalar.visible = false;
+  sahne.add(damlalar);
+  const damlaY = new Float32Array(DAMLA).map(() => Math.random() * 14);
+  const damlaX = new Float32Array(DAMLA).map(() => (Math.random() - 0.5) * 40);
+  const damlaZ = new Float32Array(DAMLA).map(() => (Math.random() - 0.5) * 40);
+  const kuruZemin = new THREE.Color('#bda55c');
+  const yesilZemin = new THREE.Color('#8e9c4c');
+  const bulutGok = new THREE.Color('#7d8790');
+  zemin.material = zemin.material.clone(); // malzemeler renge göre paylaşılıyor; bunlar değişeceği için ayrı
+  goletKiyi.material = goletKiyi.material.clone();
+  const goletKiyiRenk = goletKiyi.material.color.clone();
+  const kuruCamur = new THREE.Color('#9a8458');
   let ilk = true;
   let saat = 0;
   const gunduzGok = new THREE.Color('#9ec9ea');
@@ -467,10 +494,40 @@ export function sahneKur(gl, d) {
       const l = isikDuzeyi(k.dk);
       const alaca = Math.max(0, 1 - Math.abs(l - 0.45) * 3) * (l < 1 ? 1 : 0);
       gokRenk.copy(geceGok).lerp(gunduzGok, l).lerp(alacaGok, alaca * 0.5);
+      const eko = k.eko;
+      const bulut = eko ? (eko.yagmurVar ? (eko.siddet > 0.8 ? 0.75 : 0.5) : eko.hava && eko.hava.tur === 'bulutlu' ? 0.35 : 0) : 0;
+      if (bulut) gokRenk.lerp(bulutGok.clone().multiplyScalar(0.25 + l * 0.75), bulut);
       sahne.background.copy(gokRenk);
       sahne.fog.color.copy(gokRenk);
-      sahne.fog.near = 20 + l * 50;
-      sahne.fog.far = 80 + l * 100;
+      sahne.fog.near = (20 + l * 50) * (1 - bulut * 0.5);
+      sahne.fog.far = (80 + l * 100) * (1 - bulut * 0.45);
+      // Zemin yağmurla yeşerir, kurakta sararır; gölet çekilir
+      if (eko) {
+        zemin.material.color.copy(kuruZemin).lerp(yesilZemin, Math.min(1, Math.max(0, (eko.yesil - 0.15) / 0.8)));
+        const gs = (GOLET.su === undefined ? GOLET.r : GOLET.su) / GOLET.r;
+        golet.visible = gs > 0.01;
+        golet.scale.set(Math.max(0.01, gs), Math.max(0.01, gs), 1);
+        goletKiyi.material.color.copy(goletKiyiRenk).lerp(kuruCamur, 1 - Math.min(1, eko.golet * 1.5));
+      }
+      // Yağmur damlaları
+      damlalar.visible = !!(eko && eko.yagmurVar);
+      if (damlalar.visible) {
+        const n = eko.siddet > 0.8 ? DAMLA : Math.floor(DAMLA * 0.45);
+        const hiz = 18 * dt;
+        for (let i = 0; i < DAMLA; i++) {
+          damlaY[i] -= hiz;
+          if (damlaY[i] < 0) {
+            damlaY[i] += 14;
+            damlaX[i] = (Math.random() - 0.5) * 40;
+            damlaZ[i] = (Math.random() - 0.5) * 40;
+          }
+          const x = i < n ? o.x + damlaX[i] : 0;
+          const z = i < n ? R(o.y) + damlaZ[i] : 0;
+          const y = i < n ? damlaY[i] : -50;
+          damlaKonum.set([x, y, z, x + 0.05, y + 0.7, z], i * 6);
+        }
+        damlaGeo.attributes.position.needsUpdate = true;
+      }
       gok.intensity = 0.28 + l * 0.85;
       gunes.intensity = 0.12 + l * 1.2;
       gunes.color.copy(renkKarisim('#9aaad8', '#fff3dd', l));
@@ -534,6 +591,9 @@ export function sahneKur(gl, d) {
         });
         if (!b.olu && !t.kus) m.position.y += yatik ? -0.15 * t.boy * m.userData.olcek : 0;
       }
+      modeller.forEach((mm, id) => {
+        if (!goruldu.has(id)) mm.m.visible = false;
+      });
       const gb = d.gozlemId ? d.hayvanMap.get(d.gozlemId) : null;
       halka.visible = !!(gb && !gb.olu && goruldu.has(gb.id));
       if (halka.visible) {

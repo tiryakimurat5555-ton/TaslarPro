@@ -36,7 +36,7 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
 - Test edilmemiş bir özelliği çalışıyor diye sunma. Görüntü ve ses ancak Murat Expo Go'da denediğinde doğrulanır.
 - Murat'a belge verirken Claude Docs kullanma (VoiceOver ile erişilebilirliği kötü dedi); sade, başlıklı, tablo başlıklı HTML sayfası yap.
 
-## Vahşi Yaşam (brif Aşama 1-3 yapıldı: teknik temel, saha prototipi, ilk hayvan ve gözlem döngüsü)
+## Vahşi Yaşam (brif Aşama 1-5 yapıldı: teknik temel, saha prototipi, gözlem döngüsü, araştırma merkezi, ekosistem)
 - Dosyalar: `oyun/veri.js` (arazi: YARICAP 200, ISTASYON merkezde, GOLET (48,38), nehir y=nehirY(x)=-100+8sin(x/35) yarı genişlik 4,
   GECITLER x=-60 ve 70 (yalnız buradan geçilir), KAYALIK (-115,45), MAGARA, YERLER 10 nokta; DAVRANISLAR 24; TURLER 14: aslan leopar sirtlan
   fil zurafa zebra ceylan domuz suAygiri timsah gergedan kartal piton manda (kisa kimlik öneki, ses, sekil, aktif gunduz/gece/karma,
@@ -81,8 +81,33 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   ARASTIRMALAR 9 (ilerleme → analiz 8 oyun saati → itibar, fon, ekipman açılır). Kurum teklifleri (en çok 3). Kamera tuzakları 15 m'de
   20 oyun dakikasında bir fotoğraf; GPS'li hayvanlar Yerler'de. Mesajlar (k.mesajlar, son 60). Mz.guncelle(d) her karede.
   Sahnede tesis ve tuzak modelleri. Bot testi merkez işlerini de yapar. Tarayıcı denemesi jest-dene.cjs menülerde sağa kaydırarak gezer.
-- Sıradaki aşamalar (brif bölüm 6): Aşama 5 ekosistem (bitki/su/iklim, hastalık, göç, yaşlanma), Aşama 6 100+ tür, mağara içi, afetler, koruma projeleri,
-  Aşama 7 uçtan uca erişilebilirlik testleri. Hiçbiri Murat'a sorulmadan başlanmadı.
+- Aşama 5 ekosistem (12 Kasım akşam, Murat "devam" dedi; sayılar ÖNERİ): `oyun/ekosistem.js` (saf, mantik'i içe aktarmaz; mantik ve merkez
+  onu kullanır). Takvim: yıl 24 gün = 10 gün yağışlı + 14 gün kurak (takvim(gun)); yıl başında bazen yağmur gecikmesi (2-4 gün) ya da
+  kurak yıl. Günlük hava havaUret (acik/parcali/bulutlu/yagmurlu/saganak/sicak, yağmur dilimleri saat aralığıyla), yağışta dürbün ×0,75,
+  sağanakta ×0,55 (gorusCarpani, durbunMenzili içinde). k.eko: islaklik (toprak nemi), yesil, golet (0-1), alg, nehir, ot/yaprak ızgarası
+  (16×16, 25 m hücre; kapasite bölgeye ve ağaç sayısına göre, d.kap her açılışta hesaplanır), salgin, teshisler, gocler, gecitPusu.
+  ekoAdim her karede: yağış → nem, gölet, alg temizliği; buharlaşma; sıcak ve sığ gölette alg; ot büyümesi neme bağlı.
+  GOLET.su = o anki su yarıçapı (goletAyarla): golettemi/engelleItele/suNoktasi bunu kullanır, kuruyunca su nehirde; yerleşim için
+  goletCanagi (tam r). Otlayan gruplar hücreden yer (TUKETIM), günlük besin → kondisyon. Planda en gür otu/yaprağı seçer; sağanakta ağaç
+  altına sığınır. Birey: yas (gün; evre YASAM tablosundan, yıl×24), kondisyon, hastalik {id, siddet, tedavi, goruldu}, teshis, yetim,
+  bagisik, gecmis (son 12 olay). gunlukEkosistem (gunlukDogumlar başında): hava, mevsim duyurusu, yaşlanma, erginleşen genç erkek
+  ayrılır (k.disari), kondisyon, hastalık seyri ve bulaşma (yara: av kaçışı; parazit: kirli gölet suyu; uyuz: grup içi; şarbon: kurak
+  mevsimde yılda bir olası salgın, leşten 60 m), açlık/yaşlılık/yetim ölümleri, göç kararı ve dönüşü. Doğum çoğunlukla yağışlı mevsimde.
+  Göç (GOCMENLER zebra doğu geçidi, ceylan batı geçidi): g.goc yol noktaları → geçitte b.gecis ile nehir geçilir, timsahlar gecitPusu'da
+  bekler (geçenleri %3/sn yakalayabilir) → alan dışına çıkınca k.disari'ya taşınır → yağmurla döner (kayıp ve göçte doğan yavrular).
+  Açık sistem: azalan/tükenen gruba çevreden birey gelir (yoksa tür bölgeden silinirdi). Yırtıcı acıkma ACLIK_SURESI.
+  Merkez: numuneler (su, dışkı, leş, bitki yaprak/tohum; kutu 6, istasyona dönünce teslim, laboratuvar 3 saat, sırayla), teşhis ve salgın
+  doğrulama, veteriner müdahalesi (yara/parazit/uyuz; sağlıklıya ve zayıfa dokunmaz), şarbonlu leşi yakma, rehab tesisi (klinik +
+  hastalikEkolojisi araştırması; karantina, tedavi, beslenme, uyum, sonra Bırak), botanikUzmani personeli, BITKILER 8 (bölgeye göre,
+  4 mevsim evresi, analiz metni), 6 yeni araştırma, numune/bitki görevleri. GPS göçtekinin uzaklığını söyler.
+  App: ana menüde Ekosistem raporu, Çevredeki bitkiler, Numune ve veteriner; merkezde Laboratuvar, Hayvan sağlığı, Rehabilitasyon;
+  arşivde Bitkiler; birey sayfasında yaşam kaydı; Yardım "Mevsimler ve ekosistem". Sahne: yağmur çizgileri, bulutlu gök ve sis, zemin
+  yeşilliği, gölet küçülür ve kıyısı kurur, rehab çiti, haritadan çıkan modeller gizlenir. Sesler (akış "Vahşi Yaşam sesleri"): ortam_yagmur
+  (30 sn döngü, -24 LUFS; yağarken ortamSec bunu seçer), gok (6 sn; sağanak başında ve 18-48 sn'de bir). sesler.js tablosu assets/efekt
+  listesinden üretilir. Test: `bun araclar/ekosistem-testi.js [gün]` (50 gün ~2 dk: nüfus dengede, gölet kurak sonunda 0,1-0,3, göç ve
+  dönüş, salgın). Bilerek yapılmayanlar (Aşama 6): yangın, sel, bölgesel hâkimiyet, genetik, mağara, yeni türler.
+- Sıradaki aşamalar (brif bölüm 6): Aşama 6 100+ tür, mağara içi, afetler (yangın, sel, fırtına), koruma projeleri, kaçak avcılık izleri,
+  Aşama 7 uçtan uca erişilebilirlik testleri. Murat "devam" derse sıradaki aşama.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)
 - Dosyalar: `oyun/veri.js` (HARITALAR 5, HAYVANLAR 20 (her haritada 3 tür + lider), SILAHLAR 11, ZIRHLAR, YETENEKLER 4, IKSIR),

@@ -1,5 +1,5 @@
 // Vahşi Yaşam — erişilebilir, kendi sesiyle konuşan 3B doğa araştırması ve ekosistem simülasyonu (Afrika savanı).
-// Tasarım: 113 kararlık proje brifi. Aşama 1-4: teknik temel, saha, hayvanlar ve gözlem, araştırma merkezi.
+// Tasarım: 113 kararlık proje brifi. Aşama 1-5: teknik temel, saha, hayvanlar ve gözlem, araştırma merkezi, ekosistem.
 // Kayıp Okyanus düzeni: sahada tam ekran dokunma hareketleri, menüler kendi kendini okuyan listeler (oyun/SesliListe.js)
 // ve alt menü yığını. VoiceOver ile oynarken aynı menüler VoiceOver düğmeleri olarak çizilir.
 // Yapı: oyun/veri.js, oyun/mantik.js (saf mantık), oyun/merkez.js (araştırma merkezi), oyun/ses.js (konuşma),
@@ -16,6 +16,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Ses from './oyun/ses.js';
 import * as M from './oyun/mantik.js';
 import * as Mz from './oyun/merkez.js';
+import * as E from './oyun/ekosistem.js';
 import * as Efekt from './oyun/efekt.js';
 import { sahneKur } from './oyun/sahne.js';
 import { TURLER, TUR_SIRASI, YERLER, DAVRANISLAR, EVRELER } from './oyun/veri.js';
@@ -29,7 +30,7 @@ const VARSAYILAN_AYAR = { kip: null, hiz: 1.0, titresim: true, rehber: true, efe
 const ADLAR = ['Defne', 'Kaan', 'Ada', 'Deniz', 'Ilgaz', 'Elif', 'Atlas', 'Zeynep', 'Toprak', 'Yağmur', 'Mert', 'Selin'];
 
 const KipBaglam = createContext('kendi');
-const KALICI_OLAYLAR = ['tanimlandi', 'yeniTur', 'yeniDavranis', 'foto', 'tanik', 'sesKayit', 'saldiri', 'analizBitti', 'gorevBitti'];
+const KALICI_OLAYLAR = ['tanimlandi', 'yeniTur', 'yeniDavranis', 'foto', 'tanik', 'sesKayit', 'saldiri', 'analizBitti', 'gorevBitti', 'goc', 'salgin', 'numuneTeslim', 'mevsim'];
 
 // Sahadaki aletler (iki parmakla sağa/sola kaydırarak değişir, çift dokunuş kullanır)
 const ALETLER = [
@@ -143,6 +144,18 @@ const YARDIM = [
       'Görevler: üniversiteler ve vakıflar her gün teklif gönderir. Kabul edip tamamlayınca ödül hesabına yatar.',
       'Araştırmalar: gereken veriyi topladığında analizi başlat. Analiz bitince fon, itibar ya da yeni ekipman açılır.',
       'Kamera tuzakları önünden geçen hayvanları gece gündüz fotoğraflar. GPS tasmasını veterinerin takar; tasmalı hayvanın yerini her an bilirsin.',
+    ],
+  },
+  {
+    id: 'ekosistem',
+    baslik: 'Mevsimler ve ekosistem',
+    satirlar: [
+      'Bir oyun yılı 24 gündür: 10 gün yağışlı mevsim, 14 gün kurak mevsim. Menüdeki Ekosistem raporu mevsimi, havayı, göleti, nehri, otlakları, göçleri ve salgınları anlatır.',
+      'Yağışlı mevsimde otlar yeşerir, gölet dolar, otçullar doğurur. Kurak mevsimde gölet çekilir, su kirlenir; zebralar ve ceylanlar güneydeki otlaklara göç eder, nehri geçerken timsahlar bekler. Yağmurlarla geri dönerler.',
+      'Yağmurda ve sağanakta dürbünle görüş kısalır. Gün başında hava tahmini okunur.',
+      'Hayvanlar yaşlanır, yavrular büyür, genç erkekler sürüden ayrılır. Hastalanan ya da yaralanan hayvanlar dürbünde belirti gösterir: topallama, zayıflık, tüy dökülmesi.',
+      'Menüdeki Numune ve veteriner bölümünden su, dışkı ve leş numunesi alırsın; Çevredeki bitkiler bölümünden bitki inceler, yaprak ve tohum numunesi alırsın. Numuneler istasyona dönünce laboratuvarda analiz edilir.',
+      'Veterinerin yaralı ve hasta hayvanları tedavi eder, şarbonlu leşleri yakar. Rehabilitasyon alanı kurulunca ağır yaralı ve yetim hayvanlar bakılıp doğaya geri bırakılır. Sağlıklı hayvana dokunulmaz, vahşi hayvan beslenmez.',
     ],
   },
 ];
@@ -357,6 +370,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     if (ayarRef.current.ortam === false) return Efekt.ortamDurdur();
     // Nehir, sulak alan ve gölet kıyısında su; başka yerde gündüz ya da gece savanı (30 sn'lik kesintisiz döngüler)
     const b = M.bolgeBul(d.oyuncu.x, d.oyuncu.y);
+    if (d.k.eko && d.k.eko.yagmurVar) return Efekt.ortamBaslat('ortam_yagmur');
     if (b === 'sulak' || b === 'nehir' || b === 'golet') Efekt.ortamBaslat('ortam_nehir');
     else Efekt.ortamBaslat(M.geceMi(d.k.dk) || M.gunEvresi(d.k.dk) === 'aksam' ? 'ortam_gece' : 'ortam_gunduz');
   };
@@ -440,6 +454,22 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       case 'zaman':
         ortamSec();
         return;
+      case 'hava':
+        ortamSec();
+        if (o.hava === 'saganakBasladi') Efekt.cal('gok', 0.8);
+        return;
+      case 'goc':
+      case 'mevsim':
+      case 'salgin':
+        Efekt.cal('seviye', 0.6);
+        return;
+      case 'belirti':
+        if (b) Efekt.yonlu('sonar', d.oyuncu, b, 0.6, 200);
+        return;
+      case 'numuneTeslim':
+      case 'yeniBitki':
+        Efekt.cal('altin', 0.7);
+        return;
       default:
     }
   };
@@ -454,6 +484,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     let rehberMesafe = 0;
     let adimYol = 0;
     let adimSira = false;
+    let gokSayac = 8;
     let calisiyor = true;
     let raf;
     const dongu = () => {
@@ -474,6 +505,13 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
           titret('hafif', a);
           Efekt.cal('carpma', 0.6);
           if (a.kip !== 'gorerek') Ses.soyle(sonuc.nehir ? 'Önünde nehir var. Karşıya yalnızca geçitlerden geçilir.' : sonuc.gol ? 'Önünde gölet var.' : 'Önün kapalı.', 2);
+        }
+        if (d.k.eko && d.k.eko.yagmurVar && d.k.eko.siddet > 0.8) {
+          gokSayac -= dt;
+          if (gokSayac <= 0) {
+            gokSayac = 18 + Math.random() * 30;
+            Efekt.cal('gok', 0.45 + Math.random() * 0.4);
+          }
         }
         adimYol += sonuc.yurudu;
         if (adimYol > 1.5) {
@@ -652,6 +690,9 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         altMenu('yerler', 'Yerler ve yolculuk', menu.ac),
         { id: 'arac', etiket: k.aracta ? 'Araçtan in' : aracYakin ? 'Araca bin' : `Araca git: ${yerTarifi(k.arac)}`, sec: kapatVe(aracIslemi) },
         altMenu('alet', `Alet: ${alet.ad}. Değiştir`, menu.ac),
+        altMenu('ekosistem', `Ekosistem: ${E.MEVSIM_ADI[E.takvim(M.gunNo(k.dk)).mevsim]}, ${k.eko.yagmurVar ? 'yağmur yağıyor' : 'hava ' + E.HAVA_ADI[k.eko.hava.tur]}`, menu.ac),
+        altMenu('bitkiler', `Çevredeki bitkiler: ${Mz.cevredekiBitkiler(d).length}`, menu.ac),
+        altMenu('numune', `Numune ve veteriner${k.numuneKutusu.length ? `: kutuda ${k.numuneKutusu.length} numune` : ''}`, menu.ac),
       ];
       if (d.rota || d.yaklasId || gb) ogeler.push({ id: 'dur', etiket: 'Dur ve gözlemi bitir', sec: kapatVe(durVeBitir) });
       const sahaVar = k.stok.tuzak || k.tuzaklar.length || k.stok.tasma || k.gpsli.length;
@@ -686,7 +727,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       if (!k.aracta) ogeler.push({ id: 'arac', etiket: `Arazi aracı, ${yerTarifi(k.arac)}`, sec: kapatVe(() => M.yerGit(d, 'arac')) });
       YERLER.forEach((y) => ogeler.push({ id: y.id, etiket: `${y.ad}, ${yerTarifi(y)}`, ipucu: y.tarif, sec: kapatVe(() => M.yerGit(d, y.id)) }));
       Mz.gpsListesi(d)
-        .filter((b) => !b.olu)
+        .filter((b) => !b.olu && d.hayvanMap.has(b.id))
         .forEach((b) =>
           ogeler.push({
             id: 'g' + b.id,
@@ -741,7 +782,10 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         altMenu('ekipman', 'Ekipman', menu.ac),
         altMenu('tesisler', `Tesisler: ${k.tesisler.length} / ${Object.keys(Mz.TESISLER).length} kurulu`, menu.ac),
         altMenu('personel', `Personel: ${k.personel.length} / ${Mz.personelKapasitesi(k)}`, menu.ac),
+        altMenu('laboratuvar', `Laboratuvar: ${k.numuneler.filter((n) => n.durum === 'analiz').length} analizde, ${k.numuneler.filter((n) => n.durum === 'sira').length} sırada, ${k.numuneKutusu.length} kutunda`, menu.ac),
+        altMenu('saglik', `Hayvan sağlığı ve salgın takibi${k.eko.salgin && k.eko.salgin.bilinen ? ': salgın var' : ''}`, menu.ac),
       ];
+      if (Mz.tesisVar(k, 'rehab') || k.rehab.length) ogeler.push(altMenu('rehab', `Rehabilitasyon: ${k.rehab.length} hayvan`, menu.ac));
       return liste(u, 'Araştırma merkezi', ogeler);
     }
     if (u === 'mesajlar' || u.startsWith('mesajlar~')) {
@@ -820,6 +864,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         altMenu('bireyler', `Tanımlanan bireyler: ${M.taninanBireyler(k).length}`, menu.ac),
         altMenu('fotolar', `Fotoğraflar: ${a.fotolar.length}`, menu.ac),
         altMenu('sesler', `Ses kayıtları: ${a.sesler.length}`, menu.ac),
+        altMenu('bitkiArsiv', `Bitkiler: ${Object.keys(a.bitkiler || {}).length} / ${E.BITKI_SIRASI.length}`, menu.ac),
         altMenu('gunluk', `Günlük: ${a.olaylar.length} kayıt`, menu.ac),
       ]);
     }
@@ -856,7 +901,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       return liste(u, 'Tanımlanan bireyler', s.ogeler.length ? s.ogeler : [bilgi('bos', 'Henüz tanımlanmış birey yok. Bir hayvanı dürbünle birkaç saniye izle.')]);
     }
     if (u.startsWith('birey-')) {
-      const b = M.birey(d, Number(u.slice(6)));
+      const b = M.kayitliBirey(d, Number(u.slice(6)));
       if (!b) return liste(u, 'Birey', [bilgi('yok', 'Bu bireyin kaydı bulunamadı.')]);
       const ab = k.arsiv.bireyler[b.id] || {};
       const ogeler = [
@@ -868,6 +913,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       ];
       if (k.gpsli.includes(b.id)) ogeler.push(bilgi('gps', `GPS: ${Mz.gpsTarifi(d, b)}.`));
       if (ab.olum) ogeler.push(bilgi('olum', `Ölüm kaydı: ${ab.olum}.`));
+      if (b.gecmis && b.gecmis.length) ogeler.push(bilgi('gecmis', `Yaşam kaydı: ${b.gecmis.map((x) => `${zamanKisa(x.dk)}, ${x.metin}`).join('. ')}.`));
       const anne = M.birey(d, b.anne);
       if (anne && M.taninmisMi(anne)) ogeler.push(altMenu('birey-' + anne.id, `Annesi: ${M.bireyAdi(anne)}`, menu.ac));
       k.hayvanlar.filter((x) => x.anne === b.id && M.taninmisMi(x)).forEach((y) => ogeler.push(altMenu('birey-' + y.id, `Yavrusu: ${M.bireyAdi(y)}`, menu.ac)));
@@ -900,6 +946,100 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       const s = sayfali('gunluk', tum, menu, 10);
       if (s.sayfa) return liste(s.sayfa.anahtar, s.sayfa.baslik, s.sayfa.ogeler);
       return liste(u, 'Günlük', s.ogeler.length ? s.ogeler : [bilgi('bos', 'Günlükte henüz kayıt yok. Nadir davranışlar, doğumlar ve avlanmalar burada saklanır.')]);
+    }
+    // ----- Ekosistem (Aşama 5) -----
+    if (u === 'ekosistem') {
+      const e = k.eko;
+      const gun = M.gunNo(k.dk);
+      const tk = E.takvim(gun);
+      const sonraki = tk.mevsim === 'yagisli' ? 'kurak mevsim' : 'yağışlı mevsim';
+      const ogeler = [
+        bilgi('takvim', `${gun}. gün, ${tk.yil}. araştırma yılı. ${M.BuyukHarf(E.MEVSIM_ADI[tk.mevsim])}, ${tk.mevsimGunu}. gün. ${sonraki} ${tk.kalan + 1} gün sonra başlar.${tk.mevsim === 'yagisli' && e.yil && e.yil.gecikme && tk.mevsimGunu <= e.yil.gecikme ? ' Bu yıl yağmurlar gecikti.' : ''}`),
+        bilgi('hava', `${e.yagmurVar ? (e.siddet > 0.8 ? 'Şu an sağanak yağıyor. ' : 'Şu an yağmur yağıyor. ') : ''}${E.havaTahmini(e, k.dk % 1440)} Bu mevsim toplam yağış yaklaşık ${Math.round(e.yagisMevsim)} milimetre.`),
+        bilgi('su', `Gölet ${E.goletSozu(e)}${E.goletKurudu(e) ? '' : `, suyu ${E.kaliteSozu(E.suKalitesi(e))}`}. Nehir ${E.nehirSozu(e.nehir)}.`),
+        bilgi(
+          'ot',
+          `Otlar ${e.yesil > 0.65 ? 'yemyeşil' : e.yesil > 0.4 ? 'yeşil ama solmaya başlamış' : e.yesil > 0.25 ? 'sararıyor' : 'kurumuş, sarı'}. Doğu otlaklarında ot ${E.otSozu(E.ortalamaOt(e, 92, 2, 42))}, batıda ${E.otSozu(E.ortalamaOt(e, -62, -8, 40))}, sulak alanda ${E.otSozu(E.ortalamaOt(e, -20, -140, 40))}, akasya ağaçlığında ağaç yaprağı ${E.otSozu(e.yaprak.reduce((a, b) => a + b, 0) / Math.max(1, e.yaprak.filter((x) => x > 0).length))}.`
+        ),
+      ];
+      const gocte = k.disari.gruplar.map((g) => `${M.SOZ[g.tur]} sürüsü göçte, ${Math.max(1, Math.round((k.dk - (g.goc.cikisDk || k.dk)) / 1440))} gündür`);
+      const yolda = k.gruplar.filter((g) => g.goc).map((g) => `${M.SOZ[g.tur]} sürüsü ${g.goc.durum === 'gidiyor' ? 'göç yolunda, alandan çıkmak üzere' : 'göçten dönüyor'}`);
+      ogeler.push(bilgi('goc', gocte.length || yolda.length ? `Göç: ${[...yolda, ...gocte].join('. ')}.` : `Göç: şu an göçte sürü yok.${e.gocler.length ? ` Son kayıt: ${e.gocler[0].gun}. gün, ${kucuk(M.SOZ[e.gocler[0].tur])} sürüsü ${e.gocler[0].olay === 'cikis' ? 'göçe çıktı' : 'göçten döndü'}.` : ''}`));
+      const sal = e.salgin && e.salgin.bilinen ? `Salgın: ${E.HASTALIKLAR[e.salgin.hastalik].ad}, ${gun - e.salgin.basGun + 1}. gün, ${e.salgin.vaka} vaka.` : 'Bilinen bir salgın yok.';
+      ogeler.push(bilgi('salgin', sal));
+      // Keşfedilen türlerin bölgedeki tahmini sayısı (istasyonun kayıtlarından)
+      const sayilar = TUR_SIRASI.filter((t) => k.arsiv.turler[t]).map((t) => `${kucuk(M.SOZ[t])} ${k.hayvanlar.filter((b) => !b.olu && b.tur === t).length}`);
+      if (sayilar.length) ogeler.push(bilgi('nufus', `Bölgedeki tahmini sayılar: ${sayilar.join(', ')}.`));
+      return liste(u, 'Ekosistem raporu', ogeler);
+    }
+    if (u === 'bitkiler') {
+      const ids = Mz.cevredekiBitkiler(d);
+      const ogeler = [];
+      ids.forEach((id) => {
+        ogeler.push({ id: 'i' + id, etiket: Mz.bitkiSatiri(d, id), ipucu: 'Seçince bitkiyi inceler, şu anki evresini kaydedersin.', sec: yap(() => Mz.bitkiIncele(d, id)) });
+        if (k.arsiv.bitkiler && k.arsiv.bitkiler[id]) {
+          const ev = E.bitkiEvresi(id, M.gunNo(k.dk), k.eko);
+          ogeler.push({ id: 'n' + id, etiket: `${E.BITKILER[id].ad}: ${ev.tohum ? 'tohum' : 'yaprak'} numunesi al`, sec: yap(() => Mz.bitkiNumunesi(d, id)) });
+        }
+      });
+      if (!ogeler.length) ogeler.push(bilgi('bos', 'Burada incelenecek belirgin bir bitki yok.'));
+      return liste(u, 'Çevredeki bitkiler', ogeler, `${M.bolgeAdi(d.oyuncu.x, d.oyuncu.y)}.`);
+    }
+    if (u === 'numune') {
+      const su = Mz.yakinSu(d);
+      const les = Mz.yakinLes(d, 14);
+      const ogeler = [
+        bilgi('kutu', `Numune kutusu: ${k.numuneKutusu.length} / ${Mz.NUMUNE_KUTUSU}. ${k.numuneKutusu.length ? 'İstasyona dönünce laboratuvara teslim edilir.' : ''}`),
+        { id: 'su', etiket: su ? `Su numunesi al: ${su.ad}` : 'Su numunesi al: yakında su yok', sec: yap(() => Mz.suNumunesi(d)) },
+        { id: 'diski', etiket: `Dışkı numunesi al${gb ? `: ${M.bireyAdi(gb)}` : ''}`, ipucu: 'Gözlediğin tanımlı hayvanın bıraktığı dışkıdan; hayvana dokunulmaz.', sec: yap(() => Mz.diskiNumunesi(d)) },
+        { id: 'les', etiket: les ? `Leşten numune al: ölü ${kucuk(M.SOZ[les.tur])}, ${yerTarifi(les)}` : 'Leşten numune al: yakında leş yok', sec: yap(() => Mz.lesNumunesi(d)) },
+        { id: 'vet', etiket: `Veteriner müdahalesi${gb ? `: ${M.bireyAdi(gb)}${M.saglikGorunusu(gb)}` : ''}`, ipucu: 'Yaralı ya da hasta görünen gözlediğin hayvanı veteriner tedavi eder.', sec: yap(() => Mz.veterinerMudahale(d)) },
+      ];
+      if (les && (les.teshis === 'sarbon' || (k.eko.salgin && k.eko.salgin.bilinen))) ogeler.push({ id: 'yak', etiket: 'Şarbonlu leşi yaktır', sec: yap(() => Mz.lesiYak(d)) });
+      if (Mz.tesisVar(k, 'rehab')) ogeler.push({ id: 'rehab', etiket: `Rehabilitasyona al${gb ? `: ${M.bireyAdi(gb)}` : ''}`, ipucu: 'Ağır yaralı, ağır hasta ya da yetim yavrular için.', sec: yap(() => Mz.rehabaAl(d)) });
+      return liste(u, 'Numune ve veteriner', ogeler);
+    }
+    if (u === 'laboratuvar' || u.startsWith('laboratuvar~')) {
+      const tum = [...k.numuneKutusu, ...k.numuneler].map((n) => bilgi('n' + n.id, Mz.numuneMetni(k, n)));
+      const s = sayfali('laboratuvar', tum, menu, 10);
+      if (s.sayfa) return liste(s.sayfa.anahtar, s.sayfa.baslik, s.sayfa.ogeler);
+      return liste(u, 'Laboratuvar', s.ogeler.length ? s.ogeler : [bilgi('bos', 'Henüz numune yok. Menüdeki Numune ve veteriner bölümünden numune alabilirsin.')], `Aynı anda ${Mz.numuneKapasitesi(k)} numune analiz edilir.`);
+    }
+    if (u === 'saglik') {
+      const e = k.eko;
+      const ogeler = [];
+      if (e.salgin && e.salgin.bilinen) ogeler.push(bilgi('s', `Salgın: ${E.HASTALIKLAR[e.salgin.hastalik].ad}, ${e.salgin.vaka} vaka. ${E.HASTALIKLAR[e.salgin.hastalik].tarif}`));
+      const hastalar = M.taninanBireyler(k).filter((b) => !b.olu && b.hastalik && (b.hastalik.goruldu || b.teshis));
+      hastalar.forEach((b) =>
+        ogeler.push(altMenu('birey-' + b.id, `${M.bireyAdi(b)}: ${b.teshis ? E.HASTALIKLAR[b.hastalik.id].ad : E.HASTALIKLAR[b.hastalik.id].belirti}${b.hastalik.tedavi ? ', tedavi edildi' : ''}`, menu.ac))
+      );
+      if (!hastalar.length) ogeler.push(bilgi('yok', 'Hastalığı bilinen tanımlı birey yok. Gözlemde belirti görürsen burada listelenir.'));
+      ogeler.push(bilgi('teshis', e.teshisler.length ? `Son teşhisler: ${e.teshisler.slice(0, 6).map((t) => `${t.gun}. gün, ${t.tur ? kucuk(M.SOZ[t.tur]) : 'su'}, ${E.HASTALIKLAR[t.hastalik].ad}`).join('; ')}.` : 'Henüz teşhis yok.'));
+      Object.entries(E.HASTALIKLAR).forEach(([id, h]) => ogeler.push(bilgi('h' + id, `${M.BuyukHarf(h.ad)}: ${h.tarif} Belirti: ${h.belirti}.`)));
+      return liste(u, 'Hayvan sağlığı', ogeler);
+    }
+    if (u === 'rehab') {
+      const ogeler = k.rehab.map((r) => ({ id: 'r' + r.b.id, etiket: Mz.rehabMetni(k, r), sec: r.hazir ? yap(() => Mz.rehabBirak(d, r.b.id)) : undefined }));
+      if (!ogeler.length) ogeler.push(bilgi('bos', 'Rehabilitasyonda hayvan yok.'));
+      return liste(u, 'Rehabilitasyon', ogeler, 'Aşamalar: karantina, tedavi, beslenme ve iyileşme, doğaya uyum.');
+    }
+    if (u === 'bitkiArsiv') {
+      const ogeler = E.BITKI_SIRASI.filter((id) => (k.arsiv.bitkiler || {})[id]).map((id) => altMenu('bitki-' + id, `${E.BITKILER[id].ad}: ${k.arsiv.bitkiler[id].evreler.length} evre${k.arsiv.bitkiler[id].analiz ? ', analiz edildi' : ''}`, menu.ac));
+      const kalan = E.BITKI_SIRASI.length - ogeler.length;
+      if (kalan) ogeler.push(bilgi('kalan', `Henüz incelenmemiş ${kalan} bitki türü var. Farklı bölgelerde Çevredeki bitkiler bölümüne bak.`));
+      return liste(u, 'Bitkiler', ogeler);
+    }
+    if (u.startsWith('bitki-')) {
+      const id = u.slice(6);
+      const b = E.BITKILER[id];
+      const a = (k.arsiv.bitkiler || {})[id] || { evreler: [] };
+      const evAdi = { yE: 'yağışlı mevsimin başı', yG: 'yağışlı mevsimin sonu', kE: 'kurak mevsimin başı', kG: 'kurak mevsimin sonu' };
+      const ogeler = [
+        bilgi('ad', `${b.ad}, bilimsel adı ${b.bilimsel}, ${b.bicim}. ${b.tarif}`),
+        bilgi('ev', `Gözlenen evreler: ${a.evreler.map((e) => `${evAdi[e]}: ${b.evre[['yE', 'yG', 'kE', 'kG'].indexOf(e)]}`).join('; ') || 'yok'}.`),
+        bilgi('an', a.analiz ? `Laboratuvar: ${b.analiz}` : 'Henüz laboratuvarda incelenmedi; yaprak ya da tohum numunesi al.'),
+      ];
+      return liste(u, b.ad, ogeler);
     }
     if (u === 'ayarlar') {
       return liste(

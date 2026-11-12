@@ -2,8 +2,9 @@
 // Saf mantık: bütçe ve dengeli ekonomi (karar 22, 62, 91), ekipman (89, 88), tesisler (21, 79, 80), personel (54, 81),
 // basit araştırma ekranı ve analizler (45), hibe teklifleri ve dinamik görevler (61, 62, 90), mesajlar (82),
 // kamera tuzakları (41, 93) ve GPS tasmaları (11, 84). Sayılar öneridir; Murat onaylamadı.
-import { TURLER, TUR_SIRASI, DAVRANISLAR, ISTASYON, YARICAP } from './veri.js';
+import { TURLER, TUR_SIRASI, DAVRANISLAR, ISTASYON, YARICAP, GOLET, nehirY, NEHIR_YARI } from './veri.js';
 import * as M from './mantik.js';
+import * as E from './ekosistem.js';
 
 const lira = (n) => `${Math.round(n).toLocaleString('tr-TR')} lira`;
 export const liraSozu = lira;
@@ -22,7 +23,8 @@ export const TESISLER = {
   konaklama: { ad: 'Personel konaklama binası', fiyat: 10000, itibar: 20, bakim: 150, tarif: 'Personel kapasitesi 2 kişiden 6 kişiye çıkar.' },
   kule: { ad: 'Gözlem kulesi', fiyat: 8000, itibar: 15, bakim: 80, tarif: 'İstasyondayken çevreyi 150 metreye kadar tarayabilirsin.' },
   gelismisLab: { ad: 'Gelişmiş laboratuvar', fiyat: 14000, itibar: 35, bakim: 200, tarif: 'Aynı anda iki analiz yapılır, analizler dörtte bir daha kısa sürer.' },
-  klinik: { ad: 'Veteriner kliniği', fiyat: 18000, itibar: 45, bakim: 250, tarif: 'Veteriner işe alınabilir. Hasta ve yaralı hayvanların tedavisi sonraki aşamada buradan yapılacak.' },
+  klinik: { ad: 'Veteriner kliniği', fiyat: 18000, itibar: 45, bakim: 250, tarif: 'Veteriner işe alınabilir. Yaralı ve hasta hayvanlar sahada tedavi edilir.' },
+  rehab: { ad: 'Rehabilitasyon alanı', fiyat: 12000, itibar: 40, bakim: 150, tesis: 'klinik', arastirma: 'hastalikEkolojisi', tarif: 'Ağır yaralı ya da yetim kalmış hayvanlar karantina, tedavi, beslenme ve doğaya uyum aşamalarından geçip doğaya geri bırakılır.' },
 };
 
 export const PERSONEL = {
@@ -30,7 +32,8 @@ export const PERSONEL = {
   biyolog: { ad: 'Biyolog', maas: 600, itibar: 15, tarif: 'Analizler daha kısa sürer.' },
   fotografci: { ad: 'Fotoğrafçı', maas: 500, itibar: 20, tarif: 'Fotoğraflar daha kaliteli olur; fotoğraf satış gelirleri iki katına çıkar.' },
   teknisyen: { ad: 'Teknik personel', maas: 450, itibar: 25, tarif: 'Kurabileceğin kamera tuzağı sayısı 3 ten 6 ya çıkar.' },
-  veteriner: { ad: 'Veteriner', maas: 700, itibar: 40, tesis: 'klinik', tarif: 'GPS tasması takar. Sonraki aşamada hasta hayvanları tedavi edecek.' },
+  veteriner: { ad: 'Veteriner', maas: 700, itibar: 40, tesis: 'klinik', tarif: 'GPS tasması takar, yaralı ve hasta hayvanları tedavi eder, şarbonlu leşleri yok eder.' },
+  botanikUzmani: { ad: 'Botanik uzmanı', maas: 550, itibar: 20, tarif: 'Bitki numunelerini yarı sürede inceler; her gün bir bitkinin mevsim evresini kendisi kaydeder.' },
 };
 const ADLAR = {
   sahaArastirmacisi: ['Juma Otieno', 'Neema Mwangi', 'Baraka Kiprop'],
@@ -38,6 +41,7 @@ const ADLAR = {
   fotografci: ['Zawadi Achieng', 'Emre Kılıç', 'Lena Okoth'],
   teknisyen: ['Peter Kamau', 'Halima Njeri', 'Murat Yıldız'],
   veteriner: ['Dr. Grace Atieno', 'Dr. Kerem Doğan', 'Dr. Samuel Omondi'],
+  botanikUzmani: ['Dr. Wanjiku Njoroge', 'Dr. Elif Sarı', 'Dr. Joseph Kibet'],
 };
 
 const sayi = (k, f) => TUR_SIRASI.filter(f).length;
@@ -118,6 +122,62 @@ export const ARASTIRMALAR = [
     ilerleme: (k) => [(k.arsiv.olaylar.some((o) => o.metin.startsWith('Avlanma gözlendi')) ? 1 : 0) + (TUR_SIRASI.some((t) => davranisVar(k, t, 'pusuda')) ? 1 : 0), 2],
     odul: { itibar: 15, fon: 6000 },
     sonuc: 'Yırtıcıların av seçimi ve av sırasındaki taktikleri belgelendi.',
+  },
+  // Aşama 5: ekosistem araştırmaları
+  {
+    id: 'botanikEnvanter',
+    ad: 'Savanın bitki envanteri',
+    kosulMetni: '6 bitki türünü incele',
+    ilerleme: (k) => [Object.keys(k.arsiv.bitkiler || {}).length, 6],
+    odul: { itibar: 10, fon: 3000 },
+    sonuc: 'Araştırma alanının başlıca bitkileri ve yaşadıkları yerler kayda geçti.',
+  },
+  {
+    id: 'fenoloji',
+    ad: 'Bitkilerin mevsim döngüsü',
+    kosulMetni: '4 bitkiyi hem yağışlı hem kurak mevsimde incele',
+    ilerleme: (k) => [Object.values(k.arsiv.bitkiler || {}).filter((b) => b.evreler.some((e) => e[0] === 'y') && b.evreler.some((e) => e[0] === 'k')).length, 4],
+    odul: { itibar: 12, fon: 4000 },
+    sonuc: 'Çiçeklenme, tohum ve yaprak dökümü zamanları yağmurlarla ilişkilendirildi.',
+  },
+  {
+    id: 'suKalitesi',
+    ad: 'Su kalitesi izleme',
+    kosulMetni: '3 su numunesi analiz et, en az biri kurak mevsimde olsun',
+    ilerleme: (k) => {
+      const l = k.numuneler.filter((n) => n.tip === 'su' && n.durum === 'tamam');
+      return [Math.min(3, l.length) + (l.some((n) => n.veri.mevsim === 'kurak') ? 1 : 0), 4];
+    },
+    odul: { itibar: 10, fon: 3000 },
+    sonuc: 'Göletin kurak mevsimde çekilip ısınınca alg ve parazitle kirlendiği, yağmurlarla temizlendiği gösterildi.',
+  },
+  {
+    id: 'hastalikEkolojisi',
+    ad: 'Yaban hayatı hastalıkları',
+    kosulMetni: '2 farklı hastalık teşhis et (numune ya da veteriner)',
+    ilerleme: (k) => [new Set(((k.eko && k.eko.teshisler) || []).map((t) => t.hastalik)).size, 2],
+    odul: { itibar: 15, fon: 5000, acTesis: 'rehab' },
+    sonuc: 'Hastalıkların hangi türleri, hangi mevsimde etkilediği ortaya çıktı. Rehabilitasyon alanı artık kurulabilir.',
+  },
+  {
+    id: 'gocTakibi',
+    ad: 'Mevsimsel göç',
+    kosulMetni: 'Göç eden bir sürüyü gözlemle ve göçten dönüşü kaydet',
+    ilerleme: (k) => [(TUR_SIRASI.some((t) => davranisVar(k, t, 'gocEdiyor') || davranisVar(k, t, 'nehirGeciyor')) ? 1 : 0) + ((k.eko && k.eko.gocler.some((g) => g.olay === 'donus')) ? 1 : 0), 2],
+    odul: { itibar: 20, fon: 8000 },
+    sonuc: 'Göçmen sürülerin kurak mevsimde güneydeki otlaklara gidip yağmurlarla döndüğü, nehir geçişinin en tehlikeli an olduğu belgelendi.',
+  },
+  {
+    id: 'yasamDongusu',
+    ad: 'Yaşam döngüsü',
+    kosulMetni: '2 doğuma tanık ol, tanımlı 2 bireyin ölüm ya da ayrılış kaydını tut',
+    ilerleme: (k) => [
+      Math.min(2, k.arsiv.olaylar.filter((o) => o.metin.includes('yavruladı')).length) +
+        Math.min(2, Object.values(k.arsiv.bireyler).filter((b) => b.olum || b.ayrildi).length),
+      4,
+    ],
+    odul: { itibar: 12, fon: 4000 },
+    sonuc: 'Bireylerin doğumdan ölüme ve sürüden ayrılışa kadar yaşam öyküleri birbirine bağlandı.',
   },
 ];
 export const ANALIZ_DK = 8 * 60; // temel analiz süresi (oyun dakikası)
@@ -247,10 +307,13 @@ function teklifUret(k, rng) {
     { tip: 'ses', tur, hedef: 1, metin: `${soz} sesini kaydet`, odul: 2000 },
     { tip: 'gece', hedef: 3, metin: 'Gece 3 fotoğraf çek', odul: 3500 },
     { tip: 'kesfet', hedef: 2, metin: '2 yeni tür keşfet', odul: 4500 },
+    { tip: 'numune', hedef: 2, metin: '2 numuneyi laboratuvarda analiz et', odul: 3000 },
+    { tip: 'bitki', hedef: 3, metin: '3 bitki türü incele', odul: 2500 },
   ];
   let s = secenek[Math.floor(rng() * secenek.length)];
   if (s.tip === 'kesfet' && Object.keys(k.arsiv.turler).length > TUR_SIRASI.length - 2) s = secenek[1];
   if (s.tip === 'ses' && k.arsiv.turler[tur] && k.arsiv.turler[tur].sesKaydi) s = secenek[0];
+  if (s.tip === 'bitki' && Object.keys(k.arsiv.bitkiler || {}).length > E.BITKI_SIRASI.length - 3) s = secenek[6];
   const kurum = KURUMLAR[Math.floor(rng() * KURUMLAR.length)];
   return { id: k.sonrakiId++, kurum, ...s, durum: 'teklif', dk: k.dk };
 }
@@ -268,6 +331,10 @@ function olcum(k, t) {
       return k.arsiv.fotolar.filter((f) => M.geceMi(f.dk)).length;
     case 'kesfet':
       return Object.keys(k.arsiv.turler).length;
+    case 'numune':
+      return k.numuneler.filter((n) => n.durum === 'tamam').length;
+    case 'bitki':
+      return Object.keys(k.arsiv.bitkiler || {}).length;
     default:
       return 0;
   }
@@ -330,10 +397,17 @@ export function tasmaTak(d) {
   return `Veteriner ekip ${M.bireyAdi(b)} hayvanını kısa süreli uyuttu ve GPS tasmasını taktı. Hayvan uyanıp sürüsüne döndü. Artık nerede olduğunu her an bilirsin.`;
 }
 export function gpsListesi(d) {
-  return d.k.gpsli.map((id) => M.birey(d, id)).filter(Boolean);
+  return d.k.gpsli.map((id) => M.kayitliBirey(d, id)).filter(Boolean);
 }
 export function gpsTarifi(d, b) {
   if (b.olu) return `${M.bireyAdi(b)}: tasmadan sinyal gelmiyor`;
+  if (b.disari === 'goc') {
+    const gc = E.GOCMENLER[b.tur];
+    const gun = Math.max(1, Math.round((d.k.dk - b.disariDk) / 1440));
+    return `${M.bireyAdi(b)}: sürüsüyle göçte, araştırma alanının dışında${gc ? `, ${gc.yon} yönünde` : ''}, yaklaşık ${10 + gun * 12} kilometre uzakta`;
+  }
+  if (b.disari === 'ayrildi') return `${M.bireyAdi(b)}: bölgeden ayrıldı, sinyal çok uzaktan geliyor`;
+  if (M.rehabdaMi(d.k, b)) return `${M.bireyAdi(b)}: rehabilitasyon alanında`;
   const dv = DAVRANISLAR[b.davranis];
   return `${M.bireyAdi(b)}: ${M.bolgeAdi(b.x, b.y)}, ${dv ? dv.fiil : ''}, ${M.saatSozu(M.saatYonu(d.oyuncu, b))}, ${M.metreSozu(M.mesafe(d.oyuncu, b))}`;
 }
@@ -371,6 +445,7 @@ export function guncelle(d) {
       const o = a.odul;
       if (o.itibar) k.itibar += o.itibar;
       if (o.fon) k.butce += o.fon;
+      if (o.acTesis) M.mesajEkle(k, `${TESISLER[o.acTesis].ad} artık kurulabilir.`, 'bilgi');
       const ek = o.fon ? ` Araştırmayı destekleyen kurumlardan ${lira(o.fon)} fon geldi.` : '';
       M.mesajEkle(k, `Analiz tamamlandı: ${a.ad}. ${a.sonuc}${ek}`, 'sonuc');
       M.arsivOlay(d, `Araştırma tamamlandı: ${a.ad}.`);
@@ -388,6 +463,7 @@ export function guncelle(d) {
     }
   });
   k.teklifler = k.teklifler.filter((t) => t.durum !== 'tamam');
+  laboratuvarGuncelle(d);
   // Kamera tuzakları: 20 oyun dakikasında bir yakından geçenleri fotoğraflar (gece kızılötesi)
   k.tuzaklar.forEach((t) => {
     if (k.dk - t.sonKontrol < 20) return;
@@ -444,6 +520,10 @@ function gunlukIslem(d) {
       M.mesajEkle(k, `${p.ad} bir hayvanı tanımladı: ${M.bireyKunye(d, b)} Son görüldüğü yer ${M.bolgeAdi(b.x, b.y)}.`, 'bilgi');
     }
   }
+  rehabGunluk(d);
+  botanikGunluk(d);
+  const sal = k.eko && k.eko.salgin;
+  if (sal && sal.bilinen) M.mesajEkle(k, `Salgın takibi: ${E.HASTALIKLAR[sal.hastalik].ad}, ${M.gunNo(k.dk) - sal.basGun + 1}. gün, şimdiye kadar ${sal.vaka} vaka.`, 'ekosistem');
   // Yeni teklif (en çok 3 bekleyen)
   if (k.teklifler.filter((t) => t.durum === 'teklif').length < 3) {
     const t = teklifUret(k, d.rng);
@@ -467,4 +547,360 @@ export function baslat(d) {
   const t = teklifUret(k, d.rng);
   k.teklifler.push(t);
   M.mesajEkle(k, `Yeni teklif. ${teklifMetni(k, t)}.`, 'teklif', { teklifId: t.id });
+}
+
+// ==================== Aşama 5: numune, laboratuvar, botanik, veterinerlik, rehabilitasyon ====================
+// Karar 57: sınırlı ve kontrollü numune (su, yaprak, tohum, dışkı, leş dokusu). Karar 28: teşhis, tedavi, salgın takibi.
+// Karar 66: rehabilitasyon. Karar 11: müdahaleler hayvan refahına ve bilimsel etiğe bağlıdır.
+export const NUMUNE_KUTUSU = 6;
+export const NUMUNE_DK = 3 * 60;
+const gunu = (k) => M.gunNo(k.dk);
+const kucuk2 = (s) => s.toLocaleLowerCase('tr-TR');
+
+function numuneEkle(d, numune, metin) {
+  const k = d.k;
+  if (k.numuneKutusu.length >= NUMUNE_KUTUSU) return `Numune kutun dolu (${NUMUNE_KUTUSU} numune). Önce istasyona dönüp laboratuvara teslim et.`;
+  const tk = E.takvim(gunu(k));
+  k.numuneKutusu.push({ id: k.sonrakiId++, dk: k.dk, gun: gunu(k), bolge: M.bolgeAdi(d.oyuncu.x, d.oyuncu.y), durum: 'kutuda', ...numune, veri: { mevsim: tk.mevsim, ...numune.veri } });
+  return `${metin} Numune kutunda ${k.numuneKutusu.length} numune var; istasyona dönünce laboratuvara teslim edilir.`;
+}
+const ayniGunVar = (k, f) => [...k.numuneKutusu, ...k.numuneler].some((n) => n.gun === gunu(k) && f(n));
+
+// Yakındaki su kaynağı
+export function yakinSu(d) {
+  const o = d.oyuncu;
+  const mg = Math.hypot(o.x - GOLET.x, o.y - GOLET.y);
+  if (E.goletKurudu(d.k.eko) && mg < GOLET.r + 5) return { ad: 'gölet', kurudu: true };
+  if (!E.goletKurudu(d.k.eko) && mg < GOLET.su + 12) return { ad: 'gölet' };
+  if (Math.abs(o.y - nehirY(o.x)) < NEHIR_YARI + 10) return { ad: 'nehir' };
+  if (M.bolgeBul(o.x, o.y) === 'sulak') return { ad: 'sulak alan' };
+  return null;
+}
+export function suNumunesi(d) {
+  const k = d.k;
+  const su = yakinSu(d);
+  if (!su) return 'Yakında su yok. Gölete, nehre ya da sulak alana git.';
+  if (su.kurudu) return 'Gölet kurumuş; numune alacak su kalmadı.';
+  if (ayniGunVar(k, (n) => n.tip === 'su' && n.kaynak === su.ad)) return `Bugün ${su.ad} suyundan zaten numune aldın.`;
+  const eko = k.eko;
+  const kalite = su.ad === 'gölet' ? E.suKalitesi(eko) : su.ad === 'nehir' ? Math.min(1, 0.55 + eko.nehir * 0.4) : 0.7;
+  const veri = { kalite, alg: su.ad === 'gölet' ? eko.alg : 0.05, parazit: kalite < 0.55, sarbon: !!(eko.salgin && eko.salgin.hastalik === 'sarbon' && su.ad === 'gölet') };
+  return numuneEkle(d, { tip: 'su', kaynak: su.ad, veri }, `${M.BuyukHarf(su.ad)} suyundan steril şişeye numune aldın.`);
+}
+export function diskiNumunesi(d) {
+  const k = d.k;
+  const b = M.gozlenen(d);
+  if (!b) return 'Önce numunesini alacağın hayvanı dürbünle gözlemle.';
+  if (!M.taninmisMi(b)) return 'Dışkı numunesi tanımlanmış bir bireyden alınır; biraz daha izle.';
+  if (M.mesafe(d.oyuncu, b) > 35) return `Hayvanın geçtiği yere yakın olmalısın; ${M.bireyAdi(b)} ${M.metreSozu(M.mesafe(d.oyuncu, b))} uzakta.`;
+  if (d.gozlem && d.gozlem.sn < 8) return 'Dışkısını bırakmasını beklemek için hayvanı biraz daha izle.';
+  if (ayniGunVar(k, (n) => n.tip === 'diski' && n.veri.bireyId === b.id)) return `Bugün ${M.bireyAdi(b)} için zaten numune aldın.`;
+  const veri = { bireyId: b.id, kod: M.kod(b), tur: b.tur, hastalik: b.hastalik && ['parazit', 'sarbon'].includes(b.hastalik.id) ? b.hastalik.id : null, kondisyon: b.kondisyon };
+  return numuneEkle(d, { tip: 'diski', veri }, `${M.BuyukHarf(M.bireyAdi(b))} uzaklaşınca bıraktığı dışkıdan eldivenle numune aldın. Hayvana dokunmadan sağlığı hakkında bilgi verir.`);
+}
+export function yakinLes(d, r = 10) {
+  return d.k.lesler.filter((l) => l.kalan > 0.05 && M.mesafe(d.oyuncu, l) < r).sort((a, b) => M.mesafe(d.oyuncu, a) - M.mesafe(d.oyuncu, b))[0] || null;
+}
+export function lesNumunesi(d) {
+  const k = d.k;
+  const l = yakinLes(d);
+  if (!l) return 'Yakında leş yok. Leşten numune almak için 10 metre içinde olmalısın.';
+  if ([...k.numuneKutusu, ...k.numuneler].some((n) => n.tip === 'les' && n.veri.lesId === l.id)) return 'Bu leşten zaten numune aldın.';
+  const yirtici = k.hayvanlar.some((b) => !b.olu && TURLER[b.tur].yirtici && M.mesafe(b, l) < 25);
+  if (yirtici) return 'Leşin başında yırtıcılar var; yaklaşmak çok tehlikeli. Gitmelerini bekle.';
+  const veri = { lesId: l.id, tur: l.tur, neden: l.neden || '', hastalik: l.hastalik };
+  return numuneEkle(d, { tip: 'les', veri }, `Eldiven ve maske takarak ölü ${kucuk2(M.SOZ[l.tur])} leşinden doku numunesi aldın.`);
+}
+
+// ---------- Botanik ----------
+export function cevredekiBitkiler(d) {
+  return E.bolgedekiBitkiler(M.bolgeBul(d.oyuncu.x, d.oyuncu.y));
+}
+export function bitkiSatiri(d, id) {
+  const b = E.BITKILER[id];
+  const kayit = (d.k.arsiv.bitkiler || {})[id];
+  const ev = E.bitkiEvresi(id, gunu(d.k), d.k.eko);
+  if (!kayit) return `Tanımadığın bir ${b.bicim}. İncele`;
+  return `${b.ad}: ${ev.metin}${kayit.analiz ? `, ${E.OZELLIK_ADI[b.ozellik]}` : ''}. İncele`;
+}
+export function bitkiIncele(d, id) {
+  const k = d.k;
+  if (!cevredekiBitkiler(d).includes(id)) return 'Bu bitki burada yetişmiyor.';
+  const b = E.BITKILER[id];
+  if (!k.arsiv.bitkiler) k.arsiv.bitkiler = {};
+  const ev = E.bitkiEvresi(id, gunu(k), k.eko);
+  const anahtar = `${ev.anahtar}`;
+  let a = k.arsiv.bitkiler[id];
+  if (!a) {
+    a = k.arsiv.bitkiler[id] = { ilkDk: k.dk, ilkBolge: M.bolgeAdi(d.oyuncu.x, d.oyuncu.y), evreler: [anahtar], analiz: false };
+    M.itibarEkle(d, 4);
+    M.arsivOlay(d, `Yeni bitki kaydı: ${b.ad}.`);
+    M.olay(d, 'yeniBitki', '', 0);
+    return `Yeni bitki kaydı: ${b.ad}, bilimsel adı ${b.bilimsel}. ${b.tarif} Şu an ${ev.metin}.`;
+  }
+  if (!a.evreler.includes(anahtar)) {
+    a.evreler.push(anahtar);
+    M.itibarEkle(d, 2);
+    M.olay(d, 'yeniBitki', '', 0);
+    return `${b.ad} için yeni mevsim evresi kaydedildi: ${ev.metin}. ${a.evreler.length} farklı evrede gözlendi.`;
+  }
+  return `${b.ad}: ${ev.metin}. ${b.tarif}`;
+}
+export function bitkiNumunesi(d, id) {
+  const k = d.k;
+  const a = (k.arsiv.bitkiler || {})[id];
+  if (!a) return 'Önce bitkiyi incele.';
+  if (!cevredekiBitkiler(d).includes(id)) return 'Bu bitki burada yetişmiyor.';
+  const ev = E.bitkiEvresi(id, gunu(k), k.eko);
+  if ([...k.numuneKutusu, ...k.numuneler].some((n) => n.tip === 'bitki' && n.veri.bitki === id && n.veri.anahtar === ev.anahtar && n.veri.yil === E.takvim(gunu(k)).yil))
+    return 'Bu bitkiden bu evrede zaten numune aldın.';
+  const parca = ev.tohum ? 'tohum' : 'yaprak';
+  return numuneEkle(d, { tip: 'bitki', veri: { bitki: id, parca, anahtar: ev.anahtar, yil: E.takvim(gunu(k)).yil } }, `${E.BITKILER[id].ad} bitkisinden ${parca} numunesi aldın; bitkiye zarar vermeden küçük bir parça.`);
+}
+
+// ---------- Laboratuvar ----------
+export const numuneKapasitesi = (k) => (tesisVar(k, 'gelismisLab') ? 2 : 1);
+export const numuneAdi = (n) =>
+  n.tip === 'su' ? `${n.kaynak} suyu` : n.tip === 'diski' ? `${n.veri.kod || kucuk2(M.SOZ[n.veri.tur])} dışkısı` : n.tip === 'les' ? `${kucuk2(M.SOZ[n.veri.tur])} leşi dokusu` : `${kucuk2(E.BITKILER[n.veri.bitki].ad)} ${n.veri.parca}`;
+export function numuneMetni(k, n) {
+  const ad = `${M.BuyukHarf(numuneAdi(n))}, ${n.gun}. gün, ${n.bolge}`;
+  if (n.durum === 'kutuda') return `${ad}: numune kutunda, istasyona götür`;
+  if (n.durum === 'sira') return `${ad}: laboratuvarda sıra bekliyor`;
+  if (n.durum === 'analiz') return `${ad}: analiz ediliyor, yaklaşık ${Math.max(1, Math.ceil((n.bitis - k.dk) / 60))} saat kaldı`;
+  return `${ad}: ${n.sonuc}`;
+}
+function teshisKaydet(d, hastalik, tur, kaynak) {
+  const k = d.k;
+  k.eko.teshisler.unshift({ hastalik, tur, gun: gunu(k), kaynak });
+  if (k.eko.teshisler.length > 40) k.eko.teshisler.length = 40;
+  if (k.eko.salgin && k.eko.salgin.hastalik === hastalik && !k.eko.salgin.bilinen) {
+    k.eko.salgin.bilinen = true;
+    const h = E.HASTALIKLAR[hastalik];
+    const m = `Salgın uyarısı: ${h.ad} doğrulandı. ${h.tarif} Şimdiye kadar ${k.eko.salgin.vaka} vaka tahmin ediliyor. Veterinerin şarbonlu leşleri yakarak yayılmayı yavaşlatabilir.`;
+    M.mesajEkle(k, m, 'ekosistem');
+    M.arsivOlay(d, `Salgın doğrulandı: ${h.ad}.`);
+    M.olay(d, 'salgin', m, 4);
+    M.itibarEkle(d, 6);
+  }
+}
+function numuneSonucu(d, n) {
+  const k = d.k;
+  const v = n.veri;
+  if (n.tip === 'su') {
+    let m = `Su ${E.kaliteSozu(v.kalite)}.`;
+    if (v.alg > 0.3) m += ' Mavi-yeşil alg (siyanobakteri) yoğun; bazı türleri hayvanlar için zehirli maddeler üretir.';
+    m += v.parazit ? ' Parazit yumurtaları bulundu; bu sudan içen hayvanlar parazit kapabilir.' : ' Parazit yumurtası bulunmadı.';
+    if (v.sarbon) {
+      m += ' Suda şarbon bakterisi sporları bulundu!';
+      teshisKaydet(d, 'sarbon', null, 'su');
+    }
+    return m;
+  }
+  if (n.tip === 'diski') {
+    const b = M.kayitliBirey(d, v.bireyId);
+    const ad = b ? M.BuyukHarf(M.bireyAdi(b)) : 'Hayvan';
+    if (v.hastalik) {
+      if (b && b.hastalik && b.hastalik.id === v.hastalik) b.teshis = v.hastalik;
+      teshisKaydet(d, v.hastalik, v.tur, 'dışkı');
+      const h = E.HASTALIKLAR[v.hastalik];
+      return `${ad}: ${h.ad} teşhis edildi (${h.etken}). ${h.tedavi ? 'Veteriner tedavi edebilir.' : 'Tedavisi yok; leşleri yok edilerek yayılması yavaşlatılabilir.'}`;
+    }
+    return `${ad}: parazit ya da hastalık bulgusu yok. Kondisyonu ${E.kondisyonSozu(v.kondisyon)}; beslenmesi ${v.kondisyon > 0.55 ? 'yeterli' : 'yetersiz, besin azlığı var'}.`;
+  }
+  if (n.tip === 'les') {
+    const tur = kucuk2(M.SOZ[v.tur]);
+    if (v.hastalik) {
+      teshisKaydet(d, v.hastalik, v.tur, 'leş');
+      const l = k.lesler.find((x) => x.id === v.lesId);
+      if (l) l.teshis = v.hastalik;
+      return `Ölü ${tur}: ölüm nedeni ${E.HASTALIKLAR[v.hastalik].ad}. ${v.hastalik === 'sarbon' ? 'Leş sporları yayabilir; veteriner yakmalı.' : ''}`.trim();
+    }
+    const neden = v.neden.startsWith('avlandı') || v.neden.includes('timsah') ? 'bir yırtıcı tarafından avlanmış' : v.neden.includes('yaşlılık') ? 'yaşlılık; dişleri aşınmış, hastalık bulunmadı' : v.neden.includes('açlık') ? 'açlık; yağ dokusu tükenmiş' : v.neden || 'belirlenemedi';
+    return `Ölü ${tur}: ölüm nedeni ${neden}.`;
+  }
+  const b = E.BITKILER[v.bitki];
+  const a = k.arsiv.bitkiler[v.bitki];
+  if (a) a.analiz = true;
+  return `${b.ad}, ${v.parca}: ${b.analiz} Bitki ${E.OZELLIK_ADI[b.ozellik]}.`;
+}
+function laboratuvarGuncelle(d) {
+  const k = d.k;
+  // İstasyona dönünce numuneler teslim edilir
+  if (k.numuneKutusu.length && Math.hypot(d.oyuncu.x - ISTASYON.x, d.oyuncu.y - ISTASYON.y) < ISTASYON.r + 6) {
+    const n = k.numuneKutusu.length;
+    k.numuneKutusu.forEach((x) => {
+      x.durum = 'sira';
+      k.numuneler.unshift(x);
+    });
+    k.numuneKutusu = [];
+    if (k.numuneler.length > 60) k.numuneler.length = 60;
+    M.olay(d, 'numuneTeslim', `${n} numune laboratuvara teslim edildi. Sırayla analiz edilecek.`, 3);
+  }
+  // Biten analizler
+  k.numuneler.forEach((n) => {
+    if (n.durum === 'analiz' && k.dk >= n.bitis) {
+      n.durum = 'tamam';
+      n.sonuc = numuneSonucu(d, n);
+      M.itibarEkle(d, 2);
+      M.mesajEkle(k, `Laboratuvar: ${numuneAdi(n)} analizi bitti. ${n.sonuc}`, 'sonuc');
+      M.olay(d, 'analizBitti', `Numune analizi bitti: ${numuneAdi(n)}. ${n.sonuc}`, 3);
+    }
+  });
+  // Sıradakiler başlar
+  let bos = numuneKapasitesi(k) - k.numuneler.filter((n) => n.durum === 'analiz').length;
+  k.numuneler
+    .slice()
+    .reverse()
+    .forEach((n) => {
+      if (bos <= 0 || n.durum !== 'sira') return;
+      let sure = NUMUNE_DK;
+      if (M.personelVar(k, 'biyolog')) sure *= 0.6;
+      if (tesisVar(k, 'gelismisLab')) sure *= 0.75;
+      if (n.tip === 'bitki' && M.personelVar(k, 'botanikUzmani')) sure *= 0.5;
+      n.durum = 'analiz';
+      n.bitis = k.dk + sure;
+      bos--;
+    });
+}
+
+// ---------- Veterinerlik ----------
+export function veterinerMudahale(d) {
+  const k = d.k;
+  const b = M.gozlenen(d);
+  if (!M.personelVar(k, 'veteriner')) return 'Hayvanları yalnızca veteriner tedavi edebilir. Veteriner kliniği kur ve veteriner işe al.';
+  if (!b) return 'Önce müdahale edilecek hayvanı dürbünle gözlemle.';
+  if (M.mesafe(d.oyuncu, b) > 40) return 'Veteriner ekibin yaklaşabilmesi için 40 metre içinde olmalısın.';
+  const ad = M.bireyAdi(b);
+  if (!b.hastalik) {
+    if (b.kondisyon < 0.3) return `${M.BuyukHarf(ad)} zayıf ama hasta değil; zayıflığın nedeni besin azlığı. Vahşi hayvanları beslemek doğal dengeyi bozar, müdahale edilmedi.`;
+    return `${M.BuyukHarf(ad)} sağlıklı görünüyor. Vahşi bir hayvana gereksiz yere dokunulmaz.`;
+  }
+  const h = b.hastalik;
+  const tanim = E.HASTALIKLAR[h.id];
+  if (!h.goruldu && b.teshis !== h.id) return `Veteriner ${ad} hayvanını uzaktan inceledi ama belirgin bir sorun görmedi. Bir süre gözlemle ya da dışkı numunesi al.`;
+  if (h.tedavi) return `${M.BuyukHarf(ad)} zaten tedavi edildi; iyileşmesi bekleniyor.`;
+  b.teshis = h.id;
+  teshisKaydet(d, h.id, b.tur, 'veteriner');
+  if (!tanim.tedavi) {
+    M.gecmisEkle(k, b, `Veteriner muayenesi: ${tanim.ad}, tedavisi yok`);
+    return `Veteriner ${ad} hayvanında ${tanim.ad} teşhis etti. Hastalık ilerlemiş; vahşi hayvanda tedavisi yok. Öldüğünde leşi yakılırsa salgının yayılması yavaşlar.`;
+  }
+  const ucret = h.id === 'uyuz' ? 800 : 600;
+  if (k.butce < ucret) return `İlaç ve uyuşturucu için ${lira(ucret)} gerekli; bütçe yetmiyor.`;
+  k.butce -= ucret;
+  h.tedavi = true;
+  h.siddet *= 0.5;
+  b.alisma = Math.max(0, b.alisma - 0.2);
+  M.itibarEkle(d, 3);
+  M.gecmisEkle(k, b, `Veteriner tedavisi: ${tanim.ad}`);
+  M.arsivOlay(d, `${M.BuyukHarf(ad)} tedavi edildi: ${tanim.ad}.`);
+  const nasil = {
+    yara: 'yarasını temizleyip dikti ve antibiyotik verdi',
+    parazit: 'parazit ilacı verdi',
+    uyuz: 'akarlara karşı iğne yaptı',
+  }[h.id];
+  const grup = h.id === 'uyuz' ? ' Uyuz bulaşıcıdır; grup arkadaşlarını da gözlemle.' : '';
+  return `Veteriner ekip ${ad} hayvanını uzaktan iğneyle kısa süreli uyuttu, ${nasil}. Hayvan uyanıp grubuna döndü. Birkaç gün içinde iyileşmesi bekleniyor. Masraf ${lira(ucret)}.${grup}`;
+}
+export function lesiYak(d) {
+  const k = d.k;
+  if (!M.personelVar(k, 'veteriner')) return 'Leşleri güvenle yok etmek için veteriner gerekir.';
+  const l = yakinLes(d, 14);
+  if (!l) return 'Yakında leş yok.';
+  if (!(l.teshis === 'sarbon' || (k.eko.salgin && k.eko.salgin.bilinen))) return 'Leşin şarbonlu olduğu bilinmiyor. Doğal leşler sırtlanların ve akbabaların besinidir; önce leşten numune al.';
+  if (l.hastalik !== 'sarbon') return 'Veteriner hızlı testle baktı: bu leş şarbonlu değil. Doğal leşlere dokunulmaz.';
+  if (k.butce < 300) return 'Yakıt ve kireç için 300 lira gerekli; bütçe yetmiyor.';
+  k.butce -= 300;
+  k.lesler = k.lesler.filter((x) => x !== l);
+  M.itibarEkle(d, 4);
+  M.arsivOlay(d, `Şarbonlu bir ${kucuk2(M.SOZ[l.tur])} leşi yakıldı.`);
+  return `Veteriner ekip şarbonlu ${kucuk2(M.SOZ[l.tur])} leşini yakıp toprağı kireçle kapladı. Sporların yayılması önlendi. Masraf 300 lira.`;
+}
+
+// ---------- Rehabilitasyon (karar 66) ----------
+export const REHAB_ASAMALARI = ['karantina', 'tedavi', 'beslenme ve iyileşme', 'doğaya uyum'];
+export function rehabUygunMu(b) {
+  if (!b || b.olu) return false;
+  if (b.yetim && b.evre === 'yavru') return true;
+  return !!(b.hastalik && E.HASTALIKLAR[b.hastalik.id].tedavi && b.hastalik.siddet > 0.5);
+}
+export function rehabaAl(d) {
+  const k = d.k;
+  const b = M.gozlenen(d);
+  if (!tesisVar(k, 'rehab')) return 'Önce rehabilitasyon alanı kurulmalı.';
+  if (!M.personelVar(k, 'veteriner')) return 'Hayvanı ancak veteriner rehabilitasyona alabilir.';
+  if (!b) return 'Önce hayvanı dürbünle gözlemle.';
+  if (M.mesafe(d.oyuncu, b) > 40) return 'Veteriner ekibin yaklaşabilmesi için 40 metre içinde olmalısın.';
+  if (!rehabUygunMu(b)) return `${M.BuyukHarf(M.bireyAdi(b))} doğada iyileşebilir; rehabilitasyona yalnızca ağır yaralı, ağır hasta ya da yetim kalmış yavrular alınır.`;
+  if (k.rehab.length >= 4) return 'Rehabilitasyon alanı dolu (4 hayvan).';
+  if (k.butce < 1000) return 'Rehabilitasyon için 1.000 lira gerekli; bütçe yetmiyor.';
+  k.butce -= 1000;
+  const neden = b.yetim ? 'yetim yavru' : E.HASTALIKLAR[b.hastalik.id].ad;
+  M.haritadanCikar(d, [b]);
+  k.rehab.push({ b, asama: 0, gun: gunu(k), neden, hazir: false });
+  M.gecmisEkle(k, b, `Rehabilitasyona alındı: ${neden}`);
+  M.arsivOlay(d, `${M.BuyukHarf(M.bireyAdi(b))} rehabilitasyona alındı (${neden}).`);
+  M.itibarEkle(d, 3);
+  return `Veteriner ekip ${M.bireyAdi(b)} hayvanını uyutup araçla rehabilitasyon alanına taşıdı. Önce karantinaya alınacak. İnsanlara alışmaması için bakıcılar onu olabildiğince az görecek. Masraf 1.000 lira.`;
+}
+export function rehabMetni(k, r) {
+  const ad = M.BuyukHarf(M.bireyAdi(r.b));
+  if (r.hazir) return `${ad} (${r.neden}): doğaya bırakılmaya hazır. Bırak`;
+  return `${ad} (${r.neden}): ${REHAB_ASAMALARI[r.asama]} aşamasında, ${gunu(k) - r.gun + 1}. gün`;
+}
+export function rehabBirak(d, id) {
+  const k = d.k;
+  const r = k.rehab.find((x) => x.b.id === id);
+  if (!r) return 'Bu hayvan rehabilitasyonda değil.';
+  if (!r.hazir) return `${M.BuyukHarf(M.bireyAdi(r.b))} henüz hazır değil: ${REHAB_ASAMALARI[r.asama]} aşamasında.`;
+  const b = r.b;
+  const g = k.gruplar.find((x) => x.id === b.grup && !x.goc) || k.gruplar.find((x) => x.tur === b.tur && !x.goc);
+  if (!g) return 'Sürüsü şu an bölgede değil (göçte olabilir). Döndüğünde bırakabilirsin.';
+  b.grup = g.id;
+  b.x = g.x + b.ofs.x;
+  b.y = g.y + b.ofs.y;
+  b.yetim = false;
+  b.hastalik = null;
+  b.alisma = 0.15;
+  k.hayvanlar.push(b);
+  d.hayvanMap.set(b.id, b);
+  k.rehab = k.rehab.filter((x) => x !== r);
+  M.gecmisEkle(k, b, 'Doğaya bırakıldı');
+  M.arsivOlay(d, `${M.BuyukHarf(M.bireyAdi(b))} doğaya bırakıldı.`);
+  M.itibarEkle(d, 8);
+  return `Ekip ${M.bireyAdi(b)} hayvanını ${M.bolgeAdi(b.x, b.y)} bölgesinde grubunun yanına bıraktı. Hayvan çekinerek de olsa grubuna katıldı.`;
+}
+function rehabGunluk(d) {
+  const k = d.k;
+  k.rehab.forEach((r) => {
+    const b = r.b;
+    b.yas = (b.yas || 0) + 1;
+    b.evre = E.evreBul(b.tur, b.yas);
+    if (r.hazir) return;
+    if (r.asama === 1) b.hastalik = null;
+    if (r.asama === 2) {
+      b.kondisyon = Math.min(1, (b.kondisyon || 0.4) + 0.25);
+      // Yetim yavru kendi başına yaşayabilecek yaşa gelene kadar beslenir
+      if (b.evre === 'yavru' && b.yas < E.yilGun(E.YASAM[b.tur].yavru) * 0.5) return;
+    }
+    r.asama += 1;
+    if (r.asama >= REHAB_ASAMALARI.length) {
+      r.asama = REHAB_ASAMALARI.length - 1;
+      r.hazir = true;
+      M.mesajEkle(k, `Rehabilitasyon: ${M.bireyAdi(b)} iyileşti ve doğaya bırakılmaya hazır. Araştırma merkezi, Rehabilitasyon bölümünden bırakabilirsin.`, 'bilgi');
+    } else M.mesajEkle(k, `Rehabilitasyon: ${M.bireyAdi(b)} ${REHAB_ASAMALARI[r.asama]} aşamasına geçti.`, 'bilgi');
+  });
+}
+// Botanik uzmanı her gün bir bitkinin evresini kaydeder
+function botanikGunluk(d) {
+  const k = d.k;
+  const p = k.personel.find((x) => x.rol === 'botanikUzmani');
+  if (!p) return;
+  const ev = (id) => E.bitkiEvresi(id, gunu(k), k.eko);
+  const aday = E.BITKI_SIRASI.find((id) => k.arsiv.bitkiler[id] && !k.arsiv.bitkiler[id].evreler.includes(ev(id).anahtar)) || E.BITKI_SIRASI.find((id) => !k.arsiv.bitkiler[id]);
+  if (!aday) return;
+  const b = E.BITKILER[aday];
+  if (!k.arsiv.bitkiler[aday]) k.arsiv.bitkiler[aday] = { ilkDk: k.dk, ilkBolge: 'botanik uzmanının kaydı', evreler: [], analiz: false };
+  k.arsiv.bitkiler[aday].evreler.push(ev(aday).anahtar);
+  M.mesajEkle(k, `${p.ad} bir bitki evresi kaydetti: ${b.ad}, ${ev(aday).metin}.`, 'bilgi');
 }
