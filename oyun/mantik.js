@@ -2478,3 +2478,54 @@ export function kayittanYukle(v) {
   }
   return k;
 }
+
+// ---------- Adım ve dönüş sesleri ----------
+// Ayağının altındaki zemin: adım sesi buna göre seçilir (assets/efekt/adim_<zemin>_<n>.mp3)
+export function zeminTuru(d) {
+  const k = d.k;
+  if (k.magara) return 'magara';
+  const o = d.oyuncu;
+  if (nehirdeMi(o.x, o.y) || (GOLET.su > 0 && Math.hypot(o.x - GOLET.x, o.y - GOLET.y) < GOLET.su + 0.5)) return 'su';
+  const b = bolgeBul(o.x, o.y);
+  if (b === 'kayalik') return 'kaya';
+  if (b === 'galeri') return 'yaprak';
+  if (b === 'istasyon') return 'toprak';
+  const islak = k.eko && (k.eko.yagmurVar || k.eko.islaklik > 0.75);
+  if (b === 'golet' || b === 'sulak') return 'camur';
+  const kiyiUzak = o.y - nehirY(o.x);
+  if (b === 'nehir' && Math.abs(kiyiUzak) < 9) return 'camur';
+  if (o.x > GALERI.x0 && o.x < GALERI.x1 && kiyiUzak > 0 && kiyiUzak < GALERI.derinlik) return 'yaprak';
+  if (b === 'nehir') return 'ot';
+  if (islak) return 'camur';
+  // Kurak mevsimde otun bittiği yerlerde çıplak toprak
+  if (k.eko && E.otDegeri(k.eko, o.x, o.y) < 0.2) return 'toprak';
+  if (b === 'agaclik' && k.eko && k.eko.yesil > 0.5) return 'yaprak';
+  return 'ot';
+}
+
+// Dönüş tıkırtısı (Kayıp Okyanus dalis.js donusTikirtisi): hedef varsa hedefin yönüne göre, yoksa baktığın yöne göre
+// 30 derecelik dilimler; yarım dilimden fazla geçince 'tik' (ana yönlerde güçlü), hedef tam önüne gelince 'hedefOnde'.
+// d.donus durumu tutar. Döndürür: null | { ses: 'donus_tik' | 'hedef_onde', duzey }
+const DILIM = Math.PI / 6;
+export function donusTikirtisi(d) {
+  const o = d.oyuncu;
+  const h = gozlenen(d) || d.rota || null;
+  const kip = h ? 'hedef' : 'pusula';
+  const aciFark = (a) => Math.atan2(Math.sin(a), Math.cos(a));
+  const v = h ? aciFark(Math.atan2(h.x - o.x, h.y - o.y) - o.yon) / DILIM : (((o.yon % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI)) / DILIM;
+  const s = d.donus || (d.donus = {});
+  if (s.kip !== kip || s.hedef !== (h && (h.id || h.ad)) || s.dilim === undefined) {
+    s.kip = kip;
+    s.hedef = h && (h.id || h.ad);
+    s.dilim = Math.round(v);
+    return null;
+  }
+  let fark = v - s.dilim;
+  while (fark > 6) fark -= 12;
+  while (fark < -6) fark += 12;
+  if (Math.abs(fark) < 0.6) return null;
+  s.dilim = Math.round(v);
+  const yeni = ((s.dilim % 12) + 12) % 12;
+  if (kip === 'hedef' && yeni === 0) return { ses: 'hedef_onde', duzey: 0.8 };
+  return { ses: 'donus_tik', duzey: kip === 'pusula' && yeni % 3 === 0 ? 0.6 : 0.3 };
+}

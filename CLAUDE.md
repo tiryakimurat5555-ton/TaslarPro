@@ -160,6 +160,14 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   (getContextAttributes yedeği + WebGLRenderer kurulurken globalThis.WebGLRenderingContext gizlenir; three r163+ WebGL 1 reddi).
   Menü telefonda konuşup görünmüyordu: oyun ekranındaki SafeAreaView kaldırıldı (useSafeAreaInsets dolgusu), menü katmanı
   pointerEvents none (Kayıp Okyanus gibi). Web taklidinde useSafeAreaInsets 47/34.
+- Adım ve dönüş sesleri (12 Kasım gece, Murat "yürüme ve dönme sesini üret; dönmeyi Kayıp Okyanus'tan al, adımları çevreye göre
+  yeni ürettir" dedi): ElevenLabs (akış "Vahşi Yaşam sesleri", 5 sn "altı ağır adım", prompt_influence 0.6) adim_ot/toprak/camur/su/
+  kaya/yaprak/magara → `python3 araclar/adim-bol.py <ham> assets/efekt` başlangıçlardan böler, her zeminden 4 adım (adim_<z>_0..3,
+  rms eşit). M.zeminTuru(d): mağara, nehir/gölet suyu (geçitte su), kayalık kaya, galeri şeridi yaprak, istasyon toprak, gölet/sulak/
+  nehir kıyısı 9 m/yağmur ya da ıslaklık>0,75 çamur, ot<0,2 toprak, yeşil ağaçlık yaprak, yoksa ot. App adimCal (aynısı art arda yok,
+  ADIM_DUZEY), mağarada oda değişince 4 yankılı adım. Dönüş: Kayıp Okyanus tik.wav/hedefOnde.wav → donus_tik, hedef_onde (mp3);
+  M.donusTikirtisi(d) Kayıp Okyanus algoritması (30° dilim, 0,6 histerezis, ana yön 0,6 düzey, hedef = gözlenen ya da d.rota,
+  önüne gelince hedef_onde + Haptics.selectionAsync). Ayar donusTiki (Ses ve konuşma). Yardım "Sahada hareketler" 7. satır.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

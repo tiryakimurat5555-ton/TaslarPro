@@ -36,6 +36,7 @@ export async function setAudioModeAsync() {}
 export async function setIsAudioActiveAsync() {}
 
 export function impactAsync() {}
+export const selectionAsync = async () => {};
 export function notificationAsync() {}
 export const ImpactFeedbackStyle = { Light: 'l', Medium: 'm', Heavy: 'h' };
 export const NotificationFeedbackType = { Error: 'e', Success: 's' };

@@ -37,9 +37,11 @@ const VARSAYILAN_AYAR = {
   kip: null, hiz: 1.0, titresim: true, rehber: true, efekt: true, efektKis: true, ortam: true,
   // Aşama 7: kontrol özelleştirme ve erişilebilirlik (karar 31, 32)
   grafik: 'yuksek', hassasiyet: 'orta', surekliYuru: false, buyukDugme: false, solEl: false, kontrast: false, buyukYazi: false,
-  sesAltyazi: false, ortamDuzey: 'orta', otoBetimle: true,
+  sesAltyazi: false, ortamDuzey: 'orta', otoBetimle: true, donusTiki: true,
 };
 const ORTAM_DUZEY = { dusuk: 0.2, orta: 0.35, yuksek: 0.5 };
+// Adım sesi düzeyleri zemine göre (su ve çamur doğal olarak daha gür)
+const ADIM_DUZEY = { ot: 0.3, toprak: 0.3, camur: 0.28, su: 0.3, kaya: 0.32, yaprak: 0.3, magara: 0.4 };
 const HASSASIYET = { dusuk: 130, orta: 90, yuksek: 60 }; // tam hız için sürükleme (piksel)
 
 // ---------- Hata kayıtları (Aşama 7, çevrim dışı dayanıklılık): Murat'ın bana okuyabilmesi için ----------
@@ -127,6 +129,7 @@ const YARDIM = [
       'Çift dokun: elindeki aleti kullanır. İki parmakla sağa ya da sola kaydır: alet değiştirir. Aletler dürbün, fotoğraf makinesi, ses kayıt cihazı ve yaklaşmadır.',
       'İki parmakla yukarı kaydır: araca biner ya da inersin; araç uzaktaysa yanına yürürsün. İki parmakla aşağı kaydır: durur ve gözlemi bitirirsin.',
       'İki parmakla dokun: konuşmayı susturur. İki parmakla iki kez dokun: menüyü açar.',
+      'Ayak seslerin zemine göre değişir: kuru ot, çıplak toprak, çamur, sığ su, kaya, yaprak ve mağara taşı. Dönerken her 30 derecede bir tık duyulur; kuzey, doğu, güney ve batıda tık daha güçlüdür. İzlediğin hayvan ya da gittiğin yer tam önüne gelince ayrı bir ses çalar ve telefon hafifçe titrer. Tıkırtıyı Ayarlar, Ses ve konuşma bölümünden kapatabilirsin.',
     ],
   },
   {
@@ -431,6 +434,12 @@ function ayarOgeleri(ayar, degistir) {
       },
     },
     {
+      id: 'donusTiki',
+      etiket: `Dönüş tıkırtısı: ${durum('donusTiki')}. Değiştir`,
+      ipucu: 'Dönerken her 30 derecede bir tık duyulur; kuzey, doğu, güney ve batıda daha güçlü. İzlediğin hayvan ya da gittiğin yer tam önüne gelince ayrı bir ses çalar.',
+      sec: () => ac('donusTiki', 'Dönüş tıkırtısı'),
+    },
+    {
       id: 'efektKis',
       etiket: `Efektleri konuşmayla karıştırma: ${durum('efektKis')}. Değiştir`,
       ipucu: 'Açıkken oyun konuşurken efekt çalmaz; ses dalgalanmasını önler.',
@@ -549,7 +558,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
   };
 
   useEffect(() => {
-    Efekt.onYukle(['adim1', 'adim2', 'sonar_2', 'odak', 'etkinles', 'altin', 'seviye', 'hata', 'carpma', 'sinir']);
+    Efekt.onYukle(['adim_ot_0', 'adim_ot_1', 'adim_ot_2', 'adim_ot_3', 'donus_tik', 'hedef_onde', 'sonar_2', 'odak', 'etkinles', 'altin', 'seviye', 'hata', 'carpma', 'sinir']);
     ortamSec();
     let silici;
     setAltyazi('');
@@ -671,10 +680,23 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         return;
       case 'magara':
         ortamSec();
-        Efekt.cal('adim1', 0.5);
+        adimDizisi('magara', 4);
         return;
       default:
     }
+  };
+
+  // Zemine göre adım sesi: her zeminin 4 farklı adımı sırayla karışık çalınır (aynı ses art arda gelmez)
+  const sonAdim = useRef(-1);
+  const adimCal = (zemin, duzey = ADIM_DUZEY[zemin] || 0.3) => {
+    let n = Math.floor(Math.random() * 4);
+    if (n === sonAdim.current) n = (n + 1) % 4;
+    sonAdim.current = n;
+    Efekt.cal(`adim_${zemin}_${n}`, duzey);
+  };
+  // Mağarada oda değiştirirken birkaç adım (yankılı)
+  const adimDizisi = (zemin, kac) => {
+    for (let i = 0; i < kac; i++) setTimeout(() => adimCal(zemin), i * 430);
   };
 
   // Ana döngü
@@ -744,8 +766,15 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         adimYol += sonuc.yurudu;
         if (adimYol > 1.5) {
           adimYol = 0;
-          adimSira = !adimSira;
-          Efekt.cal(adimSira ? 'adim1' : 'adim2', 0.2);
+          adimCal(M.zeminTuru(d));
+        }
+        // Dönüş tıkırtısı (Kayıp Okyanus'taki gibi): 30 derecede bir tık, ana yönlerde güçlü; hedef önüne gelince ayrı ses
+        if (a.donusTiki !== false && !d.k.magara) {
+          const t = M.donusTikirtisi(d);
+          if (t) {
+            Efekt.cal(t.ses, t.duzey);
+            if (t.ses === 'hedef_onde' && a.titresim !== false) Haptics.selectionAsync().catch(() => {});
+          }
         }
         for (const o of M.olaylariAl(d)) {
           if (sahneRef.current) sahneRef.current.efekt(o);
