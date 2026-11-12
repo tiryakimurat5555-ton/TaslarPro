@@ -33,7 +33,9 @@ export const UST_BOSLUK = 54;
 const metinAl = (deger) => (typeof deger === 'function' ? deger() : deger);
 const soyle = (m) => Ses.hemen(m);
 
-function SesliListeIc({ baslik, giris, ogeler, onGeri, rehberAcik = true, ilkOdak = 0, onOdak, ust = null }, ref) {
+// disaridanJest: true ise liste kendi dokunma katmanını kurmaz; dokunuşları dışarıdaki tek katman ref ile iletir
+// (Kayıp Okyanus dalış ekranı gibi: iki üst üste dokunma katmanı menünün dokunuş almamasına yol açıyordu).
+function SesliListeIc({ baslik, giris, ogeler, onGeri, rehberAcik = true, ilkOdak = 0, onOdak, ust = null, disaridanJest = false }, ref) {
   const [odak, setOdak] = useState(Math.max(0, Math.min(ilkOdak, ogeler.length - 1)));
   const odakRef = useRef(odak);
   odakRef.current = Math.max(0, Math.min(odakRef.current, ogeler.length - 1));
@@ -181,7 +183,10 @@ function SesliListeIc({ baslik, giris, ogeler, onGeri, rehberAcik = true, ilkOda
   const jest = useJestler(isleyiciler, { dokunmaBekle: true });
   useImperativeHandle(ref, () => ({
     kaydir: (yon, parmak) => isleyiciRef.current.onKaydir(yon, parmak),
+    surukle: (mod, dx, dy, bilgi) => isleyiciRef.current.onSurukle(mod, dx, dy, bilgi),
+    dokun: (parmak, konum) => isleyiciRef.current.onDokun(parmak, konum),
     ciftDokun: (parmak) => isleyiciRef.current.onCiftDokun(parmak),
+    uzunBas: (konum) => isleyiciRef.current.onUzunBas(konum),
   }));
 
   return (
@@ -219,7 +224,7 @@ function SesliListeIc({ baslik, giris, ogeler, onGeri, rehberAcik = true, ilkOda
           ))}
         </ScrollView>
       </View>
-      <View style={StyleSheet.absoluteFill} {...jest} accessible={false} />
+      {disaridanJest ? null : <View style={StyleSheet.absoluteFill} {...jest} accessible={false} />}
     </Animated.View>
   );
 }

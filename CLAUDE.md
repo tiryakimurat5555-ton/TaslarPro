@@ -151,6 +151,11 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   kipindeyken VoiceOver açıktı): App voAcik (screenReaderChanged); VoiceOver açıkken seçilen kip ne olursa olsun etkin kip 'voiceover'
   (düğmeli düzen + VoiceListe), kapanınca seçilene döner, geçişler duyurulur. VoiceListe açılınca AccessibilityInfo.setAccessibilityFocus
   (250 ve 700 ms) başlığa ya da alt menüden dönülünce onu açan satıra (onOdak basılınca). Telefonda doğrulanmadı.
+- Tek dokunma katmanı (12 Kasım gece, Murat oyunun kendi ekran okuyucusuyla "menüye odaklanmıyor, hareketlerim alt ekrana gidiyor"
+  dedi; ekran görüntüsünde menü konuşuyordu ama görünmüyordu): Kayıp Okyanus DalisEkrani çözümü. Hareketli kiplerde sahaJest katmanı
+  Oyun kökünde en üstte (zIndex 20) hep kurulu; menü açıkken (menuOrt zIndex 10) dokunuşları listeRef'e iletir (surukle, kaydir, dokun,
+  ciftDokun, uzunBas); oyun içi Liste'ler disaridanJest (SesliListe kendi katmanını kurmaz). Ana menü/kip seçimi listeleri kendi katmanlı.
+  3B tanı: 8 sn'de GLView bağlamı ya da sahne kurulmazsa hata kayıtlarına yazılır (Murat'ın görüntülerinde 3B alan boş, lacivertti).
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

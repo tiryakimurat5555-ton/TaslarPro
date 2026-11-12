@@ -507,6 +507,9 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
   globalThis.__oyunMenu = menu; // denemeler için (araclar/web-deneme/menu-tara.cjs)
   const menuRef = useRef(null);
   menuRef.current = menu.ust;
+  // Açık menü listesi: sahadaki tek dokunma katmanı menü açıkken dokunuşları buna iletir
+  const listeRef = useRef(null);
+  const menuye = () => (menuRef.current ? listeRef.current : null);
   const [, yenile] = useState(0);
   const [altyazi, setAltyazi] = useState('');
   const ayarRef = useRef(ayar);
@@ -809,7 +812,18 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     };
   }, []);
 
+  // Tanı için: üç boyutlu görüntü 8 saniyede kurulmadıysa hata kayıtlarına yazılır
+  const glCagrildi = useRef(false);
+  useEffect(() => {
+    const z = setTimeout(() => {
+      if (ayarRef.current.grafik === 'kapali') return;
+      if (!glCagrildi.current) hataKaydet(new Error('Üç boyutlu görüntünün çizim bağlamı 8 saniyede oluşmadı'), 'üç boyutlu görüntü');
+      else if (!sahneRef.current) hataKaydet(new Error('Üç boyutlu sahne kurulmadı'), 'üç boyutlu görüntü');
+    }, 8000);
+    return () => clearTimeout(z);
+  }, []);
   const glHazir = useCallback((gl) => {
+    glCagrildi.current = true;
     try {
       sahneRef.current = sahneKur(gl, d, { dusuk: ayarRef.current.grafik === 'dusuk' });
     } catch (e) {
@@ -861,8 +875,12 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
   };
   const sahaJest = useJestler(
     {
-      onSurukle: (mod, dx, dy) => {
-        if (menuRef.current) return;
+      onSurukle: (mod, dx, dy, bilgi) => {
+        if (menuRef.current) {
+          const L = menuye();
+          if (L) L.surukle(mod, dx, dy, bilgi);
+          return;
+        }
         if (d.k.magara) return;
         if (mod === 'tek') {
           adimBitis.current = 0;
@@ -870,6 +888,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         }
       },
       onSurukleBitti: () => {
+        if (menuRef.current) return;
         if (ayarRef.current.surekliYuru && girdi.current.ileri > 0.5 && !d.k.magara) {
           seyir.current = true;
           girdi.current = { ileri: girdi.current.ileri, don: 0 };
@@ -879,7 +898,11 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         girdi.current = { ileri: 0, don: 0 };
       },
       onKaydir: (yon, parmak) => {
-        if (menuRef.current) return;
+        if (menuRef.current) {
+          const L = menuye();
+          if (L) L.kaydir(yon, parmak);
+          return;
+        }
         if (d.k.magara && parmak < 2) {
           if (yon === 'yukari') K.magaraIlerle(d);
           else if (yon === 'asagi') K.magaraGeri(d);
@@ -890,8 +913,12 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         else if (yon === 'yukari') aracIslemi();
         else durVeBitir();
       },
-      onDokun: (parmak) => {
-        if (menuRef.current) return;
+      onDokun: (parmak, konum) => {
+        if (menuRef.current) {
+          const L = menuye();
+          if (L) L.dokun(parmak, konum);
+          return;
+        }
         if (parmak >= 2) return Ses.sus();
         if (d.k.magara) return Ses.hemen(`${K.odaTarifi(d.k)} Aşağı kaydırırsan ${d.k.magara.oda ? 'bir önceki odaya dönersin' : 'mağaradan çıkarsın'}.`);
         const b = M.gozlenen(d);
@@ -900,7 +927,11 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         Ses.hemen(m);
       },
       onCiftDokun: (parmak) => {
-        if (menuRef.current) return;
+        if (menuRef.current) {
+          const L = menuye();
+          if (L) L.ciftDokun(parmak);
+          return;
+        }
         if (parmak >= 2) {
           Efekt.cal('etkinles', 0.5);
           menuAc('ana');
@@ -910,8 +941,12 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         if (d.k.magara && (al.id === 'durbun' || al.id === 'yaklas')) K.kucukAra(d);
         else al.kullan(d);
       },
-      onUzunBas: () => {
-        if (menuRef.current) return;
+      onUzunBas: (konum) => {
+        if (menuRef.current) {
+          const L = menuye();
+          if (L) L.uzunBas(konum);
+          return;
+        }
         Ses.hemen(B.betimle(d, ALETLER[aletRef.current].ad));
       },
     },
@@ -927,7 +962,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     return 'sessiz';
   };
   const liste = (anahtar, baslik, ogeler, giris) => (
-    <Liste key={anahtar} kip={kip} baslik={baslik} giris={giris} ogeler={[...ogeler, geriOgesi(geri)]} onGeri={geri} {...menu.odak(anahtar)} />
+    <Liste key={anahtar} ref={listeRef} disaridanJest={jestli} kip={kip} baslik={baslik} giris={giris} ogeler={[...ogeler, geriOgesi(geri)]} onGeri={geri} {...menu.odak(anahtar)} />
   );
   const bilgi = (id, etiket, ipucu) => ({ id, etiket, ipucu });
   // Menüde bir işlem yapar, sonucunu söyler ve menüyü yeni değerlerle yeniden çizer
@@ -993,7 +1028,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
           return 'sessiz';
         },
       });
-      return <Liste key="ana" kip={kip} baslik="Menü" giris={`${M.zamanSozu(k.dk)}. ${M.bolgeAdi(d.oyuncu.x, d.oyuncu.y)}. Zaman durdu.`} ogeler={ogeler} onGeri={geri} {...menu.odak('ana')} />;
+      return <Liste key="ana" ref={listeRef} disaridanJest={jestli} kip={kip} baslik="Menü" giris={`${M.zamanSozu(k.dk)}. ${M.bolgeAdi(d.oyuncu.x, d.oyuncu.y)}. Zaman durdu.`} ogeler={ogeler} onGeri={geri} {...menu.odak('ana')} />;
     }
     if (u === 'cevre') {
       const l = M.gorunurler(d).slice(0, 20);
@@ -1485,12 +1520,18 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
             )}
           </>
         )}
-        {jestli && !menu.ust && (
-          <View style={StyleSheet.absoluteFill} {...sahaJest} accessible accessibilityLabel="Saha. Tek parmakla sürükleyerek yürü, dokununca çevre anlatılır, iki parmakla iki kez dokununca menü açılır." />
-        )}
       </SafeAreaView>
 
-      {menu.ust && <View style={st.menuOrt}>{menuIcerigi()}</View>}
+      {menu.ust && <View style={[st.menuOrt, { zIndex: 10 }]}>{menuIcerigi()}</View>}
+      {/* Hareketle oynarken tek dokunma katmanı: sahada ve menüde bütün dokunuşlar buradan geçer (en üstte, hep kurulu) */}
+      {jestli && (
+        <View
+          style={[StyleSheet.absoluteFill, { zIndex: 20 }]}
+          {...sahaJest}
+          accessible={!menu.ust}
+          accessibilityLabel={menu.ust ? undefined : 'Saha. Tek parmakla sürükleyerek yürü, dokununca çevre anlatılır, iki parmakla iki kez dokununca menü açılır.'}
+        />
+      )}
     </View>
   );
 }
