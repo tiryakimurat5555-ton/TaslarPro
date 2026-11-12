@@ -197,6 +197,23 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   Kayıt: asama8Alanlari / asama8Onar (dunyaOlustur'da; bozuk harita/hâkimiyet atılır). Yardım "Genetik, bölgeler, dron, tekne ve kamp".
   Sesler dron (3B), kurek. Testler: dayanıklılık 300/300 (Aşama 8 metinleri dahil), bot 6 gün, ekosistem 30 gün dengede,
   menu-tara 198 sayfa iki kipte sorun 0, /tmp/claude-0/g8-dene.js 24 gün: rekabet ~5/gün, meydan nadir. Telefonda doğrulanmadı.
+- Aşama 9 davranış ve keşif (13 Kasım gece, Murat "devam" dedi; kararlar 47, 69, 70, 71, 85, 86, 93, 105, 108, 109, 110; sayılar ÖNERİ).
+  mantik: DUYULAR (tür başına koku/görme/işitme), ruzgarDurumu (hava.ruzgarYon rüzgârın geldiği yön; +1 kokun hayvana gidiyor),
+  duyuCarpani kacisMesafesi'nde (rüzgâr üstü ×1+0,45r·hız·(koku-0,3), rüzgâr altı ×0,82, yürürken ×1+0,15(işitme-0,5), dururken
+  ×0,92, gündüz uzun ot ×1-0,12·görme; 0,6-1,8), ruzgarUyarisi (yaklaş ve betimlemede). b.korku (kurtulan av +0,5, tel tuzaktan
+  kurtarılan +0,8, oyuncudan ürken +0,04; günlük ×0,5/0,65/0,8 kişiliğe göre) kaçış ×(1+0,6 korku); b.aracAlisma (araçtan sakin izleme)
+  araçta kaçış ×(1-0,4); g.tehlikeYerleri (avlanılan/kovalanan yer 2 gün, 30 m, enGur -0,6). grupAlarm zincir: otçul alarmı 38 m'deki
+  otçul sürüleri gecikmeli kaçırır (olay 'alarmZinciri', ilk görülüşte itibar 3). Kamera tuzağı ilk gün hayvanların yarısı çekinir.
+  YUVA_TURLERI 7 (sırtlan/yaban köpeği ini termitlerde, leopar ağacı, aslan sığınağı, kartal yuvası, timsah yuvası, babun uyku ağaçları),
+  k.yuvalar (yuvalariKur, tohum 31337); aktif olmayan saatlerde grup yuvaya gider. `oyun/izler.js` (saf; Iz.guncelle her karede, 2 sn'de
+  bir): g.iz iz noktaları (8 dk/6 m, 30 nokta, 4 saat okunur, yağmur siler), izAra (12 m, iz tarifi tür tipine göre, tazelik, yön),
+  izTakip (en taze ize ya da izler ine gidiyorsa ine; varınca sahibi söylenir), yuvaBul (14 m saha, gece GPS'li birey 15 m, dron 45 m;
+  itibar 6), video (alet 'video', 10 sn, 50/80 m teleobjektifle, k.arsiv.videolar, nadir davranışın ilk videosu +5), kesifAni (yeniTur,
+  tanik, meydan, yuvaBulundu, rekabet, nadir yeniDavranis, video nadir): App 'kesif' vurgu sesi + titreşim + d.sinematik (sahne kamerası
+  4,5 sn hayvana yaklaşır), ayar kesifAnlari. App: Doğa'da İzleri incele / İzi takip et / Bilinen inler ve yuvalar (yuvalar), Arşiv'de
+  Videolar; harita bölgesinde bilinen yuvalar. HATA DÜZELTMESİ: olay() ekindeki `tur` olay türünü eziyordu ('yeniTur' ve 'goc' olayları
+  hayvan adına dönüşüp sessiz kalıyordu); artık ek.tur → hayvanTur. Ses: kesif (ElevenLabs, kalimba vurgusu). Testler: dayanıklılık
+  300/300, bot 5 gün, ekosistem 25 gün, menu-tara 146 sayfa iki kipte sorun 0, /tmp/claude-0/g9-dene.js. Telefonda doğrulanmadı.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

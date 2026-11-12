@@ -529,6 +529,8 @@ export function guncelle(d) {
     const gun = M.gunNo(k.dk);
     k.hayvanlar.forEach((b) => {
       if (b.olu || Math.abs(b.x - t.x) > 15 || Math.abs(b.y - t.y) > 15 || M.mesafe(b, t) > 15) return;
+      // Yeni kurulan kameradan ilk gün çekinirler; alıştıkça önünden geçerler (karar 70)
+      if (k.dk - t.dk < 1440 && (b.id + t.id + M.gunNo(k.dk)) % 2 === 0) return;
       const anahtar = `${gun}:${b.tur}`;
       if (t.gunluk[anahtar]) return;
       t.gunluk[anahtar] = true;

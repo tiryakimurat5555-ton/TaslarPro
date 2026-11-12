@@ -3,6 +3,7 @@
 import * as M from '../oyun/mantik.js';
 import * as Mz from '../oyun/merkez.js';
 import * as G from '../oyun/genisleme.js';
+import * as Iz from '../oyun/izler.js';
 import { TURLER, YERLER } from '../oyun/veri.js';
 import * as K from '../oyun/kesif.js';
 
@@ -30,6 +31,7 @@ for (let t = 0; t < toplam; t += adim) {
   M.guncelle(d, adim, {});
   Mz.guncelle(d);
     G.guncelle(d, 0.1);
+    Iz.guncelle(d, 0.1);
   const gecen = performance.now() - t0;
   sureTop += gecen;
   sureSayi++;

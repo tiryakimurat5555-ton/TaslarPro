@@ -249,6 +249,7 @@ export function tuzaktanKurtar(d) {
     return `Tuzağa takılmış, korkmuş bir hayvana yalnız yaklaşmak senin için de onun için de tehlikeli. Yaban hayatı servisine haber verdin; veteriner ekipleri yarın gelecek. Kendi veterinerin olsaydı hemen müdahale edebilirdi.`;
   }
   b.tuzakta = null;
+  b.korku = Math.min(1, (b.korku || 0) + 0.8); // tuzak travması: bir süre çok ürkek (karar 109)
   t.hayvanId = null;
   k.kacak.tuzaklar = k.kacak.tuzaklar.filter((x) => x !== t);
   k.kacak.kurtarilan += 1;
@@ -269,6 +270,7 @@ export function kacakGunluk(d) {
       t.hayvanId = null;
       if (b && !b.olu) {
         b.tuzakta = null;
+        b.korku = Math.min(1, (b.korku || 0) + 0.8);
         if (b.hastalik && b.hastalik.id === 'yara') b.hastalik.tedavi = true;
         M.gecmisEkle(k, b, 'Yaban hayatı servisi tel tuzaktan kurtardı');
         k.kacak.kurtarilan += 1;

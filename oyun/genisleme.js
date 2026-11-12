@@ -9,6 +9,7 @@
 import { TURLER, ISTASYON, GOLET, KAYALIK, TERMITLER, YARICAP, nehirY, BOLGE_ADLARI, DAVRANISLAR } from './veri.js';
 import * as M from './mantik.js';
 import * as E from './ekosistem.js';
+import * as Iz from './izler.js';
 
 const kucuk = (s) => s.toLocaleLowerCase('tr-TR');
 const yuzde = (v) => `yüzde ${Math.round(v * 100)}`;
@@ -155,7 +156,7 @@ function rekabetDenetle(d) {
       const gor = savunan && M.mesafe(d.oyuncu, savunan) <= M.durbunMenzili(k.dk, k) && !k.magara;
       const m = `${M.BuyukHarf(cogul(guclu.tur))} ${cogulAkuzatif(zayif.tur)} bölgelerinden kovalıyor`;
       if (gor) {
-        M.olay(d, 'rekabet', `Nadir an! ${m}, ${M.yerTarifi(d.oyuncu, savunan)}.`, 4, { id: savunan.id, tur: guclu.tur });
+        M.olay(d, 'rekabet', `Nadir an! ${m}, ${M.yerTarifi(d.oyuncu, savunan)}.`, 4, { id: savunan.id, hayvanTur: guclu.tur });
         M.arsivOlay(d, `${m}; ${M.bolgeAdi(savunan.x, savunan.y)}.`);
         M.itibarEkle(d, 4);
       }
@@ -290,7 +291,7 @@ function meydanGuncelle(d) {
       d.say8.meydan = (d.say8.meydan || 0) + 1;
       if (M.mesafe(d.oyuncu, lider) <= M.durbunMenzili(k.dk, k) && !k.magara) {
         m.goruldu = true;
-        M.olay(d, 'meydan', `Nadir an! ${m.gocebe ? 'Bölgeye dışarıdan gelen bir' : 'Sürüden ayrılmış genç bir'} erkek ${kucuk(M.SOZ[g.tur])} geldi ve ${M.taninmisMi(lider) ? M.bireyAdi(lider) : 'sürünün liderine'}${M.taninmisMi(lider) ? "'e" : ''} meydan okuyor, ${M.yerTarifi(d.oyuncu, lider)}.`.replace("'e'e", "'e"), 4, { id: lider.id, tur: g.tur });
+        M.olay(d, 'meydan', `Nadir an! ${m.gocebe ? 'Bölgeye dışarıdan gelen bir' : 'Sürüden ayrılmış genç bir'} erkek ${kucuk(M.SOZ[g.tur])} geldi ve ${M.taninmisMi(lider) ? M.bireyAdi(lider) : 'sürünün liderine'}${M.taninmisMi(lider) ? "'e" : ''} meydan okuyor, ${M.yerTarifi(d.oyuncu, lider)}.`.replace("'e'e", "'e"), 4, { id: lider.id, hayvanTur: g.tur });
       }
       continue;
     }
@@ -404,6 +405,7 @@ function dronRaporu(d, r) {
     const dv = DAVRANISLAR[u[0].davranis];
     parcalar.push({ m: M.mesafe(yer, u[0]), s: `${u.length} ${kucuk(M.SOZ[g.tur])} ${dv ? dv.fiil : ''}`.trim() });
   }
+  (k.yuvalar || []).filter((y) => !y.bulundu && M.mesafe(y, yer) <= DRON_TARAMA && y.tur !== 'timsah').forEach((y) => Iz.yuvaBul(d, y, 'dron'));
   const tuzak = k.kacak.tuzaklar.filter((t) => !t.bulundu && M.mesafe(t, yer) <= DRON_TARAMA);
   tuzak.forEach((t) => (t.bulundu = true));
   const lesler = k.lesler.filter((l) => l.kalan > 0.05 && M.mesafe(l, yer) <= DRON_TARAMA).length;
@@ -545,6 +547,9 @@ export function haritaBolgeSatirlari(d, id) {
   const tel = k.kacak.tuzaklar.filter((t) => t.bulundu && M.bolgeBul(t.x, t.y) === id).length;
   if (tel) l.push(`${tel} işaretli tel tuzak sökülmeyi bekliyor.`);
   if (k.kamp && M.bolgeBul(k.kamp.x, k.kamp.y) === id) l.push('Saha kampın bu bölgede.');
+  Iz.bilinenYuvalar(k)
+    .filter((y) => M.bolgeBul(y.x, y.y) === id)
+    .forEach((y) => l.push(`${M.YUVA_TURLERI[y.tur].ad}: ${M.yerTarifi(d.oyuncu, y)}.`));
   return l;
 }
 export function haritaOzeti(d) {

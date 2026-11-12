@@ -8,6 +8,7 @@ import * as K from '../oyun/kesif.js';
 import * as B from '../oyun/betimleme.js';
 import * as Eg from '../oyun/egitim.js';
 import * as G from '../oyun/genisleme.js';
+import * as Iz from '../oyun/izler.js';
 
 const deneme = +(process.argv[2] || 200);
 const KOTU = /undefined|NaN|\[object|null\b|  |\.\.(?!\.)| ,|^ /;
@@ -22,6 +23,7 @@ function oynat(d, adim) {
     M.guncelle(d, 0.1, { ileri: i % 50 < 25 ? 1 : 0, don: i % 70 < 10 ? 0.5 : 0 });
     Mz.guncelle(d);
     G.guncelle(d, 0.1);
+    Iz.guncelle(d, 0.1);
     for (const o of M.olaylariAl(d)) metinDenetle(o.metin, o.tur);
     if (i % 60 === 0) {
       metinDenetle(B.betimle(d, 'Dürbün'), 'betimleme');
@@ -37,6 +39,12 @@ function oynat(d, adim) {
       metinDenetle(G.dronBaslat(d), 'dron');
       metinDenetle(G.kampKur(d), 'kamp');
       metinDenetle(G.haritaOzeti(d), 'harita');
+      // Aşama 9
+      metinDenetle(Iz.izAra(d), 'iz');
+      metinDenetle(Iz.izTakip(d), 'iz takip');
+      metinDenetle(Iz.videoBaslat(d), 'video');
+      Iz.yuvaSatirlari(d).forEach((x) => metinDenetle(x.metin, 'yuva'));
+      d.k.hayvanlar.slice(0, 3).forEach((b) => metinDenetle(M.ruzgarUyarisi(d, b).trim(), 'rüzgâr'));
       G.haritaBolgeleri(d).forEach((x) => G.haritaBolgeSatirlari(d, x.id).forEach((m) => metinDenetle(m, 'harita bölgesi')));
       G.hakimiyetSatirlari(d).forEach((m) => metinDenetle(m, 'hâkimiyet'));
       const b0 = d.k.hayvanlar.find((b) => !b.olu);

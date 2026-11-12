@@ -142,7 +142,7 @@ export function betimle(d, aletAdi) {
   }
   const p = [`${M.saatMetni(k.dk)}. ${isikSozu(k)}`, havaSozu(k), zeminSozu(d), onSozu(d), isaretSozu(d), sesSozu(d), hayvanSozu(d)];
   const g = M.gozlenen(d);
-  if (g) p.push(`Gözlediğin: ${M.gozlemTarifi(d, g)}.`);
+  if (g) p.push(`Gözlediğin: ${M.gozlemTarifi(d, g)}.${M.ruzgarUyarisi(d, g)}`);
   if (k.aracta) p.push('Araçtasın.');
   if (aletAdi) p.push(`Elindeki alet: ${aletAdi}.`);
   return p.filter(Boolean).join(' ');

@@ -340,16 +340,63 @@ function asama8Onar(k) {
     if (!b || typeof b !== 'object') return;
     if (!b.gen || !sayiMi(b.gen.h)) b.gen = { h: 0.6 + ((b.id * 37) % 25) / 100, tasiyici: (b.id * 13) % 17 === 0 };
     if (b.baba === undefined) b.baba = null;
+    if (b.korku !== undefined && !sayiMi(b.korku)) b.korku = 0;
+    if (b.aracAlisma !== undefined && !sayiMi(b.aracAlisma)) b.aracAlisma = 0;
   };
+  (k.gruplar || []).forEach((g) => {
+    if (g && g.tehlikeYerleri && !Array.isArray(g.tehlikeYerleri)) g.tehlikeYerleri = [];
+    if (g && Array.isArray(g.tehlikeYerleri)) g.tehlikeYerleri = g.tehlikeYerleri.filter((y) => y && sayiMi(y.x) && sayiMi(y.y) && sayiMi(y.dk));
+    if (g && g.iz !== undefined) g.iz = Array.isArray(g.iz) ? g.iz.filter((p) => p && sayiMi(p.x) && sayiMi(p.y) && sayiMi(p.dk)) : [];
+  });
   (k.hayvanlar || []).forEach(genVer);
   ((k.disari && k.disari.hayvanlar) || []).forEach(genVer);
   ((k.rehab || []).map((r) => r && r.b) || []).forEach(genVer);
+}
+
+// ---------- Yuvalar ve inler (Aşama 9, karar 93, 105, 110): gizlidir, izle, GPS ya da dronla bulunur ----------
+export const YUVA_TURLERI = {
+  sirtlan: { ad: 'Sırtlan ini', tarif: 'Eski bir termit tepesinin altına kazılmış, birkaç girişli bir in. Yavrular girişlerin önünde oynar; yetişkinler avdan buraya döner.' },
+  yabanKopegi: { ad: 'Yaban köpeği ini', tarif: 'Terk edilmiş bir yerdomuzu yuvasını genişletip kullandıkları in. Yavru dönemi boyunca sürü buraya bağlıdır; avdan dönenler yavrulara yiyecek kusarak getirir.' },
+  leopar: { ad: 'Leoparın avını sakladığı ağaç', tarif: 'Kalın dallı yalnız bir ağaç. Leopar avını sırtlan ve aslanlardan korumak için dişleriyle buraya taşır; dallarda kemik artıkları var.' },
+  aslan: { ad: 'Aslanların yavru sığınağı', tarif: 'Kayaların arasında gizli, gölgeli bir kovuk. Dişi aslanlar yeni doğan yavrularını ilk haftalarda burada saklar.' },
+  kartal: { ad: 'Balık kartalı yuvası', tarif: 'Nehre bakan yüksek bir ağacın tepesinde, dallardan örülmüş büyük bir yuva. Çift her yıl aynı yuvaya döner ve onu büyütür.' },
+  timsah: { ad: 'Timsah yuvası', tarif: 'Nehir kıyısında kuma gömülmüş yumurtalar. Dişi yuvanın yakınında bekler; yavrular çıkınca onları ağzında suya taşır.' },
+  babun: { ad: 'Babunların uyku ağaçları', tarif: 'Galeri ormanında birkaç yüksek ağaç. Babun sürüsü her akşam leoparlardan korunmak için buraya tırmanır.' },
+};
+function yuvalariKur(k) {
+  const rng = tohumluUretec(31337);
+  k.yuvalar = [];
+  Object.keys(YUVA_TURLERI).forEach((tur) => {
+    const t = TURLER[tur];
+    if (!t) return;
+    const h = t.habitat;
+    let p = null;
+    for (let i = 0; i < 60 && !p; i++) {
+      let x = h.x + arasi(rng, -h.r * 0.5, h.r * 0.5);
+      let y = h.nehirde ? nehirY(x) + (rng() < 0.5 ? 7 : -7) : h.y + arasi(rng, -h.r * 0.5, h.r * 0.5);
+      if (tur === 'sirtlan' || tur === 'yabanKopegi') {
+        x = TERMITLER.x + arasi(rng, -TERMITLER.r * 0.7, TERMITLER.r * 0.7);
+        y = TERMITLER.y + arasi(rng, -TERMITLER.r * 0.7, TERMITLER.r * 0.7);
+      }
+      if (Math.hypot(x, y) > YARICAP - 15 || nehirdeMi(x, y) || goletCanagi(x, y, 3) || Math.hypot(x - ISTASYON.x, y - ISTASYON.y) < 50) continue;
+      p = { x: Math.round(x), y: Math.round(y) };
+    }
+    if (p) k.yuvalar.push({ id: 'yuva-' + tur, tur, x: p.x, y: p.y, bulundu: false, bulunmaDk: 0, nasil: null });
+  });
 }
 
 export function dunyaOlustur(k) {
   const rng = tohumluUretec(77); // arazi sabittir: her açılışta aynı
   if (!k.hayvanlar || !k.gruplar) nufusOlustur(k);
   asama8Onar(k);
+  if (!Array.isArray(k.yuvalar) || k.yuvalar.some((y) => !y || !TURLER[y.tur] || !sayiMi(y.x) || !sayiMi(y.y))) yuvalariKur(k);
+  k.yuvalar.forEach((y) => {
+    y.bulundu = y.bulundu === true;
+    if (!sayiMi(y.bulunmaDk)) y.bulunmaDk = 0;
+  });
+  if (!k.arsiv || typeof k.arsiv !== 'object') k.arsiv = {};
+  if (!Array.isArray(k.arsiv.videolar)) k.arsiv.videolar = [];
+  k.arsiv.videolar = k.arsiv.videolar.filter((v) => v && TURLER[v.tur] && Array.isArray(v.davranislar) && sayiMi(v.dk) && sayiMi(v.sure));
   // Sonradan eklenen türler (Aşama 6) eski kayıtlara da yerleşir
   TUR_SIRASI.forEach((tur) => {
     if (!k.gruplar.some((g) => g.tur === tur) && !((k.disari && k.disari.gruplar) || []).some((g) => g.tur === tur)) turGrubuKur(k, tohumluUretec(900 + TUR_SIRASI.indexOf(tur)), tur);
@@ -480,7 +527,9 @@ export function dunyaOlustur(k) {
 }
 
 export function olay(d, tur, metin, oncelik = 1, ek = {}) {
-  d.olaylar.push({ tur, metin, oncelik, zaman: d.zaman, ...ek });
+  // Ekteki hayvan türü olayın türünü ezmesin (eskiden 'yeniTur' ve 'goc' olayları hayvan adına dönüşüp sessiz kalıyordu)
+  const { tur: hayvanTur, ...geri } = ek || {};
+  d.olaylar.push({ ...geri, ...(hayvanTur ? { hayvanTur } : {}), tur, metin, oncelik, zaman: d.zaman });
 }
 export function olaylariAl(d) {
   const l = d.olaylar;
@@ -628,6 +677,9 @@ function planSec(d, g) {
   if (!aktif) {
     g.plan = t.aktif === 'gunduz' ? 'uyu' : 'dinlen';
     g.planBitis = sure(60, 120);
+    // Uyku ve dinlenme yeri: türün ini, yuvası ya da uyku ağaçları (Aşama 9, karar 105 ve 110)
+    const yv = (k.yuvalar || []).find((y) => y.tur === g.tur);
+    if (yv && mesafe(yv, g) < 140) g.hedef = { x: yv.x + arasi(d.rng, -3, 3), y: yv.y + arasi(d.rng, -3, 3) };
     return;
   }
   // Sağanakta otçulların çoğu ağaç altında bekler
@@ -676,11 +728,14 @@ function planSec(d, g) {
   }
   const r2 = d.rng();
   const besinDegeri = (p) => (!k.eko ? 1 : t.yeme === 'yapraklaBesleniyor' ? E.yaprakDegeri(k.eko, p.x, p.y) : E.otDegeri(k.eko, p.x, p.y));
+  // Sürü hafızası (karar 47): yakın zamanda avlanılan yerler kaçınılır
+  const tehlike = (p) => (g.tehlikeYerleri || []).some((y) => k.dk - y.dk < 2 * 1440 && Math.hypot(p.x - y.x, p.y - y.y) < 30);
   const enGur = (uret, n) => {
     let en = null;
     for (let i = 0; i < n; i++) {
       const p = uret();
-      if (!en || besinDegeri(p) > besinDegeri(en)) en = p;
+      const deger = (q) => besinDegeri(q) - (tehlike(q) ? 0.6 : 0);
+      if (!en || deger(p) > deger(en)) en = p;
     }
     return en;
   };
@@ -769,10 +824,52 @@ export function kacisMesafesi(d, b) {
   else if (d.k.kamp && mesafe(d.oyuncu, d.k.kamp) < 10) m *= 0.6; // kamptaki gözlem çadırı saklar
   if (geceMi(d.k.dk)) m *= 0.8;
   if (b.evre === 'yavru') m *= 1.2;
+  m *= duyuCarpani(d, b);
+  if (b.korku) m *= 1 + 0.6 * b.korku; // öğrenilmiş korku (karar 109)
+  if (d.k.aracta && b.aracAlisma) m *= 1 - 0.4 * b.aracAlisma; // araçları tanır (karar 47)
   m *= zorlukCarpani(d.k, 'tehlike', [0.7, 1, 1.2]);
   return Math.max(4, m);
 }
-function grupAlarm(d, g, kaynak, sure = 6, gecikme = 0) {
+// ---------- Duyular (Aşama 9, karar 71) ----------
+// Türlerin koku, görme ve işitme duyarlılığı (1 ortalama)
+export const DUYULAR = {
+  aslan: { koku: 1.1, gorme: 1.1, isitme: 1.2 }, leopar: { koku: 1, gorme: 1.2, isitme: 1.3 }, sirtlan: { koku: 1.5, gorme: 0.9, isitme: 1.3 },
+  fil: { koku: 1.6, gorme: 0.6, isitme: 1.3 }, zurafa: { koku: 0.8, gorme: 1.6, isitme: 1 }, zebra: { koku: 1, gorme: 1.1, isitme: 1.2 },
+  ceylan: { koku: 1, gorme: 1.2, isitme: 1.2 }, domuz: { koku: 1.4, gorme: 0.7, isitme: 1.1 }, suAygiri: { koku: 1, gorme: 0.8, isitme: 1 },
+  timsah: { koku: 0.7, gorme: 1, isitme: 1.1 }, gergedan: { koku: 1.6, gorme: 0.4, isitme: 1.3 }, manda: { koku: 1.3, gorme: 0.8, isitme: 1.1 },
+  gnu: { koku: 1.1, gorme: 1, isitme: 1.1 }, cita: { koku: 0.8, gorme: 1.4, isitme: 1 }, impala: { koku: 1.1, gorme: 1.1, isitme: 1.3 },
+  yabanKopegi: { koku: 1.4, gorme: 1, isitme: 1.3 }, babun: { koku: 0.8, gorme: 1.4, isitme: 1.1 },
+};
+// Rüzgâr: oyuncu hayvanın rüzgâr üstündeyse koku ona taşınır. Döndürür -1 (rüzgâr altındasın, iyi) .. 1 (kokun ona gidiyor)
+export function ruzgarDurumu(d, b) {
+  const h = d.k.eko && d.k.eko.hava;
+  if (!h || !(h.ruzgarHiz > 0.3)) return 0;
+  const esme = h.ruzgarYon + Math.PI; // rüzgârın gittiği yön
+  return Math.cos(yonAcisi(d.oyuncu, b) - esme);
+}
+// Gözlem ve yaklaşmada rüzgâr tavsiyesi (koku duyusu güçlü türler için önemli)
+export function ruzgarUyarisi(d, b) {
+  const r = ruzgarDurumu(d, b);
+  const du = DUYULAR[b.tur];
+  if (!du || d.k.aracta) return '';
+  if (r > 0.4) return ` Dikkat: rüzgâr arkandan esiyor, kokunu ona taşıyor${du.koku >= 1.3 ? '; koku duyusu çok güçlü, uzaktan fark eder' : ''}. Rüzgâr yüzüne gelecek biçimde yandan dolaşırsan daha yakına sokulabilirsin.`;
+  if (r < -0.4) return ' Rüzgâr ondan sana doğru esiyor; kokunu alamaz, bu iyi.';
+  return '';
+}
+function duyuCarpani(d, b) {
+  const du = DUYULAR[b.tur];
+  if (!du || d.k.aracta) return 1;
+  const h = d.k.eko && d.k.eko.hava;
+  let c = 1;
+  const r = ruzgarDurumu(d, b);
+  if (r > 0.4) c *= 1 + 0.45 * r * Math.min(1.5, (h ? h.ruzgarHiz : 1) / 1.2) * (du.koku - 0.3);
+  else if (r < -0.4) c *= 0.82;
+  if (d.oyuncuHareketli) c *= 1 + 0.15 * (du.isitme - 0.5); // ayak sesi
+  else c *= 0.92; // kıpırdamadan duran insan daha az fark edilir
+  if (d.k.eko && !geceMi(d.k.dk) && E.otDegeri(d.k.eko, d.oyuncu.x, d.oyuncu.y) > 0.6) c *= 1 - 0.12 * du.gorme; // uzun ot gizler
+  return sinirla(c, 0.6, 1.8);
+}
+function grupAlarm(d, g, kaynak, sure = 6, gecikme = 0, zincir = true) {
   if (g.alarm > 0.5 && g.kaynak && mesafe(g.kaynak, kaynak) < 3) return;
   g.alarm = sure;
   g.alarmGecikme = gecikme;
@@ -781,6 +878,23 @@ function grupAlarm(d, g, kaynak, sure = 6, gecikme = 0) {
     g.av = null;
     g.plan = 'dinlen';
     g.planBitis = d.k.dk + 30;
+  }
+  // Türler arası uyarı: otçulların alarm sesi yakındaki başka otçul sürüleri de kaçırır (karar 108)
+  const t = TURLER[g.tur];
+  if (zincir && !t.yirtici && !t.kus) {
+    for (const g2 of d.k.gruplar) {
+      if (g2 === g || g2.alarm > 0.5 || g2.goc || TURLER[g2.tur].yirtici || TURLER[g2.tur].kus || mesafe(g, g2) > 38) continue;
+      grupAlarm(d, g2, kaynak, sure * 0.8, gecikme + 0.6 + d.rng() * 0.8, false);
+      if (g2.tur !== g.tur && mesafe(d.oyuncu, g2) < durbunMenzili(d.k.dk, d.k) && d.zaman - (d.sonZincir || -99) > 40 && !d.k.magara) {
+        d.sonZincir = d.zaman;
+        olay(d, 'alarmZinciri', `${BuyukHarf(SOZ[g.tur])} sürüsünün alarm sesi üzerine ${kucuk(SOZ[g2.tur])} sürüsü de kaçıyor; türler birbirinin uyarısını anlıyor.`, 2, { id: (uyeler(d, g2)[0] || {}).id });
+        if (!d.k.zincirGoruldu) {
+          d.k.zincirGoruldu = true;
+          itibarEkle(d, 3);
+          arsivOlay(d, `Türler arası alarm iletişimi gözlendi: ${kucuk(SOZ[g.tur])} uyardı, ${kucuk(SOZ[g2.tur])} kaçtı.`);
+        }
+      }
+    }
   }
 }
 
@@ -897,6 +1011,8 @@ function avGuncelle(d, g, uyelerListe, dt) {
   const m = mesafe(avci, av);
   if (m < 1.6) {
     const les = hayvanOldu(d, av, `avlandı (${kucuk(SOZ[g.tur])})`, avci);
+    const avg = k.gruplar.find((x) => x.id === av.grup);
+    if (avg) tehlikeYeriEkle(k, avg, av);
     g.aclik = 0;
     g.plan = 'beslen';
     g.hedef = { x: av.x, y: av.y };
@@ -908,6 +1024,10 @@ function avGuncelle(d, g, uyelerListe, dt) {
   if (g.av.t > 13 || m > 55) {
     // Kaçan av ya da (manda gibi güçlü avlarda) avcı yaralanabilir (karar 28)
     if (!av.hastalik && d.rng() < 0.12) yaraVer(d, av, 'avcıdan kaçarken yaralandı');
+    av.korku = Math.min(1, (av.korku || 0) + 0.5); // kurtulan av bir süre ürkek olur
+    // Sürü hafızası: av alanı bir süre tehlikeli sayılır
+    const avg = k.gruplar.find((x) => x.id === av.grup);
+    if (avg) tehlikeYeriEkle(k, avg, av);
     if (!avci.hastalik && d.rng() < (av.tur === 'manda' ? 0.25 : 0.05)) yaraVer(d, avci, `av sırasında ${kucuk(SOZ[av.tur])} tarafından yaralandı`);
     g.av = null;
     g.aclik = Math.max(0.55, g.aclik - 0.05);
@@ -920,6 +1040,11 @@ function avGuncelle(d, g, uyelerListe, dt) {
 }
 
 // ---------- Doğum (karar 20) ----------
+function tehlikeYeriEkle(k, g, p) {
+  g.tehlikeYerleri = (g.tehlikeYerleri || []).filter((y) => k.dk - y.dk < 2 * 1440);
+  g.tehlikeYerleri.push({ x: Math.round(p.x), y: Math.round(p.y), dk: k.dk });
+  if (g.tehlikeYerleri.length > 4) g.tehlikeYerleri.shift();
+}
 // ---------- Genetik (Aşama 8, karar 39) ----------
 // Ataları ve yol uzunluklarını bulur (en çok 4 kuşak)
 function atalar(d, b, derinlik = 4, yol = 0, l = new Map()) {
@@ -1023,6 +1148,13 @@ function gunlukDogumlar(d) {
     }
     }
   }
+  // Korku zamanla söner (karar 109: psikolojik iyileşme); kişiliğe göre hızı değişir
+  for (const b of k.hayvanlar) {
+    if (!b.korku) continue;
+    b.korku *= b.kisilik === 'cesur' ? 0.5 : b.kisilik === 'urkek' ? 0.8 : 0.65;
+    if (b.korku < 0.03) b.korku = 0;
+  }
+  for (const g of k.gruplar) if (g.tehlikeYerleri) g.tehlikeYerleri = g.tehlikeYerleri.filter((y) => k.dk - y.dk < 2 * 1440);
   // Kalıtsal zayıflık: iki taşıyıcı ebeveynden gelen yavruların bir kısmı ilk haftalarda ölür (karar 39)
   for (const b of k.hayvanlar) {
     if (b.olu || b.kalitsal !== 'zayiflik' || b.evre !== 'yavru') continue;
@@ -1666,14 +1798,16 @@ function bireyGuncelle(d, b, g, dt) {
       } else if (!(t.tehlikeli && t.yirtici && b.kisilik === 'cesur')) {
         grupAlarm(d, g, d.oyuncu, arasi(d.rng, 5, 8));
         b.alisma = Math.max(0, b.alisma - 0.04);
+        b.korku = Math.min(1, (b.korku || 0) + 0.04);
         if (d.zaman - d.sonUyari > 20 && mo < durbunMenzili(k.dk, k)) {
           d.sonUyari = d.zaman;
           olay(d, 'urktu', `${grupAdi(d, g, b)} seni fark edip uzaklaştı. Daha uzaktan izlemelisin.`, 2, { id: b.id });
         }
       }
     } else if (mo >= kac && !d.oyuncuHareketli && mo < durbunMenzili(k.dk, k)) {
-      // Sakin ve uzaktan izlenmeye alışır (karar 19)
+      // Sakin ve uzaktan izlenmeye alışır (karar 19); araçtan izlenince araçlara da alışır (karar 47)
       b.alisma = Math.min(1, b.alisma + dt * 0.0015 * KISILIKLER[b.kisilik].alisma * (d.gozlemId === b.id ? 2 : 1));
+      if (k.aracta) b.aracAlisma = Math.min(1, (b.aracAlisma || 0) + dt * 0.002);
     }
   }
   // Sesler: 70 metre içindekiler arada bir ses çıkarır (3B ses App'te çalınır)
@@ -1890,7 +2024,7 @@ export function yaklas(d) {
     d.yaklasId = null;
     return;
   }
-  olay(d, 'yaklas', `Yaklaşıyorsun: ${bireyAdi(b)}. Ürkütmeden ${metreSozu(hedefM)} uzakta duracaksın.`, 3, { id: b.id });
+  olay(d, 'yaklas', `Yaklaşıyorsun: ${bireyAdi(b)}. Ürkütmeden ${metreSozu(hedefM)} uzakta duracaksın.${ruzgarUyarisi(d, b)}`, 3, { id: b.id });
 }
 export function dur(d) {
   d.rota = null;

@@ -790,10 +790,25 @@ export function sahneKur(gl, d, secenek = {}) {
       const geri = (k.aracta ? 12 : 8) * dikey;
       kamKonum.set(o.x - Math.sin(o.yon) * geri, (k.aracta ? 6 : 4.4) * dikey, R(o.y - Math.cos(o.yon) * geri));
       kamHedef.set(o.x + Math.sin(o.yon) * 1.5, 1.5, R(o.y + Math.cos(o.yon) * 1.5));
+      // Keşif anı (Aşama 9, karar 85): kamera birkaç saniye hayvana yaklaşır, sonra geri döner
+      const sn = d.sinematik;
+      let hiz = 5;
+      if (sn && d.zaman < sn.bitis) {
+        const hb = sn.id ? d.hayvanMap.get(sn.id) : null;
+        const tx = hb ? hb.x : sn.x;
+        const ty = hb ? hb.y : sn.y;
+        const dx = o.x - tx;
+        const dy = o.y - ty;
+        const m = Math.hypot(dx, dy) || 1;
+        const uz = Math.min(7, m * 0.6 + 3);
+        kamKonum.set(tx + (dx / m) * uz + (dy / m) * 2, 2.6, R(ty + (dy / m) * uz - (dx / m) * 2));
+        kamHedef.set(tx, 1.1, R(ty));
+        hiz = 1.6;
+      } else if (sn) d.sinematik = null;
       if (ilk) {
         kamera.position.copy(kamKonum);
         ilk = false;
-      } else kamera.position.lerp(kamKonum, Math.min(1, dt * 5));
+      } else kamera.position.lerp(kamKonum, Math.min(1, dt * hiz));
       kamera.lookAt(kamHedef);
 
       // Hayvanlar

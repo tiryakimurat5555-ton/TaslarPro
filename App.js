@@ -20,6 +20,7 @@ import * as Mz from './oyun/merkez.js';
 import * as E from './oyun/ekosistem.js';
 import * as K from './oyun/kesif.js';
 import * as G from './oyun/genisleme.js';
+import * as Iz from './oyun/izler.js';
 import { KUCUKLER, KUCUK_SIRASI, GRUPLAR, MAGARA_ODALARI } from './oyun/kucukler.js';
 import * as Efekt from './oyun/efekt.js';
 import { sahneKur } from './oyun/sahne.js';
@@ -38,7 +39,7 @@ const VARSAYILAN_AYAR = {
   kip: null, hiz: 1.0, titresim: true, rehber: true, efekt: true, efektKis: true, ortam: true,
   // Aşama 7: kontrol özelleştirme ve erişilebilirlik (karar 31, 32)
   grafik: 'yuksek', hassasiyet: 'orta', surekliYuru: false, buyukDugme: false, solEl: false, kontrast: false, buyukYazi: false,
-  sesAltyazi: false, ortamDuzey: 'orta', otoBetimle: true, donusTiki: true,
+  sesAltyazi: false, ortamDuzey: 'orta', otoBetimle: true, donusTiki: true, kesifAnlari: true,
 };
 const ORTAM_DUZEY = { dusuk: 0.2, orta: 0.35, yuksek: 0.5 };
 // Hayvan koşu sesleri (3B, uzaklıkla kısılır)
@@ -66,6 +67,7 @@ const KALICI_OLAYLAR = ['tanimlandi', 'yeniTur', 'yeniDavranis', 'foto', 'tanik'
 const ALETLER = [
   { id: 'durbun', ad: 'Dürbün', ipucu: 'Çift dokununca sıradaki hayvanı gözlemlersin.', kullan: (d) => M.gozlemBaslat(d) },
   { id: 'kamera', ad: 'Fotoğraf makinesi', ipucu: 'Çift dokununca gözlediğin hayvanın fotoğrafını çekersin.', kullan: (d) => M.fotografCek(d) },
+  { id: 'video', ad: 'Video kamera', ipucu: 'Çift dokununca gözlediğin hayvanı 10 saniye videoya çekersin; görüntüdeki davranışlar arşive kaydedilir.', kullan: (d) => { const m = Iz.videoBaslat(d); if (m) M.olay(d, 'hata', m, 3); } },
   { id: 'ses', ad: 'Ses kayıt cihazı', ipucu: 'Çift dokununca 6 saniye kayıt yapıp sesleri çözümlersin.', kullan: (d) => M.sesKaydiBaslat(d) },
   { id: 'yaklas', ad: 'Yaklaşma', ipucu: 'Çift dokununca gözlediğin hayvana ürkütmeden yaklaşırsın.', kullan: (d) => M.yaklas(d) },
   { id: 'dron', ad: 'Araştırma dronu', gerek: 'drone', ipucu: 'Çift dokununca dron baktığın yönde 110 metre öteye uçar, oradaki hayvanları sayıp haritaya işler ve geri döner.', kullan: (d) => { const m = G.dronBaslat(d); if (m) M.olay(d, 'hata', m, 3); } },
@@ -196,7 +198,7 @@ const YARDIM = [
   },
   {
     id: 'genisleme',
-    baslik: 'Genetik, bölgeler, dron, tekne ve kamp',
+    baslik: 'Genetik, bölgeler, izler, video, dron, tekne ve kamp',
     satirlar: [
       'Genetik: tanımlı bir hayvanın dışkı numunesini laboratuvarda inceletince DNA profili çıkar: genetik çeşitliliği, kalıtsal hastalık geni taşıyıp taşımadığı ve babası. Bir türün en az üç bireyinin DNA’sı varsa tür sayfasında popülasyon raporu ve yok olma riski okunur.',
       'Aile ağacı: Arşiv, Bireyler bölümünde bir hayvanın sayfasından anne, baba, kardeş, yavru ve torunlarına gidersin. Akraba hayvanların yavruları zayıf doğabilir; iki taşıyıcı ebeveynin yavrularının bir kısmı kalıtsal zayıflıkla doğar.',
@@ -204,6 +206,9 @@ const YARDIM = [
       'Ekosistem haritası: ana menüde. Bölgeler yakından uzağa sıralıdır; her bölgede otlak durumu, hâkim yırtıcı ve bildiğin sürüler, bilginin ne zaman ve nasıl geldiğiyle birlikte yazar: gözlem, dron, kamera tuzağı ya da GPS.',
       'Dron: araştırma merkezinden alınır, aletler arasına girer. Çift dokununca baktığın yönde 110 metre öteye uçar, oradaki hayvanları sayar, leşleri ve tel tuzakları görür, geri döner. Pervane sesi dronun olduğu yerden gelir. Üç uçuşluk batarya istasyonda ya da kampta dolar.',
       'Tekne: iskelede bağlıdır. Yanına gidip iki parmakla yukarı kaydırınca binersin; tek parmakla sürükleyerek nehir boyunca kürek çekersin. Hayvanlar tekneyi daha az fark eder ama su aygırları tehlikelidir. İki parmakla yukarı kaydırınca karaya çıkarsın.',
+      'İzler: Doğa bölümünde İzleri incele, 12 metre içindeki en taze izi okur: hangi hayvan, ne kadar taze, hangi yöne gitmiş. İzi takip et seni izlerin gittiği yere götürür. Sırtlan ve yaban köpeği inleri, leoparın avını sakladığı ağaç, aslanların yavru sığınağı, balık kartalı ve timsah yuvası, babunların uyku ağaçları gizlidir; izle, gece GPS kayıtlarıyla ya da dronla bulunur. Hayvanlar geceleri buralara döner.',
+      'Duyular: hayvanlar seni koku, görme ve işitmeyle fark eder. Rüzgâr arkandan esiyorsa kokun onlara gider; fil, gergedan ve sırtlan gibi koku duyusu güçlü türler çok uzaktan kaçar. Rüzgâr yüzüne gelecek biçimde yaklaş, kıpırdamadan bekle; uzun otlar seni gizler. Avcıdan kaçıp kurtulan ya da tuzağa düşen hayvan bir süre ürkek olur; sürüler avlandıkları yerden birkaç gün uzak durur. Bir sürünün alarm sesi yakındaki başka türleri de kaçırır.',
+      'Video: aletlerde Video kamera var; gözlediğin hayvanı 10 saniye çeker. Nadir bir davranışın ilk videosu bilimsel olarak çok değerlidir. Videolar Arşiv bölümünde.',
       'Saha kampı: kamp takımıyla Doğa bölümünden kurulur. Kamptayken hayvanlar seni daha az fark eder. Kampta ya da istasyonda ana menüden Dinlen seçilince zaman hızla akar; uyanınca olanlar özetlenir.',
     ],
   },
@@ -452,6 +457,12 @@ function ayarOgeleri(ayar, degistir) {
         Ses.hemen(`Ortam sesi düzeyi ${{ dusuk: 'düşük', orta: 'orta', yuksek: 'yüksek' }[y]}`);
         return 'sessiz';
       },
+    },
+    {
+      id: 'kesifAnlari',
+      etiket: `Keşif anları: ${durum('kesifAnlari')}. Değiştir`,
+      ipucu: 'Yeni tür, nadir davranış, doğum, in keşfi gibi anlarda kısa bir müzik vurgusu çalar, telefon titreşir, görüntüde kamera hayvana yaklaşır.',
+      sec: () => ac('kesifAnlari', 'Keşif anları'),
     },
     {
       id: 'donusTiki',
@@ -764,6 +775,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     let sesAltyaziSon = 0;
     const kosuSesi = new Map(); // hayvan kimliği → son koşu sesi zamanı
     let dronSesSon = 0;
+    let kesifSon = 0;
     let kurekYol = 0;
     let kareSira = 0;
     let kareBirikim = 0;
@@ -787,6 +799,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
             M.guncelle(d, 0.1, {});
             if (i % 5 === 0) Mz.guncelle(d);
             G.guncelle(d, 0.1);
+            Iz.guncelle(d, 0.1);
             for (const o of M.olaylariAl(d)) if (G.dinlenmeOzetiSec(o) && r.ozet.length < 12 && !r.ozet.includes(o.metin)) r.ozet.push(o.metin);
           }
         } catch (e) {
@@ -803,6 +816,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
           sonuc = M.guncelle(d, dt, girdi.current);
           Mz.guncelle(d);
           G.guncelle(d, dt);
+          Iz.guncelle(d, dt);
         } catch (e) {
           if (hataKaydet(e, 'oyun döngüsü')) Ses.soyle('Oyunda beklenmedik bir hata oldu. Hata kaydedildi; Ayarlar, Hata kayıtları bölümünden bana okuyabilirsin. Oyun sürüyor.', 4);
         }
@@ -874,6 +888,15 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         for (const o of M.olaylariAl(d)) {
           if (sahneRef.current) sahneRef.current.efekt(o);
           efektCal(o);
+          // Keşif anı (karar 85): kısa müzik vurgusu, titreşim, görüntüde kamera hayvana yaklaşır
+          if (a.kesifAnlari !== false && Iz.kesifAni(o) && simdi - kesifSon > 6000) {
+            kesifSon = simdi;
+            Efekt.cal('kesif', 0.55);
+            titret('iyi', a);
+            const hb = o.id ? M.birey(d, o.id) : null;
+            const hedefNokta = hb || (o.x !== undefined ? { x: o.x, y: o.y } : null);
+            if (hedefNokta) d.sinematik = { x: hedefNokta.x, y: hedefNokta.y, id: hb ? hb.id : null, bitis: d.zaman + 4.5 };
+          }
           // İşitme engelliler için hayvan sesleri altyazıda (Ayarlar > Görünüm)
           if (o.tur === 'hayvanSesi' && a.sesAltyazi && simdi - sesAltyaziSon > 2500) {
             const b = M.birey(d, o.id);
@@ -1190,10 +1213,42 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       });
       return liste(u, 'Dinlen', [sec('iki', 'İki saat dinlen'), sec('aksam', 'Akşama kadar dinlen, saat 17:30'), sec('sabah', 'Sabaha kadar uyu, saat 05:30')], 'Dinlenirken zaman hızla akar; savanda olanlar uyanınca özetlenir. Ekrana dokunursan dinlenmeyi bırakırsın.');
     }
+    if (u === 'yuvalar') {
+      const l = Iz.yuvaSatirlari(d);
+      const ogeler = [];
+      l.forEach(({ y, metin, tarif }) => {
+        ogeler.push(bilgi('y' + y.id, metin, tarif));
+        if (!k.teknede && !k.magara)
+          ogeler.push({
+            id: 'git' + y.id,
+            etiket: `${M.YUVA_TURLERI[y.tur].ad}: oraya ${k.aracta ? 'sür' : 'yürü'}`,
+            sec: kapatVe(() => {
+              d.rota = { x: y.x, y: y.y, ad: M.YUVA_TURLERI[y.tur].ad, yakin: 12 };
+              d.yaklasId = null;
+              M.olay(d, 'rota', `${M.YUVA_TURLERI[y.tur].ad} yönüne gidiyorsun. ${M.BuyukHarf(yerTarifi(y))}. Hayvanları ürkütmemek için yaklaşınca dur.`, 3);
+            }),
+          });
+      });
+      if (!l.length) ogeler.push(bilgi('yok', 'Henüz bilinen in ya da yuva yok. Hayvanların izlerini takip et, GPS tasmalı hayvanların gece döndüğü yere bak ya da dronla tara. Sırtlanlar, yaban köpekleri, leopar, aslanlar, balık kartalı, timsah ve babunların gizli yerleri var.'));
+      return liste(u, 'İnler ve yuvalar', ogeler);
+    }
+    if (u === 'videolar' || u.startsWith('videolar~')) {
+      const tum = (k.arsiv.videolar || []).map((v) => {
+        const b = M.birey(d, v.bireyId);
+        const ad = b && M.taninmisMi(b) ? M.bireyAdi(b) : M.SOZ[v.tur];
+        return bilgi('v' + v.id, `${ad}, ${v.sure} saniye, kalite ${v.kalite}: ${v.davranislar.map((x) => kucuk(M.davranisAdi(x))).join(', ')}. ${v.bolge}, ${zamanKisa(v.dk)}`);
+      });
+      const s = sayfali('videolar', tum, menu, 10);
+      if (s.sayfa) return liste(s.sayfa.anahtar, s.sayfa.baslik, s.sayfa.ogeler);
+      return liste(u, 'Videolar', s.ogeler.length ? s.ogeler : [bilgi('bos', 'Henüz video yok. Aletlerden Video kamerayı seçip gözlediğin hayvanı çek.')]);
+    }
     if (u === 'doga') {
       const ogeler = [
         altMenu('ekosistem', `Ekosistem: ${E.MEVSIM_ADI[E.takvim(M.gunNo(k.dk)).mevsim]}, ${k.eko.yagmurVar ? 'yağmur yağıyor' : 'hava ' + E.HAVA_ADI[k.eko.hava.tur]}`, menu.ac),
         { id: 'ara', etiket: 'Küçük canlı ara', ipucu: 'Böcek, kuş, kurbağa, sürüngen ve küçük memelileri arar.', sec: kapatVe(() => K.kucukAra(d)) },
+        { id: 'izAra', etiket: 'İzleri incele', ipucu: 'Yakındaki ayak izlerini okur: hangi hayvan, ne kadar taze, hangi yöne gitmiş.', sec: yap(() => Iz.izAra(d)) },
+        ...(d.sonIz ? [{ id: 'izTakip', etiket: 'İzi takip et', ipucu: 'İzlerin gittiği yöne yürürsün; izler bir ine çıkıyorsa oraya.', sec: kapatVe(() => Ses.hemen(Iz.izTakip(d))) }] : []),
+        altMenu('yuvalar', `Bilinen inler ve yuvalar: ${Iz.bilinenYuvalar(k).length} / ${(k.yuvalar || []).length}`, menu.ac),
         altMenu('bitkiler', `Çevredeki bitkiler: ${Mz.cevredekiBitkiler(d).length}`, menu.ac),
         altMenu('numune', `Numune ve veteriner${k.numuneKutusu.length ? `: kutuda ${k.numuneKutusu.length} numune` : ''}`, menu.ac),
       ];
@@ -1381,6 +1436,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         altMenu('bireyler', `Tanımlanan bireyler: ${M.taninanBireyler(k).length}`, menu.ac),
         altMenu('fotolar', `Fotoğraflar: ${a.fotolar.length}`, menu.ac),
         altMenu('sesler', `Ses kayıtları: ${a.sesler.length}`, menu.ac),
+        altMenu('videolar', `Videolar: ${(a.videolar || []).length}`, menu.ac),
         altMenu('bitkiArsiv', `Bitkiler: ${Object.keys(a.bitkiler || {}).length} / ${E.BITKI_SIRASI.length}`, menu.ac),
         altMenu('kucukler', `Küçük canlılar: ${K.kucukSayisi(k)} / ${KUCUK_SIRASI.length} tür`, menu.ac),
         altMenu('gunluk', `Günlük: ${a.olaylar.length} kayıt`, menu.ac),

@@ -185,6 +185,7 @@ export const SESLER = {
   'kartal_3a': require('../assets/efekt/kartal_3a.m4a'),
   'kartal_4': require('../assets/efekt/kartal_4.m4a'),
   'kartal_4a': require('../assets/efekt/kartal_4a.m4a'),
+  'kesif': require('../assets/efekt/kesif.m4a'),
   'kilic': require('../assets/efekt/kilic.m4a'),
   'kosu_agir_0': require('../assets/efekt/kosu_agir_0.m4a'),
   'kosu_agir_0a': require('../assets/efekt/kosu_agir_0a.m4a'),
