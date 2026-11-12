@@ -1,35 +1,61 @@
-// Bot testi: avcıyı oynatır (hedef seç, saldır, iksir iç, tüccardan al, harita değiştir). Kullanım: bun araclar/oyun-testi.js [dakika]
+// Bot testi: araştırmacıyı oynatır (yerlere git, gözlemle, yaklaş, fotoğraf, ses kaydı, araç).
+// Kullanım: bun araclar/oyun-testi.js [oyun günü]
 import * as M from '../oyun/mantik.js';
-import { SILAHLAR, ZIRHLAR, HARITALAR } from '../oyun/veri.js';
-const dakika = +(process.argv[2] || 60);
-const k = M.avciOlustur('Bot');
-let d = M.dunyaOlustur(k, 'orman');
-let olum = 0;
-const rapor = [];
-for (let t = 0; t < dakika * 60; t += 0.1) {
-  M.guncelle(d, 0.1, {});
+import { TURLER, YERLER } from '../oyun/veri.js';
+
+const gun = +(process.argv[2] || 3);
+const k = M.arastirmaciOlustur('Bot');
+let d = M.dunyaOlustur(k);
+const sayac = {};
+const say = (t) => (sayac[t] = (sayac[t] || 0) + 1);
+const ornekler = {};
+const adim = 0.1;
+const toplam = (gun * 1440) / 0.5; // gerçek saniye
+let yerSira = 0;
+let sonEylem = 0;
+const baslangicNufus = {};
+k.hayvanlar.forEach((b) => (baslangicNufus[b.tur] = (baslangicNufus[b.tur] || 0) + 1));
+
+for (let t = 0; t < toplam; t += adim) {
+  M.guncelle(d, adim, {});
   for (const o of M.olaylariAl(d)) {
-    if (o.tur === 'oldun') olum++;
-    if (o.tur === 'seviye') rapor.push(`${(t / 60).toFixed(1)} dk: sv ${k.seviye}, ${d.harita.ad}, ${M.hesapla(k).silah.ad}`);
+    say(o.tur);
+    if (o.metin && !ornekler[o.tur]) ornekler[o.tur] = o.metin;
+    if (o.tur === 'tehdit') M.yerGit(d, 'istasyon'); // uyarılınca geri çekil
   }
-  if (d.olu) { M.yenidenDog(d); continue; }
-  const h = M.hesapla(k);
-  if (k.can < h.enCan * 0.35) M.iksirIc(d);
-  M.yetenekKullan(d, 'sargi'); M.yetenekKullan(d, 'avciNidasi');
-  if (M.hedef(d)) { M.yetenekKullan(d, 'gucluVurus'); if (!d.otoSaldiri) M.saldir(d); }
-  else if (Math.floor(t * 10) % 20 === 0) {
-    // Seviyesine uygun hedef seç
-    const l = M.yakindakiler(d, 80).filter((x) => x.c.seviye <= k.seviye + 2 && !(x.c.enCan > 300 && k.seviye < x.c.seviye));
-    if (l.length) { d.hedefId = l[0].c.id; M.saldir(d); }
+  if (t - sonEylem > 4) {
+    sonEylem = t;
+    if (!d.rota && !d.yaklasId) {
+      const g = M.gozlenen(d);
+      if (!g) {
+        if (!M.gozlemBaslat(d)) {
+          const y = YERLER[yerSira++ % YERLER.length];
+          M.yerGit(d, y.id);
+        }
+      } else if (d.gozlem && d.gozlem.sn > 25) {
+        M.fotografCek(d);
+        if (Math.random() < 0.3) M.sesKaydiBaslat(d);
+        M.gozlemBitir(d);
+        const y = YERLER[yerSira++ % YERLER.length];
+        M.yerGit(d, y.id);
+      } else if (Math.random() < 0.3) M.yaklas(d);
+    }
   }
-  // Alışveriş ve harita: dakikada bir
-  if (Math.floor(t * 10) % 600 === 0) {
-    for (const s of SILAHLAR) if (!k.silahlar.includes(s.id) && s.seviye <= k.seviye && s.menzil < 10 && k.altin >= s.fiyat) M.satinAl(k, 'silah', s.id);
-    for (const z of ZIRHLAR) if (!k.zirhlar.includes(z.id) && z.seviye <= k.seviye && k.altin >= z.fiyat) M.satinAl(k, 'zirh', z.id);
-    while (k.iksir < 5 && k.altin > 200) M.satinAl(k, 'iksir');
-    const uygun = [...HARITALAR].reverse().find((hr) => hr.seviye[0] <= k.seviye);
-    if (uygun.id !== d.harita.id) { k.konum = null; d = M.dunyaOlustur(k, uygun.id); }
+  // Kayıt ve yeniden yükleme denemesi (gün ortasında)
+  if (Math.abs(t - toplam / 2) < adim / 2) {
+    const ham = JSON.stringify(M.kayitHazirla(k));
+    const k2 = M.kayittanYukle(JSON.parse(ham));
+    if (!k2) throw new Error('Kayıt yüklenemedi');
+    console.log(`Kayıt boyutu: ${(ham.length / 1024).toFixed(1)} KB`);
+    Object.assign(k, k2);
+    d = M.dunyaOlustur(k);
   }
 }
-console.log(rapor.join('\n'));
-console.log(`Bitti: sv ${k.seviye}, ${k.avlanan} av, ${olum} ölüm, ${k.altin} altın, liderler: ${k.patronlar.join(', ')}`);
+const nufus = {};
+k.hayvanlar.filter((b) => !b.olu).forEach((b) => (nufus[b.tur] = (nufus[b.tur] || 0) + 1));
+console.log('Olaylar:', JSON.stringify(sayac));
+console.log('Nüfus (başta → sonda):', Object.keys(TURLER).map((t) => `${t} ${baslangicNufus[t] || 0}→${nufus[t] || 0}`).join(', '));
+console.log(`Bitti: ${M.zamanSozu(k.dk)}; itibar ${k.itibar}; tür ${Object.keys(k.arsiv.turler).length}; birey ${Object.keys(k.arsiv.bireyler).length}; foto ${k.arsiv.fotolar.length}; ses ${k.arsiv.sesler.length}; olay ${k.arsiv.olaylar.length}`);
+Object.entries(k.arsiv.turler).forEach(([t, v]) => console.log(`  ${t}: ${v.davranislar.join(', ')}`));
+console.log('Örnek metinler:');
+Object.entries(ornekler).forEach(([t, m]) => console.log(`  [${t}] ${m}`));

@@ -1,172 +1,197 @@
-// ==== VAHŞİ TOPRAKLAR: OYUN VERİSİ ====
-// Haritalar, hayvanlar, silahlar, zırhlar. Koordinat: x doğu, y kuzey; her harita merkezinde kamp.
+// ==== VAHŞİ YAŞAM: OYUN VERİSİ ====
+// Afrika savanı test bölgesi, türler, davranışlar. Koordinat: x doğu, y kuzey (metre). Haritanın ortasında araştırma istasyonu.
+// Tasarım brifi: 113 karar (Vahşi Yaşam Oyun Tasarım Dosyası). Bu sürüm Aşama 1-3: teknik temel, saha prototipi,
+// ilk hayvan ve gözlem döngüsü.
 
-export const SEVIYE_SINIRI = 30;
-export const KAMP_YARICAP = 13; // hayvanlar kampa girmez
-export const IKSIR = { ad: 'Şifa İksiri', fiyat: 25, iyilestir: 0.45, enCok: 10 };
+export const YARICAP = 200; // haritanın yarıçapı
+export const ISTASYON = { x: 0, y: 0, r: 12 }; // hayvanlar istasyona girmez (kuşlar hariç)
+export const ARAC_YERI = { x: 5, y: -5, yon: Math.PI / 2 }; // garajın önü
 
-// Hayvan türleri. sekil: 3B modelin biçimi. ses: oyunda hangi ses dosyası çalar (3B konumlu).
-// can ve saldiri 1. seviyedeki değerdir; seviye arttıkça büyür. saldirgan: false ise sen saldırmadıkça saldırmaz.
-export const HAYVANLAR = {
-  tilki: { ad: 'Tilki', can: 34, saldiri: 5, hiz: 5.4, boy: 0.6, renk: '#c8642a', sekil: 'dortayak', ses: 'tilki', saldirgan: false, xp: 0.8 },
-  kurt: { ad: 'Kurt', can: 52, saldiri: 7, hiz: 5.8, boy: 0.85, renk: '#6f6a64', sekil: 'dortayak', ses: 'kurt', saldirgan: true, xp: 1 },
-  domuz: { ad: 'Yaban Domuzu', can: 70, saldiri: 8, hiz: 5.0, boy: 0.9, renk: '#4e3b2c', sekil: 'dortayak', ses: 'domuz', saldirgan: true, xp: 1.1 },
-  bozAyi: { ad: 'Boz Ayı', can: 420, saldiri: 13, hiz: 4.6, boy: 1.7, renk: '#5a3b22', sekil: 'ayi', ses: 'ayi', saldirgan: true, patron: true, xp: 6 },
+// Zaman: oyun açıkken akar, kapalıyken durur (karar 10, 44). Gerçek 1 saniye = oyunda 30 saniye; bir gün 48 dakika sürer.
+// (Öneri; Murat onaylamadı.)
+export const OYUN_DK_SN = 0.5;
+export const BASLANGIC_SAATI = 6 * 60 + 30; // 1. gün 06:30
 
-  akrep: { ad: 'Çöl Akrebi', can: 46, saldiri: 7, hiz: 4.2, boy: 0.8, renk: '#a0702c', sekil: 'akrep', ses: 'akrep', saldirgan: true, xp: 1 },
-  cingirakli: { ad: 'Çıngıraklı Yılan', can: 40, saldiri: 9, hiz: 3.8, boy: 0.9, renk: '#b49a5a', sekil: 'yilan', ses: 'yilan', saldirgan: true, xp: 1.05 },
-  sirtlan: { ad: 'Sırtlan', can: 58, saldiri: 8, hiz: 5.8, boy: 0.85, renk: '#9a8358', sekil: 'dortayak', ses: 'sirtlan', saldirgan: true, xp: 1.1 },
-  devAkrep: { ad: 'Dev Kum Akrebi', can: 360, saldiri: 12, hiz: 4.0, boy: 2.2, renk: '#6b3f1a', sekil: 'akrep', ses: 'akrep', saldirgan: true, patron: true, xp: 6 },
+// Su ve arazi (değiştirilemez, karar 56)
+export const GOLET = { x: 48, y: 38, r: 9 };
+export const NEHIR_YARI = 4; // nehrin yarı genişliği
+export const nehirY = (x) => -100 + 8 * Math.sin(x / 35);
+export const GECITLER = [
+  { ad: 'Batı geçidi', x: -60, yari: 6 },
+  { ad: 'Doğu geçidi', x: 70, yari: 6 },
+];
+export const KAYALIK = { x: -115, y: 45, r: 32 };
+export const MAGARA = { x: -128, y: 64 };
 
-  engerek: { ad: 'Bataklık Engereği', can: 42, saldiri: 9, hiz: 4.0, boy: 1.0, renk: '#3f5a2a', sekil: 'yilan', ses: 'yilan', saldirgan: true, xp: 1 },
-  bataklikKurdu: { ad: 'Bataklık Kurdu', can: 52, saldiri: 8, hiz: 5.6, boy: 0.9, renk: '#3e4a3a', sekil: 'dortayak', ses: 'kurt', saldirgan: true, xp: 1 },
-  timsah: { ad: 'Timsah', can: 80, saldiri: 9, hiz: 3.6, boy: 1.1, renk: '#3b4f2e', sekil: 'timsah', ses: 'timsah', saldirgan: true, xp: 1.25 },
-  yasliTimsah: { ad: 'Yaşlı Timsah', can: 380, saldiri: 12, hiz: 3.8, boy: 1.9, renk: '#2c3a22', sekil: 'timsah', ses: 'timsah', saldirgan: true, patron: true, xp: 6 },
+// Gidilebilecek yerler (Yerler paneli). y değeri işlev olabilir (nehir boyu).
+export const YERLER = [
+  { id: 'istasyon', ad: 'Araştırma istasyonu', x: 0, y: 2, tarif: 'Küçük laboratuvar, garaj ve çadırdan oluşan istasyonun.' },
+  { id: 'golet', ad: 'Gölet', x: GOLET.x - 13, y: GOLET.y - 8, tarif: 'Otlakların ortasında bir gölet. Pek çok hayvan su içmeye gelir.' },
+  { id: 'batiGecit', ad: 'Nehrin batı geçidi', x: -60, y: nehirY(-60) + 9, tarif: 'Nehrin sığ yeri. Araçla ya da yaya karşıya geçilebilir.' },
+  { id: 'doguGecit', ad: 'Nehrin doğu geçidi', x: 70, y: nehirY(70) + 9, tarif: 'Nehrin ikinci sığ geçidi.' },
+  { id: 'nehirKiyisi', ad: 'Nehir kıyısı', x: 12, y: nehirY(12) + 24, tarif: 'Su aygırlarının ve timsahların yaşadığı geniş nehrin kuzey kıyısı.' },
+  { id: 'sulakAlan', ad: 'Sulak alan', x: -20, y: -135, tarif: 'Nehrin güneyinde sazlık ve çamurlu bir sulak alan. Mandalar burada otlar.' },
+  { id: 'kayalik', ad: 'Kayalık', x: -88, y: 40, tarif: 'Büyük granit kayalardan oluşan bir tepe. Leopar ve piton burada yaşar.' },
+  { id: 'magara', ad: 'Mağara girişi', x: -116, y: 74, tarif: 'Kayalığın kuzeyinde karanlık bir mağara ağzı. İçi henüz araştırılmadı.' },
+  { id: 'agaclik', ad: 'Akasya ağaçlığı', x: 30, y: 100, tarif: 'Kuzeyde sık akasya ağaçları. Filler ve zürafalar burada beslenir.' },
+  { id: 'dogOtlak', ad: 'Doğu otlakları', x: 95, y: 0, tarif: 'Uçsuz bucaksız açık çayırlar. Zebralar burada otlar.' },
+];
 
-  karKurdu: { ad: 'Kar Kurdu', can: 52, saldiri: 8, hiz: 6.0, boy: 0.9, renk: '#d8dde2', sekil: 'dortayak', ses: 'kurt', saldirgan: true, xp: 1 },
-  kartal: { ad: 'Kaya Kartalı', can: 40, saldiri: 9, hiz: 6.6, boy: 0.9, renk: '#5b4632', sekil: 'kus', ses: 'kartal', saldirgan: true, xp: 1.05 },
-  leopar: { ad: 'Kar Leoparı', can: 58, saldiri: 10, hiz: 6.2, boy: 0.9, renk: '#cfc8b8', sekil: 'kedi', ses: 'leopar', saldirgan: true, xp: 1.2 },
-  kutupAyisi: { ad: 'Kutup Ayısı', can: 400, saldiri: 13, hiz: 4.6, boy: 2.0, renk: '#eef1f4', sekil: 'ayi', ses: 'ayi', saldirgan: true, patron: true, xp: 6 },
-
-  savanSirtlani: { ad: 'Benekli Sırtlan', can: 56, saldiri: 8, hiz: 6.0, boy: 0.9, renk: '#8f7a4f', sekil: 'dortayak', ses: 'sirtlan', saldirgan: true, xp: 1 },
-  aslan: { ad: 'Aslan', can: 66, saldiri: 10, hiz: 6.0, boy: 1.1, renk: '#c9a050', sekil: 'kedi', ses: 'aslan', saldirgan: true, xp: 1.25 },
-  gergedan: { ad: 'Gergedan', can: 100, saldiri: 9, hiz: 4.8, boy: 1.5, renk: '#7c7a76', sekil: 'gergedan', ses: 'gergedan', saldirgan: false, xp: 1.4 },
-  aslanKral: { ad: 'Aslan Kral', can: 420, saldiri: 13, hiz: 5.4, boy: 1.7, renk: '#b3802e', sekil: 'kedi', ses: 'aslan', saldirgan: true, patron: true, xp: 7 },
+// Bölgeler: bolgeBul (mantik.js) konuma göre adını verir.
+export const BOLGE_ADLARI = {
+  istasyon: 'Araştırma istasyonu',
+  golet: 'Gölet kıyısı',
+  nehir: 'Nehir kıyısı',
+  sulak: 'Sulak alan',
+  kayalik: 'Kayalık',
+  agaclik: 'Akasya ağaçlığı',
+  otlak: 'Açık otlak',
 };
 
-// Haritalar: kampın dışında halkalar. Her hayvan kendi halkasında (metre) doğar; seviye halkada dışa doğru artar.
-export const HARITALAR = [
-  {
-    id: 'orman',
-    ad: 'Yeşil Orman',
-    seviye: [1, 7],
-    tarif: 'Çam ve meşelerle dolu sık bir orman. Tilkiler, kurt sürüleri ve yaban domuzları yaşar. Ormanın kuzey ucunda Boz Ayı dolaşır.',
-    yaricap: 110,
-    zemin: '#4f7a36',
-    gok: '#9cc7e8',
-    sis: [45, 120],
-    agac: [{ tur: 'cam', sayi: 120 }, { tur: 'mese', sayi: 70 }],
-    kaya: 30,
-    ortam: 'ortam_orman',
-    adim: 'adim1',
-    hayvanlar: [
-      { tur: 'tilki', sayi: 9, halka: [18, 60] },
-      { tur: 'kurt', sayi: 10, halka: [45, 100] },
-      { tur: 'domuz', sayi: 8, halka: [55, 105] },
-    ],
-    patron: { tur: 'bozAyi', seviye: 8, x: 0, y: 92 },
-  },
-  {
-    id: 'col',
-    ad: 'Kavurucu Çöl',
-    seviye: [7, 13],
-    tarif: 'Uçsuz bucaksız kum tepeleri ve kaktüsler. Akrepler, çıngıraklı yılanlar ve sırtlan sürüleri avlanır. Doğuda Dev Kum Akrebi saklanır.',
-    yaricap: 110,
-    zemin: '#d9b87a',
-    gok: '#f0d9a8',
-    sis: [40, 115],
-    agac: [{ tur: 'kaktus', sayi: 70 }, { tur: 'olu', sayi: 18 }],
-    kaya: 45,
-    ortam: 'ortam_col',
-    adim: 'adim2',
-    hayvanlar: [
-      { tur: 'akrep', sayi: 10, halka: [18, 70] },
-      { tur: 'cingirakli', sayi: 9, halka: [35, 95] },
-      { tur: 'sirtlan', sayi: 9, halka: [55, 105] },
-    ],
-    patron: { tur: 'devAkrep', seviye: 14, x: 92, y: 0 },
-  },
-  {
-    id: 'bataklik',
-    ad: 'Sisli Bataklık',
-    seviye: [12, 18],
-    tarif: 'Sisli, çamurlu bir bataklık; ölü ağaçlar ve sazlıklar. Engerekler, bataklık kurtları ve timsahlar pusuda bekler. Güneyde Yaşlı Timsah yaşar.',
-    yaricap: 110,
-    zemin: '#3f5236',
-    gok: '#8a9688',
-    sis: [16, 55],
-    agac: [{ tur: 'olu', sayi: 90 }, { tur: 'saz', sayi: 70 }],
-    kaya: 15,
-    gol: 14,
-    ortam: 'ortam_bataklik',
-    adim: 'adim2',
-    hayvanlar: [
-      { tur: 'engerek', sayi: 10, halka: [18, 75] },
-      { tur: 'bataklikKurdu', sayi: 9, halka: [35, 100] },
-      { tur: 'timsah', sayi: 9, halka: [50, 105] },
-    ],
-    patron: { tur: 'yasliTimsah', seviye: 19, x: 0, y: -92 },
-  },
-  {
-    id: 'dag',
-    ad: 'Karlı Dağlar',
-    seviye: [17, 24],
-    tarif: 'Rüzgârın uğuldadığı karlı yamaçlar ve çam ağaçları. Kar kurtları, kaya kartalları ve kar leoparları avlanır. Batıdaki zirvede Kutup Ayısı yaşar.',
-    yaricap: 110,
-    zemin: '#e8edf1',
-    gok: '#cfdbe6',
-    sis: [30, 95],
-    agac: [{ tur: 'karcam', sayi: 110 }],
-    kaya: 60,
-    ortam: 'ortam_dag',
-    adim: 'adim1',
-    hayvanlar: [
-      { tur: 'karKurdu', sayi: 10, halka: [18, 75] },
-      { tur: 'kartal', sayi: 8, halka: [35, 100] },
-      { tur: 'leopar', sayi: 9, halka: [50, 105] },
-    ],
-    patron: { tur: 'kutupAyisi', seviye: 25, x: -92, y: 0 },
-  },
-  {
-    id: 'savan',
-    ad: 'Altın Savan',
-    seviye: [22, 30],
-    tarif: 'Uzun sarı otlar ve tek tük akasya ağaçları. Sırtlanlar, aslanlar ve gergedanlar burada yaşar. Kuzeydoğuda Aslan Kral hüküm sürer.',
-    yaricap: 110,
-    zemin: '#b89a4a',
-    gok: '#f2d29a',
-    sis: [45, 125],
-    agac: [{ tur: 'akasya', sayi: 45 }],
-    kaya: 25,
-    ortam: 'ortam_savan',
-    adim: 'adim1',
-    hayvanlar: [
-      { tur: 'savanSirtlani', sayi: 10, halka: [18, 75] },
-      { tur: 'aslan', sayi: 9, halka: [40, 105] },
-      { tur: 'gergedan', sayi: 7, halka: [30, 100] },
-    ],
-    patron: { tur: 'aslanKral', seviye: 30, x: 66, y: 66 },
-  },
-];
+// Davranışlar: fiil (konuşmada "Zebra 4 otluyor"), ad (arşivde), nadir (bilimsel değeri yüksek)
+export const DAVRANISLAR = {
+  otluyor: { fiil: 'otluyor', ad: 'Otlama' },
+  yapraklaBesleniyor: { fiil: 'ağaç yapraklarıyla besleniyor', ad: 'Yaprakla beslenme' },
+  dinleniyor: { fiil: 'dinleniyor', ad: 'Dinlenme' },
+  uyuyor: { fiil: 'uyuyor', ad: 'Uyku' },
+  suIciyor: { fiil: 'su içiyor', ad: 'Su içme' },
+  yuruyor: { fiil: 'yürüyor', ad: 'Yer değiştirme' },
+  kaciyor: { fiil: 'kaçıyor', ad: 'Kaçış' },
+  uyariyor: { fiil: 'tehdit gösterisi yapıyor', ad: 'Tehdit gösterisi', nadir: true },
+  pusuda: { fiil: 'pusuya yatmış, avını izliyor', ad: 'Pusuya yatma', nadir: true },
+  kovaliyor: { fiil: 'avını kovalıyor', ad: 'Av kovalamacası', nadir: true },
+  besleniyor: { fiil: 'avıyla besleniyor', ad: 'Avla beslenme', nadir: true },
+  lesteBesleniyor: { fiil: 'leşle besleniyor', ad: 'Leşle beslenme', nadir: true },
+  emziriyor: { fiil: 'yavrusunu emziriyor', ad: 'Yavru emzirme', nadir: true },
+  oynuyor: { fiil: 'oyun oynuyor', ad: 'Yavruların oyunu', nadir: true },
+  timarlaniyor: { fiil: 'sürü arkadaşını tımarlıyor', ad: 'Sosyal tımar' },
+  camurBanyosu: { fiil: 'çamur banyosu yapıyor', ad: 'Çamur banyosu' },
+  suda: { fiil: 'suyun içinde dinleniyor', ad: 'Suda dinlenme' },
+  gunesleniyor: { fiil: 'kıyıda güneşleniyor', ad: 'Güneşlenme' },
+  tunemis: { fiil: 'bir ağaca tünemiş', ad: 'Tüneme' },
+  suzuluyor: { fiil: 'havada süzülüyor', ad: 'Süzülme' },
+  balikAvliyor: { fiil: 'balık avlıyor', ad: 'Balık avı', nadir: true },
+  dogum: { fiil: 'yeni doğmuş yavrusuyla', ad: 'Doğum', nadir: true },
+  bekliyor: { fiil: 'hareketsiz bekliyor', ad: 'Hareketsiz bekleme' },
+  kolluyor: { fiil: 'çevreyi kolluyor', ad: 'Çevreyi gözetleme' },
+};
 
-// Silahlar: basitten güçlüye. hiz = iki vuruş arası saniye, menzil metre.
-export const SILAHLAR = [
-  { id: 'sopa', ad: 'Sopa', seviye: 1, fiyat: 0, hasar: 9, hiz: 1.0, menzil: 2.0, ses: 'sopa', sekil: 'sopa' },
-  { id: 'bicak', ad: 'Av Bıçağı', seviye: 2, fiyat: 60, hasar: 12, hiz: 0.75, menzil: 1.8, ses: 'bicak', sekil: 'bicak' },
-  { id: 'kisaMizrak', ad: 'Kısa Mızrak', seviye: 5, fiyat: 220, hasar: 21, hiz: 1.1, menzil: 3.0, ses: 'mizrak', sekil: 'mizrak' },
-  { id: 'avciYayi', ad: 'Avcı Yayı', seviye: 7, fiyat: 420, hasar: 19, hiz: 1.2, menzil: 14, ses: 'yay', sekil: 'yay' },
-  { id: 'demirKilic', ad: 'Demir Kılıç', seviye: 10, fiyat: 850, hasar: 33, hiz: 1.0, menzil: 2.2, ses: 'kilic', sekil: 'kilic' },
-  { id: 'savasBaltasi', ad: 'Savaş Baltası', seviye: 13, fiyat: 1500, hasar: 52, hiz: 1.4, menzil: 2.2, ses: 'balta', sekil: 'balta' },
-  { id: 'uzunYay', ad: 'Uzun Yay', seviye: 16, fiyat: 2400, hasar: 44, hiz: 1.2, menzil: 18, ses: 'yay', sekil: 'yay' },
-  { id: 'celikKilic', ad: 'Çelik Kılıç', seviye: 19, fiyat: 3600, hasar: 68, hiz: 0.95, menzil: 2.4, ses: 'kilic', sekil: 'kilic' },
-  { id: 'uzunMizrak', ad: 'Uzun Mızrak', seviye: 22, fiyat: 5200, hasar: 88, hiz: 1.15, menzil: 3.4, ses: 'mizrak', sekil: 'mizrak' },
-  { id: 'ejderBaltasi', ad: 'Ejder Baltası', seviye: 25, fiyat: 8000, hasar: 125, hiz: 1.35, menzil: 2.4, ses: 'balta', sekil: 'balta' },
-  { id: 'efsaneYay', ad: 'Efsane Yay', seviye: 28, fiyat: 11000, hasar: 98, hiz: 1.05, menzil: 22, ses: 'yay', sekil: 'yay' },
-];
+// Hayvan sesinin anlamı (ses analizi, karar 49 ve 87)
+export const SES_TURLERI = {
+  iletisim: 'sürüyle iletişim',
+  alarm: 'alarm çağrısı',
+  bolge: 'bölge çağrısı',
+  yavru: 'yavru çağrısı',
+  tehdit: 'tehdit sesi',
+};
 
-export const ZIRHLAR = [
-  { id: 'yok', ad: 'Zırh yok', seviye: 1, fiyat: 0, savunma: 0, can: 0 },
-  { id: 'deriYelek', ad: 'Deri Yelek', seviye: 2, fiyat: 80, savunma: 4, can: 10 },
-  { id: 'kalinPost', ad: 'Kalın Post', seviye: 6, fiyat: 350, savunma: 9, can: 30 },
-  { id: 'pulluZirh', ad: 'Pullu Zırh', seviye: 12, fiyat: 1200, savunma: 16, can: 60 },
-  { id: 'kemikZirh', ad: 'Kemik Zırh', seviye: 18, fiyat: 3000, savunma: 24, can: 100 },
-  { id: 'ejderPulu', ad: 'Ejder Pulu Zırh', seviye: 25, fiyat: 7500, savunma: 34, can: 160 },
-];
+// Türler. kisa: kimlik öneki. ses: 3B ses dosyası (yoksa sessiz). aktif: gunduz | gece | karma.
+// kacis: yaya yaklaşınca kaçtığı mesafe (m). tehlikeli: çok yaklaşınca tehdit gösterisi ve sahte saldırı yapar.
+// yirtici: avlar listesindeki türleri avlar. habitat: grubun yaşadığı alan. grup: [en az, en çok] birey.
+export const TURLER = {
+  aslan: {
+    ad: 'Aslan', bilimsel: 'Panthera leo', kisa: 'ASL', sinif: 'Memeli', ses: 'aslan', sekil: 'kedi', boy: 1.15, renk: '#c9a050',
+    hiz: 9, aktif: 'gece', kacis: 20, tehlikeli: true, yirtici: true, avlar: ['zebra', 'ceylan', 'domuz', 'manda'], sesSik: 60,
+    sesTuru: 'bolge', habitat: { x: 62, y: 76, r: 40 }, grup: [5, 6], erkekOran: 0.2,
+    tarif: 'Sürü hâlinde yaşayan tek büyük kedi. Gündüzün çoğunu gölgede dinleyerek geçirir, alacakaranlıkta ve gece avlanır. Erkeklerin kükremesi kilometrelerce uzaktan duyulur.',
+  },
+  leopar: {
+    ad: 'Leopar', bilimsel: 'Panthera pardus', kisa: 'LEO', sinif: 'Memeli', ses: 'leopar', sekil: 'kedi', boy: 0.85, renk: '#d4b06a',
+    hiz: 9, aktif: 'gece', kacis: 30, yirtici: true, avlar: ['ceylan', 'domuz'], sesSik: 90,
+    sesTuru: 'bolge', habitat: { x: -112, y: 48, r: 26 }, grup: [1, 1],
+    tarif: 'Yalnız yaşayan, gizlenmede usta bir kedi. Kayalıklarda ve ağaçlarda dinlenir, geceleri sessizce avlanır. Testere sesine benzer hırıltılı bir çağrısı vardır.',
+  },
+  sirtlan: {
+    ad: 'Benekli Sırtlan', bilimsel: 'Crocuta crocuta', kisa: 'SRT', sinif: 'Memeli', ses: 'sirtlan', sekil: 'dortayak', boy: 0.85, renk: '#8f7a4f',
+    hiz: 8, aktif: 'gece', kacis: 22, yirtici: true, lesci: true, avlar: ['ceylan', 'domuz'], sesSik: 45,
+    sesTuru: 'iletisim', habitat: { x: -40, y: -55, r: 35 }, grup: [4, 5], erkekOran: 0.4,
+    tarif: 'Dişilerin yönettiği klanlar hâlinde yaşar. Hem usta bir avcı hem de leşçidir. Gülmeye benzeyen sesleriyle klan üyeleri birbirini bulur.',
+  },
+  fil: {
+    ad: 'Afrika Fili', bilimsel: 'Loxodonta africana', kisa: 'FIL', sinif: 'Memeli', ses: 'fil', sekil: 'fil', boy: 1.6, renk: '#8a8580',
+    hiz: 5, aktif: 'karma', kacis: 28, tehlikeli: true, sesSik: 70, sesTuru: 'iletisim', yeme: 'yapraklaBesleniyor', camur: true,
+    habitat: { x: 22, y: 118, r: 38 }, grup: [5, 6], erkekOran: 0.15,
+    tarif: 'Karada yaşayan en büyük hayvan. Sürüyü yaşlı bir dişi, yani anaç yönetir. Ağaç yaprakları, kabuk ve otla beslenir; her gün su içmeye gelir.',
+  },
+  zurafa: {
+    ad: 'Zürafa', bilimsel: 'Giraffa camelopardalis', kisa: 'ZRF', sinif: 'Memeli', ses: 'zurafa', sekil: 'zurafa', boy: 1.0, renk: '#d0a15a',
+    hiz: 7, aktif: 'gunduz', kacis: 32, sesSik: 200, sesTuru: 'iletisim', yeme: 'yapraklaBesleniyor',
+    habitat: { x: 82, y: 112, r: 32 }, grup: [3, 4], erkekOran: 0.3,
+    tarif: 'Dünyanın en uzun boylu hayvanı. Akasya yapraklarını uzun diliyle koparır. Çok az ses çıkarır; gece alçak bir uğultuyla iletişim kurduğu düşünülür.',
+  },
+  zebra: {
+    ad: 'Bozkır Zebrası', bilimsel: 'Equus quagga', kisa: 'ZEB', sinif: 'Memeli', ses: 'zebra', sekil: 'zebra', boy: 0.95, renk: '#e8e6e0',
+    hiz: 8, aktif: 'gunduz', kacis: 28, sesSik: 50, sesTuru: 'iletisim', alarmSesi: true,
+    habitat: { x: 92, y: 2, r: 42 }, grup: [8, 10], erkekOran: 0.2,
+    tarif: 'Her bireyin çizgi deseni parmak izi gibi kendine özgüdür. Aileler bir aygır ve kısraklardan oluşur. Tehlikeyi havlamaya benzer bir sesle duyururlar.',
+  },
+  ceylan: {
+    ad: 'Thomson Ceylanı', bilimsel: 'Eudorcas thomsonii', kisa: 'CEY', sinif: 'Memeli', ses: 'ceylan', sekil: 'ceylan', boy: 0.6, renk: '#c08a50',
+    hiz: 10, aktif: 'gunduz', kacis: 30, sesSik: 120, sesTuru: 'alarm', alarmSesi: true,
+    habitat: { x: -62, y: -8, r: 40 }, grup: [8, 10], erkekOran: 0.25,
+    tarif: 'Küçük ve çok hızlı bir antilop. Tehlike anında dört ayağıyla birden havaya sıçrar. Kısa otları sever, büyük sürüler hâlinde gezer.',
+  },
+  domuz: {
+    ad: 'Afrika Yaban Domuzu', bilimsel: 'Phacochoerus africanus', kisa: 'DMZ', sinif: 'Memeli', ses: 'domuz', sekil: 'domuz', boy: 0.75, renk: '#5a4636',
+    hiz: 7, aktif: 'gunduz', kacis: 22, sesSik: 70, sesTuru: 'iletisim', camur: true,
+    habitat: { x: 25, y: -42, r: 30 }, grup: [4, 5], erkekOran: 0.25,
+    tarif: 'Yüzündeki siğil benzeri çıkıntılardan adını alır. Otları ve kökleri dizlerinin üstüne çökerek yer. Kaçarken kuyruğunu anten gibi dik tutar; geceyi yer altı yuvalarında geçirir.',
+  },
+  suAygiri: {
+    ad: 'Su Aygırı', bilimsel: 'Hippopotamus amphibius', kisa: 'SAY', sinif: 'Memeli', ses: 'suaygiri', sekil: 'suaygiri', boy: 1.3, renk: '#7a6a6a',
+    hiz: 6, aktif: 'gece', kacis: 25, tehlikeli: true, suCanlisi: true, sesSik: 40, sesTuru: 'bolge',
+    habitat: { x: 30, y: nehirY(30), r: 24, nehirde: true }, grup: [4, 5], erkekOran: 0.25,
+    tarif: 'Gündüzü nehirde suyun içinde geçirir, gece karaya çıkıp otlar. Afrika\'nın en tehlikeli hayvanlarından biridir; kıyıda ona asla yol kesme.',
+  },
+  timsah: {
+    ad: 'Nil Timsahı', bilimsel: 'Crocodylus niloticus', kisa: 'TMS', sinif: 'Sürüngen', ses: 'timsah', sekil: 'timsah', boy: 1.1, renk: '#4a5a32',
+    hiz: 5, aktif: 'karma', kacis: 10, tehlikeli: true, suCanlisi: true, yirtici: true, pusucu: true, avlar: ['ceylan', 'zebra', 'domuz'], sesSik: 240,
+    sesTuru: 'tehdit', habitat: { x: -20, y: nehirY(-20), r: 20, nehirde: true }, grup: [2, 3],
+    tarif: 'Suyun kenarında saatlerce kıpırdamadan bekleyen bir pusu avcısı. Sabahları kıyıda güneşlenerek ısınır.',
+  },
+  gergedan: {
+    ad: 'Ak Gergedan', bilimsel: 'Ceratotherium simum', kisa: 'GRG', sinif: 'Memeli', ses: 'gergedan', sekil: 'gergedan', boy: 1.35, renk: '#8a8884',
+    hiz: 7, aktif: 'karma', kacis: 25, tehlikeli: true, sesSik: 110, sesTuru: 'iletisim', camur: true, nadirTur: true,
+    habitat: { x: 122, y: 48, r: 30 }, grup: [2, 2], erkekOran: 0,
+    tarif: 'Nesli tehlike altındaki büyük bir otçul. Geniş, düz dudağıyla kısa otları biçer gibi yer. Gözleri zayıftır, koku ve işitmesi çok güçlüdür.',
+  },
+  kartal: {
+    ad: 'Afrika Balık Kartalı', bilimsel: 'Haliaeetus vocifer', kisa: 'KRT', sinif: 'Kuş', ses: 'kartal', sekil: 'kus', boy: 0.8, renk: '#3a2c22',
+    hiz: 9, aktif: 'gunduz', kacis: 25, kus: true, sesSik: 50, sesTuru: 'bolge',
+    habitat: { x: 42, y: nehirY(42) + 8, r: 35 }, grup: [2, 2], erkekOran: 0.5,
+    tarif: 'Beyaz başlı, çığlığı Afrika\'nın simgesi sayılan bir kartal. Kıyıdaki ağaçlara tüner, sudan balık kapar.',
+  },
+  piton: {
+    ad: 'Afrika Kaya Pitonu', bilimsel: 'Python sebae', kisa: 'PTN', sinif: 'Sürüngen', ses: 'yilan', sekil: 'yilan', boy: 1.3, renk: '#6a5a3a',
+    hiz: 2, aktif: 'gece', kacis: 5, sesSik: 300, sesTuru: 'tehdit', yeme: 'bekliyor',
+    habitat: { x: -122, y: 30, r: 18 }, grup: [1, 1],
+    tarif: 'Afrika\'nın en büyük yılanı. Zehirsizdir; avını sararak yakalar. Kaya kovuklarında saklanır, çoğu zaman hiç fark edilmez.',
+  },
+  manda: {
+    ad: 'Afrika Mandası', bilimsel: 'Syncerus caffer', kisa: 'MND', sinif: 'Memeli', ses: 'manda', sekil: 'manda', boy: 1.1, renk: '#2e2a28',
+    hiz: 7, aktif: 'karma', kacis: 30, tehlikeli: true, sesSik: 80, sesTuru: 'iletisim', camur: true,
+    habitat: { x: -20, y: -140, r: 40, guneyde: true }, grup: [7, 8], erkekOran: 0.3,
+    tarif: 'Sürü hâlinde yaşayan, öfkelendiğinde çok tehlikeli bir yaban sığırı. Sürü üyeleri tehlikede birbirini korur; yaralı birini yalnız bırakmaz.',
+  },
+};
 
-// Yetenekler (avcının): seviyeyle açılır
-export const YETENEKLER = [
-  { id: 'gucluVurus', ad: 'Güçlü Vuruş', seviye: 1, bekleme: 8, aciklama: 'Hedefe iki katından fazla hasar veren bir vuruş.' },
-  { id: 'sargi', ad: 'Sargı', seviye: 4, bekleme: 35, aciklama: 'Yaralarını sararsın: canının üçte birini geri kazanırsın.' },
-  { id: 'avciNidasi', ad: 'Avcı Nidası', seviye: 9, bekleme: 30, aciklama: 'Yakındaki hayvanları ürkütür: 8 saniye daha az hasar alırsın.' },
-  { id: 'okYagmuru', ad: 'Kasırga', seviye: 15, bekleme: 20, aciklama: 'Silahını savurup çevrendeki bütün hayvanlara vurursun.' },
-];
+export const TUR_SIRASI = Object.keys(TURLER);
+
+export const KISILIKLER = {
+  cesur: { ad: 'cesur', kacis: 0.7, alisma: 1.2 },
+  urkek: { ad: 'ürkek', kacis: 1.3, alisma: 0.6 },
+  merakli: { ad: 'meraklı', kacis: 0.85, alisma: 1.5 },
+  sakin: { ad: 'sakin', kacis: 1.0, alisma: 1.0 },
+};
+export const EVRELER = { yavru: 'yavru', genc: 'genç', yetiskin: 'yetişkin', yasli: 'yaşlı' };
+
+// Ekipman (başlangıç): menziller metre (karar 7: temel fotoğraf ve gözlem ekipmanı)
+export const EKIPMAN = {
+  durbunGunduz: 70,
+  durbunGece: 22, // gece dürbünü yok; geceleri gözlem menzili kısalır
+  kamera: 50,
+  sesKayit: 60,
+};
+
+export const ARAC = { ad: 'Arazi aracı', hiz: 13, geri: 4, don: 1.5 };
+export const YURUME = { hiz: 4.2, don: 2.2 };

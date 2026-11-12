@@ -1,3 +1,3 @@
-# Vahşi Topraklar
+# Vahşi Yaşam
 
-Erişilebilir, kendi sesiyle konuşan 3B hayvan avı ve savaş oyunu (Expo). Beş harita, yirmi hayvan, on bir silah, 3B konumlu sesler.
+Erişilebilir, kendi sesiyle konuşan 3B doğa araştırması ve ekosistem simülasyonu (Expo). Afrika savanında hayvanları gözlemle, tanımla, fotoğrafla, seslerini kaydet.

@@ -1,10 +1,11 @@
 # TaslarPro deposu — çalışma notları
 
-Depo artık **Vahşi Topraklar** için kullanılıyor (12 Kasım 2026): Murat "Taslarpro depomuzdaki oyunu tamamen sil, yerine
-Kayıp Okyanus'un karada geçen versiyonu gibi bir şey yap; amaç hayvanlarla savaşmak. Farklı haritalar, çeşitli hayvanlar,
-seviye sistemi, basitten güçlüye silahlar, hepsi 3B. ElevenLabs ile sesler üret. Bana bir şey sorma" dedi; sonra "sesler de 3B olacak".
-Görünen ad "Vahşi Topraklar", slug/EAS projesi aynı (taslarpro), yatay ekran. Diyarın Kaderi silindi (son hâli commit da1e9e1'de).
-Önceki oyunlar: İki Sancak `arsiv/iki-sancak/` (Vahşi Topraklar'ın altyapısı buradan alındı), Renkli Taşlar `arsiv/renkli-taslar/`.
+Depo artık **Vahşi Yaşam** için kullanılıyor (12 Kasım 2026, akşam): Murat başka bir yapay zekâyla hazırladığı 113 kararlık
+tasarım brifini (PDF "Vahşi Yaşam — Oyun Tasarımı ve Proje Brifi") verdi, "bunu hayata geçir, Taslarpro depomuzu kullanabilirsin" dedi.
+Brif ana karar kaynağıdır: kararları kendiliğinden değiştirme, kapsamı daraltma; teknik sınırlamayı Murat'a açıkla.
+Aynı gün yapılan savaş oyunu Vahşi Topraklar `arsiv/vahsi-topraklar/` altına taşındı (sesleri assets/efekt'te, yeniden kullanılıyor).
+Önceki oyunlar: İki Sancak `arsiv/iki-sancak/`, Renkli Taşlar `arsiv/renkli-taslar/`, Diyarın Kaderi (commit da1e9e1).
+Slug/EAS projesi aynı (taslarpro), app.json'daki görünen ad "Vahşi Yaşam", yatay ekran.
 
 ## Murat ile çalışma
 - Murat'ın yalnızca iPhone'u var; kodu elle düzenleyemez. Bütün dosyaları ben yazar, depoya gönderirim.
@@ -14,7 +15,43 @@ Görünen ad "Vahşi Topraklar", slug/EAS projesi aynı (taslarpro), yatay ekran
 - Test edilmemiş bir özelliği çalışıyor diye sunma. Görüntü ve ses ancak Murat Expo Go'da denediğinde doğrulanır.
 - Murat'a belge verirken Claude Docs kullanma (VoiceOver ile erişilebilirliği kötü dedi); sade, başlıklı, tablo başlıklı HTML sayfası yap.
 
-## Vahşi Topraklar
+## Vahşi Yaşam (brif Aşama 1-3 yapıldı: teknik temel, saha prototipi, ilk hayvan ve gözlem döngüsü)
+- Dosyalar: `oyun/veri.js` (arazi: YARICAP 200, ISTASYON merkezde, GOLET (48,38), nehir y=nehirY(x)=-100+8sin(x/35) yarı genişlik 4,
+  GECITLER x=-60 ve 70 (yalnız buradan geçilir), KAYALIK (-115,45), MAGARA, YERLER 10 nokta; DAVRANISLAR 24; TURLER 14: aslan leopar sirtlan
+  fil zurafa zebra ceylan domuz suAygiri timsah gergedan kartal piton manda (kisa kimlik öneki, ses, sekil, aktif gunduz/gece/karma,
+  kacis m, tehlikeli, yirtici+avlar, habitat, grup boyu); KISILIKLER 4; EKIPMAN menzilleri), `oyun/mantik.js` (saf mantık), `oyun/sahne.js`
+  (savan, nehir şeridi, gölet, kayalık, mağara ağzı, istasyon binaları, arazi aracı, 13 hayvan biçimi, yavru/genç ölçeği, gün-gece ışığı,
+  ölü hayvan leş durdukça yatık), `App.js`. `ses.js`, `efekt.js`, `gezgin.js` öncekinden aynen.
+- Her şey araştırmacı nesnesinde (k) kalıcı: dk (oyun dakikası), oyuncu, arac, aracta, hayvanlar, gruplar, lesler, sayac, arsiv
+  {turler, bireyler, fotolar, sesler, olaylar}, itibar. Kayıt AsyncStorage 'vahsi-yasam-kayit-v1' (~50 KB), ayar 'vahsi-yasam-ayar-v1'.
+  Otomatik kayıt 20 sn'de bir, önemli olaylarda ~1 sn içinde, panel açılınca ve uygulama arka plana geçince.
+- Zaman (karar 10/44): yalnız oyun açıkken akar; gerçek 1 sn = 30 oyun saniyesi, gün 48 dk (ÖNERİ, Murat onaylamadı). Panel açıkken durur.
+  Evreler şafak 5:30, gündüz 7, akşam 18, gece 20. Dürbün menzili gündüz 70, şafak/akşam 50, gece 22 m (gece dürbünü Aşama 4'te).
+- Hayvanlar: grup (sürü) planı + birey. Plan: otla, gez, dinlen, uyu, su (susuzluk), camur, av (yırtıcı açlığı), beslen, les (sırtlan),
+  suda/gunes/pusu (su aygırı, timsah), tunemis/suzuluyor/balikAvi (kartal), bekle (piton). Birey alt davranışı: emzirme, oyun, tımar.
+  Av: ava sinsice yaklaş, 24 m'de kovala, 13 sn'de yakalayamazsa vazgeç; timsah su içen ava pusudan. Ölünce leş (2 gün). Her gün doğum
+  şansı; grup en az boyunun altına düşerse göç. Bot testi 10 günde nüfus dengede.
+- Bireysel kimlik (karar 37/55): oyuncu isim vermez; 6 sn gözlenen birey kimlik numarası alır (FIL-01, konuşmada "Fil 1").
+  Cinsiyet, evre, kişilik, anne, grup, alışma (0-1; sakin uzaktan izlenince artar, ürkütünce azalır, kaçış mesafesini %60'a kadar kısaltır).
+- Oyuncuya tepki: kaçış mesafesi = tür × kişilik × (1-0,6 alışma) × araçta 0,45 (hızlıysa 0,85) × gece 0,8. Tehlikeli türler (aslan, fil,
+  su aygırı, timsah, gergedan, manda) yayaya önce uyarır, 3,5 sn sonra sahte saldırı (oyuncu geri sıçrar, itibar -2, 25 sn sakin).
+  Otomatik yürüyüş tehlikeli hayvanların çevresinden dolaşır (tehlikedenKacan). Timsahlar ürkünce suya dalar.
+- Eylemler: Gözlemle (sıradaki görünen hayvan), Yaklaş (kaçış+5 m'de durur), Fotoğraf (kalite: uzaklık, davranış, nadirlik, gece),
+  Ses kaydı (6 sn; yakındaki 3 türü seslendirir; tür, yön, mesafe, ses türü), Etrafı tara (sürüleri tek cümlede), Neredeyim, Yerler
+  (yol bulma nehir geçitlerinden), Arşiv (Türler/Bireyler/Fotoğraflar/Sesler/Günlük, tür ve birey sayfaları birbirine bağlı). Araç: 6,5 m
+  içindeyken Araca bin; Yerler araçla sürülür. İki parmak çift dokunuş = Fotoğraf çek.
+- İtibar (sayılar oyuncuya söylenmez): yeni tür 8, birey 2, davranış 2 (nadir 6), nadir davranışın iyi fotoğrafı 5, tanıklık 4-6, ilk ses 3.
+- Sesler: mevcut ElevenLabs sesleri (aslan, leopar, sirtlan, timsah, gergedan, domuz, kartal, yilan) + bu oturumda üretilenler (fil,
+  zebra, suaygiri, manda, ceylan, zurafa; akış "Vahşi Yaşam sesleri"). Ortam: savan; nehir ve sulak alanda ortam_bataklik.
+  Ayak sesi her 1,5 m; foto 'etkinles', gözlem seçilince hayvan yönünden sonar.
+- Testler: `bun araclar/oyun-testi.js [gün]` (bot gözlemler, yürür, kaydı yükler; nüfus raporu).
+  Tarayıcı: `bash araclar/web-deneme/yap.sh /tmp/claude-0/web && NODE_PATH=/opt/npm-tools/node_modules node araclar/web-deneme/dene.cjs /tmp/claude-0/web /tmp/claude-0/ekran`
+  (three r166 /tmp/claude-0/three/build/three.module.js, nasıl alınacağı aşağıda İki Sancak'ta).
+- Sıradaki aşamalar (brif bölüm 6): Aşama 4 araştırma merkezi (ekipman: gece dürbünü, GPS tasma, kamera tuzağı; personel; bütçe),
+  Aşama 5 ekosistem (bitki/su/iklim, hastalık, göç, yaşlanma), Aşama 6 100+ tür, mağara içi, afetler, koruma projeleri,
+  Aşama 7 uçtan uca erişilebilirlik testleri. Hiçbiri Murat'a sorulmadan başlanmadı.
+
+## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)
 - Dosyalar: `oyun/veri.js` (HARITALAR 5, HAYVANLAR 20 (her haritada 3 tür + lider), SILAHLAR 11, ZIRHLAR, YETENEKLER 4, IKSIR),
   `oyun/mantik.js` (saf mantık: avcı, hesapla, gerekenXp 60×sv^1.7, hayvanStat, hasar, dunyaOlustur(k, haritaId), guncelle,
   tüccar satinAl, kampaDon, patronaGit, yön tarifleri), `oyun/sahne.js` (expo-gl + three: hayvan biçimleri dortayak/ayi/kedi/gergedan/

@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Vahşi Topraklar",
+    "name": "Vahşi Yaşam",
     "slug": "taslarpro",
     "owner": "murat5561",
     "version": "1.0.0",
@@ -10,7 +10,7 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#14161b"
+      "backgroundColor": "#15171a"
     },
     "ios": {
       "supportsTablet": true,
