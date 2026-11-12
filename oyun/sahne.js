@@ -384,6 +384,38 @@ export function sahneKur(gl, d) {
   const isik = parca(ist, new THREE.SphereGeometry(0.2, 6, 4), '#fff3c0', -2, 2.3, R(-5.5));
   sahne.add(ist);
 
+  // Sonradan kurulan tesisler (karar 80: merkez görsel olarak büyür) ve kamera tuzakları
+  const tesisModelleri = new Map();
+  const tesisModeli = (id) => {
+    const g = new THREE.Group();
+    if (id === 'konaklama') {
+      parca(g, new THREE.BoxGeometry(5, 2.6, 3.2), '#d8cfb8', 10, 1.3, R(-9));
+      parca(g, new THREE.BoxGeometry(5.4, 0.25, 3.6), '#6a4a30', 10, 2.7, R(-9));
+    } else if (id === 'kule') {
+      [-1, 1].forEach((sx) => [-1, 1].forEach((sz) => parca(g, new THREE.CylinderGeometry(0.12, 0.12, 7, 5), '#7a5a3a', -10 + sx, 3.5, R(-8) + sz)));
+      parca(g, new THREE.BoxGeometry(2.8, 0.2, 2.8), '#8a6a44', -10, 7, R(-8));
+      parca(g, new THREE.ConeGeometry(2.2, 1.2, 4), '#6a4a30', -10, 8.2, R(-8), 0, Math.PI / 4, 0);
+    } else if (id === 'gelismisLab') {
+      parca(g, new THREE.BoxGeometry(3.6, 2.4, 3.6), '#eef0ea', -11.5, 1.2, R(5));
+      parca(g, new THREE.CylinderGeometry(0.5, 0.5, 0.1, 10), '#9ab0c0', -11.5, 2.45, R(5), Math.PI / 2.5, 0, 0); // çanak anten
+    } else if (id === 'klinik') {
+      parca(g, new THREE.BoxGeometry(4, 2.6, 3.2), '#f2f2ee', 10, 1.3, R(8));
+      parca(g, new THREE.BoxGeometry(0.9, 0.25, 0.05), '#c83a3a', 10, 2.0, R(8) + 1.62);
+      parca(g, new THREE.BoxGeometry(0.25, 0.9, 0.05), '#c83a3a', 10, 2.0, R(8) + 1.62);
+    }
+    sahne.add(g);
+    return g;
+  };
+  const tuzakModelleri = new Map();
+  const tuzakModeli = (t) => {
+    const g = new THREE.Group();
+    parca(g, new THREE.CylinderGeometry(0.05, 0.05, 1.1, 5), '#5a4a38', 0, 0.55, 0);
+    parca(g, new THREE.BoxGeometry(0.22, 0.3, 0.14), '#3f4a30', 0, 1.0, 0);
+    g.position.set(t.x, 0, R(t.y));
+    sahne.add(g);
+    return g;
+  };
+
   // Araç ve araştırmacı
   const arac = aracModeli();
   sahne.add(arac);
@@ -511,6 +543,19 @@ export function sahneKur(gl, d) {
         halka.rotation.z = saat;
       }
       golet.material.color.setHSL(0.52, 0.28, 0.2 + l * 0.22);
+      (k.tesisler || []).forEach((id) => {
+        if (!tesisModelleri.has(id)) tesisModelleri.set(id, tesisModeli(id));
+      });
+      const tuzakIdler = new Set((k.tuzaklar || []).map((t) => t.id));
+      (k.tuzaklar || []).forEach((t) => {
+        if (!tuzakModelleri.has(t.id)) tuzakModelleri.set(t.id, tuzakModeli(t));
+      });
+      tuzakModelleri.forEach((m, id) => {
+        if (!tuzakIdler.has(id)) {
+          sahne.remove(m);
+          tuzakModelleri.delete(id);
+        }
+      });
       ciz.render(sahne, kamera);
       if (gl.endFrameEXP) gl.endFrameEXP();
     },

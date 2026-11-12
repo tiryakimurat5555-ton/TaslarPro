@@ -17,12 +17,16 @@ KAYIP OKYANUS DENETİMİ (12 Kasım, Murat "isterim" dedi): VoiceOver kipi dış
 tam, ölü bölge 0,12), dokun = gözlenen hayvanın tarifi ya da Etrafı tara (+ rota), uzun bas = durum + alet, çift dokun = aletin kullanımı,
 iki parmak sağa/sola kaydır = alet değiştir (ALETLER: Dürbün = gozlemBaslat, Fotoğraf makinesi, Ses kayıt cihazı, Yaklaşma),
 iki parmak yukarı = araca bin/in (uzaksa araca yürü), aşağı = dur + gözlemi bitir, iki parmak dokun = sus, iki parmak çift dokun = menü.
-Sahadayken App `sahada` true olur ve Gezgin kapanır (iki dokunma katmanı çakışmasın; Kayıp Okyanus'ta da tek katman). Menü/panellerde
-Gezgin VoiceOver gibi çalışır; iki parmak çift dokunuş (sihirli eylem) bir önceki sayfaya döner (menüde sahaya). Menüye Etrafı tara,
-Araca bin/in/git, Dur ve gözlemi bitir, Alet değiştir eklendi. Ekranda yalnız durum kutusu, altyazı ve hareket ipucu yazısı görünür.
+MENÜLER (12 Kasım, Murat "menü yapısını Kayıp Okyanus'a bakarak düzenle" dedi): Gezgin kaldırıldı. `oyun/SesliListe.js` Kayıp
+Okyanus'un SesliListe'sinin uyarlaması: sağa/sola kaydır = satır, dokun = oku, çift dokun = seç, uzun bas = ipucuyla yeniden oku,
+iki parmak dokun = sus, iki parmak çift dokun = geri; görerek kipte dokunmak seçer; VoiceOver kipinde Pressable satırlar (VoiceListe).
+`Liste` kipine göre seçer. useMenuYigini (yol + düzey başına odak), altMenu(id, etiket, ac, ipucu), sayfali(anahtar, ogeler, menu, 12),
+her listenin sonunda Geri. App'te menuIcerigi(id): ana, cevre, yerler, alet, saha, merkez, mesajlar, gorevler, teklif-<id>, arastirmalar,
+ekipman, tesisler, personel, arsiv, turler, tur-<tur>, bireyler, birey-<id>, fotolar, sesler, gunluk, ayarlar, yardim, oy-<konu>.
+Ana menü, kip seçimi ve ad seçimi de Liste. Menü açıkken dünya durur.
 VoiceOver kipinde eski düğmeli dikey düzen kalır. Tarayıcıda hareket denemesi: `araclar/web-deneme/jest-dene.cjs` (window.__parmak
 parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa içinde olay gönderir, başsız tarayıcı yavaş).
-`dene.cjs` düğmeli düzene göreydi (görerek kip artık hareketli; VoiceOver kipini denemek için uyarlanmalı).
+`dene.cjs` eski düğmeli düzene göreydi (artık geçersiz); denemeler jest-dene.cjs ile.
 
 ## Murat ile çalışma
 - Murat'ın yalnızca iPhone'u var; kodu elle düzenleyemez. Bütün dosyaları ben yazar, depoya gönderirim.
@@ -70,8 +74,14 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
 - Testler: `bun araclar/oyun-testi.js [gün]` (bot gözlemler, yürür, kaydı yükler; nüfus raporu).
   Tarayıcı: `bash araclar/web-deneme/yap.sh /tmp/claude-0/web && NODE_PATH=/opt/npm-tools/node_modules node araclar/web-deneme/dene.cjs /tmp/claude-0/web /tmp/claude-0/ekran`
   (three r166 /tmp/claude-0/three/build/three.module.js, nasıl alınacağı aşağıda İki Sancak'ta).
-- Sıradaki aşamalar (brif bölüm 6): Aşama 4 araştırma merkezi (ekipman: gece dürbünü, GPS tasma, kamera tuzağı; personel; bütçe),
-  Aşama 5 ekosistem (bitki/su/iklim, hastalık, göç, yaşlanma), Aşama 6 100+ tür, mağara içi, afetler, koruma projeleri,
+- Aşama 4 araştırma merkezi (12 Kasım, `oyun/merkez.js`, saf; sayılar ÖNERİ, Murat onaylamadı): başlangıç bütçesi 15.000 lira,
+  günlük gider 300 + maaş + tesis bakımı, günlük destek itibar/10 × 100 (en çok 2.500). EKIPMANLAR geceDurbunu 6000, teleobjektif 5000,
+  parabolik 4000, termal 12000, tuzak 2500/adet, tasma 4000/adet (itibar ve araştırma koşulları). TESISLER konaklama, kule (istasyondan
+  150 m tarama), gelismisLab, klinik. PERSONEL sahaArastirmacisi, biyolog, fotografci, teknisyen, veteriner (GPS tasmayı o takar).
+  ARASTIRMALAR 9 (ilerleme → analiz 8 oyun saati → itibar, fon, ekipman açılır). Kurum teklifleri (en çok 3). Kamera tuzakları 15 m'de
+  20 oyun dakikasında bir fotoğraf; GPS'li hayvanlar Yerler'de. Mesajlar (k.mesajlar, son 60). Mz.guncelle(d) her karede.
+  Sahnede tesis ve tuzak modelleri. Bot testi merkez işlerini de yapar. Tarayıcı denemesi jest-dene.cjs menülerde sağa kaydırarak gezer.
+- Sıradaki aşamalar (brif bölüm 6): Aşama 5 ekosistem (bitki/su/iklim, hastalık, göç, yaşlanma), Aşama 6 100+ tür, mağara içi, afetler, koruma projeleri,
   Aşama 7 uçtan uca erişilebilirlik testleri. Hiçbiri Murat'a sorulmadan başlanmadı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

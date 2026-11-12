@@ -269,9 +269,34 @@ function yanitlayiciOlaylari(p) {
   };
 }
 
+// onLayout: üst öğeye göre konum ve boyut (React Native gibi)
+function useYerlesim(p) {
+  const ic = React.useRef(null);
+  const son = React.useRef('');
+  React.useLayoutEffect(() => {
+    if (!p.onLayout || !ic.current) return;
+    const e = ic.current;
+    const ust = e.parentElement;
+    const r = e.getBoundingClientRect();
+    const ur = ust ? ust.getBoundingClientRect() : { left: 0, top: 0 };
+    const y = r.top - ur.top + (ust ? ust.scrollTop : 0);
+    const anahtar = [r.left - ur.left, y, r.width, r.height].join(',');
+    if (anahtar === son.current) return;
+    son.current = anahtar;
+    p.onLayout({ nativeEvent: { layout: { x: r.left - ur.left, y, width: r.width, height: r.height } } });
+  });
+  return ic;
+}
+
 const View = React.forwardRef(function View(p, ref) {
+  const ic = useYerlesim(p);
+  const bagla = (n) => {
+    ic.current = n;
+    if (typeof ref === 'function') ref(n);
+    else if (ref) ref.current = n;
+  };
   return (
-    <div ref={ref} style={{ ...css(p.style, true), ...dokunma(p) }} {...erisim(p)} {...panOlaylari(p)} {...yanitlayiciOlaylari(p)}>
+    <div ref={bagla} style={{ ...css(p.style, true), ...dokunma(p) }} {...erisim(p)} {...panOlaylari(p)} {...yanitlayiciOlaylari(p)}>
       {p.children}
     </div>
   );

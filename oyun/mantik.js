@@ -88,7 +88,16 @@ export function isikDuzeyi(dk) {
 }
 export const zamanSozu = (dk) => `${gunNo(dk)}. gün, saat ${saatMetni(dk)}, ${EVRE_ADI[gunEvresi(dk)]}`;
 export const geceMi = (dk) => gunEvresi(dk) === 'gece';
-export const durbunMenzili = (dk) => (geceMi(dk) ? EKIPMAN.durbunGece : gunEvresi(dk) === 'gunduz' ? EKIPMAN.durbunGunduz : 50);
+// Dürbün menzili gün evresine ve ekipmana göre (gece görüş dürbünü, termal kamera; Aşama 4)
+export function durbunMenzili(dk, k) {
+  const e = (k && k.ekipman) || {};
+  if (geceMi(dk)) return e.termal ? 70 : e.geceDurbunu ? 55 : EKIPMAN.durbunGece;
+  if (gunEvresi(dk) === 'gunduz') return EKIPMAN.durbunGunduz;
+  return e.geceDurbunu || e.termal ? 65 : 50;
+}
+export const kameraMenzili = (k) => (k && k.ekipman && k.ekipman.teleobjektif ? 80 : EKIPMAN.kamera);
+export const sesKayitMenzili = (k) => (k && k.ekipman && k.ekipman.parabolik ? 100 : EKIPMAN.sesKayit);
+export const personelVar = (k, rol) => !!(k && k.personel && k.personel.some((p) => p.rol === rol));
 
 // ---------- Arazi ----------
 export const nehirdeMi = (x, y) => Math.abs(y - nehirY(x)) < NEHIR_YARI;
@@ -138,6 +147,18 @@ export function arastirmaciOlustur(ad) {
     lesler: [],
     sonrakiId: 1,
     egitim: 0,
+    // Aşama 4: araştırma merkezi
+    butce: 15000,
+    ekipman: {},
+    stok: { tuzak: 0, tasma: 0 },
+    tesisler: [],
+    personel: [],
+    arastirmalar: {},
+    teklifler: [],
+    mesajlar: [],
+    tuzaklar: [],
+    gpsli: [],
+    merkezGun: 0,
   };
 }
 
@@ -320,7 +341,7 @@ export function dunyaOlustur(k) {
   return d;
 }
 
-function olay(d, tur, metin, oncelik = 1, ek = {}) {
+export function olay(d, tur, metin, oncelik = 1, ek = {}) {
   d.olaylar.push({ tur, metin, oncelik, zaman: d.zaman, ...ek });
 }
 export function olaylariAl(d) {
@@ -337,7 +358,7 @@ export function bireyAdi(b) {
   if (taninmisMi(b)) return `${SOZ[b.tur]} ${b.no}`;
   return `tanımlanmamış ${kucuk(SOZ[b.tur])}${b.evre === 'yavru' ? ' yavrusu' : ''}`;
 }
-const BuyukHarf = (s) => s.charAt(0).toLocaleUpperCase('tr-TR') + s.slice(1);
+export const BuyukHarf = (s) => s.charAt(0).toLocaleUpperCase('tr-TR') + s.slice(1);
 export function bireyKunye(d, b) {
   const t = TURLER[b.tur];
   const grup = d.k.gruplar.find((g) => g.id === b.grup);
@@ -589,7 +610,7 @@ function hayvanOldu(d, b, neden, avci) {
   d.k.lesler.push(les);
   // Tanık olduysan arşive
   const kayitli = d.k.arsiv.bireyler[b.id];
-  if (mesafe(d.oyuncu, b) <= durbunMenzili(d.k.dk)) {
+  if (mesafe(d.oyuncu, b) <= durbunMenzili(d.k.dk, d.k)) {
     const metin = avciMetni(b, avci);
     arsivOlay(d, metin);
     olay(d, 'tanik', `${metin} ${BuyukHarf(yerTarifi(d.oyuncu, b))}.`, 4, { id: b.id });
@@ -660,7 +681,7 @@ function avGuncelle(d, g, uyelerListe, dt) {
       g.av.avciId = avci.id;
       const avGrup = k.gruplar.find((x) => x.id === av.grup);
       if (avGrup) grupAlarm(d, avGrup, avci, 9, 1.1);
-      if (mesafe(d.oyuncu, avci) <= durbunMenzili(k.dk)) {
+      if (mesafe(d.oyuncu, avci) <= durbunMenzili(k.dk, k)) {
         olay(d, 'avBasladi', `Dikkat! ${taninmisMi(avci) ? bireyAdi(avci) : 'Bir ' + kucuk(SOZ[avci.tur])} avını kovalamaya başladı, ${yerTarifi(d.oyuncu, avci)}.`, 3, { id: avci.id });
       }
     }
@@ -693,7 +714,7 @@ function avGuncelle(d, g, uyelerListe, dt) {
     g.planBitis = k.dk + arasi(d.rng, 30, 60);
     g.x = avci.x;
     g.y = avci.y;
-    if (mesafe(d.oyuncu, avci) <= durbunMenzili(k.dk)) olay(d, 'avBitti', `${taninmisMi(avci) ? bireyAdi(avci) : BuyukHarf(kucuk(SOZ[avci.tur]))} avını kaçırdı.`, 2, { id: avci.id });
+    if (mesafe(d.oyuncu, avci) <= durbunMenzili(k.dk, k)) olay(d, 'avBitti', `${taninmisMi(avci) ? bireyAdi(avci) : BuyukHarf(kucuk(SOZ[avci.tur]))} avını kaçırdı.`, 2, { id: avci.id });
   }
 }
 
@@ -727,7 +748,7 @@ function gunlukDogumlar(d) {
     d.hayvanMap.set(y.id, y);
     anne.alt = 'dogum';
     anne.altBitis = k.dk + 240;
-    if (mesafe(d.oyuncu, anne) <= durbunMenzili(k.dk)) {
+    if (mesafe(d.oyuncu, anne) <= durbunMenzili(k.dk, k)) {
       olay(d, 'tanik', `Bir doğuma tanık oldun! ${taninmisMi(anne) ? bireyAdi(anne) : 'Bir ' + kucuk(SOZ[g.tur])} yavruladı, ${yerTarifi(d.oyuncu, anne)}.`, 4, { id: anne.id });
       arsivOlay(d, `${taninmisMi(anne) ? bireyAdi(anne) : 'Bir ' + kucuk(SOZ[g.tur])} yavruladı.`);
       itibarEkle(d, 6);
@@ -917,12 +938,12 @@ function bireyGuncelle(d, b, g, dt) {
       } else if (!(t.tehlikeli && t.yirtici && b.kisilik === 'cesur')) {
         grupAlarm(d, g, d.oyuncu, arasi(d.rng, 5, 8));
         b.alisma = Math.max(0, b.alisma - 0.04);
-        if (d.zaman - d.sonUyari > 20 && mo < durbunMenzili(k.dk)) {
+        if (d.zaman - d.sonUyari > 20 && mo < durbunMenzili(k.dk, k)) {
           d.sonUyari = d.zaman;
           olay(d, 'urktu', `${grupAdi(d, g, b)} seni fark edip uzaklaştı. Daha uzaktan izlemelisin.`, 2, { id: b.id });
         }
       }
-    } else if (mo >= kac && !d.oyuncuHareketli && mo < durbunMenzili(k.dk)) {
+    } else if (mo >= kac && !d.oyuncuHareketli && mo < durbunMenzili(k.dk, k)) {
       // Sakin ve uzaktan izlenmeye alışır (karar 19)
       b.alisma = Math.min(1, b.alisma + dt * 0.0015 * KISILIKLER[b.kisilik].alisma * (d.gozlemId === b.id ? 2 : 1));
     }
@@ -992,17 +1013,25 @@ function tehditGoster(d, b) {
   }
 }
 
+// ---------- Mesajlar (karar 82: teklif, sonuç ve bildirimler tek ekranda) ----------
+export function mesajEkle(k, metin, tur = 'bilgi', ek = {}) {
+  if (!Array.isArray(k.mesajlar)) k.mesajlar = [];
+  k.mesajlar.unshift({ id: k.sonrakiId++, dk: k.dk, metin, tur, okundu: false, ...ek });
+  if (k.mesajlar.length > 60) k.mesajlar.length = 60;
+  k.yeniMesaj = true;
+}
+
 // ---------- Arşiv ve itibar ----------
-function itibarEkle(d, n) {
+export function itibarEkle(d, n) {
   if (!n) return;
   d.k.itibar = Math.max(0, d.k.itibar + n);
 }
-function arsivOlay(d, metin) {
+export function arsivOlay(d, metin) {
   const l = d.k.arsiv.olaylar;
   l.unshift({ metin, dk: d.k.dk, bolge: bolgeAdi(d.oyuncu.x, d.oyuncu.y) });
   if (l.length > 150) l.length = 150;
 }
-function turKaydi(d, tur) {
+export function turKaydi(d, tur) {
   const a = d.k.arsiv.turler;
   if (!a[tur]) {
     a[tur] = { ilkDk: d.k.dk, gozlemSn: 0, davranislar: [], sesKaydi: false, ilkBolge: bolgeAdi(d.oyuncu.x, d.oyuncu.y) };
@@ -1015,7 +1044,7 @@ function turKaydi(d, tur) {
 
 // ---------- Gözlem (karar 11, 45, 58) ----------
 export function gorunurler(d, menzil) {
-  const m = menzil ?? durbunMenzili(d.k.dk);
+  const m = menzil ?? durbunMenzili(d.k.dk, d.k);
   return d.k.hayvanlar
     .filter((b) => gozlenebilirMi(b))
     .map((b) => ({ b, m: mesafe(d.oyuncu, b) }))
@@ -1036,7 +1065,7 @@ export function gozlemBaslat(d, id) {
     const liste = gorunurler(d);
     if (!liste.length) {
       d.gozlemId = null;
-      olay(d, 'gozlemYok', `Dürbünle görebileceğin ${durbunMenzili(d.k.dk)} metre içinde hayvan yok.${geceMi(d.k.dk) ? ' Gece görüş kısa.' : ''} Seslere kulak ver ya da Etrafı tara.`, 3);
+      olay(d, 'gozlemYok', `Dürbünle görebileceğin ${durbunMenzili(d.k.dk, d.k)} metre içinde hayvan yok.${geceMi(d.k.dk) ? ' Gece görüş kısa.' : ''} Seslere kulak ver ya da Etrafı tara.`, 3);
       return null;
     }
     const i = liste.findIndex((x) => x.b.id === d.gozlemId);
@@ -1060,7 +1089,7 @@ function gozlemGuncelle(d, dt) {
   const b = gozlenen(d);
   if (!d.gozlemId) return;
   const k = d.k;
-  const menzil = durbunMenzili(k.dk);
+  const menzil = durbunMenzili(k.dk, k);
   if (!b || mesafe(d.oyuncu, b) > menzil + 5) {
     const ad = b ? BuyukHarf(bireyAdi(b)) : 'Hayvan';
     if (!d.yaklasId) {
@@ -1133,7 +1162,7 @@ export function fotografCek(d) {
   const k = d.k;
   if (d.zaman - d.sonFoto < 1.2) return;
   let b = gozlenen(d);
-  const menzil = Math.min(EKIPMAN.kamera, durbunMenzili(k.dk) + 4);
+  const menzil = Math.min(kameraMenzili(k), durbunMenzili(k.dk, k) + 4);
   if (!b || mesafe(d.oyuncu, b) > menzil) {
     const l = gorunurler(d, menzil);
     if (!l.length) {
@@ -1152,8 +1181,10 @@ export function fotografCek(d) {
   let puan = 1 - m / menzil;
   if (b.davranis === 'kaciyor' || b.davranis === 'kovaliyor') puan -= 0.35;
   if (dv.nadir) puan += 0.3;
-  if (geceMi(k.dk)) puan -= 0.25;
+  if (geceMi(k.dk)) puan -= k.ekipman && k.ekipman.termal ? 0.08 : 0.25;
   puan += b.alisma * 0.2;
+  if (k.ekipman && k.ekipman.teleobjektif) puan += 0.1;
+  if (personelVar(k, 'fotografci')) puan += 0.12;
   const kalite = puan > 0.75 ? 'çok iyi' : puan > 0.4 ? 'iyi' : puan > 0.1 ? 'orta' : 'bulanık';
   const foto = { id: k.sonrakiId++, bireyId: b.id, kod: taninmisMi(b) ? kod(b) : null, tur: b.tur, davranis: b.davranis, bolge: bolgeAdi(b.x, b.y), dk: k.dk, kalite };
   k.arsiv.fotolar.unshift(foto);
@@ -1166,6 +1197,13 @@ export function fotografCek(d) {
       metin += ' Belgesel değerinde bir kare!';
       arsivOlay(d, `Fotoğraflandı: ${bireyAdi(b)}, ${kucuk(dv.ad)}.`);
     }
+  }
+  // Belgesel değerindeki kareler (nadir davranış, çok iyi) lisanslanır: gelir (karar 25)
+  if (dv.nadir && kalite === 'çok iyi' && typeof k.butce === 'number') {
+    const gelir = personelVar(k, 'fotografci') ? 1600 : 800;
+    k.butce += gelir;
+    mesajEkle(k, `Bir doğa dergisi ${bireyAdi(b)} fotoğrafının yayın hakkını satın aldı: ${gelir} lira.`, 'gelir');
+    metin += ` Bir dergi bu kareyi ${gelir} liraya satın aldı.`;
   }
   // Çok yakından çekim hayvanı rahatsız eder
   if (m < kacisMesafesi(d, b) * 1.15 && !TURLER[b.tur].kus) b.alisma = Math.max(0, b.alisma - 0.03);
@@ -1180,7 +1218,7 @@ export function sesKaydiBaslat(d) {
   }
   d.sesKayit = { bitis: d.zaman + 6, duyulan: [], zorla: new Set() };
   // Yakındaki ses çıkaran hayvanlardan birkaçı kayıt sırasında ses verir
-  const yakin = d.k.hayvanlar.filter((b) => !b.olu && mesafe(b, d.oyuncu) < EKIPMAN.sesKayit).sort((a, b) => mesafe(a, d.oyuncu) - mesafe(b, d.oyuncu));
+  const yakin = d.k.hayvanlar.filter((b) => !b.olu && mesafe(b, d.oyuncu) < sesKayitMenzili(d.k)).sort((a, b) => mesafe(a, d.oyuncu) - mesafe(b, d.oyuncu));
   const turler = new Set();
   let gec = 0.6;
   for (const b of yakin) {
@@ -1198,7 +1236,7 @@ function sesKaydiGuncelle(d, sesOlaylari) {
   if (!s) return;
   for (const o of sesOlaylari) {
     const b = birey(d, o.id);
-    if (b && mesafe(b, d.oyuncu) < EKIPMAN.sesKayit && !s.duyulan.some((x) => x.tur === b.tur)) {
+    if (b && mesafe(b, d.oyuncu) < sesKayitMenzili(d.k) && !s.duyulan.some((x) => x.tur === b.tur)) {
       s.duyulan.push({ id: b.id, tur: b.tur, saat: saatYonu(d.oyuncu, b), m: mesafe(d.oyuncu, b), sesTuru: o.sesTuru });
     }
   }
@@ -1522,7 +1560,7 @@ export function konumOzeti(d) {
 }
 export function etrafiTara(d) {
   const k = d.k;
-  const menzil = durbunMenzili(k.dk);
+  const menzil = durbunMenzili(k.dk, k);
   const liste = gorunurler(d, menzil);
   if (!liste.length) {
     const duyulan = gorunurler(d, 70).filter((x) => x.m > menzil);
@@ -1579,6 +1617,14 @@ export function kayittanYukle(v) {
   const k = { ...arastirmaciOlustur(v.ad), ...v };
   k.arsiv = { turler: {}, bireyler: {}, fotolar: [], sesler: [], olaylar: [], ...(v.arsiv || {}) };
   if (!Array.isArray(k.lesler)) k.lesler = [];
+  const bos = arastirmaciOlustur(v.ad);
+  ['ekipman', 'stok', 'arastirmalar'].forEach((a) => {
+    if (!k[a] || typeof k[a] !== 'object' || Array.isArray(k[a])) k[a] = bos[a];
+  });
+  ['tesisler', 'personel', 'teklifler', 'mesajlar', 'tuzaklar', 'gpsli'].forEach((a) => {
+    if (!Array.isArray(k[a])) k[a] = [];
+  });
+  if (typeof k.butce !== 'number') k.butce = bos.butce;
   if (!Array.isArray(k.gezilen)) k.gezilen = [];
   if (!Array.isArray(k.hayvanlar) || !Array.isArray(k.gruplar)) {
     k.hayvanlar = null;
