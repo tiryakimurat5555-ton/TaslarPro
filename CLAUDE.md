@@ -168,6 +168,15 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   ADIM_DUZEY), mağarada oda değişince 4 yankılı adım. Dönüş: Kayıp Okyanus tik.wav/hedefOnde.wav → donus_tik, hedef_onde (mp3);
   M.donusTikirtisi(d) Kayıp Okyanus algoritması (30° dilim, 0,6 histerezis, ana yön 0,6 düzey, hedef = gözlenen ya da d.rota,
   önüne gelince hedef_onde + Haptics.selectionAsync). Ayar donusTiki (Ses ve konuşma). Yardım "Sahada hareketler" 7. satır.
+- Menü ve koşu sesleri (13 Kasım gece, Murat "menüyü daha efektif hale getir; adım seslerini kara hayvanlarına da uygula, kaçarken
+  koşarken 3B duyalım" dedi). Ana menü 18 → ~11 satır: Sahaya dön, o an yapılabilenler (tel tuzağı, mağara, dur, eğitim), Çevreyi
+  betimle, Görüş alanı, Yerler, Araç, Alet, 'doga' (Doğa: ekosistem, küçük canlı ara, bitkiler, numune, saha ekipmanı), Merkez, Arşiv,
+  'oyun' (Durum, Ayarlar, Nasıl oynanır, Kaydet ve ana menüye dön); giriş yalnız saat ve bölge. SesliListe: tek parmak yukarı kaydır
+  = ilk satır, aşağı = son satır (Geri). Yardım "Menülerde gezinme" 4. satır. Koşu: mantik KOSU_SESI (kosu_toynak zebra/gnu/zürafa,
+  kosu_hafif ceylan/impala/domuz, kosu_agir fil/gergedan/su aygırı/manda, kosu_pati kediler/sırtlan/yaban köpeği/babun), b.kosu
+  (kaçış dalı, kovalayan avcı ve av, sahte saldırı), kosanlar(d, 55) (suda olan su canlısı hariç). App: en yakın 3 koşan, her biri
+  1,85 sn'de bir Efekt.yonlu (KOSU_DUZEY). Sesler ElevenLabs 2 sn loop (pati ilk deneme çok kısık çıktı, prompt_influence 0.8 ile
+  yeniden), sesleri-isle.sh UC_B'de (3B, 10 dosya). Bot 20 dk'da karelerin %6'sında koşu sesi var. jest-dene Doğa alt menüsünden geçer.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

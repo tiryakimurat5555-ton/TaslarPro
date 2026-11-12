@@ -40,6 +40,8 @@ const VARSAYILAN_AYAR = {
   sesAltyazi: false, ortamDuzey: 'orta', otoBetimle: true, donusTiki: true,
 };
 const ORTAM_DUZEY = { dusuk: 0.2, orta: 0.35, yuksek: 0.5 };
+// Hayvan koşu sesleri (3B, uzaklıkla kısılır)
+const KOSU_DUZEY = { kosu_toynak: 0.8, kosu_hafif: 0.7, kosu_agir: 0.95, kosu_pati: 0.65 };
 // Adım sesi düzeyleri zemine göre (su ve çamur doğal olarak daha gür)
 const ADIM_DUZEY = { ot: 0.3, toprak: 0.3, camur: 0.28, su: 0.3, kaya: 0.32, yaprak: 0.3, magara: 0.4 };
 const HASSASIYET = { dusuk: 130, orta: 90, yuksek: 60 }; // tam hız için sürükleme (piksel)
@@ -139,6 +141,7 @@ const YARDIM = [
       'Sağa kaydır: sonraki satır. Sola kaydır: önceki satır. Bir satıra dokun: o satırı okur. Parmağını yavaşça gezdirmek de satırları okur.',
       'Ekranın herhangi bir yerine çift dokun: okunan satırı seçer. Uzun bas: satırı açıklamasıyla yeniden okur.',
       'İki parmakla çift dokun: bir önceki menüye döner; ana menüdeysen sahaya döndürür. Menü açıkken zaman durur.',
+      'Yukarı kaydır: listenin ilk satırına atlar. Aşağı kaydır: son satıra, yani Geri satırına atlar. Ana menü kısadır: sık kullanılanlar üstte; ekosistem, bitkiler, numune ve küçük canlılar Doğa bölümünde; durum, ayarlar, yardım ve kayıt en alttaki bölümde.',
       'VoiceOver ile oynarken menüler VoiceOver düğmeleridir; Z hareketi bir önceki menüye döndürür.',
     ],
   },
@@ -179,11 +182,11 @@ const YARDIM = [
     id: 'ekosistem',
     baslik: 'Mevsimler ve ekosistem',
     satirlar: [
-      'Bir oyun yılı 24 gündür: 10 gün yağışlı mevsim, 14 gün kurak mevsim. Menüdeki Ekosistem raporu mevsimi, havayı, göleti, nehri, otlakları, göçleri ve salgınları anlatır.',
+      'Bir oyun yılı 24 gündür: 10 gün yağışlı mevsim, 14 gün kurak mevsim. Menüde Doğa bölümündeki Ekosistem raporu mevsimi, havayı, göleti, nehri, otlakları, göçleri ve salgınları anlatır.',
       'Yağışlı mevsimde otlar yeşerir, gölet dolar, otçullar doğurur. Kurak mevsimde gölet çekilir, su kirlenir; zebralar ve ceylanlar güneydeki otlaklara göç eder, nehri geçerken timsahlar bekler. Yağmurlarla geri dönerler.',
       'Yağmurda ve sağanakta dürbünle görüş kısalır. Gün başında hava tahmini okunur.',
       'Hayvanlar yaşlanır, yavrular büyür, genç erkekler sürüden ayrılır. Hastalanan ya da yaralanan hayvanlar dürbünde belirti gösterir: topallama, zayıflık, tüy dökülmesi.',
-      'Menüdeki Numune ve veteriner bölümünden su, dışkı ve leş numunesi alırsın; Çevredeki bitkiler bölümünden bitki inceler, yaprak ve tohum numunesi alırsın. Numuneler istasyona dönünce laboratuvarda analiz edilir.',
+      'Menüde Doğa bölümündeki Numune ve veteriner satırından su, dışkı ve leş numunesi alırsın; Çevredeki bitkiler bölümünden bitki inceler, yaprak ve tohum numunesi alırsın. Numuneler istasyona dönünce laboratuvarda analiz edilir.',
       'Veterinerin yaralı ve hasta hayvanları tedavi eder, şarbonlu leşleri yakar. Rehabilitasyon alanı kurulunca ağır yaralı ve yetim hayvanlar bakılıp doğaya geri bırakılır. Sağlıklı hayvana dokunulmaz, vahşi hayvan beslenmez.',
     ],
   },
@@ -712,6 +715,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     let gokSayac = 8;
     let egitimSayac = -5; // giriş konuşması bitsin
     let sesAltyaziSon = 0;
+    const kosuSesi = new Map(); // hayvan kimliği → son koşu sesi zamanı
     let kareSira = 0;
     let kareBirikim = 0;
     let ortamSayac = 3;
@@ -767,6 +771,19 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         if (adimYol > 1.5) {
           adimYol = 0;
           adimCal(M.zeminTuru(d));
+        }
+        // Kaçan, kovalayan ve hamle yapan hayvanların koşu sesleri, hayvanın yönünden ve uzaklığına göre (3B).
+        // En yakın 3 koşan hayvan; her biri ~1,9 sn'de bir (kayıt 2 sn'lik kesintisiz koşu ritmi), hayvan uzaklaştıkça kısılır.
+        if (a.efekt !== false) {
+          const kl = M.kosanlar(d, 55);
+          for (let i = 0; i < Math.min(3, kl.length); i++) {
+            const { b } = kl[i];
+            const son = kosuSesi.get(b.id) || 0;
+            if (simdi - son < 1850) continue;
+            kosuSesi.set(b.id, simdi + Math.random() * 120);
+            Efekt.yonlu(M.KOSU_SESI[b.tur], d.oyuncu, b, KOSU_DUZEY[M.KOSU_SESI[b.tur]], 55);
+          }
+          if (kosuSesi.size > 60) kosuSesi.clear();
         }
         // Dönüş tıkırtısı (Kayıp Okyanus'taki gibi): 30 derecede bir tık, ana yönlerde güçlü; hedef önüne gelince ayrı ses
         if (a.donusTiki !== false && !d.k.magara) {
@@ -1009,23 +1026,14 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     const yardim = yardimListesi(menu, 'o');
     if (yardim) return liste(u, yardim.baslik, yardim.ogeler.slice(0, -1));
     if (u === 'ana') {
-      const ogeler = [
-        { id: 'sahayaDon', etiket: 'Sahaya dön', sec: () => (menuKapat(), 'sessiz') },
-        bilgi('durum', `Durum: ${M.durumOzeti(d)}`),
-        altMenu('cevre', `Görüş alanındaki hayvanlar: ${M.gorunurler(d).length}`, menu.ac),
-        altMenu('yerler', 'Yerler ve yolculuk', menu.ac),
-        { id: 'arac', etiket: k.aracta ? 'Araçtan in' : aracYakin ? 'Araca bin' : `Araca git: ${yerTarifi(k.arac)}`, sec: kapatVe(aracIslemi) },
-        altMenu('alet', `Alet: ${alet.ad}. Değiştir`, menu.ac),
-        altMenu('ekosistem', `Ekosistem: ${E.MEVSIM_ADI[E.takvim(M.gunNo(k.dk)).mevsim]}, ${k.eko.yagmurVar ? 'yağmur yağıyor' : 'hava ' + E.HAVA_ADI[k.eko.hava.tur]}`, menu.ac),
-        altMenu('bitkiler', `Çevredeki bitkiler: ${Mz.cevredekiBitkiler(d).length}`, menu.ac),
-        altMenu('numune', `Numune ve veteriner${k.numuneKutusu.length ? `: kutuda ${k.numuneKutusu.length} numune` : ''}`, menu.ac),
-        { id: 'ara', etiket: 'Küçük canlı ara', ipucu: 'Böcek, kuş, kurbağa, sürüngen ve küçük memelileri arar.', sec: kapatVe(() => K.kucukAra(d)) },
-      ];
-      ogeler.splice(2, 0, { id: 'betimle', etiket: 'Çevreyi betimle', ipucu: 'Işık, hava, zemin, önündeki engel, yakındaki yerler, sesler ve hayvanlar.', sec: () => (Ses.hemen(B.betimle(d, alet.ad)), 'sessiz') });
-      if (Eg.egitimSuruyor(k)) ogeler.splice(1, 0, { id: 'egitim', etiket: Eg.adimMetni(k, kip), ipucu: 'Eğitimin sıradaki adımı.' });
-      if (k.magara) ogeler.splice(1, 0, altMenu('magara', `Mağaradasın: ${MAGARA_ODALARI[k.magara.oda].ad}`, menu.ac));
+      // Kısa ana menü (Murat "menüyü daha efektif hale getir" dedi): sık kullanılanlar üstte, seyrek olanlar iki alt menüde.
+      // O an yapılabilen işler (mağara, tel tuzağı, dur) Sahaya dön'ün hemen altına gelir.
+      const ogeler = [{ id: 'sahayaDon', etiket: 'Sahaya dön', sec: () => (menuKapat(), 'sessiz') }];
+      const tz = K.yakinTuzak(d, 6);
+      if (tz && tz.bulundu) ogeler.push({ id: 'sok', etiket: 'Tel tuzağı sök ve bildir', sec: yap(() => K.tuzakSok(d)) });
+      if (k.magara) ogeler.push(altMenu('magara', `Mağaradasın: ${MAGARA_ODALARI[k.magara.oda].ad}`, menu.ac));
       else if (K.magaraYakin(d))
-        ogeler.splice(1, 0, {
+        ogeler.push({
           id: 'magaraGir',
           etiket: 'Mağaraya gir',
           sec: () => {
@@ -1038,27 +1046,48 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
             return 'sessiz';
           },
         });
-      const tz = K.yakinTuzak(d, 6);
-      if (tz && tz.bulundu) ogeler.splice(1, 0, { id: 'sok', etiket: 'Tel tuzağı sök ve bildir', sec: yap(() => K.tuzakSok(d)) });
       if (d.rota || d.yaklasId || gb) ogeler.push({ id: 'dur', etiket: 'Dur ve gözlemi bitir', sec: kapatVe(durVeBitir) });
+      if (Eg.egitimSuruyor(k)) ogeler.push({ id: 'egitim', etiket: Eg.adimMetni(k, kip), ipucu: 'Eğitimin sıradaki adımı.' });
+      const ok = Mz.okunmamis(k);
+      ogeler.push(
+        { id: 'betimle', etiket: 'Çevreyi betimle', ipucu: 'Işık, hava, zemin, önündeki engel, yakındaki yerler, sesler ve hayvanlar.', sec: () => (Ses.hemen(B.betimle(d, alet.ad)), 'sessiz') },
+        altMenu('cevre', `Görüş alanındaki hayvanlar: ${M.gorunurler(d).length}`, menu.ac),
+        altMenu('yerler', 'Yerler ve yolculuk', menu.ac),
+        { id: 'arac', etiket: k.aracta ? 'Araçtan in' : aracYakin ? 'Araca bin' : `Araca git: ${yerTarifi(k.arac)}`, sec: kapatVe(aracIslemi) },
+        altMenu('alet', `Alet: ${alet.ad}. Değiştir`, menu.ac),
+        altMenu('doga', 'Doğa: ekosistem, bitkiler, numune, küçük canlılar', menu.ac),
+        altMenu('merkez', `Araştırma merkezi${ok ? `: ${ok} okunmamış mesaj` : ''}`, menu.ac),
+        altMenu('arsiv', `Arşiv: ${Object.keys(k.arsiv.turler).length} tür, ${M.taninanBireyler(k).length} birey`, menu.ac),
+        altMenu('oyun', 'Durum, ayarlar, yardım ve kayıt', menu.ac)
+      );
+      return <Liste key="ana" ref={listeRef} disaridanJest={jestli} kip={kip} baslik="Menü" giris={`${M.saatMetni(k.dk)}, ${M.bolgeAdi(d.oyuncu.x, d.oyuncu.y)}.`} ogeler={ogeler} onGeri={geri} {...menu.odak('ana')} />;
+    }
+    if (u === 'doga') {
+      const ogeler = [
+        altMenu('ekosistem', `Ekosistem: ${E.MEVSIM_ADI[E.takvim(M.gunNo(k.dk)).mevsim]}, ${k.eko.yagmurVar ? 'yağmur yağıyor' : 'hava ' + E.HAVA_ADI[k.eko.hava.tur]}`, menu.ac),
+        { id: 'ara', etiket: 'Küçük canlı ara', ipucu: 'Böcek, kuş, kurbağa, sürüngen ve küçük memelileri arar.', sec: kapatVe(() => K.kucukAra(d)) },
+        altMenu('bitkiler', `Çevredeki bitkiler: ${Mz.cevredekiBitkiler(d).length}`, menu.ac),
+        altMenu('numune', `Numune ve veteriner${k.numuneKutusu.length ? `: kutuda ${k.numuneKutusu.length} numune` : ''}`, menu.ac),
+      ];
       const sahaVar = k.stok.tuzak || k.tuzaklar.length || k.stok.tasma || k.gpsli.length;
       if (sahaVar) ogeler.push(altMenu('saha', `Saha ekipmanı: ${k.tuzaklar.length} kamera tuzağı kurulu, ${k.gpsli.length} tasmalı hayvan`, menu.ac));
-      const ok = Mz.okunmamis(k);
-      ogeler.push(altMenu('merkez', `Araştırma merkezi: bütçe ${Mz.liraSozu(k.butce)}${ok ? `, ${ok} okunmamış mesaj` : ''}`, menu.ac));
-      ogeler.push(altMenu('arsiv', `Arşiv: ${Object.keys(k.arsiv.turler).length} / ${TUR_SIRASI.length} tür, ${M.taninanBireyler(k).length} birey`, menu.ac));
-      ogeler.push(altMenu('ayarlar', 'Ayarlar', menu.ac));
-      ogeler.push(altMenu('yardim', 'Nasıl oynanır', menu.ac));
-      ogeler.push({
-        id: 'cik',
-        etiket: 'Kaydet ve ana menüye dön',
-        ikincil: true,
-        sec: () => {
-          kaydet();
-          cikis();
-          return 'sessiz';
+      return liste(u, 'Doğa', ogeler);
+    }
+    if (u === 'oyun') {
+      return liste(u, 'Durum, ayarlar, yardım ve kayıt', [
+        bilgi('durum', `Durum: ${M.durumOzeti(d)}`),
+        altMenu('ayarlar', 'Ayarlar', menu.ac),
+        altMenu('yardim', 'Nasıl oynanır', menu.ac),
+        {
+          id: 'cik',
+          etiket: 'Kaydet ve ana menüye dön',
+          sec: () => {
+            kaydet();
+            cikis();
+            return 'sessiz';
+          },
         },
-      });
-      return <Liste key="ana" ref={listeRef} disaridanJest={jestli} kip={kip} baslik="Menü" giris={`${M.zamanSozu(k.dk)}. ${M.bolgeAdi(d.oyuncu.x, d.oyuncu.y)}. Zaman durdu.`} ogeler={ogeler} onGeri={geri} {...menu.odak('ana')} />;
+      ]);
     }
     if (u === 'cevre') {
       const l = M.gorunurler(d).slice(0, 20);
@@ -1359,7 +1388,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       const tum = [...k.numuneKutusu, ...k.numuneler].map((n) => bilgi('n' + n.id, Mz.numuneMetni(k, n)));
       const s = sayfali('laboratuvar', tum, menu, 10);
       if (s.sayfa) return liste(s.sayfa.anahtar, s.sayfa.baslik, s.sayfa.ogeler);
-      return liste(u, 'Laboratuvar', s.ogeler.length ? s.ogeler : [bilgi('bos', 'Henüz numune yok. Menüdeki Numune ve veteriner bölümünden numune alabilirsin.')], `Aynı anda ${Mz.numuneKapasitesi(k)} numune analiz edilir.`);
+      return liste(u, 'Laboratuvar', s.ogeler.length ? s.ogeler : [bilgi('bos', 'Henüz numune yok. Menüde Doğa, Numune ve veteriner bölümünden numune alabilirsin.')], `Aynı anda ${Mz.numuneKapasitesi(k)} numune analiz edilir.`);
     }
     if (u === 'saglik') {
       const e = k.eko;

@@ -128,6 +128,8 @@ fs.mkdirSync(O, { recursive: true });
   await parmak(1);
   await bekle(800);
   // Aşama 5: ekosistem raporu, bitkiler, numune
+  // Doğa alt menüsü (ana menü kısaltıldı): aşağı kaydırınca son satıra atlamayı da dener
+  await menuSec('Doğa');
   await menuSec('Ekosistem');
   await yaz('8a-ekosistem', true);
   await geri();
@@ -138,6 +140,7 @@ fs.mkdirSync(O, { recursive: true });
   await menuSec('Numune ve veteriner');
   await menuSec('Su numunesi al');
   await yaz('8c-numune', true);
+  await geri();
   await geri();
   await menuSec('Araştırma merkezi');
   await yaz('9-merkez', true);

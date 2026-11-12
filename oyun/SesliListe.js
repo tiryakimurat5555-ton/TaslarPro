@@ -143,6 +143,14 @@ function SesliListeIc({ baslik, giris, ogeler, onGeri, rehberAcik = true, ilkOda
       } else if (yon === 'sol') {
         if (odakRef.current <= 0) kenar();
         else odakla(odakRef.current - 1);
+      } else if (yon === 'yukari') {
+        // Hızlı atlama: ilk satır
+        if (odakRef.current === 0) kenar();
+        else odakla(0);
+      } else if (yon === 'asagi') {
+        // Hızlı atlama: son satır (çoğunlukla Geri)
+        if (odakRef.current === n - 1) kenar();
+        else odakla(n - 1);
       }
     },
     onSurukle: (mod, dx, dy, bilgi) => {

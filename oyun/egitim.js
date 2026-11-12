@@ -44,7 +44,7 @@ export const ADIMLAR = [
   {
     ad: 'Küçük canlı ara',
     hareket: 'Savanda büyük hayvanlardan çok daha fazlası var. İki parmakla sağa kaydırıp Büyüteç ve fenere geç ve çift dokunarak küçük canlı ara.',
-    vo: 'Menüyü açıp Küçük canlı ara satırını seç.',
+    vo: 'Menüyü açıp Doğa bölümünden Küçük canlı ara satırını seç.',
     tamam: (k) => K.kucukSayisi(k) > 0,
   },
   {

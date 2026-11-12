@@ -830,6 +830,8 @@ function avGuncelle(d, g, uyelerListe, dt) {
   g.av.t += dt;
   bireyYuru(d, avci, av.x, av.y, t.hiz, dt);
   avci.davranis = 'kovaliyor';
+  avci.kosu = d.zaman + 0.6;
+  av.kosu = d.zaman + 0.6;
   const m = mesafe(avci, av);
   if (m < 1.6) {
     const les = hayvanOldu(d, av, `avlandı (${kucuk(SOZ[g.tur])})`, avci);
@@ -1501,6 +1503,7 @@ function bireyGuncelle(d, b, g, dt) {
   if (g.alarm > 0 && g.alarmGecikme <= 0 && !(g.plan === 'av' && t.yirtici) && g.kaynak) {
     const a = yonAcisi(g.kaynak, b) + (b.ofs.x * 0.04);
     const hiz = t.hiz * saglikHiz * (b.evre === 'yavru' || b.evre === 'yasli' ? 0.8 : 1) * (t.suCanlisi && nehirdeMi(b.x, b.y) ? 0.6 : 1);
+    b.kosu = d.zaman + 0.6; // koşu sesi için (App)
     if (t.suCanlisi) bireyYuru(d, b, b.x + Math.sin(a) * 6, nehirY(b.x + Math.sin(a) * 6), hiz, dt); // suya dalar
     else bireyYuru(d, b, b.x + Math.sin(a) * 20, b.y + Math.cos(a) * 20, hiz, dt);
   } else if (g.plan === 'av' && g.av && g.av.evre === 'kovala' && g.av.avciId === b.id) {
@@ -1602,6 +1605,7 @@ function tehditGoster(d, b) {
     b.uyardi = d.zaman;
     b.sakin = d.zaman + 25;
     b.tehdit = 2;
+    b.kosu = d.zaman + 1.2;
     const a = yonAcisi(b, d.oyuncu);
     b.x += Math.sin(a) * 4;
     b.y += Math.cos(a) * 4;
@@ -1729,7 +1733,7 @@ function gozlemGuncelle(d, dt) {
   if (b.hastalik && E.belirtiGorunur(b.hastalik) && !b.hastalik.goruldu && g.sn > 2) {
     b.hastalik.goruldu = true;
     gecmisEkle(k, b, `Gözlemde görüldü: ${E.HASTALIKLAR[b.hastalik.id].belirti}`);
-    olay(d, 'belirti', `${BuyukHarf(bireyAdi(b))} ${E.HASTALIKLAR[b.hastalik.id].belirti}. Sağlığı bozuk görünüyor. Menüde Numune ve veteriner bölümünden dışkı numunesi alabilir ya da veteriner çağırabilirsin.`, 3, { id: b.id });
+    olay(d, 'belirti', `${BuyukHarf(bireyAdi(b))} ${E.HASTALIKLAR[b.hastalik.id].belirti}. Sağlığı bozuk görünüyor. Menüde Doğa, Numune ve veteriner bölümünden dışkı numunesi alabilir ya da veteriner çağırabilirsin.`, 3, { id: b.id });
   }
   const ab = k.arsiv.bireyler[b.id];
   if (ab) {
@@ -2528,4 +2532,24 @@ export function donusTikirtisi(d) {
   const yeni = ((s.dilim % 12) + 12) % 12;
   if (kip === 'hedef' && yeni === 0) return { ses: 'hedef_onde', duzey: 0.8 };
   return { ses: 'donus_tik', duzey: kip === 'pusula' && yeni % 3 === 0 ? 0.6 : 0.3 };
+}
+
+// Koşu sesi türü (kaçarken, kovalarken, sahte saldırıda; App 3B çalar): toynak orta boy, hafif toynak, ağır, pati
+export const KOSU_SESI = {
+  zebra: 'kosu_toynak', gnu: 'kosu_toynak', zurafa: 'kosu_toynak',
+  ceylan: 'kosu_hafif', impala: 'kosu_hafif', domuz: 'kosu_hafif',
+  fil: 'kosu_agir', gergedan: 'kosu_agir', suAygiri: 'kosu_agir', manda: 'kosu_agir',
+  aslan: 'kosu_pati', leopar: 'kosu_pati', cita: 'kosu_pati', sirtlan: 'kosu_pati', yabanKopegi: 'kosu_pati', babun: 'kosu_pati',
+};
+// Yakında koşan hayvanlar (en yakın önce): sesleri için
+export function kosanlar(d, menzil = 55) {
+  if (d.k.magara) return [];
+  const l = [];
+  for (const b of d.k.hayvanlar) {
+    if (b.olu || !b.kosu || b.kosu < d.zaman || !KOSU_SESI[b.tur] || b.tuzakta) continue;
+    if (TURLER[b.tur].suCanlisi && nehirdeMi(b.x, b.y)) continue; // suda koşu sesi olmaz
+    const m = mesafe(b, d.oyuncu);
+    if (m <= menzil) l.push({ b, m });
+  }
+  return l.sort((a, b) => a.m - b.m);
 }
