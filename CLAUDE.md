@@ -36,7 +36,7 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
 - Test edilmemiş bir özelliği çalışıyor diye sunma. Görüntü ve ses ancak Murat Expo Go'da denediğinde doğrulanır.
 - Murat'a belge verirken Claude Docs kullanma (VoiceOver ile erişilebilirliği kötü dedi); sade, başlıklı, tablo başlıklı HTML sayfası yap.
 
-## Vahşi Yaşam (brif Aşama 1-5 yapıldı: teknik temel, saha prototipi, gözlem döngüsü, araştırma merkezi, ekosistem)
+## Vahşi Yaşam (brif Aşama 1-6 yapıldı: teknik temel, saha, gözlem, araştırma merkezi, ekosistem, içerik ve ölçekleme)
 - Dosyalar: `oyun/veri.js` (arazi: YARICAP 200, ISTASYON merkezde, GOLET (48,38), nehir y=nehirY(x)=-100+8sin(x/35) yarı genişlik 4,
   GECITLER x=-60 ve 70 (yalnız buradan geçilir), KAYALIK (-115,45), MAGARA, YERLER 10 nokta; DAVRANISLAR 24; TURLER 14: aslan leopar sirtlan
   fil zurafa zebra ceylan domuz suAygiri timsah gergedan kartal piton manda (kisa kimlik öneki, ses, sekil, aktif gunduz/gece/karma,
@@ -106,8 +106,34 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   (30 sn döngü, -24 LUFS; yağarken ortamSec bunu seçer), gok (6 sn; sağanak başında ve 18-48 sn'de bir). sesler.js tablosu assets/efekt
   listesinden üretilir. Test: `bun araclar/ekosistem-testi.js [gün]` (50 gün ~2 dk: nüfus dengede, gölet kurak sonunda 0,1-0,3, göç ve
   dönüş, salgın). Bilerek yapılmayanlar (Aşama 6): yangın, sel, bölgesel hâkimiyet, genetik, mağara, yeni türler.
-- Sıradaki aşamalar (brif bölüm 6): Aşama 6 100+ tür, mağara içi, afetler (yangın, sel, fırtına), koruma projeleri, kaçak avcılık izleri,
-  Aşama 7 uçtan uca erişilebilirlik testleri. Murat "devam" derse sıradaki aşama.
+- Aşama 6 içerik (12 Kasım gece, Murat "devam" dedi; sayılar ÖNERİ). Toplam 124 tür = 19 büyük (TURLER) + 105 küçük.
+  Yeni büyük türler: gnu (göçmen, doğu geçidi), cita (gündüz avcısı, gunduzAvcisi), impala (akasyalık kenarı), yabanKopegi (alacaAvcisi,
+  nadir), babun (galeri ormanı, yeme yiyecekAriyor); sesleri ElevenLabs (3B, UC_B listesinde). Yeni bölgeler: galeri (GALERI: nehrin kuzeyinde
+  x 100-190, 36 m şerit, sık kıyı ağaçları), termit (TERMITLER (-140,-40) r 30; engel tür 'termit', sahnede kızıl koniler); YERLER +2.
+  Eski kayıtlara eksik türlerin grubu dunyaOlustur'da turGrubuKur ile eklenir. Av: yoğunluğa bağlı (bölgede ≤4 kalan türü avlamazlar);
+  kalabalık otçul sürülerinde yağışlı mevsimde birden çok doğum. HASTALIKLAR + distemper (köpek gençlik hastalığı; yaban köpeği, sırtlan,
+  aslan; k.asili aşılananlar). `oyun/kucukler.js`: KUCUKLER 105 (kuş 32, sürüngen 11, amfibi 6, balık 6, böcek 20, örümcek/akrep 5,
+  diğer 4, memeli 21; yer, oda, zaman gunduz/gece/her/alaca, mevsim, sik, yagmur, ses, nadir), MAGARA_ODALARI 5, bulunabilirler().
+  `oyun/kesif.js` (mantik'i ve ekosistemi kullanır; merkez onu çağırır): kucukAra (alet "Büyüteç ve fener", menüde Küçük canlı ara;
+  bölge/saat/mevsim/yağmura göre ağırlıklı, 3,5 sn bekleme, %75 başarı, gece ekipmansız %50; özel anlar: termitlerin çiftleşme uçuşu,
+  yarasaların akşam çıkışı 18:20-19:10), ardından fotoğraf (d.sonKucuk, 25 sn). Mağara: ekipman magaraTakimi (2.500), girişin 14 m'sinde
+  Mağaraya gir; k.magara {oda}; mağarada tek parmak yukarı/aşağı kaydır = ilerle/geri (0. odada çık), dokun = oda tarifi, dürbün/yaklaşma
+  çift dokunuşu = ara; dışarıdaki hayvanlar oyuncuyu yok sayar; sahnede MZ 3000'de ayrı tünel ve fener ışığı; ortam_magara.
+  Kaçak avcılık (k.kacak): günde %30 (devriyeyle ×0,35) yeni tel tuzak (en çok 4), 7 m'de fark edilir, kamera tuzağı yakınındakini
+  bildirir; otçul takılırsa b.tuzakta (kıpırdayamaz, yara), 2 günde ölür; tuzakSok, tuzaktanKurtar (veteriner hemen, yoksa servis ertesi gün).
+  Afetler (ekosistem.js): rüzgâr (hava.ruzgarYon/Hiz); yangın yanginRiski (kurak mevsim 7. gün sonrası kuru ve sıcak, ya da yağışlı
+  ilk günlerde kuru sağanakta yıldırım) → yanginPlan → hücre hücre rüzgâr yönüne yayılır (yanmaz: nehir, gölet, istasyon şeridi),
+  40 dk yanar, yağmur söndürür, yanık alanda ot 1,8 kat hızlı büyür (12 gün). Hayvanlar kaçar, yavaşlar ölebilir, oyuncu uyarılır/geri
+  itilir, kamera tuzakları yanar; ortam_yangin 70 m'de; Ekosistem raporunda Yangın söndürme ekibi (3.000). Sel: nehir > 0,96 ve günlük
+  yağış > 50 mm, mevsimde en çok bir kez, 6-12 saat taşkın: gecitteMi false, yerGit karşı kıyıyı reddeder, nehir kahverengi.
+  Koruma projeleri (merkez KORUMA; k.koruma {projeler, devriye, asi, kampanya}): gergedan, yabanKopegi (aşı), kacakMucadele, akbaba;
+  adımlar tamam(k, p) + eylem (ücretli); devriye günlük 200 lira. 3 yeni araştırma (kucukCanlilar, magaraEkosistemi, yanginEkolojisi).
+  App: ana menüde Mağaraya gir / Mağaradasın, Tel tuzağı sök, Küçük canlı ara; numune menüsünde Tuzaktaki hayvanı kurtar; merkezde
+  Koruma projeleri; arşivde Küçük canlılar (gruplara göre); Yardım "Küçük canlılar, mağara, afetler ve koruma". VoiceOver kipinde
+  mağarada hareket satırı Geri dön / İlerle / Odayı anlat / Mağaradan çık. Sesler: gnu, cita, impala, yabankopegi, babun (3B), yarasa,
+  ortam_magara (-24), ortam_yangin. Kayıt ~100 KB. Ekosistem testi 50 gün ~4,5 dk.
+- Sıradaki: Aşama 7 uçtan uca erişilebilirlik ve kalite testleri (ekran okuyucu, sesli betimleme, kontrol özelleştirme, düşük performanslı
+  cihaz, çevrim dışı dayanıklılık). Murat "devam" derse.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)
 - Dosyalar: `oyun/veri.js` (HARITALAR 5, HAYVANLAR 20 (her haritada 3 tür + lider), SILAHLAR 11, ZIRHLAR, YETENEKLER 4, IKSIR),

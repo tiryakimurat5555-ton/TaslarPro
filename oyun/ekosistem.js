@@ -4,7 +4,7 @@
 // yaşam döngüsü (46, 53) ve mevsimsel göç (43, 111).
 // Hayvanlarla ilgili kısım mantik.js'te bu modülün işlevlerini kullanır; bu modül mantik.js'i içe aktarmaz.
 // Sayılar öneridir; Murat onaylamadı.
-import { YARICAP, GOLET } from './veri.js';
+import { YARICAP, GOLET, ISTASYON, nehirY } from './veri.js';
 
 // ---------- Takvim ----------
 // Oyun yılı 24 gün: 10 gün yağışlı mevsim, 14 gün kurak mevsim (gerçek savanda yağışlı dönem kabaca yılın %40'ı).
@@ -31,12 +31,13 @@ export function hucre(x, y) {
 }
 export const hucreMerkezi = (h) => ({ x: (h % KENAR) * HUCRE - YARICAP + HUCRE / 2, y: Math.floor(h / KENAR) * HUCRE - YARICAP + HUCRE / 2 });
 // Bölgeye göre otlak taşıma kapasitesi
-const OT_KAPASITE = { otlak: 1, agaclik: 0.7, golet: 0.9, nehir: 0.8, sulak: 1, kayalik: 0.35, istasyon: 0.5 };
+const OT_KAPASITE = { otlak: 1, agaclik: 0.7, golet: 0.9, nehir: 0.8, sulak: 1, kayalik: 0.35, istasyon: 0.5, galeri: 0.55, termit: 0.9 };
 
 // Arazi sabittir; kapasiteler her açılışta aynı hesaplanır (kayda girmez)
 export function kapasiteHesapla(bolgeBul, agaclar) {
   const ot = [];
   const yaprak = [];
+  const yanmaz = [];
   const agacSayisi = new Array(KENAR * KENAR).fill(0);
   agaclar.forEach((a) => {
     const h = hucre(a.x, a.y);
@@ -47,12 +48,15 @@ export function kapasiteHesapla(bolgeBul, agaclar) {
     if (Math.hypot(m.x, m.y) > YARICAP + 8) {
       ot.push(0);
       yaprak.push(0);
+      yanmaz[h] = true;
       continue;
     }
     ot.push(OT_KAPASITE[bolgeBul(m.x, m.y)] ?? 0.8);
+    // Yanmaz hücreler: nehir, gölet ve istasyonun çevresindeki yangın kesici şerit
+    yanmaz[h] = Math.abs(m.y - nehirY(m.x)) < 14 || Math.hypot(m.x - GOLET.x, m.y - GOLET.y) < GOLET.r + 8 || Math.hypot(m.x - ISTASYON.x, m.y - ISTASYON.y) < ISTASYON.r + 16;
     yaprak.push(Math.min(1, agacSayisi[h] / 5));
   }
-  return { ot, yaprak };
+  return { ot, yaprak, yanmaz };
 }
 
 // ---------- Ekosistem durumu (k.eko, kayda girer) ----------
@@ -79,6 +83,14 @@ export function ekoOlustur(kap) {
     salgin: null, // {hastalik, basGun, vaka, bilinen}
     teshisler: [], // laboratuvar ya da veteriner teşhisleri {hastalik, tur, gun}
     gecitPusu: null, // göç eden sürü bir geçide yaklaşırken timsahların beklediği x
+    // Aşama 6: afetler (karar 23, 76)
+    yanan: {}, // yanan hücre -> tutuştuğu dakika
+    yanik: {}, // yanmış hücre -> yandığı dakika (yeniden filizlenme)
+    yanginPlan: null, // {dk, h, neden}
+    yanginSayac: 0,
+    yanginlar: 0,
+    taskin: false,
+    taskinBitis: 0,
   };
 }
 
@@ -142,7 +154,10 @@ export function havaUret(eko, gun, rng) {
     }
   }
   const sicaklik = tur === 'sicak' ? 36 : tk.mevsim === 'kurak' ? 31 : tur === 'saganak' || tur === 'yagmurlu' ? 25 : 28;
-  eko.hava = { gun, tur, yagmur, sicaklik };
+  // Rüzgâr: kurak mevsimde çoğunlukla doğudan (alize), yağışlıda değişken
+  const ruzgarYon = tk.mevsim === 'kurak' ? Math.PI / 2 + (rng() - 0.5) * 1.2 : rng() * Math.PI * 2;
+  const ruzgarHiz = tur === 'saganak' ? 2 : tur === 'sicak' || tk.mevsim === 'kurak' ? 1.4 : 1;
+  eko.hava = { gun, tur, yagmur, sicaklik, ruzgarYon, ruzgarHiz };
   return eko.hava;
 }
 // Şu anki yağış şiddeti (0-1)
@@ -213,7 +228,7 @@ export function otYe(eko, x, y, miktar, yaprak = false) {
 
 // ---------- Ekosistemin zaman içindeki değişimi ----------
 // Her karede çağrılır; dtDk oyun dakikası. Dönen olaylar mantik.js'te duyurulur.
-export function ekoAdim(eko, kap, gun, gunDk, dtDk) {
+export function ekoAdim(eko, kap, gun, gunDk, dtDk, rng = Math.random) {
   const olaylar = [];
   const tk = takvim(gun);
   const siddet = yagisSiddeti(eko, gunDk);
@@ -251,7 +266,8 @@ export function ekoAdim(eko, kap, gun, gunDk, dtDk) {
   for (let h = 0; h < eko.ot.length; h++) {
     const kp = kap.ot[h];
     if (!kp) continue;
-    if (buyume > 0) eko.ot[h] = Math.min(kp, eko.ot[h] + buyume * (1 - eko.ot[h] / kp) * 1.4);
+    // Yanmış alanda yağmurla taze sürgünler daha hızlı çıkar (karar 76)
+    if (buyume > 0) eko.ot[h] = Math.min(kp, eko.ot[h] + buyume * (1 - eko.ot[h] / kp) * 1.4 * (eko.yanik && eko.yanik[h] ? 1.8 : 1));
     else eko.ot[h] = Math.max(0, eko.ot[h] + buyume);
     const ky = kap.yaprak[h];
     if (ky) eko.yaprak[h] = Math.min(ky, eko.yaprak[h] + (0.03 + eko.islaklik * 0.05) * gunOrani);
@@ -272,6 +288,18 @@ export function ekoAdim(eko, kap, gun, gunDk, dtDk) {
     olaylar.push('algCogaldi');
   } else if (eko.algUyari && eko.alg < 0.2) eko.algUyari = false;
   goletAyarla(eko);
+  const dkMutlak = (gun - 1) * 1440 + gunDk;
+  yanginAdim(eko, kap, dkMutlak, dtDk, rng, olaylar);
+  // Sel: büyük sağanakta nehir taşar, geçitler birkaç saat geçilmez
+  if (!eko.taskin && eko.nehir > 0.96 && eko.yagisBugun > 50 && !(eko.selSayisi >= 1)) {
+    eko.taskin = true;
+    eko.selSayisi = (eko.selSayisi || 0) + 1;
+    eko.taskinBitis = dkMutlak + 6 * 60 + rng() * 6 * 60;
+    olaylar.push('selBasladi');
+  } else if (eko.taskin && dkMutlak > eko.taskinBitis && !eko.yagmurVar) {
+    eko.taskin = false;
+    olaylar.push('selBitti');
+  }
   return olaylar;
 }
 
@@ -358,14 +386,19 @@ export const HASTALIKLAR = {
     tarif: 'Kirli sudan ve otlardan geçen parazitler. Su azalıp kirlendiğinde artar, hayvanın kondisyonunu düşürür.',
   },
   uyuz: {
-    ad: 'uyuz', etken: 'Sarcoptes scabiei akarı', belirti: 'tüyleri yer yer dökülmüş, sürekli kaşınıyor', tedavi: true, bulasici: true, gunluk: 0.07, iyilesme: 0.04,
-    turler: ['aslan', 'sirtlan', 'leopar', 'ceylan', 'zebra', 'domuz'],
+    ad: 'uyuz', etken: 'Sarcoptes scabiei akarı', belirti: 'tüyleri yer yer dökülmüş, sürekli kaşınıyor', tedavi: true, bulasici: true, gunluk: 0.07, iyilesme: 0.06,
+    turler: ['aslan', 'sirtlan', 'leopar', 'ceylan', 'zebra', 'domuz', 'yabanKopegi', 'babun', 'cita'],
     tarif: 'Deri altına yerleşen akarların yol açtığı bulaşıcı deri hastalığı. Yakın temasla sürü içinde yayılır; tedavi edilmezse hayvanı tüketebilir.',
   },
   sarbon: {
     ad: 'şarbon', etken: 'Bacillus anthracis bakterisi', belirti: 'halsiz ve titriyor, burnundan kan geliyor', tedavi: false, bulasici: true, gunluk: 0.55, iyilesme: 0.02, yavaslatir: 0.5, olumcul: true,
-    turler: ['zebra', 'manda', 'fil', 'zurafa', 'ceylan', 'gergedan', 'suAygiri', 'domuz'],
+    turler: ['zebra', 'manda', 'fil', 'zurafa', 'ceylan', 'gergedan', 'suAygiri', 'domuz', 'gnu', 'impala'],
     tarif: 'Toprakta yıllarca canlı kalan sporlarla bulaşan ölümcül bir bakteri hastalığı. Kurak mevsimde hayvanlar azalan su ve kısa otların çevresinde toplanınca salgın yapar. Leşler sporları yayar; sırtlanlar ve akbabalar büyük ölçüde dayanıklıdır.',
+  },
+  distemper: {
+    ad: 'köpek gençlik hastalığı', etken: 'köpek distemper virüsü (evcil köpeklerden bulaşır)', belirti: 'gözleri ve burnu akıyor, öksürüyor', tedavi: false, bulasici: true, gunluk: 0.1, iyilesme: 0.07,
+    turler: ['yabanKopegi', 'sirtlan', 'aslan'],
+    tarif: 'Evcil köpeklerden yaban köpeklerine, sırtlanlara ve aslanlara bulaşan ölümcül bir virüs hastalığı. Bir yaban köpeği sürüsünü birkaç haftada yok edebilir. Hastalanan hayvan tedavi edilemez; korunmanın yolu aşıdır.',
   },
 };
 // Belirti dürbünle ancak hastalık ilerleyince görülür
@@ -388,6 +421,11 @@ export const YASAM = {
   kartal: { yavru: 1, genc: 5, yasli: 18, omur: 24 },
   piton: { yavru: 2, genc: 4, yasli: 22, omur: 30 },
   manda: { yavru: 2, genc: 5, yasli: 16, omur: 22 },
+  gnu: { yavru: 1, genc: 3, yasli: 15, omur: 20 },
+  cita: { yavru: 1.5, genc: 3, yasli: 9, omur: 13 },
+  impala: { yavru: 0.7, genc: 2, yasli: 10, omur: 13 },
+  yabanKopegi: { yavru: 1, genc: 2, yasli: 8, omur: 11 },
+  babun: { yavru: 1.5, genc: 6, yasli: 20, omur: 28 },
 };
 export const yilGun = (yil) => yil * YIL_GUN;
 export function evreBul(tur, yasGun) {
@@ -426,6 +464,7 @@ export const kondisyonSozu = (v) => (v > 0.7 ? 'iyi' : v > 0.45 ? 'orta' : v > 0
 // Göçmen sürüler kurak mevsimde güneye, haritanın dışındaki sulak otlaklara gider; yağmurlarla döner.
 export const GOCMENLER = {
   zebra: { gecit: 70, cikis: { x: 128, y: -146 }, yon: 'güneydoğu' },
+  gnu: { gecit: 70, cikis: { x: 118, y: -154 }, yon: 'güneydoğu' },
   ceylan: { gecit: -60, cikis: { x: -128, y: -146 }, yon: 'güneybatı' },
 };
 // Göç kararı: kurak mevsimin ortasında otlak ve su azaldıysa
@@ -436,4 +475,95 @@ export function gocGerekli(eko, tk, habitatOt) {
 // Dönüş: yağmurlar başlayıp otlar yeşerince
 export function donusZamani(eko, tk) {
   return tk.mevsim === 'yagisli' && tk.mevsimGunu >= 2 + (eko.yil ? eko.yil.gecikme : 0) && eko.yesil > 0.45;
+}
+
+// ---------- Yangın (karar 23, 76) ----------
+export const yangindaMi = (eko, h) => !!(eko.yanan && eko.yanan[h] !== undefined);
+export const yananHucreler = (eko) => Object.keys(eko.yanan || {}).map(Number);
+export function yanginBaslat(eko, kap, h, dk) {
+  if (h < 0 || kap.yanmaz[h] || yangindaMi(eko, h) || eko.ot[h] < 0.2) return false;
+  eko.yanan[h] = dk;
+  return true;
+}
+function yanginAdim(eko, kap, dk, dtDk, rng, olaylar) {
+  if (!eko.yanan) return;
+  // Planlanan tutuşma (kuru fırtınada yıldırım ya da kurak mevsimin sonunda)
+  if (eko.yanginPlan && dk >= eko.yanginPlan.dk) {
+    const p = eko.yanginPlan;
+    eko.yanginPlan = null;
+    if (yanginBaslat(eko, kap, p.h, dk)) {
+      eko.yanginlar += 1;
+      eko.sonYangin = { h: p.h, neden: p.neden, dk, yanan: 1 };
+      olaylar.push('yanginBasladi');
+    }
+  }
+  const yanan = yananHucreler(eko);
+  if (!yanan.length) return;
+  eko.yanginSayac += dtDk;
+  if (eko.yanginSayac < 8) return;
+  const adim = eko.yanginSayac;
+  eko.yanginSayac = 0;
+  const yag = eko.yagmurVar;
+  const ruzgar = eko.hava ? eko.hava.ruzgarYon : 0;
+  const hizR = eko.hava ? eko.hava.ruzgarHiz : 1;
+  for (const h of yanan) {
+    // Yağmur söndürür
+    if (yag && rng() < 0.6) {
+      delete eko.yanan[h];
+      continue;
+    }
+    const yas = dk - eko.yanan[h];
+    if (yas > 40) {
+      delete eko.yanan[h];
+      eko.ot[h] = 0.02;
+      eko.yaprak[h] = eko.yaprak[h] * 0.6;
+      eko.yanik[h] = dk;
+      if (eko.sonYangin) eko.sonYangin.yanan = (eko.sonYangin.yanan || 0) + 1;
+      continue;
+    }
+    if (yas < 12) continue;
+    const i = h % KENAR;
+    const j = Math.floor(h / KENAR);
+    for (let di = -1; di <= 1; di++)
+      for (let dj = -1; dj <= 1; dj++) {
+        if (!di && !dj) continue;
+        const ni = i + di;
+        const nj = j + dj;
+        if (ni < 0 || nj < 0 || ni >= KENAR || nj >= KENAR) continue;
+        const n = nj * KENAR + ni;
+        if (kap.yanmaz[n] || yangindaMi(eko, n) || (eko.yanik[n] && dk - eko.yanik[n] < 4 * 1440) || eko.ot[n] < 0.25) continue;
+        // Rüzgârın estiği yöne doğru daha hızlı yayılır (yön: rüzgârın geldiği taraf)
+        const a = Math.atan2(di, dj);
+        const ruzgarCarpani = 1 + 0.8 * hizR * Math.cos(a - (ruzgar + Math.PI));
+        const p = 0.2 * eko.ot[n] * Math.max(0.05, 1 - eko.islaklik * 2.5) * Math.max(0.2, ruzgarCarpani) * (adim / 10);
+        if (rng() < p) eko.yanan[n] = dk;
+      }
+  }
+  if (!yananHucreler(eko).length) olaylar.push('yanginBitti');
+}
+// Günlük yangın riski: kurak mevsimin sonunda kuru ot ve sıcakta, ya da yağmurların başında kuru fırtınada yıldırım
+export function yanginRiski(eko, kap, gun, rng) {
+  const tk = takvim(gun);
+  if (eko.yanginPlan || yananHucreler(eko).length) return;
+  let p = 0;
+  let neden = '';
+  if (tk.mevsim === 'kurak' && tk.mevsimGunu >= 7 && eko.islaklik < 0.12) {
+    p = (eko.hava && eko.hava.tur === 'sicak' ? 0.18 : 0.08) * (eko.yil && eko.yil.kuraklik ? 1.6 : 1);
+    neden = 'kuru otlar tutuştu';
+  } else if (tk.mevsim === 'yagisli' && tk.mevsimGunu <= 3 && eko.hava && eko.hava.tur === 'saganak' && eko.islaklik < 0.3) {
+    p = 0.45;
+    neden = 'kuru otlara yıldırım düştü';
+  }
+  if (rng() >= p) return;
+  const adaylar = [];
+  for (let h = 0; h < eko.ot.length; h++) if (!kap.yanmaz[h] && eko.ot[h] > 0.45) adaylar.push(h);
+  if (!adaylar.length) return;
+  const h = adaylar[Math.floor(rng() * adaylar.length)];
+  const saat = neden.includes('yıldırım') && eko.hava.yagmur[0] ? eko.hava.yagmur[0].bas - 20 : (11 + rng() * 6) * 60;
+  eko.yanginPlan = { dk: (gun - 1) * 1440 + saat, h, neden };
+}
+export function yanginSoz(eko) {
+  const n = yananHucreler(eko).length;
+  if (!n) return eko.sonYangin ? `Son yangın ${Math.max(0, Object.keys(eko.yanik).length)} hücrelik bir alanı yaktı.` : 'Yangın yok.';
+  return `Yangın sürüyor: yaklaşık ${Math.round((n * HUCRE * HUCRE) / 10000 * 10) / 10} hektar alev hattı.`;
 }

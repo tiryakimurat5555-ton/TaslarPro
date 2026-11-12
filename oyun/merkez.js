@@ -5,6 +5,8 @@
 import { TURLER, TUR_SIRASI, DAVRANISLAR, ISTASYON, YARICAP, GOLET, nehirY, NEHIR_YARI } from './veri.js';
 import * as M from './mantik.js';
 import * as E from './ekosistem.js';
+import * as K from './kesif.js';
+import { KUCUKLER } from './kucukler.js';
 
 const lira = (n) => `${Math.round(n).toLocaleString('tr-TR')} lira`;
 export const liraSozu = lira;
@@ -17,6 +19,7 @@ export const EKIPMANLAR = {
   termal: { ad: 'Termal kamera', fiyat: 12000, itibar: 30, arastirma: 'geceAktivitesi', gerek: 'geceDurbunu', tarif: 'Gece 70 metreye kadar ısı izinden görürsün; gece fotoğrafları netleşir.' },
   tuzak: { ad: 'Kamera tuzağı', fiyat: 2500, adet: true, itibar: 20, arastirma: 'izlemeAgi', tarif: 'Kurduğun yerden geçen hayvanları gece gündüz kendiliğinden fotoğraflar.' },
   tasma: { ad: 'GPS tasması', fiyat: 4000, adet: true, itibar: 30, arastirma: 'hareketEkolojisi', tarif: 'Veterinerin tanımlı bir yetişkin hayvana takar; nerede olduğunu her an bilirsin.' },
+  magaraTakimi: { ad: 'Mağara takımı', fiyat: 2500, itibar: 5, tarif: 'Kask, kafa lambası ve maske. Kayalığın kuzeyindeki mağaraya güvenle girersin.' },
 };
 
 export const TESISLER = {
@@ -179,6 +182,34 @@ export const ARASTIRMALAR = [
     odul: { itibar: 12, fon: 4000 },
     sonuc: 'Bireylerin doğumdan ölüme ve sürüden ayrılışa kadar yaşam öyküleri birbirine bağlandı.',
   },
+  // Aşama 6
+  {
+    id: 'kucukCanlilar',
+    ad: 'Savanın küçük canlıları',
+    kosulMetni: '25 küçük canlı türü bul (kuş, böcek, sürüngen, kurbağa, balık, küçük memeli)',
+    ilerleme: (k) => [K.kucukSayisi(k), 25],
+    odul: { itibar: 15, fon: 5000 },
+    sonuc: 'Böceklerden kuşlara savanın küçük canlılarının besin zincirindeki yerleri belgelendi: tozlaşma, leş temizliği, toprağın havalanması.',
+  },
+  {
+    id: 'magaraEkosistemi',
+    ad: 'Mağara ekosistemi',
+    kosulMetni: 'Mağaranın 5 odasını keşfet ve 5 mağara canlısı bul',
+    ilerleme: (k) => [
+      Math.min(5, ((k.arsiv.magara && k.arsiv.magara.odalar) || []).length) + Math.min(5, Object.keys(k.arsiv.kucukler || {}).filter((id) => KUCUKLER[id] && KUCUKLER[id].yer.includes('magara')).length),
+      10,
+    ],
+    odul: { itibar: 15, fon: 6000 },
+    sonuc: 'Yarasaların guanosunun mağaradaki bütün yaşamın besin kaynağı olduğu, karanlığa uyum sağlamış canlıların gözlerinin küçüldüğü belgelendi.',
+  },
+  {
+    id: 'yanginEkolojisi',
+    ad: 'Yangın ekolojisi',
+    kosulMetni: 'Bir savan yangınını yakından gözlemle ve yanmış alanda yeniden filizlenmeyi gör',
+    ilerleme: (k) => [(k.eko && k.eko.yanginGoruldu ? 1 : 0) + (k.eko && k.eko.filizGoruldu ? 1 : 0), 2],
+    odul: { itibar: 15, fon: 6000 },
+    sonuc: 'Savan yangınlarının ölü otu temizleyip taze sürgünleri uyardığı, otçulların yanmış alanlara akın ettiği gösterildi.',
+  },
 ];
 export const ANALIZ_DK = 8 * 60; // temel analiz süresi (oyun dakikası)
 
@@ -188,7 +219,7 @@ export const personelKapasitesi = (k) => (tesisVar(k, 'konaklama') ? 6 : 2);
 export const tuzakKapasitesi = (k) => (M.personelVar(k, 'teknisyen') ? 6 : 3);
 export const analizKapasitesi = (k) => (tesisVar(k, 'gelismisLab') ? 2 : 1);
 export function gunlukGider(k) {
-  return 300 + k.personel.reduce((s, p) => s + PERSONEL[p.rol].maas, 0) + k.tesisler.reduce((s, t) => s + TESISLER[t].bakim, 0);
+  return 300 + (k.koruma && k.koruma.devriye ? 200 : 0) + k.personel.reduce((s, p) => s + PERSONEL[p.rol].maas, 0) + k.tesisler.reduce((s, t) => s + TESISLER[t].bakim, 0);
 }
 // İtibar arttıkça bilimsel kuruluşlar günlük destek verir (karar 61, 91)
 export const gunlukDestek = (k) => Math.min(2500, Math.floor(k.itibar / 10) * 100);
@@ -464,6 +495,28 @@ export function guncelle(d) {
   });
   k.teklifler = k.teklifler.filter((t) => t.durum !== 'tamam');
   laboratuvarGuncelle(d);
+  // Aşama 6: kaçak avcı tuzakları, yarasa çıkışı, koruma projeleri, yangının tuzaklara etkisi
+  K.kacakGuncelle(d);
+  K.yarasaGuncelle(d);
+  if (!d.korumaSayac || k.dk - d.korumaSayac > 30) {
+    d.korumaSayac = k.dk;
+    korumaDenetle(d);
+  }
+  if (k.eko && k.eko.yanan) {
+    const yanan = k.tuzaklar.filter((t) => E.yangindaMi(k.eko, E.hucre(t.x, t.y)));
+    if (yanan.length) {
+      k.tuzaklar = k.tuzaklar.filter((t) => !yanan.includes(t));
+      M.mesajEkle(k, `Yangın ${yanan.length} kamera tuzağını yaktı (${yanan.map((t) => t.bolge).join(', ')}).`, 'ekosistem');
+    }
+    if (!k.eko.filizGoruldu) {
+      const h = E.hucre(d.oyuncu.x, d.oyuncu.y);
+      if (h >= 0 && k.eko.yanik[h] && k.eko.ot[h] > 0.25) {
+        k.eko.filizGoruldu = true;
+        M.olay(d, 'yeniKucuk', 'Yanmış alanda kara toprağın arasından taze yeşil sürgünler fışkırıyor. Otçullar bu besleyici otlara akın ediyor.', 3);
+        M.arsivOlay(d, 'Yangından sonra yeniden filizlenme gözlendi.');
+      }
+    }
+  }
   // Kamera tuzakları: 20 oyun dakikasında bir yakından geçenleri fotoğraflar (gece kızılötesi)
   k.tuzaklar.forEach((t) => {
     if (k.dk - t.sonKontrol < 20) return;
@@ -522,6 +575,7 @@ function gunlukIslem(d) {
   }
   rehabGunluk(d);
   botanikGunluk(d);
+  K.kacakGunluk(d);
   const sal = k.eko && k.eko.salgin;
   if (sal && sal.bilinen) M.mesajEkle(k, `Salgın takibi: ${E.HASTALIKLAR[sal.hastalik].ad}, ${M.gunNo(k.dk) - sal.basGun + 1}. gün, şimdiye kadar ${sal.vaka} vaka.`, 'ekosistem');
   // Yeni teklif (en çok 3 bekleyen)
@@ -536,6 +590,7 @@ function gunlukIslem(d) {
 // İlk açılışta hoş geldin mesajı ve ilk teklif
 export function baslat(d) {
   const k = d.k;
+  K.kesifHazirla(k);
   if (k.merkezBasladi) return;
   k.merkezBasladi = true;
   k.merkezGun = M.gunNo(k.dk);
@@ -903,4 +958,134 @@ function botanikGunluk(d) {
   if (!k.arsiv.bitkiler[aday]) k.arsiv.bitkiler[aday] = { ilkDk: k.dk, ilkBolge: 'botanik uzmanının kaydı', evreler: [], analiz: false };
   k.arsiv.bitkiler[aday].evreler.push(ev(aday).anahtar);
   M.mesajEkle(k, `${p.ad} bir bitki evresi kaydetti: ${b.ad}, ${ev(aday).metin}.`, 'bilgi');
+}
+
+// ==================== Koruma projeleri (karar 59, 64, 65) ====================
+// Her proje adımlardan oluşur; bazı adımlar bir eylem (ücretli) ister. Tamamlanınca itibar, fon ve kalıcı etki.
+const projeDurumu = (k, id) => (k.koruma.projeler[id] || null);
+const gpsliTur = (k, tur) => k.gpsli.some((id) => (k.hayvanlar.find((b) => b.id === id) || {}).tur === tur);
+export const KORUMA = [
+  {
+    id: 'gergedan',
+    ad: 'Ak gergedan koruma programı',
+    tarif: 'Ak gergedanın nesli tehlike altında; boynuzları için kaçak avlanıyor. Bölgedeki küçük grubu izleyip korumak ve üremesini desteklemek.',
+    adimlar: [
+      { metin: 'Bölgedeki iki gergedanı tanımla', tamam: (k) => k.hayvanlar.filter((b) => b.tur === 'gergedan' && b.no > 0).length >= 2 },
+      { metin: 'Bir gergedana GPS tasması taktır', tamam: (k) => gpsliTur(k, 'gergedan') },
+      { metin: 'Koruma devriyesini başlat (6.000 lira, günlük 200 lira)', tamam: (k) => !!k.koruma.devriye, eylem: { etiket: 'Devriyeyi başlat, 6.000 lira', ucret: 6000, yap: (k) => ((k.koruma.devriye = true), 'Korucular bölgede düzenli devriyeye başladı. Kaçak avcıların tuzak kurması çok azalacak.') } },
+      { metin: 'Bir gergedan yavrusu doğsun', tamam: (k, p) => k.hayvanlar.some((b) => b.tur === 'gergedan' && b.dogumDk && b.dogumDk > p.bas) },
+    ],
+    odul: { itibar: 30, fon: 15000 },
+    sonuc: 'Gergedan grubu büyüdü. Program uluslararası koruma raporlarında örnek gösterildi.',
+  },
+  {
+    id: 'yabanKopegi',
+    ad: 'Yaban köpeği sürüsünü koruma',
+    tarif: 'Afrika yaban köpeği nesli tehlikede; en büyük tehdit evcil köpeklerden bulaşan köpek gençlik hastalığı. Sürüyü bulup aşılamak ve izlemek.',
+    adimlar: [
+      { metin: 'Yaban köpeği sürüsünden 3 birey tanımla', tamam: (k) => k.hayvanlar.filter((b) => b.tur === 'yabanKopegi' && b.no > 0).length >= 3 },
+      {
+        metin: 'Sürüyü köpek gençlik hastalığına karşı aşılat (veteriner, 3.000 lira)',
+        tamam: (k) => !!k.koruma.asi,
+        eylem: {
+          etiket: 'Sürüyü aşılat, 3.000 lira',
+          ucret: 3000,
+          gerek: (k) => (M.personelVar(k, 'veteriner') ? null : 'Aşı için veteriner gerekir.'),
+          yap: (k) => {
+            k.koruma.asi = true;
+            k.koruma.asiGun = M.gunNo(k.dk);
+            k.asili = k.hayvanlar.filter((b) => b.tur === 'yabanKopegi' && !b.olu).map((b) => b.id);
+            return `Veteriner ekip sürüdeki ${k.asili.length} yaban köpeğini uzaktan aşı iğnesiyle aşıladı. Sürü artık hastalığa karşı korunuyor.`;
+          },
+        },
+      },
+      { metin: 'Aşıdan sonra 10 gün boyunca sürü en az 5 birey kalsın', tamam: (k) => k.koruma.asi && M.gunNo(k.dk) - k.koruma.asiGun >= 10 && k.hayvanlar.filter((b) => b.tur === 'yabanKopegi' && !b.olu).length >= 5 },
+    ],
+    odul: { itibar: 25, fon: 10000 },
+    sonuc: 'Aşılanan sürü sağlıklı kaldı ve yavruladı. Yöntem başka bölgelerde de uygulanacak.',
+  },
+  {
+    id: 'kacakMucadele',
+    ad: 'Kaçak avcılıkla mücadele',
+    tarif: 'Kaçak avcıların tel tuzakları her yıl pek çok hayvanı öldürüyor. Tuzakları bulup sökmek, takılan hayvanları kurtarmak ve devriyeyi kurmak.',
+    adimlar: [
+      { metin: '3 tel tuzak bul ve sök', tamam: (k) => k.kacak.bulunan >= 3 },
+      { metin: 'Tuzağa takılmış bir hayvanı kurtar', tamam: (k) => k.kacak.kurtarilan >= 1 },
+      { metin: 'Koruma devriyesi kurulsun', tamam: (k) => !!k.koruma.devriye, eylem: { etiket: 'Devriyeyi başlat, 6.000 lira', ucret: 6000, yap: (k) => ((k.koruma.devriye = true), 'Korucular bölgede düzenli devriyeye başladı.') } },
+    ],
+    odul: { itibar: 20, fon: 8000 },
+    sonuc: 'Bölgede tel tuzak sayısı belirgin biçimde azaldı. Yaban hayatı servisi seni teşekkür belgesiyle onurlandırdı.',
+  },
+  {
+    id: 'akbaba',
+    ad: 'Akbabaları koruma',
+    tarif: 'Akbabalar, çobanların yırtıcılar için zehirlediği leşleri yiyerek toplu hâlde ölüyor. Akbabaları izlemek, leşleri taramak ve çevre köylerde bilinçlendirme yapmak.',
+    adimlar: [
+      { metin: 'Ak sırtlı akbaba ve kulaklı akbabayı gözlemle', tamam: (k) => !!(k.arsiv.kucukler.akSirtliAkbaba && k.arsiv.kucukler.kulakliAkbaba) },
+      { metin: '2 leş numunesini laboratuvarda zehir için tara', tamam: (k) => k.numuneler.filter((n) => n.tip === 'les' && n.durum === 'tamam').length >= 2 },
+      { metin: 'Zehirli yem karşıtı bilinçlendirme kampanyası (4.000 lira)', tamam: (k) => !!k.koruma.kampanya, eylem: { etiket: 'Kampanyayı başlat, 4.000 lira', ucret: 4000, yap: (k) => ((k.koruma.kampanya = true), 'Çevre köylerde çobanlarla toplantılar yapıldı; zehirli yem yerine yırtıcılardan korunmak için çit ve bekçi köpeği desteği verildi.') } },
+    ],
+    odul: { itibar: 20, fon: 7000 },
+    sonuc: 'Bölgede zehirlenme vakası görülmedi; akbaba sayısı artmaya başladı.',
+  },
+];
+export function korumaBaslat(k, id) {
+  const p = KORUMA.find((x) => x.id === id);
+  if (!p) return 'Proje bulunamadı.';
+  if (projeDurumu(k, id)) return `${p.ad} zaten ${k.koruma.projeler[id].durum === 'tamam' ? 'tamamlandı' : 'sürüyor'}.`;
+  k.koruma.projeler[id] = { durum: 'surer', bas: k.dk };
+  M.mesajEkle(k, `Koruma projesi başladı: ${p.ad}. ${p.tarif}`, 'bilgi');
+  return `Proje başladı: ${p.ad}. Adımları Koruma projeleri bölümünden izleyebilirsin.`;
+}
+export function korumaEylem(k, id, i) {
+  const p = KORUMA.find((x) => x.id === id);
+  const a = p && p.adimlar[i];
+  const pd = projeDurumu(k, id);
+  if (!a || !a.eylem || !pd) return 'Bu adım için yapılacak bir şey yok.';
+  if (a.tamam(k, pd)) return 'Bu adım zaten tamamlandı.';
+  const engel = a.eylem.gerek && a.eylem.gerek(k);
+  if (engel) return engel;
+  if (k.butce < a.eylem.ucret) return `Bütçe yetmiyor. ${lira(a.eylem.ucret - k.butce)} daha gerekli.`;
+  k.butce -= a.eylem.ucret;
+  return a.eylem.yap(k);
+}
+export function korumaSatirlari(k, id) {
+  const p = KORUMA.find((x) => x.id === id);
+  const pd = projeDurumu(k, id);
+  return p.adimlar.map((a, i) => ({ i, metin: a.metin, tamam: !!(pd && a.tamam(k, pd)), eylem: a.eylem && pd && pd.durum === 'surer' && !a.tamam(k, pd) ? a.eylem.etiket : null }));
+}
+export function korumaOzeti(k, p) {
+  const pd = projeDurumu(k, p.id);
+  if (!pd) return `${p.ad}: başlatılmadı`;
+  if (pd.durum === 'tamam') return `${p.ad}: tamamlandı`;
+  const s = korumaSatirlari(k, p.id);
+  return `${p.ad}: ${s.filter((x) => x.tamam).length} / ${s.length} adım`;
+}
+function korumaDenetle(d) {
+  const k = d.k;
+  KORUMA.forEach((p) => {
+    const pd = projeDurumu(k, p.id);
+    if (!pd || pd.durum !== 'surer') return;
+    if (p.adimlar.every((a) => a.tamam(k, pd))) {
+      pd.durum = 'tamam';
+      k.itibar += p.odul.itibar;
+      k.butce += p.odul.fon;
+      const m = `Koruma projesi tamamlandı: ${p.ad}. ${p.sonuc} Destekçi kurumlardan ${lira(p.odul.fon)} fon geldi.`;
+      M.mesajEkle(k, m, 'sonuc');
+      M.arsivOlay(d, `Koruma projesi tamamlandı: ${p.ad}.`);
+      M.olay(d, 'koruma', m, 4);
+    }
+  });
+}
+export function yanginSondur(d) {
+  const k = d.k;
+  if (!E.yananHucreler(k.eko).length) return 'Şu an yangın yok.';
+  if (k.butce < 3000) return 'Yangın söndürme ekibi için 3.000 lira gerekli; bütçe yetmiyor.';
+  k.butce -= 3000;
+  E.yananHucreler(k.eko).forEach((h) => {
+    delete k.eko.yanan[h];
+    k.eko.yanik[h] = k.dk;
+  });
+  M.arsivOlay(d, 'Yangın söndürme ekibi yangını söndürdü.');
+  return 'Yangın söndürme ekibi geldi; yangın kesici şeritler açıp alevleri söndürdüler. Masraf 3.000 lira. Doğal yangınlar savanın parçasıdır; yalnızca istasyon ya da nadir türler tehlikedeyken müdahale etmek en doğrusudur.';
 }

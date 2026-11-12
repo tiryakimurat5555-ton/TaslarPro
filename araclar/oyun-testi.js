@@ -3,6 +3,7 @@
 import * as M from '../oyun/mantik.js';
 import * as Mz from '../oyun/merkez.js';
 import { TURLER, YERLER } from '../oyun/veri.js';
+import * as K from '../oyun/kesif.js';
 
 const gun = +(process.argv[2] || 3);
 const k = M.arastirmaciOlustur('Bot');
@@ -60,6 +61,20 @@ for (let t = 0; t < toplam; t += adim) {
         if (g.hastalik && g.hastalik.goruldu) say('v:' + Mz.veterinerMudahale(d).slice(0, 40));
         if (Mz.rehabUygunMu(g)) say('r:' + Mz.rehabaAl(d).slice(0, 40));
         k.rehab.filter((r) => r.hazir).forEach((r) => say('rb:' + Mz.rehabBirak(d, r.b.id).slice(0, 30)));
+        // Aşama 6: küçük canlı, tel tuzak, koruma, mağara
+        K.kucukAra(d);
+        const tz = K.yakinTuzak(d, 6);
+        if (tz && tz.bulundu) say('tz:' + (tz.hayvanId ? K.tuzaktanKurtar(d) : K.tuzakSok(d)).slice(0, 25));
+        Mz.KORUMA.forEach((p) => {
+          if (!k.koruma.projeler[p.id]) Mz.korumaBaslat(k, p.id);
+          Mz.korumaSatirlari(k, p.id).forEach((x) => x.eylem && k.butce > 20000 && say('ke:' + Mz.korumaEylem(k, p.id, x.i).slice(0, 25)));
+        });
+        if (K.magaraYakin(d) && k.ekipman.magaraTakimi && !k.magara) {
+          K.magarayaGir(d);
+          for (let i = 0; i < 5; i++) { K.magaraIlerle(d); d.sonArama = -9; K.kucukAra(d); }
+          K.magaradanCik(d);
+          for (let i = 0; i < 5; i++) K.magaraGeri(d);
+        }
         if (Math.random() < 0.3) M.sesKaydiBaslat(d);
         M.gozlemBitir(d);
         const y = YERLER[yerSira++ % YERLER.length];
@@ -83,6 +98,7 @@ console.log('Olaylar:', JSON.stringify(sayac));
 console.log('Nüfus (başta → sonda):', Object.keys(TURLER).map((t) => `${t} ${baslangicNufus[t] || 0}→${nufus[t] || 0}`).join(', '));
 console.log(`Merkez: bütçe ${k.butce}, tesisler ${k.tesisler.join(',')}, ekipman ${Object.keys(k.ekipman).join(',')}, personel ${k.personel.map((p) => p.rol).join(',')}, araştırma ${Object.entries(k.arastirmalar).map(([a, v]) => a + ':' + v.durum).join(',')}, görev ${k.teklifler.map((x) => x.tip + ':' + x.durum).join(',')}, tuzak ${k.tuzaklar.map((x) => x.foto).join(',')}, gps ${k.gpsli.length}, mesaj ${k.mesajlar.length}`);
 console.log(`Ekosistem: gölet ${k.eko.golet.toFixed(2)}, göç ${JSON.stringify(k.eko.gocler.map((g) => g.tur + ':' + g.olay))}, teşhis ${k.eko.teshisler.map((t) => t.hastalik).join(',')}, numune ${k.numuneler.map((n) => n.tip + ':' + n.durum).join(',')}, bitki ${Object.keys(k.arsiv.bitkiler).length}, rehab ${k.rehab.length}`);
+console.log(`Aşama 6: küçük ${K.kucukSayisi(k)}, mağara ${k.arsiv.magara.odalar.length}, kaçak ${JSON.stringify(k.kacak.tuzaklar.length)} kalan ${k.kacak.bulunan} söküldü ${k.kacak.kurtarilan} kurtarıldı, koruma ${JSON.stringify(Object.fromEntries(Object.entries(k.koruma.projeler).map(([a, b]) => [a, b.durum])))}, yangın ${k.eko.yanginlar}`);
 console.log(`Bitti: ${M.zamanSozu(k.dk)}; itibar ${k.itibar}; tür ${Object.keys(k.arsiv.turler).length}; birey ${Object.keys(k.arsiv.bireyler).length}; foto ${k.arsiv.fotolar.length}; ses ${k.arsiv.sesler.length}; olay ${k.arsiv.olaylar.length}`);
 Object.entries(k.arsiv.turler).forEach(([t, v]) => console.log(`  ${t}: ${v.davranislar.join(', ')}`));
 console.log('Örnek metinler:');

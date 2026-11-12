@@ -357,6 +357,12 @@ export function sahneKur(gl, d) {
     olcek.set(e.r, e.r * (e.magara ? 1.4 : 0.85), e.r);
     yer.set(e.x, e.r * (e.magara ? 0.9 : 0.4), R(e.y));
   });
+  // Termit tepeleri: kızıl topraktan sivri bacalı kuleler
+  ornekle(new THREE.ConeGeometry(1, 2.6, 7), '#a0603a', d.engeller.filter((e) => e.tur === 'termit'), (e) => {
+    q.setFromEuler(new THREE.Euler(0, e.x, 0));
+    olcek.set(e.r, e.r * 1.1, e.r);
+    yer.set(e.x, 1.3 * e.r * 1.1, R(e.y));
+  });
   ornekle(new THREE.ConeGeometry(0.12, 1.4, 3), '#7c8a4a', d.suslar.filter((s) => s.tur === 'saz'), dik(0.7));
   ornekle(new THREE.IcosahedronGeometry(0.7, 0), '#7a7a3a', d.suslar.filter((s) => s.tur === 'cali'), (e) => {
     q.identity();
@@ -471,6 +477,75 @@ export function sahneKur(gl, d) {
   goletKiyi.material = goletKiyi.material.clone();
   const goletKiyiRenk = goletKiyi.material.color.clone();
   const kuruCamur = new THREE.Color('#9a8458');
+  // ---- Mağara (Aşama 6): dünyadan uzakta ayrı bir tünel; mağaradayken kamera buraya geçer ----
+  const MZ = 3000; // mağaranın z konumu (ana sahnenin çok dışında)
+  const magaraGrup = new THREE.Group();
+  magaraGrup.visible = false;
+  sahne.add(magaraGrup);
+  const kayaIc = new THREE.MeshLambertMaterial({ color: '#8a7a68', side: THREE.BackSide, flatShading: true });
+  const odaBoyu = [6, 9, 3.2, 7, 6]; // giriş, yarasa salonu, dar geçit, göl, derin oda
+  const odaZ = odaBoyu.map((_, i) => MZ - i * 16);
+  odaBoyu.forEach((r, i) => {
+    const kure = new THREE.Mesh(new THREE.IcosahedronGeometry(r, 1), kayaIc);
+    kure.scale.set(1.3, 0.7, 1.2);
+    kure.position.set(0, r * 0.45, odaZ[i]);
+    magaraGrup.add(kure);
+    if (i < odaBoyu.length - 1) {
+      const tunel = new THREE.Mesh(new THREE.CylinderGeometry(2.2, 2.2, 16, 8, 1, true), kayaIc);
+      tunel.rotation.x = Math.PI / 2;
+      tunel.position.set(0, 1.6, odaZ[i] - 8);
+      magaraGrup.add(tunel);
+    }
+    // Sarkıtlar
+    for (let j = 0; j < 7; j++) {
+      const a = (j / 7) * Math.PI * 2 + i;
+      const sk = new THREE.Mesh(new THREE.ConeGeometry(0.18, 1.2, 5), mat('#8a7a66'));
+      sk.rotation.x = Math.PI;
+      sk.position.set(Math.sin(a) * r * 0.6, r * 0.75, odaZ[i] + Math.cos(a) * r * 0.5);
+      magaraGrup.add(sk);
+    }
+  });
+  // Yarasa salonunun tavanında asılı yarasalar
+  const yarasaIm = new THREE.InstancedMesh(new THREE.BoxGeometry(0.12, 0.22, 0.1), mat('#2a2220'), 160);
+  for (let i = 0; i < 160; i++) {
+    const a = Math.random() * Math.PI * 2;
+    const r = Math.random() * 7;
+    m4.makeTranslation(Math.sin(a) * r * 1.2, 7.4 - Math.random() * 0.6, odaZ[1] + Math.cos(a) * r);
+    yarasaIm.setMatrixAt(i, m4);
+  }
+  magaraGrup.add(yarasaIm);
+  // Yeraltı gölü
+  const yeraltiGol = new THREE.Mesh(new THREE.CircleGeometry(4.5, 20), new THREE.MeshLambertMaterial({ color: '#16303a' }));
+  yeraltiGol.rotation.x = -Math.PI / 2;
+  yeraltiGol.position.set(0, 0.05, odaZ[3] - 1);
+  magaraGrup.add(yeraltiGol);
+  const fener = new THREE.PointLight('#fff1d0', 0, 22, 1.6);
+  sahne.add(fener);
+  // ---- Yangın: alev konileri ve dumanlar; yanmış alanlar koyu yamalar ----
+  const ALEV = 72;
+  const alevler = [];
+  for (let i = 0; i < ALEV; i++) {
+    const m = new THREE.Mesh(new THREE.ConeGeometry(0.9, 2.4, 6), new THREE.MeshBasicMaterial({ color: i % 2 ? '#ff7a1a' : '#ffb020' }));
+    m.visible = false;
+    sahne.add(m);
+    alevler.push(m);
+  }
+  const dumanMat = new THREE.MeshBasicMaterial({ color: '#6a6660', transparent: true, opacity: 0.35, depthWrite: false });
+  const dumanlar = [];
+  for (let i = 0; i < 24; i++) {
+    const m = new THREE.Mesh(new THREE.SphereGeometry(3, 7, 5), dumanMat);
+    m.visible = false;
+    sahne.add(m);
+    dumanlar.push(m);
+  }
+  const yanikIm = new THREE.InstancedMesh(new THREE.CircleGeometry(13, 14), new THREE.MeshLambertMaterial({ color: '#3a3328' }), 256);
+  yanikIm.count = 0;
+  sahne.add(yanikIm);
+  let yanikImza = '';
+  const nehirRenk = new THREE.Color('#4a7a8a');
+  const selRenk = new THREE.Color('#7a6a48');
+  const HUCRE_K = 25;
+  const hucreMerkez = (h) => ({ x: (h % 16) * HUCRE_K - YARICAP + HUCRE_K / 2, y: Math.floor(h / 16) * HUCRE_K - YARICAP + HUCRE_K / 2 });
   let ilk = true;
   let saat = 0;
   const gunduzGok = new THREE.Color('#9ec9ea');
@@ -540,6 +615,72 @@ export function sahneKur(gl, d) {
       insan.position.set(o.x, 0, R(o.y));
       insan.rotation.y = -o.yon;
 
+      // Mağara: kamera tünelin içinde, fener ışığıyla
+      magaraGrup.visible = !!k.magara;
+      fener.intensity = k.magara ? 45 : 0;
+      if (k.magara) {
+        const z = odaZ[k.magara.oda] + 3;
+        kamKonum.set(0, 1.6, z);
+        kamera.position.lerp(kamKonum, Math.min(1, dt * 3));
+        kamera.lookAt(0, 1.4, z - 10);
+        fener.position.copy(kamera.position);
+        sahne.background.set('#050403');
+        sahne.fog.color.set('#050403');
+        sahne.fog.near = 3;
+        sahne.fog.far = 24;
+        gok.intensity = 0.15;
+        gunes.intensity = 0;
+        insan.visible = false;
+        arac.visible = false;
+        ciz.render(sahne, kamera);
+        if (gl.endFrameEXP) gl.endFrameEXP();
+        return;
+      }
+      arac.visible = true;
+      // Alevler, duman, yanık alanlar ve taşkın
+      if (eko && eko.yanan) {
+        const yanan = Object.keys(eko.yanan).map(Number);
+        let ai = 0;
+        let di = 0;
+        for (const h of yanan) {
+          const c = hucreMerkez(h);
+          if (Math.abs(c.x - o.x) > 130 || Math.abs(c.y - o.y) > 130) continue;
+          for (let j = 0; j < 4 && ai < ALEV; j++, ai++) {
+            const m = alevler[ai];
+            m.visible = true;
+            const ox = ((h * 7 + j * 13) % 20) - 10;
+            const oz = ((h * 11 + j * 5) % 20) - 10;
+            const titre = 0.7 + Math.abs(Math.sin(saat * 9 + h + j)) * 0.6;
+            m.scale.set(1, titre, 1);
+            m.position.set(c.x + ox, 1.2 * titre, R(c.y + oz));
+          }
+          if (di < dumanlar.length) {
+            const m = dumanlar[di++];
+            m.visible = true;
+            const yuk = (saat * 2 + h) % 12;
+            m.position.set(c.x, 4 + yuk, R(c.y));
+            m.scale.setScalar(1 + yuk * 0.25);
+          }
+        }
+        for (; ai < ALEV; ai++) alevler[ai].visible = false;
+        for (; di < dumanlar.length; di++) dumanlar[di].visible = false;
+        const yanikH = Object.keys(eko.yanik || {});
+        const imza = yanikH.length + ':' + yanikH.slice(-3).join(',');
+        if (imza !== yanikImza) {
+          yanikImza = imza;
+          yanikIm.count = Math.min(256, yanikH.length);
+          yanikH.slice(0, 256).forEach((hs, i) => {
+            const c = hucreMerkez(Number(hs));
+            q.setFromEuler(new THREE.Euler(-Math.PI / 2, 0, 0));
+            olcek.set(1, 1, 1);
+            yer.set(c.x, 0.04, R(c.y));
+            m4.compose(yer, q, olcek);
+            yanikIm.setMatrixAt(i, m4);
+          });
+          yanikIm.instanceMatrix.needsUpdate = true;
+        }
+        su.material.color.copy(nehirRenk).lerp(selRenk, eko.taskin ? 0.8 : 0);
+      }
       // Kamera
       const dikey = kamera.aspect < 1 ? 1.35 : 1; // dikey ekranda kamera biraz daha geride ve yüksekte
       const geri = (k.aracta ? 12 : 8) * dikey;

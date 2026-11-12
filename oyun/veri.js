@@ -35,7 +35,11 @@ export const YERLER = [
   { id: 'magara', ad: 'Mağara girişi', x: -116, y: 74, tarif: 'Kayalığın kuzeyinde karanlık bir mağara ağzı. İçi henüz araştırılmadı.' },
   { id: 'agaclik', ad: 'Akasya ağaçlığı', x: 30, y: 100, tarif: 'Kuzeyde sık akasya ağaçları. Filler ve zürafalar burada beslenir.' },
   { id: 'dogOtlak', ad: 'Doğu otlakları', x: 95, y: 0, tarif: 'Uçsuz bucaksız açık çayırlar. Zebralar burada otlar.' },
+  { id: 'galeri', ad: 'Galeri ormanı', x: 140, y: -82, tarif: 'Nehrin doğu kıyısı boyunca uzanan sık, gölgeli bir orman şeridi. Babunlar, maymunlar ve orman kuşları burada yaşar.' },
+  { id: 'termitler', ad: 'Termit tepeleri', x: -140, y: -40, tarif: 'Batı otlaklarında boyu insanı aşan termit tepeleri. Eski tepelerde firavunfareleri ve yerdomuzu yuvaları var.' },
 ];
+export const GALERI = { x0: 100, x1: 190, derinlik: 36 }; // nehrin kuzey kıyısında orman şeridi
+export const TERMITLER = { x: -140, y: -40, r: 30 };
 
 // Bölgeler: bolgeBul (mantik.js) konuma göre adını verir.
 export const BOLGE_ADLARI = {
@@ -46,6 +50,9 @@ export const BOLGE_ADLARI = {
   kayalik: 'Kayalık',
   agaclik: 'Akasya ağaçlığı',
   otlak: 'Açık otlak',
+  galeri: 'Galeri ormanı',
+  termit: 'Termit tepeleri',
+  magara: 'Mağara',
 };
 
 // Davranışlar: fiil (konuşmada "Zebra 4 otluyor"), ad (arşivde), nadir (bilimsel değeri yüksek)
@@ -74,6 +81,8 @@ export const DAVRANISLAR = {
   dogum: { fiil: 'yeni doğmuş yavrusuyla', ad: 'Doğum', nadir: true },
   bekliyor: { fiil: 'hareketsiz bekliyor', ad: 'Hareketsiz bekleme' },
   kolluyor: { fiil: 'çevreyi kolluyor', ad: 'Çevreyi gözetleme' },
+  yiyecekAriyor: { fiil: 'yerde yiyecek arıyor', ad: 'Yiyecek arama' },
+  tuzaktaKaldi: { fiil: 'bir tel tuzağa takılmış, çırpınıyor', ad: 'Tel tuzağa takılma', nadir: true },
   gocEdiyor: { fiil: 'sürüsüyle göç ediyor', ad: 'Mevsimsel göç', nadir: true },
   nehirGeciyor: { fiil: 'göç sırasında nehri geçiyor', ad: 'Göçte nehir geçişi', nadir: true },
 };
@@ -93,19 +102,19 @@ export const SES_TURLERI = {
 export const TURLER = {
   aslan: {
     ad: 'Aslan', bilimsel: 'Panthera leo', kisa: 'ASL', sinif: 'Memeli', ses: 'aslan', sekil: 'kedi', boy: 1.15, renk: '#c9a050',
-    hiz: 9, aktif: 'gece', kacis: 20, tehlikeli: true, yirtici: true, avlar: ['zebra', 'ceylan', 'domuz', 'manda'], sesSik: 60,
+    hiz: 9, aktif: 'gece', kacis: 20, tehlikeli: true, yirtici: true, avlar: ['zebra', 'ceylan', 'domuz', 'manda', 'gnu', 'impala'], sesSik: 60,
     sesTuru: 'bolge', habitat: { x: 62, y: 76, r: 40 }, grup: [5, 6], erkekOran: 0.2,
     tarif: 'Sürü hâlinde yaşayan tek büyük kedi. Gündüzün çoğunu gölgede dinleyerek geçirir, alacakaranlıkta ve gece avlanır. Erkeklerin kükremesi kilometrelerce uzaktan duyulur.',
   },
   leopar: {
     ad: 'Leopar', bilimsel: 'Panthera pardus', kisa: 'LEO', sinif: 'Memeli', ses: 'leopar', sekil: 'kedi', boy: 0.85, renk: '#d4b06a',
-    hiz: 9, aktif: 'gece', kacis: 30, yirtici: true, avlar: ['ceylan', 'domuz'], sesSik: 90,
+    hiz: 9, aktif: 'gece', kacis: 30, yirtici: true, avlar: ['ceylan', 'domuz', 'impala', 'babun'], sesSik: 90,
     sesTuru: 'bolge', habitat: { x: -112, y: 48, r: 26 }, grup: [1, 1],
     tarif: 'Yalnız yaşayan, gizlenmede usta bir kedi. Kayalıklarda ve ağaçlarda dinlenir, geceleri sessizce avlanır. Testere sesine benzer hırıltılı bir çağrısı vardır.',
   },
   sirtlan: {
     ad: 'Benekli Sırtlan', bilimsel: 'Crocuta crocuta', kisa: 'SRT', sinif: 'Memeli', ses: 'sirtlan', sekil: 'dortayak', boy: 0.85, renk: '#8f7a4f',
-    hiz: 8, aktif: 'gece', kacis: 22, yirtici: true, lesci: true, avlar: ['ceylan', 'domuz'], sesSik: 45,
+    hiz: 8, aktif: 'gece', kacis: 22, yirtici: true, lesci: true, avlar: ['ceylan', 'domuz', 'gnu', 'impala'], sesSik: 45,
     sesTuru: 'iletisim', habitat: { x: -40, y: -55, r: 35 }, grup: [4, 5], erkekOran: 0.4,
     tarif: 'Dişilerin yönettiği klanlar hâlinde yaşar. Hem usta bir avcı hem de leşçidir. Gülmeye benzeyen sesleriyle klan üyeleri birbirini bulur.',
   },
@@ -147,7 +156,7 @@ export const TURLER = {
   },
   timsah: {
     ad: 'Nil Timsahı', bilimsel: 'Crocodylus niloticus', kisa: 'TMS', sinif: 'Sürüngen', ses: 'timsah', sekil: 'timsah', boy: 1.1, renk: '#4a5a32',
-    hiz: 5, aktif: 'karma', kacis: 10, tehlikeli: true, suCanlisi: true, yirtici: true, pusucu: true, avlar: ['ceylan', 'zebra', 'domuz'], sesSik: 240,
+    hiz: 5, aktif: 'karma', kacis: 10, tehlikeli: true, suCanlisi: true, yirtici: true, pusucu: true, avlar: ['ceylan', 'zebra', 'domuz', 'gnu', 'impala'], sesSik: 240,
     sesTuru: 'tehdit', habitat: { x: -20, y: nehirY(-20), r: 20, nehirde: true }, grup: [2, 3],
     tarif: 'Suyun kenarında saatlerce kıpırdamadan bekleyen bir pusu avcısı. Sabahları kıyıda güneşlenerek ısınır.',
   },
@@ -174,6 +183,37 @@ export const TURLER = {
     hiz: 7, aktif: 'karma', kacis: 30, tehlikeli: true, sesSik: 80, sesTuru: 'iletisim', camur: true,
     habitat: { x: -20, y: -140, r: 40, guneyde: true }, grup: [7, 8], erkekOran: 0.3,
     tarif: 'Sürü hâlinde yaşayan, öfkelendiğinde çok tehlikeli bir yaban sığırı. Sürü üyeleri tehlikede birbirini korur; yaralı birini yalnız bırakmaz.',
+  },
+  // Aşama 6: yeni türler
+  gnu: {
+    ad: 'Ak sakallı gnu', bilimsel: 'Connochaetes taurinus', kisa: 'GNU', sinif: 'Memeli', ses: 'gnu', sekil: 'manda', boy: 0.85, renk: '#5e5a52',
+    hiz: 9, aktif: 'gunduz', kacis: 30, sesSik: 40, sesTuru: 'iletisim', alarmSesi: true,
+    habitat: { x: 112, y: -32, r: 36 }, grup: [10, 14], erkekOran: 0.3,
+    tarif: 'Doğu Afrika\'nın büyük göçünün yıldızı. Zebralarla birlikte dolaşır: zebralar uzun otu, gnular arkadan kısa otu yer. Yavrular doğduktan birkaç dakika sonra koşabilir.',
+  },
+  cita: {
+    ad: 'Çita', bilimsel: 'Acinonyx jubatus', kisa: 'CIT', sinif: 'Memeli', ses: 'cita', sekil: 'kedi', boy: 0.8, renk: '#d9b770',
+    hiz: 13, aktif: 'gunduz', kacis: 38, yirtici: true, gunduzAvcisi: true, avlar: ['ceylan', 'impala', 'domuz', 'gnu'], sesSik: 110, sesTuru: 'iletisim', nadirTur: true,
+    habitat: { x: -45, y: 58, r: 38 }, grup: [1, 3], erkekOran: 0.45,
+    tarif: 'Karadaki en hızlı hayvan; birkaç saniyede saatte 100 kilometreye ulaşır. Aslanlar ve sırtlanlarla karşılaşmamak için gündüz avlanır. Kükreyemez; kuş gibi cıvıldar. Nesli tehlike altında.',
+  },
+  impala: {
+    ad: 'İmpala', bilimsel: 'Aepyceros melampus', kisa: 'IMP', sinif: 'Memeli', ses: 'impala', sekil: 'ceylan', boy: 0.85, renk: '#b8743c',
+    hiz: 10, aktif: 'gunduz', kacis: 30, sesSik: 90, sesTuru: 'alarm', alarmSesi: true,
+    habitat: { x: -20, y: 118, r: 32 }, grup: [8, 12], erkekOran: 0.15,
+    tarif: 'Akasyalık kenarında yaşayan zarif bir antilop. Hem ot hem yaprak yer, bu yüzden kurak mevsimde de bölgeden ayrılmaz. Kaçarken üç metre yükseğe sıçrar.',
+  },
+  yabanKopegi: {
+    ad: 'Afrika yaban köpeği', bilimsel: 'Lycaon pictus', kisa: 'YKP', sinif: 'Memeli', ses: 'yabankopegi', sekil: 'dortayak', boy: 0.7, renk: '#6a5a3c',
+    hiz: 11, aktif: 'gunduz', alacaAvcisi: true, kacis: 40, yirtici: true, avlar: ['impala', 'ceylan', 'gnu', 'domuz', 'zebra'], sesSik: 60, sesTuru: 'iletisim', nadirTur: true,
+    habitat: { x: 58, y: -48, r: 55 }, grup: [5, 8], erkekOran: 0.6,
+    tarif: 'Her bireyin benekli deseni farklıdır. Sürü birlikte avlanır ve avını yaşlılarla yavrularla paylaşır. Evcil köpeklerden bulaşan hastalıklar ve yaşam alanı kaybı yüzünden nesli tehlikede.',
+  },
+  babun: {
+    ad: 'Zeytin babunu', bilimsel: 'Papio anubis', kisa: 'BBN', sinif: 'Memeli', ses: 'babun', sekil: 'dortayak', boy: 0.62, renk: '#6e6649',
+    hiz: 7, aktif: 'gunduz', kacis: 30, sesSik: 70, sesTuru: 'alarm', alarmSesi: true, yeme: 'yiyecekAriyor',
+    habitat: { x: 148, y: -80, r: 26 }, grup: [8, 12], erkekOran: 0.35,
+    tarif: 'Galeri ormanında ve kayalıklarda yaşayan büyük bir maymun. Sürüde karmaşık bir hiyerarşi ve dostluklar vardır; tımarlaşma bağları güçlendirir. Hemen her şeyi yer.',
   },
 };
 

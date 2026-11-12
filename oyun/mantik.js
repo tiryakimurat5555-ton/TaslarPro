@@ -4,7 +4,7 @@
 // Kalıcı her şey araştırmacı nesnesinde (k) durur; d yalnızca o anki oturumun geçici durumunu tutar.
 import {
   YARICAP, ISTASYON, ARAC_YERI, OYUN_DK_SN, BASLANGIC_SAATI, GOLET, NEHIR_YARI, nehirY, GECITLER, KAYALIK, MAGARA, YERLER,
-  BOLGE_ADLARI, DAVRANISLAR, SES_TURLERI, TURLER, TUR_SIRASI, KISILIKLER, EVRELER, EKIPMAN, ARAC, YURUME,
+  BOLGE_ADLARI, DAVRANISLAR, GALERI, TERMITLER, SES_TURLERI, TURLER, TUR_SIRASI, KISILIKLER, EVRELER, EKIPMAN, ARAC, YURUME,
 } from './veri.js';
 import * as E from './ekosistem.js';
 
@@ -15,6 +15,7 @@ if (GOLET.su === undefined) GOLET.su = GOLET.r; // göletin o anki su yarıçap�
 export const SOZ = {
   aslan: 'Aslan', leopar: 'Leopar', sirtlan: 'Sırtlan', fil: 'Fil', zurafa: 'Zürafa', zebra: 'Zebra', ceylan: 'Ceylan',
   domuz: 'Yaban domuzu', suAygiri: 'Su aygırı', timsah: 'Timsah', gergedan: 'Gergedan', kartal: 'Balık kartalı', piton: 'Piton', manda: 'Manda',
+  gnu: 'Gnu', cita: 'Çita', impala: 'İmpala', yabanKopegi: 'Yaban köpeği', babun: 'Babun',
 };
 const kucuk = (s) => s.toLocaleLowerCase('tr-TR');
 
@@ -106,7 +107,8 @@ export const personelVar = (k, rol) => !!(k && k.personel && k.personel.some((p)
 
 // ---------- Arazi ----------
 export const nehirdeMi = (x, y) => Math.abs(y - nehirY(x)) < NEHIR_YARI;
-export const gecitteMi = (x) => GECITLER.some((g) => Math.abs(x - g.x) < g.yari);
+let taskinVar = false; // nehir taştığında geçitler geçilmez (Aşama 6, sel)
+export const gecitteMi = (x) => !taskinVar && GECITLER.some((g) => Math.abs(x - g.x) < g.yari);
 export const guneydeMi = (x, y) => y < nehirY(x);
 export const golettemi = (x, y, pay = 0) => GOLET.su > 0 && Math.hypot(x - GOLET.x, y - GOLET.y) < GOLET.su + pay;
 const goletCanagi = (x, y, pay = 0) => Math.hypot(x - GOLET.x, y - GOLET.y) < GOLET.r + pay;
@@ -116,6 +118,8 @@ export function bolgeBul(x, y) {
   if (Math.abs(y - nehirY(x)) < 16) return 'nehir';
   if (guneydeMi(x, y)) return 'sulak';
   if (Math.hypot(x - KAYALIK.x, y - KAYALIK.y) < KAYALIK.r + 6) return 'kayalik';
+  if (x > GALERI.x0 && x < GALERI.x1 && y - nehirY(x) < GALERI.derinlik && y > nehirY(x)) return 'galeri';
+  if (Math.hypot(x - TERMITLER.x, y - TERMITLER.y) < TERMITLER.r) return 'termit';
   if (y > 78 && x > -50) return 'agaclik';
   return 'otlak';
 }
@@ -171,6 +175,11 @@ export function arastirmaciOlustur(ad) {
     numuneler: [], // laboratuvardaki numuneler
     rehab: [], // rehabilitasyondaki hayvanlar
     disari: { gruplar: [], hayvanlar: [] }, // göçte ya da bölgeden ayrılmış olanlar
+    // Aşama 6
+    kacak: { tuzaklar: [], bulunan: 0, kurtarilan: 0, olen: 0, izler: 0 },
+    koruma: { projeler: {}, devriye: false, asi: false },
+    asili: [],
+    magara: null,
   };
 }
 
@@ -213,13 +222,17 @@ function nufusOlustur(k) {
   const rng = tohumluUretec(4242);
   k.hayvanlar = [];
   k.gruplar = [];
-  let gid = 1;
-  TUR_SIRASI.forEach((tur) => {
+  TUR_SIRASI.forEach((tur) => turGrubuKur(k, rng, tur));
+}
+// Bir türün grubunu habitatında kurar (yeni oyun ya da eski kayda sonradan eklenen türler)
+function turGrubuKur(k, rng, tur) {
+  const gid = Math.max(0, ...k.gruplar.map((g) => g.id), ...((k.disari && k.disari.gruplar) || []).map((g) => g.id)) + 1;
+  {
     const t = TURLER[tur];
     const h = t.habitat;
     // İlk sabah zebralar ve filler gölete su içmeye gelir (ilk görev oradadır)
     const susuz = tur === 'zebra' || tur === 'fil' ? 0.8 : rng() * 0.5;
-    const g = { id: gid++, tur, x: h.x, y: h.y, plan: null, planBitis: 0, hedef: null, susuzluk: susuz, aclik: rng() * 0.6, alarm: 0, kaynak: null, av: null };
+    const g = { id: gid, tur, x: h.x, y: h.y, plan: null, planBitis: 0, hedef: null, susuzluk: susuz, aclik: rng() * 0.6, alarm: 0, kaynak: null, av: null };
     for (let i = 0; i < 40; i++) {
       const x = h.x + arasi(rng, -h.r * 0.4, h.r * 0.4);
       const y = h.nehirde ? nehirY(h.x) + arasi(rng, -2, 2) : h.y + arasi(rng, -h.r * 0.4, h.r * 0.4);
@@ -250,13 +263,17 @@ function nufusOlustur(k) {
       uyeler.push(b);
       k.hayvanlar.push(b);
     }
-  });
+  }
 }
 
 // ---------- Dünya ----------
 export function dunyaOlustur(k) {
   const rng = tohumluUretec(77); // arazi sabittir: her açılışta aynı
   if (!k.hayvanlar || !k.gruplar) nufusOlustur(k);
+  // Sonradan eklenen türler (Aşama 6) eski kayıtlara da yerleşir
+  TUR_SIRASI.forEach((tur) => {
+    if (!k.gruplar.some((g) => g.tur === tur) && !((k.disari && k.disari.gruplar) || []).some((g) => g.tur === tur)) turGrubuKur(k, tohumluUretec(900 + TUR_SIRASI.indexOf(tur)), tur);
+  });
   const d = {
     k,
     rng: tohumluUretec((Date.now() & 0xffff) + 13),
@@ -328,6 +345,17 @@ export function dunyaOlustur(k) {
     const x = arasi(rng, -180, 180);
     return [x, nehirY(x) + (rng() < 0.5 ? 1 : -1) * arasi(rng, 8, 16)];
   }, 'agac', 0.45, 0.55, { agacTur: 'kiyi' });
+  // Galeri ormanı: nehrin doğu kıyısında sık ağaç şeridi (Aşama 6)
+  yerlestir(70, () => {
+    const x = arasi(rng, GALERI.x0 + 2, GALERI.x1 - 4);
+    return [x, nehirY(x) + arasi(rng, 9, GALERI.derinlik)];
+  }, 'agac', 0.45, 0.6, { agacTur: 'kiyi' });
+  // Termit tepeleri (geçilmez; küçük canlıların yuvası)
+  yerlestir(16, () => {
+    const a = rng() * Math.PI * 2;
+    const r = Math.sqrt(rng()) * TERMITLER.r;
+    return [TERMITLER.x + Math.sin(a) * r, TERMITLER.y + Math.cos(a) * r];
+  }, 'termit', 0.9, 1.6);
   // Dağınık kayalar
   yerlestir(18, halkada, 'kaya', 0.6, 1.4);
   // Geçilebilir süs bitkileri: sazlık, çalı (engel değil)
@@ -548,7 +576,13 @@ function planSec(d, g) {
     g.icti = false;
     return;
   }
-  if (t.yirtici && g.aclik > 0.55 && (gunEvresi(dk) !== 'gunduz' || g.tur === 'leopar' || g.aclik > 0.9)) {
+  const evreSimdi = gunEvresi(dk);
+  const avZamani = t.gunduzAvcisi
+    ? evreSimdi === 'gunduz'
+    : t.alacaAvcisi
+      ? evreSimdi === 'safak' || evreSimdi === 'aksam' || g.aclik > 0.85
+      : evreSimdi !== 'gunduz' || g.tur === 'leopar' || g.aclik > 0.9;
+  if (t.yirtici && g.aclik > 0.55 && avZamani) {
     g.plan = 'av';
     g.av = null;
     g.planBitis = sure(120, 200);
@@ -668,6 +702,7 @@ function grupAlarm(d, g, kaynak, sure = 6, gecikme = 0) {
 }
 
 // ---------- Av ve ölüm (karar 40, 46, 102) ----------
+export const hayvanOldur = (d, b, neden) => hayvanOldu(d, b, neden, null);
 function hayvanOldu(d, b, neden, avci) {
   b.olu = true;
   b.olumNedeni = neden;
@@ -708,8 +743,11 @@ function avGuncelle(d, g, uyelerListe, dt) {
     // Av seç: zayıf olanları (yavru, yaşlı) yeğler
     let en = null;
     let enPuan = Infinity;
+    // Av değiştirme: bölgede çok azalmış bir türü avlamazlar (yoğunluğa bağlı av seçimi)
+    const sayi = {};
+    k.hayvanlar.forEach((b) => !b.olu && (sayi[b.tur] = (sayi[b.tur] || 0) + 1));
     for (const b of k.hayvanlar) {
-      if (b.olu || !t.avlar.includes(b.tur)) continue;
+      if (b.olu || !t.avlar.includes(b.tur) || b.tuzakta || (sayi[b.tur] || 0) <= 4) continue;
       const m = mesafe(g, b);
       if (m > 170) continue;
       if (Math.hypot(b.x, b.y) < ISTASYON.r + 8) continue;
@@ -830,8 +868,11 @@ function gunlukDogumlar(d) {
     const yagisli = E.takvim(gunNo(k.dk)).mevsim === 'yagisli';
     let sans = t.yirtici ? 0.1 : ['fil', 'gergedan', 'zurafa'].includes(g.tur) ? 0.06 : ['piton', 'timsah', 'kartal'].includes(g.tur) ? 0 : kucukGrup ? 0.5 : 0.3;
     if (!t.yirtici && !yagisli) sans *= 0.15;
-    if (d.rng() >= sans) continue;
-    const anne = sec(d.rng, anneler);
+    // Büyük otçul sürülerinde yağmurlarla birden çok dişi aynı günlerde doğurur (gnu, zebra, impala...)
+    const kalabalik = !t.yirtici && t.grup[1] >= 8 && yagisli;
+    const dogumSayisi = kalabalik ? anneler.filter(() => d.rng() < (kucukGrup ? 0.16 : 0.09)).length : d.rng() < sans ? 1 : 0;
+    const anneSirasi = anneler.slice().sort(() => d.rng() - 0.5).slice(0, dogumSayisi);
+    for (const anne of anneSirasi) {
     const y = bireyOlustur(k, d.rng, g.tur, g, 'yavru', d.rng() < 0.5 ? 'erkek' : 'disi', anne.x + 0.8, anne.y + 0.8, anne.id);
     y.dogumDk = k.dk;
     y.yas = 0;
@@ -847,6 +888,7 @@ function gunlukDogumlar(d) {
       arsivOlay(d, `${taninmisMi(anne) ? bireyAdi(anne) : 'Bir ' + kucuk(SOZ[g.tur])} yavruladı.`);
       itibarEkle(d, 6);
     }
+    }
   }
   // Eski leşler kaybolur
   k.lesler = k.lesler.filter((l) => k.dk - l.dk < 2 * 1440 && l.kalan > 0.05);
@@ -857,9 +899,9 @@ function gunlukDogumlar(d) {
 
 // ---------- Ekosistem: sağlık, yaşam döngüsü, göç (Aşama 5) ----------
 // Yırtıcıların acıkma süresi (oyun dakikası): büyük av birkaç gün doyurur, timsah haftalarca aç kalabilir
-const ACLIK_SURESI = { aslan: 4300, leopar: 5200, sirtlan: 3600, timsah: 12000 };
+const ACLIK_SURESI = { aslan: 4300, leopar: 7000, sirtlan: 3600, timsah: 12000, cita: 5000, yabanKopegi: 4500 };
 // Otlayan bir bireyin saatlik tüketimi (zebra = 1)
-const TUKETIM = { fil: 3, manda: 1.5, zebra: 1, ceylan: 0.4, domuz: 0.5, gergedan: 2, suAygiri: 2, zurafa: 1.5 };
+const TUKETIM = { fil: 3, manda: 1.5, zebra: 1, ceylan: 0.4, domuz: 0.5, gergedan: 2, suAygiri: 2, zurafa: 1.5, gnu: 1.1, impala: 0.5, babun: 0.3 };
 
 export function gecmisEkle(k, b, metin) {
   if (!b) return;
@@ -879,7 +921,7 @@ function hastalikVer(d, b, id, siddet, neden) {
 function yaraVer(d, b, neden) {
   return hastalikVer(d, b, 'yara', 0.3 + d.rng() * 0.3, BuyukHarf(neden));
 }
-const AYRILAN_ERKEK = { aslan: true, zebra: true, fil: true, zurafa: true, manda: true };
+const AYRILAN_ERKEK = { aslan: true, zebra: true, fil: true, zurafa: true, manda: true, gnu: true, impala: true, babun: true };
 
 function ekoDuyurusu(d, e) {
   const k = d.k;
@@ -891,13 +933,80 @@ function ekoDuyurusu(d, e) {
     goletKurudu: 'Gölet kurudu, yalnızca çatlak bir çamur kaldı. Hayvanlar suyu artık nehirde arayacak; nehir kıyısında timsahlar daha tehlikeli olacak.',
     goletDoldu: 'Yağmurlarla gölet yeniden doldu.',
     algCogaldi: 'Gölette alg çoğaldı, su yeşile döndü. Kirli su hayvanlarda parazit riskini artırır. Bir su numunesi alıp laboratuvarda inceletebilirsin.',
+    selBasladi: 'Sel! Sağanakla nehir taştı; iki geçit de sular altında kaldı. Sular çekilene kadar karşı kıyıya geçilemez.',
+    selBitti: 'Nehrin suları çekildi, geçitler yeniden geçilebilir.',
+    yanginBasladi: yanginMetni(d),
+    yanginBitti: `Yangın söndü. ${k.eko.sonYangin ? `Yaklaşık ${Math.round(((k.eko.sonYangin.yanan || 1) * 625) / 1000) / 10} hektar alan yandı.` : ''} Yanan otlaklar ilk yağmurlarla taze sürgün verecek.`,
   }[e];
   if (!m) return;
+  if (e === 'yanginBasladi') k.eko.yanginUyari = 0;
   const yagmurlu = e.startsWith('yagmur') || e === 'saganakBasladi';
   olay(d, 'hava', m, yagmurlu ? 2 : 3, { hava: e });
   if (!yagmurlu) {
     mesajEkle(k, `Ekosistem: ${m}`, 'ekosistem');
     arsivOlay(d, m);
+  }
+}
+
+// ---------- Yangın etkisi (karar 23, 76): hayvanlar kaçar, oyuncu uyarılır ----------
+function yanginMetni(d) {
+  const k = d.k;
+  const y = k.eko.sonYangin;
+  if (!y) return 'Savanda yangın çıktı!';
+  const c = E.hucreMerkezi(y.h);
+  const r = k.eko.hava ? pusulaYonu(k.eko.hava.ruzgarYon) : '';
+  return `Yangın! ${BuyukHarf(y.neden)}: ${bolgeAdi(c.x, c.y)} bölgesinde alevler yükseliyor, ${yerTarifi(d.oyuncu, c)}. Rüzgâr ${r} yönünden esiyor; yangın rüzgârın estiği yöne doğru yayılır.`;
+}
+export function yanginYakin(d) {
+  const k = d.k;
+  if (!k.eko || !k.eko.yanan) return null;
+  let en = null;
+  let enM = Infinity;
+  for (const h of E.yananHucreler(k.eko)) {
+    const c = E.hucreMerkezi(h);
+    const m = mesafe(d.oyuncu, c);
+    if (m < enM) {
+      enM = m;
+      en = c;
+    }
+  }
+  return en ? { ...en, m: enM } : null;
+}
+function yanginEtkisi(d, dt) {
+  const k = d.k;
+  const yanan = E.yananHucreler(k.eko);
+  if (!yanan.length) return;
+  d.yanginKontrol = (d.yanginKontrol || 0) + dt;
+  if (d.yanginKontrol < 1) return;
+  d.yanginKontrol = 0;
+  const merkezler = yanan.map((h) => E.hucreMerkezi(h));
+  // Sürüler alevlerden kaçar
+  for (const g of k.gruplar) {
+    const t = TURLER[g.tur];
+    if (t.kus || g.goc) continue;
+    const c = merkezler.find((m) => Math.abs(m.x - g.x) < 40 && Math.abs(m.y - g.y) < 40);
+    if (c && g.alarm <= 0.5) grupAlarm(d, g, c, 8);
+  }
+  // Alevin içinde kalan yavaş hayvanlar ölebilir
+  for (const b of k.hayvanlar) {
+    if (b.olu || TURLER[b.tur].kus || b.tuzakta) continue;
+    if (!E.yangindaMi(k.eko, E.hucre(b.x, b.y))) continue;
+    if ((b.evre === 'yavru' || b.evre === 'yasli' || b.hastalik) && d.rng() < 0.03) hayvanOldu(d, b, 'yangında öldü', null);
+  }
+  if (k.magara) return;
+  // Oyuncu
+  const y = yanginYakin(d);
+  if (!y) return;
+  if (y.m < 60) k.eko.yanginGoruldu = true;
+  if (E.yangindaMi(k.eko, E.hucre(d.oyuncu.x, d.oyuncu.y))) {
+    const a = yonAcisi(y, d.oyuncu);
+    d.oyuncu.x += Math.sin(a) * 6;
+    d.oyuncu.y += Math.cos(a) * 6;
+    d.rota = null;
+    olay(d, 'yangin', 'Alevlerin içindesin! Dumandan nefes alamıyorsun; hızla geri çekildin. Yangından uzak dur.', 5);
+  } else if (y.m < 45 && d.zaman - (d.sonYanginUyari || -99) > 15) {
+    d.sonYanginUyari = d.zaman;
+    olay(d, 'yangin', `Dikkat, yangın yakın: ${yerTarifi(d.oyuncu, y)}. Alevlerin sesi ve duman geliyor.`, 4);
   }
 }
 
@@ -1053,6 +1162,11 @@ function gunlukEkosistem(d) {
   const tk = E.takvim(gun);
   E.havaUret(eko, gun, d.rng);
   eko.yagisBugun = 0;
+  E.yanginRiski(eko, d.kap, gun, d.rng);
+  Object.keys(eko.yanik || {}).forEach((h) => {
+    if (k.dk - eko.yanik[h] > 12 * 1440) delete eko.yanik[h];
+  });
+  if (eko.mevsim !== tk.mevsim) eko.selSayisi = 0;
   if (eko.mevsim !== tk.mevsim) {
     eko.mevsim = tk.mevsim;
     eko.yagisMevsim = 0;
@@ -1076,7 +1190,10 @@ function gunlukEkosistem(d) {
   const olecekler = [];
   const ayrilanlar = [];
   // Uyuzlu grup arkadaşı olan grup
-  const uyuzlu = new Set(k.hayvanlar.filter((b) => !b.olu && b.hastalik && b.hastalik.id === 'uyuz').map((b) => b.grup));
+  const bulasan = { uyuz: new Set(), distemper: new Set() };
+  k.hayvanlar.forEach((b) => {
+    if (!b.olu && b.hastalik && bulasan[b.hastalik.id]) bulasan[b.hastalik.id].add(b.grup);
+  });
   const sarbonLes = k.lesler.filter((l) => l.hastalik === 'sarbon' && k.dk - l.dk < 2 * 1440);
   for (const b of k.hayvanlar) {
     if (b.olu) continue;
@@ -1123,9 +1240,11 @@ function gunlukEkosistem(d) {
     if (!b.hastalik) {
       if (g && g.kirliSu < 0.55 && d.rng() < 0.08) hastalikVer(d, b, 'parazit', 0.2, 'Kirli sudan parazit kaptı');
       else if (d.rng() < 0.003) hastalikVer(d, b, 'parazit', 0.15, 'Parazit kaptı');
-      else if (uyuzlu.has(b.grup) && d.rng() < 0.12) hastalikVer(d, b, 'uyuz', 0.15, 'Grup arkadaşından uyuz bulaştı');
-      else if (d.rng() < 0.0015) hastalikVer(d, b, 'uyuz', 0.15, 'Uyuz oldu');
-      else if (sarbonLes.length && eko.salgin && sarbonLes.some((l) => mesafe(l, g || b) < 60) && d.rng() < 0.15) {
+      else if (bulasan.uyuz.has(b.grup) && d.rng() < 0.06) hastalikVer(d, b, 'uyuz', 0.15, 'Grup arkadaşından uyuz bulaştı');
+      else if (bulasan.distemper.has(b.grup) && !(k.asili || []).includes(b.id) && d.rng() < 0.18) hastalikVer(d, b, 'distemper', 0.2, 'Grup arkadaşından köpek gençlik hastalığı bulaştı');
+      else if (d.rng() < 0.0006 * (k.koruma && k.koruma.asi ? 0.2 : 1) && !(k.asili || []).includes(b.id)) hastalikVer(d, b, 'distemper', 0.2, 'Köpek gençlik hastalığı kaptı');
+      else if (d.rng() < 0.0008) hastalikVer(d, b, 'uyuz', 0.15, 'Uyuz oldu');
+      else if (tk.mevsim === 'kurak' && sarbonLes.length && eko.salgin && sarbonLes.some((l) => mesafe(l, g || b) < 40) && d.rng() < 0.08) {
         if (hastalikVer(d, b, 'sarbon', 0.3, 'Şarbon leşinin çevresinde otlarken şarbon kaptı')) eko.salgin.vaka += 1;
       }
     }
@@ -1343,6 +1462,12 @@ function bireyGuncelle(d, b, g, dt) {
   const t = TURLER[b.tur];
   const ox = b.x;
   const oy = b.y;
+  if (b.tuzakta) {
+    // Tel tuzağa takılmış hayvan yerinden kıpırdayamaz (karar 60)
+    b.davranis = 'tuzaktaKaldi';
+    b.hareketli = false;
+    return;
+  }
   if (b.tehdit > 0) b.tehdit -= dt;
   b.gecis = !!g.goc;
   const hDef = b.hastalik ? E.HASTALIKLAR[b.hastalik.id] : null;
@@ -1389,8 +1514,8 @@ function bireyGuncelle(d, b, g, dt) {
   b.hareketli = hareketli;
   b.davranis = davranisBelirle(d, b, g, hareketli);
 
-  // Oyuncuya tepki
-  const mo = mesafe(b, d.oyuncu);
+  // Oyuncuya tepki (mağaradayken oyuncu dışarıda yok sayılır)
+  const mo = k.magara ? 999 : mesafe(b, d.oyuncu);
   if (mo < 70 && !t.kus) {
     const kac = kacisMesafesi(d, b);
     if (mo < kac && g.alarm <= 0.5 && b.tehdit <= 0) {
@@ -1635,6 +1760,20 @@ export function fotografCek(d) {
   const k = d.k;
   if (d.zaman - d.sonFoto < 1.2) return;
   let b = gozlenen(d);
+  // Az önce bulunan küçük canlının fotoğrafı (Aşama 6)
+  if ((!b || k.magara) && d.sonKucuk && d.zaman - d.sonKucuk.zaman < 25) {
+    d.sonFoto = d.zaman;
+    const id = d.sonKucuk.id;
+    const kalite = d.rng() < 0.5 ? 'iyi' : d.rng() < 0.6 ? 'çok iyi' : 'orta';
+    k.arsiv.fotolar.unshift({ id: k.sonrakiId++, kucuk: id, tur: null, davranis: null, bolge: k.magara ? 'Mağara' : bolgeAdi(d.oyuncu.x, d.oyuncu.y), dk: k.dk, kalite });
+    if (k.arsiv.fotolar.length > 300) k.arsiv.fotolar.length = 300;
+    olay(d, 'foto', `Fotoğraf çekildi: ${d.sonKucukAd || 'küçük canlı'}, yakın çekim. Kalite ${kalite}.`, 3, { cekildi: true });
+    return;
+  }
+  if (k.magara) {
+    olay(d, 'foto', 'Mağarada önce fenerinle bir canlı bul, sonra fotoğrafını çek.', 3, { cekildi: false });
+    return;
+  }
   const menzil = Math.min(kameraMenzili(k), durbunMenzili(k.dk, k) + 4);
   if (!b || mesafe(d.oyuncu, b) > menzil) {
     const l = gorunurler(d, menzil);
@@ -1685,6 +1824,10 @@ export function fotografCek(d) {
 
 // ---------- Ses kaydı ve analizi (karar 49, 87) ----------
 export function sesKaydiBaslat(d) {
+  if (d.k.magara) {
+    olay(d, 'hata', 'Mağarada yankı çok güçlü; kayıt çözümlenemiyor. Yarasaların seslerini dışarıda, akşam çıkışında kaydedebilirsin.', 3);
+    return;
+  }
   if (d.sesKayit) {
     olay(d, 'hata', 'Kayıt zaten sürüyor.', 2);
     return;
@@ -1741,6 +1884,14 @@ export function yerGit(d, id) {
     const y = YERLER.find((x) => x.id === id);
     if (!y) return;
     hedef = { x: y.x, y: y.y, ad: y.ad, yakin: 4 };
+  }
+  if (taskinVar && guneydeMi(hedef.x, hedef.y) !== guneydeMi(d.oyuncu.x, d.oyuncu.y)) {
+    olay(d, 'hata', 'Nehir taştı, geçitler sular altında. Sular çekilene kadar karşı kıyıya geçemezsin.', 3);
+    return;
+  }
+  if (d.k.magara) {
+    olay(d, 'hata', 'Önce mağaradan çıkmalısın.', 3);
+    return;
   }
   d.rota = hedef;
   d.yaklasId = null;
@@ -1880,8 +2031,9 @@ export function guncelle(d, dt, girdi = {}) {
   let sonuc = { carpti: false, nehir: false, gol: false };
 
   // --- Oyuncu ---
-  const ileri = sinirla(girdi.ileri || 0, -1, 1);
-  const don = sinirla(girdi.don || 0, -1, 1);
+  taskinVar = !!(k.eko && k.eko.taskin);
+  const ileri = k.magara ? 0 : sinirla(girdi.ileri || 0, -1, 1);
+  const don = k.magara ? 0 : sinirla(girdi.don || 0, -1, 1);
   const elle = Math.abs(ileri) > 0.08 || Math.abs(don) > 0.08;
   if (elle) {
     d.rota = null;
@@ -1984,7 +2136,8 @@ export function guncelle(d, dt, girdi = {}) {
 
   // --- Ekosistem: hava, su, bitki örtüsü (Aşama 5) ---
   if (k.eko) {
-    for (const e of E.ekoAdim(k.eko, d.kap, gunNo(k.dk), gunDakikasi(k.dk), dtDk)) ekoDuyurusu(d, e);
+    for (const e of E.ekoAdim(k.eko, d.kap, gunNo(k.dk), gunDakikasi(k.dk), dtDk, d.rng)) ekoDuyurusu(d, e);
+    yanginEtkisi(d, dt);
   }
 
   // --- Zaman duyuruları ---
@@ -2106,6 +2259,8 @@ export function kayittanYukle(v) {
   });
   if (!k.arsiv.bitkiler || typeof k.arsiv.bitkiler !== 'object') k.arsiv.bitkiler = {};
   if (!k.disari || !Array.isArray(k.disari.gruplar) || !Array.isArray(k.disari.hayvanlar)) k.disari = { gruplar: [], hayvanlar: [] };
+  if (!k.koruma || typeof k.koruma !== 'object' || !k.koruma.projeler) k.koruma = { projeler: {}, devriye: false, asi: false };
+  if (!Array.isArray(k.asili)) k.asili = [];
   if (k.eko && typeof k.eko !== 'object') k.eko = null;
   ['tesisler', 'personel', 'teklifler', 'mesajlar', 'tuzaklar', 'gpsli', 'numuneKutusu', 'numuneler', 'rehab'].forEach((a) => {
     if (!Array.isArray(k[a])) k[a] = [];

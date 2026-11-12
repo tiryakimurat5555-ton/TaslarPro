@@ -18,6 +18,7 @@ const SURE = {
   seviye: 1.8, yarali: 0.45, adim1: 0.07, adim2: 0.07, carpma: 0.15, hata: 0.18, olum: 1.4, dogus: 0.9, odak: 0.02,
   sinir: 0.12, etkinles: 0.1, kalp: 0.32, isinlan: 1.2, iksir: 0.6, hedef: 0.18, sonar: 0.09,
   gok: 0.3, // gök gürültüsü uzun ama arka plan sesi; konuşmayı bekletmesin
+  gnu: 1.5, cita: 1.2, impala: 1.4, yabankopegi: 1.6, babun: 1.4, yarasa: 0.4,
   fil: 0.7, zebra: 0.8, suaygiri: 0.8, manda: 1.8, ceylan: 1.4, zurafa: 0.8,
   kurt: 1.6, tilki: 0.9, domuz: 1.4, ayi: 1.4, yilan: 1.2, akrep: 1.0, sirtlan: 1.2, timsah: 1.8, leopar: 1.4, kartal: 1.2, aslan: 1.8, gergedan: 1.2,
 };

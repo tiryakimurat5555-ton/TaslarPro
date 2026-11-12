@@ -4,6 +4,7 @@ import * as M from '../oyun/mantik.js';
 import * as Mz from '../oyun/merkez.js';
 import * as E from '../oyun/ekosistem.js';
 import { TURLER, TUR_SIRASI } from '../oyun/veri.js';
+import * as K from '../oyun/kesif.js';
 
 const gunSayisi = +(process.argv[2] || 30);
 const k = M.arastirmaciOlustur('Ekosistem');
@@ -24,7 +25,7 @@ for (let t = 0; t < (gunSayisi * 1440) / 0.5; t += 0.1) {
   Mz.guncelle(d);
   for (const o of M.olaylariAl(d)) {
     olaySay[o.tur] = (olaySay[o.tur] || 0) + 1;
-    if (['goc', 'mevsim'].includes(o.tur)) console.log('   >', o.metin.slice(0, 160));
+    if (['goc', 'mevsim', 'hava'].includes(o.tur) && /Sel|Yangın|yangın|Nehrin/.test(o.metin || '') || ['goc', 'mevsim'].includes(o.tur)) console.log('   >', o.metin.slice(0, 160));
   }
   const gun = M.gunNo(k.dk);
   if (gun !== sonGun) {
@@ -38,7 +39,7 @@ for (let t = 0; t < (gunSayisi * 1440) / 0.5; t += 0.1) {
     const otOrt = e.ot.reduce((a, b) => a + b, 0) / e.ot.filter((x, i) => d.kap.ot[i]).length;
     const kon = k.hayvanlar.filter((b) => !b.olu).reduce((a, b) => a + b.kondisyon, 0) / Math.max(1, top);
     console.log(
-      `Gün ${gun} ${tk.mevsim[0]}${tk.mevsimGunu} ${e.hava.tur.padEnd(8)} gölet ${e.golet.toFixed(2)} alg ${e.alg.toFixed(2)} nem ${e.islaklik.toFixed(2)} ot ${otOrt.toFixed(2)} yeşil ${e.yesil.toFixed(2)} | nüfus ${top} (dışarıda ${k.disari.hayvanlar.length}) kondisyon ${kon.toFixed(2)} | hasta ${JSON.stringify(hasta)}${e.salgin ? ' SALGIN ' + e.salgin.vaka : ''} | bütçe ${k.butce}`
+      `Gün ${gun} ${tk.mevsim[0]}${tk.mevsimGunu} ${e.hava.tur.padEnd(8)} gölet ${e.golet.toFixed(2)} alg ${e.alg.toFixed(2)} nem ${e.islaklik.toFixed(2)} ot ${otOrt.toFixed(2)} yeşil ${e.yesil.toFixed(2)} | nüfus ${top} (dışarıda ${k.disari.hayvanlar.length}) kondisyon ${kon.toFixed(2)} | hasta ${JSON.stringify(hasta)}${e.salgin ? ' SALGIN ' + e.salgin.vaka : ''} | yanan ${E.yananHucreler(e).length} yanık ${Object.keys(e.yanik).length}${e.taskin ? ' SEL' : ''} | tuzak ${k.kacak.tuzaklar.length}${k.kacak.tuzaklar.filter((t) => t.hayvanId).length ? ' takılı' : ''} | bütçe ${k.butce}`
     );
   }
 }

@@ -1,5 +1,6 @@
 // Vahşi Yaşam — erişilebilir, kendi sesiyle konuşan 3B doğa araştırması ve ekosistem simülasyonu (Afrika savanı).
-// Tasarım: 113 kararlık proje brifi. Aşama 1-5: teknik temel, saha, hayvanlar ve gözlem, araştırma merkezi, ekosistem.
+// Tasarım: 113 kararlık proje brifi. Aşama 1-6: teknik temel, saha, hayvanlar ve gözlem, araştırma merkezi, ekosistem,
+// içerik (küçük canlılar, mağara, afetler, kaçak avcılık, koruma projeleri).
 // Kayıp Okyanus düzeni: sahada tam ekran dokunma hareketleri, menüler kendi kendini okuyan listeler (oyun/SesliListe.js)
 // ve alt menü yığını. VoiceOver ile oynarken aynı menüler VoiceOver düğmeleri olarak çizilir.
 // Yapı: oyun/veri.js, oyun/mantik.js (saf mantık), oyun/merkez.js (araştırma merkezi), oyun/ses.js (konuşma),
@@ -17,6 +18,8 @@ import * as Ses from './oyun/ses.js';
 import * as M from './oyun/mantik.js';
 import * as Mz from './oyun/merkez.js';
 import * as E from './oyun/ekosistem.js';
+import * as K from './oyun/kesif.js';
+import { KUCUKLER, KUCUK_SIRASI, GRUPLAR, MAGARA_ODALARI } from './oyun/kucukler.js';
 import * as Efekt from './oyun/efekt.js';
 import { sahneKur } from './oyun/sahne.js';
 import { TURLER, TUR_SIRASI, YERLER, DAVRANISLAR, EVRELER } from './oyun/veri.js';
@@ -30,7 +33,7 @@ const VARSAYILAN_AYAR = { kip: null, hiz: 1.0, titresim: true, rehber: true, efe
 const ADLAR = ['Defne', 'Kaan', 'Ada', 'Deniz', 'Ilgaz', 'Elif', 'Atlas', 'Zeynep', 'Toprak', 'Yağmur', 'Mert', 'Selin'];
 
 const KipBaglam = createContext('kendi');
-const KALICI_OLAYLAR = ['tanimlandi', 'yeniTur', 'yeniDavranis', 'foto', 'tanik', 'sesKayit', 'saldiri', 'analizBitti', 'gorevBitti', 'goc', 'salgin', 'numuneTeslim', 'mevsim'];
+const KALICI_OLAYLAR = ['tanimlandi', 'yeniTur', 'yeniDavranis', 'foto', 'tanik', 'sesKayit', 'saldiri', 'analizBitti', 'gorevBitti', 'goc', 'salgin', 'numuneTeslim', 'mevsim', 'yeniKucuk', 'kacakTuzak', 'koruma', 'magara'];
 
 // Sahadaki aletler (iki parmakla sağa/sola kaydırarak değişir, çift dokunuş kullanır)
 const ALETLER = [
@@ -38,6 +41,7 @@ const ALETLER = [
   { id: 'kamera', ad: 'Fotoğraf makinesi', ipucu: 'Çift dokununca gözlediğin hayvanın fotoğrafını çekersin.', kullan: (d) => M.fotografCek(d) },
   { id: 'ses', ad: 'Ses kayıt cihazı', ipucu: 'Çift dokununca 6 saniye kayıt yapıp sesleri çözümlersin.', kullan: (d) => M.sesKaydiBaslat(d) },
   { id: 'yaklas', ad: 'Yaklaşma', ipucu: 'Çift dokununca gözlediğin hayvana ürkütmeden yaklaşırsın.', kullan: (d) => M.yaklas(d) },
+  { id: 'ara', ad: 'Büyüteç ve fener', ipucu: 'Çift dokununca yakındaki küçük canlıları ararsın: böcekler, kuşlar, kurbağalar, sürüngenler. Hemen ardından fotoğraf makinesiyle fotoğrafını çekebilirsin.', kullan: (d) => K.kucukAra(d) },
 ];
 const OLU_BOLGE = 0.12;
 const TAM_SURUKLEME = 90; // bu kadar piksel sürükleyince tam hız
@@ -156,6 +160,18 @@ const YARDIM = [
       'Hayvanlar yaşlanır, yavrular büyür, genç erkekler sürüden ayrılır. Hastalanan ya da yaralanan hayvanlar dürbünde belirti gösterir: topallama, zayıflık, tüy dökülmesi.',
       'Menüdeki Numune ve veteriner bölümünden su, dışkı ve leş numunesi alırsın; Çevredeki bitkiler bölümünden bitki inceler, yaprak ve tohum numunesi alırsın. Numuneler istasyona dönünce laboratuvarda analiz edilir.',
       'Veterinerin yaralı ve hasta hayvanları tedavi eder, şarbonlu leşleri yakar. Rehabilitasyon alanı kurulunca ağır yaralı ve yetim hayvanlar bakılıp doğaya geri bırakılır. Sağlıklı hayvana dokunulmaz, vahşi hayvan beslenmez.',
+    ],
+  },
+  {
+    id: 'kesif',
+    baslik: 'Küçük canlılar, mağara, afetler ve koruma',
+    satirlar: [
+      'Savanda 100\'den fazla küçük canlı var: kuşlar, böcekler, sürüngenler, kurbağalar, balıklar ve küçük memeliler. Aletlerden Büyüteç ve fener ile çift dokununca çevrende küçük canlı ararsın; hemen ardından fotoğrafını çekebilirsin.',
+      'Hangi canlıyı bulacağın bölgeye, saate, mevsime ve havaya bağlı: kurbağalar yağmurdan sonra, baykuşlar gece, kelebekler yağışlı mevsimde çıkar. Galeri ormanı ve termit tepeleri yeni bölgelerdir.',
+      'Mağara takımıyla kayalığın kuzeyindeki mağaraya girersin. Mağarada tek parmakla yukarı kaydırınca bir sonraki odaya ilerler, aşağı kaydırınca geri dönersin; dokununca oda anlatılır. Akşam mağaranın ağzında yarasaların çıkışını izleyebilirsin.',
+      'Afetler: kurak mevsimin sonunda yangın çıkabilir, rüzgârla yayılır, hayvanlar kaçar; ilk yağmurlarla yanan alanda taze sürgünler çıkar. Büyük sağanakta nehir taşar ve geçitler birkaç saat geçilmez.',
+      'Kaçak avcılar otçulların yollarına tel tuzak kurar. Yakından geçince fark edersin; menüden söküp yaban hayatı servisine bildirirsin. Tuzağa takılmış hayvanı veterinerin kurtarır.',
+      'Araştırma merkezindeki Koruma projeleri: gergedan koruma programı, yaban köpeklerinin aşılanması, kaçak avcılıkla mücadele ve akbabaları koruma. Her projenin adımları vardır; tamamlanınca fon ve itibar gelir.',
     ],
   },
 ];
@@ -370,6 +386,9 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     if (ayarRef.current.ortam === false) return Efekt.ortamDurdur();
     // Nehir, sulak alan ve gölet kıyısında su; başka yerde gündüz ya da gece savanı (30 sn'lik kesintisiz döngüler)
     const b = M.bolgeBul(d.oyuncu.x, d.oyuncu.y);
+    if (d.k.magara) return Efekt.ortamBaslat('ortam_magara');
+    const yy = M.yanginYakin(d);
+    if (yy && yy.m < 70) return Efekt.ortamBaslat('ortam_yangin');
     if (d.k.eko && d.k.eko.yagmurVar) return Efekt.ortamBaslat('ortam_yagmur');
     if (b === 'sulak' || b === 'nehir' || b === 'golet') Efekt.ortamBaslat('ortam_nehir');
     else Efekt.ortamBaslat(M.geceMi(d.k.dk) || M.gunEvresi(d.k.dk) === 'aksam' ? 'ortam_gece' : 'ortam_gunduz');
@@ -470,6 +489,29 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       case 'yeniBitki':
         Efekt.cal('altin', 0.7);
         return;
+      case 'yeniKucuk':
+        Efekt.cal(o.nadir ? 'seviye' : 'altin', 0.7);
+        return;
+      case 'kucuk':
+        Efekt.cal('odak', 0.6);
+        return;
+      case 'yarasaCikisi':
+        Efekt.cal('yarasa', o.metin ? 0.9 : 0.45);
+        return;
+      case 'kacakTuzak':
+        Efekt.cal('kritik', 0.8);
+        return;
+      case 'yangin':
+        ortamSec();
+        Efekt.cal('kritik', 0.7);
+        return;
+      case 'koruma':
+        Efekt.cal('seviye', 0.8);
+        return;
+      case 'magara':
+        ortamSec();
+        Efekt.cal('adim1', 0.5);
+        return;
       default:
     }
   };
@@ -485,6 +527,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     let adimYol = 0;
     let adimSira = false;
     let gokSayac = 8;
+    let ortamSayac = 3;
     let calisiyor = true;
     let raf;
     const dongu = () => {
@@ -506,7 +549,12 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
           Efekt.cal('carpma', 0.6);
           if (a.kip !== 'gorerek') Ses.soyle(sonuc.nehir ? 'Önünde nehir var. Karşıya yalnızca geçitlerden geçilir.' : sonuc.gol ? 'Önünde gölet var.' : 'Önün kapalı.', 2);
         }
-        if (d.k.eko && d.k.eko.yagmurVar && d.k.eko.siddet > 0.8) {
+        ortamSayac -= dt;
+        if (ortamSayac <= 0) {
+          ortamSayac = 3;
+          if (d.k.eko && E.yananHucreler(d.k.eko).length) ortamSec();
+        }
+        if (d.k.eko && d.k.eko.yagmurVar && d.k.eko.siddet > 0.8 && !d.k.magara) {
           gokSayac -= dt;
           if (gokSayac <= 0) {
             gokSayac = 18 + Math.random() * 30;
@@ -618,6 +666,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     {
       onSurukle: (mod, dx, dy) => {
         if (menuRef.current) return;
+        if (d.k.magara) return;
         if (mod === 'tek') {
           adimBitis.current = 0;
           girdi.current = { ileri: olcekle(-dy), don: olcekle(dx) };
@@ -627,7 +676,13 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         girdi.current = { ileri: 0, don: 0 };
       },
       onKaydir: (yon, parmak) => {
-        if (menuRef.current || parmak < 2) return;
+        if (menuRef.current) return;
+        if (d.k.magara && parmak < 2) {
+          if (yon === 'yukari') K.magaraIlerle(d);
+          else if (yon === 'asagi') K.magaraGeri(d);
+          return;
+        }
+        if (parmak < 2) return;
         if (yon === 'sag' || yon === 'sol') aletSec((aletRef.current + (yon === 'sag' ? 1 : ALETLER.length - 1)) % ALETLER.length);
         else if (yon === 'yukari') aracIslemi();
         else durVeBitir();
@@ -635,6 +690,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       onDokun: (parmak) => {
         if (menuRef.current) return;
         if (parmak >= 2) return Ses.sus();
+        if (d.k.magara) return Ses.hemen(`${K.odaTarifi(d.k)} Aşağı kaydırırsan ${d.k.magara.oda ? 'bir önceki odaya dönersin' : 'mağaradan çıkarsın'}.`);
         const b = M.gozlenen(d);
         let m = b ? `${M.gozlemTarifi(d, b)}.` : M.etrafiTara(d);
         if (d.rota) m += ` ${d.rota.ad} yolundasın, ${M.saatSozu(M.saatYonu(d.oyuncu, d.rota))}, ${M.metreSozu(M.mesafe(d.oyuncu, d.rota))}.`;
@@ -647,7 +703,9 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
           menuAc('ana');
           return;
         }
-        ALETLER[aletRef.current].kullan(d);
+        const al = ALETLER[aletRef.current];
+        if (d.k.magara && (al.id === 'durbun' || al.id === 'yaklas')) K.kucukAra(d);
+        else al.kullan(d);
       },
       onUzunBas: () => {
         if (menuRef.current) return;
@@ -693,7 +751,25 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         altMenu('ekosistem', `Ekosistem: ${E.MEVSIM_ADI[E.takvim(M.gunNo(k.dk)).mevsim]}, ${k.eko.yagmurVar ? 'yağmur yağıyor' : 'hava ' + E.HAVA_ADI[k.eko.hava.tur]}`, menu.ac),
         altMenu('bitkiler', `Çevredeki bitkiler: ${Mz.cevredekiBitkiler(d).length}`, menu.ac),
         altMenu('numune', `Numune ve veteriner${k.numuneKutusu.length ? `: kutuda ${k.numuneKutusu.length} numune` : ''}`, menu.ac),
+        { id: 'ara', etiket: 'Küçük canlı ara', ipucu: 'Böcek, kuş, kurbağa, sürüngen ve küçük memelileri arar.', sec: kapatVe(() => K.kucukAra(d)) },
       ];
+      if (k.magara) ogeler.splice(1, 0, altMenu('magara', `Mağaradasın: ${MAGARA_ODALARI[k.magara.oda].ad}`, menu.ac));
+      else if (K.magaraYakin(d))
+        ogeler.splice(1, 0, {
+          id: 'magaraGir',
+          etiket: 'Mağaraya gir',
+          sec: () => {
+            const m = K.magarayaGir(d);
+            if (!d.k.magara) Ses.hemen(m);
+            else {
+              menu.kapat();
+              kaydet();
+            }
+            return 'sessiz';
+          },
+        });
+      const tz = K.yakinTuzak(d, 6);
+      if (tz && tz.bulundu) ogeler.splice(1, 0, { id: 'sok', etiket: 'Tel tuzağı sök ve bildir', sec: yap(() => K.tuzakSok(d)) });
       if (d.rota || d.yaklasId || gb) ogeler.push({ id: 'dur', etiket: 'Dur ve gözlemi bitir', sec: kapatVe(durVeBitir) });
       const sahaVar = k.stok.tuzak || k.tuzaklar.length || k.stok.tasma || k.gpsli.length;
       if (sahaVar) ogeler.push(altMenu('saha', `Saha ekipmanı: ${k.tuzaklar.length} kamera tuzağı kurulu, ${k.gpsli.length} tasmalı hayvan`, menu.ac));
@@ -786,6 +862,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         altMenu('saglik', `Hayvan sağlığı ve salgın takibi${k.eko.salgin && k.eko.salgin.bilinen ? ': salgın var' : ''}`, menu.ac),
       ];
       if (Mz.tesisVar(k, 'rehab') || k.rehab.length) ogeler.push(altMenu('rehab', `Rehabilitasyon: ${k.rehab.length} hayvan`, menu.ac));
+      ogeler.push(altMenu('koruma', `Koruma projeleri: ${Object.values(k.koruma.projeler).filter((p) => p.durum === 'surer').length} süren, ${Object.values(k.koruma.projeler).filter((p) => p.durum === 'tamam').length} tamamlanan`, menu.ac));
       return liste(u, 'Araştırma merkezi', ogeler);
     }
     if (u === 'mesajlar' || u.startsWith('mesajlar~')) {
@@ -865,6 +942,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         altMenu('fotolar', `Fotoğraflar: ${a.fotolar.length}`, menu.ac),
         altMenu('sesler', `Ses kayıtları: ${a.sesler.length}`, menu.ac),
         altMenu('bitkiArsiv', `Bitkiler: ${Object.keys(a.bitkiler || {}).length} / ${E.BITKI_SIRASI.length}`, menu.ac),
+        altMenu('kucukler', `Küçük canlılar: ${K.kucukSayisi(k)} / ${KUCUK_SIRASI.length} tür`, menu.ac),
         altMenu('gunluk', `Günlük: ${a.olaylar.length} kayıt`, menu.ac),
       ]);
     }
@@ -927,6 +1005,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     }
     if (u === 'fotolar' || u.startsWith('fotolar~')) {
       const tum = k.arsiv.fotolar.map((f) => {
+        if (f.kucuk) return bilgi('f' + f.id, `${KUCUKLER[f.kucuk] ? KUCUKLER[f.kucuk].ad : 'Küçük canlı'}, yakın çekim, kalite ${f.kalite}. ${f.bolge}, ${zamanKisa(f.dk)}`);
         const b = M.birey(d, f.bireyId);
         const ad = b && M.taninmisMi(b) ? M.bireyAdi(b) : M.SOZ[f.tur];
         return bilgi('f' + f.id, `${ad}, ${kucuk(M.davranisAdi(f.davranis))}, kalite ${f.kalite}${f.kaynak === 'tuzak' ? ', kamera tuzağı' : ''}. ${f.bolge}, ${zamanKisa(f.dk)}`);
@@ -967,6 +1046,11 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       ogeler.push(bilgi('goc', gocte.length || yolda.length ? `Göç: ${[...yolda, ...gocte].join('. ')}.` : `Göç: şu an göçte sürü yok.${e.gocler.length ? ` Son kayıt: ${e.gocler[0].gun}. gün, ${kucuk(M.SOZ[e.gocler[0].tur])} sürüsü ${e.gocler[0].olay === 'cikis' ? 'göçe çıktı' : 'göçten döndü'}.` : ''}`));
       const sal = e.salgin && e.salgin.bilinen ? `Salgın: ${E.HASTALIKLAR[e.salgin.hastalik].ad}, ${gun - e.salgin.basGun + 1}. gün, ${e.salgin.vaka} vaka.` : 'Bilinen bir salgın yok.';
       ogeler.push(bilgi('salgin', sal));
+      const yanan = E.yananHucreler(e).length;
+      ogeler.push(bilgi('yangin', yanan ? `${E.yanginSoz(e)} ${(() => { const y = M.yanginYakin(d); return y ? `En yakın alevler ${yerTarifi(y)}.` : ''; })()} Rüzgâr ${M.pusulaYonu(e.hava.ruzgarYon)} yönünden esiyor.` : `Yangın yok.${e.yanginlar ? ` Bu araştırmada ${e.yanginlar} yangın çıktı.` : ''}`));
+      if (yanan) ogeler.push({ id: 'sondur', etiket: 'Yangın söndürme ekibi çağır, 3.000 lira', ipucu: 'Doğal yangınlar savanın parçasıdır; istasyon ya da nadir türler tehlikedeyse çağır.', sec: yap(() => Mz.yanginSondur(d)) });
+      if (e.taskin) ogeler.push(bilgi('sel', 'Nehir taşkın: geçitler sular altında, karşı kıyıya geçilemiyor.'));
+      ogeler.push(bilgi('kacak', `Kaçak avcılık: ${k.kacak.bulunan} tel tuzak söküldü, ${k.kacak.kurtarilan} hayvan kurtarıldı, ${k.kacak.olen} hayvan tuzakta öldü.${k.koruma.devriye ? ' Koruma devriyesi görevde.' : ''}`));
       // Keşfedilen türlerin bölgedeki tahmini sayısı (istasyonun kayıtlarından)
       const sayilar = TUR_SIRASI.filter((t) => k.arsiv.turler[t]).map((t) => `${kucuk(M.SOZ[t])} ${k.hayvanlar.filter((b) => !b.olu && b.tur === t).length}`);
       if (sayilar.length) ogeler.push(bilgi('nufus', `Bölgedeki tahmini sayılar: ${sayilar.join(', ')}.`));
@@ -997,6 +1081,8 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       ];
       if (les && (les.teshis === 'sarbon' || (k.eko.salgin && k.eko.salgin.bilinen))) ogeler.push({ id: 'yak', etiket: 'Şarbonlu leşi yaktır', sec: yap(() => Mz.lesiYak(d)) });
       if (Mz.tesisVar(k, 'rehab')) ogeler.push({ id: 'rehab', etiket: `Rehabilitasyona al${gb ? `: ${M.bireyAdi(gb)}` : ''}`, ipucu: 'Ağır yaralı, ağır hasta ya da yetim yavrular için.', sec: yap(() => Mz.rehabaAl(d)) });
+      const takili = k.kacak.tuzaklar.find((t) => t.hayvanId && t.bulundu && M.mesafe(d.oyuncu, t) < 40);
+      if (takili) ogeler.splice(1, 0, { id: 'kurtar', etiket: 'Tel tuzağa takılmış hayvanı kurtar', sec: yap(() => K.tuzaktanKurtar(d)) });
       return liste(u, 'Numune ve veteriner', ogeler);
     }
     if (u === 'laboratuvar' || u.startsWith('laboratuvar~')) {
@@ -1041,6 +1127,64 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       ];
       return liste(u, b.ad, ogeler);
     }
+    // ----- Mağara, küçük canlılar, koruma (Aşama 6) -----
+    if (u === 'magara') {
+      if (!k.magara) return liste(u, 'Mağara', [bilgi('yok', 'Mağarada değilsin.')]);
+      const i = k.magara.oda;
+      const ogeler = [bilgi('oda', K.odaTarifi(k))];
+      if (i < MAGARA_ODALARI.length - 1) ogeler.push({ id: 'ileri', etiket: `İlerle: ${MAGARA_ODALARI[i + 1].ad}`, sec: kapatVe(() => K.magaraIlerle(d)) });
+      if (i > 0) ogeler.push({ id: 'gerid', etiket: `Geri dön: ${MAGARA_ODALARI[i - 1].ad}`, sec: kapatVe(() => K.magaraGeri(d)) });
+      ogeler.push({ id: 'ara', etiket: 'Fenerle küçük canlı ara', sec: kapatVe(() => K.kucukAra(d)) });
+      ogeler.push({ id: 'cik', etiket: 'Mağaradan çık', sec: kapatVe(() => K.magaradanCik(d)) });
+      return liste(u, 'Mağara', ogeler);
+    }
+    if (u === 'kucukler') {
+      const a = k.arsiv.kucukler || {};
+      const ogeler = GRUPLAR.map((g) => {
+        const l = KUCUK_SIRASI.filter((id) => KUCUKLER[id].grup === g);
+        return altMenu('kg-' + g, `${g}: ${l.filter((id) => a[id]).length} / ${l.length}`, menu.ac);
+      });
+      const ozel = [a.termitUcusu && 'termitlerin çiftleşme uçuşu', a.yarasaCikisi && 'yarasaların akşam çıkışı'].filter(Boolean);
+      if (ozel.length) ogeler.push(bilgi('ozel', `Gözlenen özel anlar: ${ozel.join(', ')}.`));
+      const odalar = (k.arsiv.magara && k.arsiv.magara.odalar) || [];
+      ogeler.push(bilgi('magara', odalar.length ? `Mağarada keşfedilen odalar: ${MAGARA_ODALARI.filter((o) => odalar.includes(o.id)).map((o) => o.ad).join(', ')}.` : 'Mağara henüz keşfedilmedi.'));
+      return liste(u, 'Küçük canlılar', ogeler);
+    }
+    if (u.startsWith('kg-')) {
+      const g = u.slice(3).split('~')[0];
+      const a = k.arsiv.kucukler || {};
+      const l = KUCUK_SIRASI.filter((id) => KUCUKLER[id].grup === g);
+      const tum = l
+        .filter((id) => a[id])
+        .map((id) => {
+          const c = KUCUKLER[id];
+          return bilgi('c' + id, `${c.ad}, ${c.bilimsel}${c.nadir ? ', nadir' : ''}. ${c.tarif}${c.ses ? ` Sesi: ${c.ses}` : ''} ${a[id].sayi} kez görüldü; ilk kez ${a[id].ilkBolge}.`);
+        });
+      const kalan = l.length - tum.length;
+      const s2 = sayfali('kg-' + g, tum, menu, 10);
+      if (s2.sayfa) return liste(s2.sayfa.anahtar, s2.sayfa.baslik, s2.sayfa.ogeler);
+      return liste(u, g, [...(s2.ogeler.length ? s2.ogeler : [bilgi('bos', 'Bu gruptan henüz bir tür bulmadın.')]), ...(kalan ? [bilgi('kalan', `Bulunmamış ${kalan} tür var.`)] : [])]);
+    }
+    if (u === 'koruma') {
+      const ogeler = Mz.KORUMA.map((p) => altMenu('koruma-' + p.id, Mz.korumaOzeti(k, p), menu.ac, p.tarif));
+      return liste(u, 'Koruma projeleri', ogeler, 'Nesli tehlikedeki türler ve insan etkileri için uzun süreli projeler.');
+    }
+    if (u.startsWith('koruma-')) {
+      const p = Mz.KORUMA.find((x) => 'koruma-' + x.id === u);
+      if (!p) return liste(u, 'Proje', [bilgi('yok', 'Proje bulunamadı.')]);
+      const pd = k.koruma.projeler[p.id];
+      const ogeler = [bilgi('tarif', p.tarif)];
+      if (!pd) ogeler.push({ id: 'basla', etiket: 'Projeyi başlat', sec: yap(() => Mz.korumaBaslat(k, p.id)) });
+      else {
+        Mz.korumaSatirlari(k, p.id).forEach((a) => {
+          ogeler.push(bilgi('a' + a.i, `${a.i + 1}. adım, ${a.tamam ? 'tamamlandı' : 'yapılacak'}: ${a.metin}`));
+          if (a.eylem) ogeler.push({ id: 'e' + a.i, etiket: a.eylem, sec: yap(() => Mz.korumaEylem(k, p.id, a.i)) });
+        });
+        if (pd.durum === 'tamam') ogeler.push(bilgi('sonuc', `Tamamlandı. ${p.sonuc}`));
+      }
+      ogeler.push(bilgi('odul', `Ödül: ${Mz.liraSozu(p.odul.fon)} fon ve bilimsel itibar.`));
+      return liste(u, p.ad, ogeler);
+    }
     if (u === 'ayarlar') {
       return liste(
         u,
@@ -1075,7 +1219,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
               </Text>
             </View>
             <Text style={st.hudKucuk} numberOfLines={1}>
-              {M.bolgeAdi(d.oyuncu.x, d.oyuncu.y)}
+              {k.magara ? `Mağara · ${MAGARA_ODALARI[k.magara.oda].ad}` : M.bolgeAdi(d.oyuncu.x, d.oyuncu.y)}
               {k.aracta ? ' · araçta' : ''}
               {jestli ? ` · Alet: ${alet.ad}` : ''}
             </Text>
@@ -1112,7 +1256,11 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         {!jestli && (
           <>
             <View style={st.izgara}>
-              <Dugme etiket="Gözlemle" ipucu="Dürbünle sıradaki hayvanı seçer ve izler" onEtkin={() => M.gozlemBaslat(d)} stil={[st.eylem, st.ana]} />
+              {k.magara ? (
+                <Dugme etiket="Küçük canlı ara" ipucu="Fenerle mağaradaki canlıları arar" onEtkin={() => K.kucukAra(d)} stil={[st.eylem, st.ana]} />
+              ) : (
+                <Dugme etiket="Gözlemle" ipucu="Dürbünle sıradaki hayvanı seçer ve izler" onEtkin={() => M.gozlemBaslat(d)} stil={[st.eylem, st.ana]} />
+              )}
               <Dugme etiket="Yaklaş" ipucu="Seçili hayvana ürkütmeden yaklaşır" onEtkin={() => M.yaklas(d)} stil={st.eylem} />
               <Dugme etiket="Fotoğraf çek" onEtkin={() => M.fotografCek(d)} stil={st.eylem} />
               <Dugme etiket={d.sesKayit ? 'Kayıt sürüyor' : 'Ses kaydı'} devre={!!d.sesKayit} ipucu="6 saniye dinler ve sesleri çözümler" onEtkin={() => M.sesKaydiBaslat(d)} stil={st.eylem} />
@@ -1122,12 +1270,21 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
               <Dugme etiket="Merkez" ipucu="Araştırma merkezi: mesajlar, görevler, araştırmalar" onEtkin={() => menuAc('merkez')} stil={st.eylem} />
               <Dugme etiket="Menü" onEtkin={() => menuAc('ana')} stil={st.eylem} />
             </View>
+            {k.magara ? (
+              <View style={st.voSatir}>
+                <Dugme etiket="Geri dön" onEtkin={() => K.magaraGeri(d)} stil={st.voDugme} />
+                <Dugme etiket="İlerle" onEtkin={() => K.magaraIlerle(d)} stil={st.voDugme} />
+                <Dugme etiket="Odayı anlat" onEtkin={() => Ses.hemen(K.odaTarifi(k))} stil={st.voDugme} />
+                <Dugme etiket="Mağaradan çık" onEtkin={() => K.magaradanCik(d)} stil={st.voDugme} />
+              </View>
+            ) : (
             <View style={st.voSatir}>
               <Dugme etiket="Sola dön" onEtkin={() => adimAt(k.aracta ? 0.5 : 0, -1, k.aracta ? 900 : 360)} stil={st.voDugme} />
               <Dugme etiket={k.aracta ? 'İleri sür' : 'İleri yürü'} ipucu={k.aracta ? 'Bir süre ileri sürer' : 'Yaklaşık 4 metre ilerler'} onEtkin={() => adimAt(1, 0, k.aracta ? 1500 : 900)} stil={st.voDugme} />
               <Dugme etiket="Sağa dön" onEtkin={() => adimAt(k.aracta ? 0.5 : 0, 1, k.aracta ? 900 : 360)} stil={st.voDugme} />
               <Dugme etiket="Geri git" onEtkin={() => adimAt(-1, 0, 800)} stil={st.voDugme} />
             </View>
+            )}
           </>
         )}
         {jestli && !menu.ust && (
