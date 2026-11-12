@@ -98,7 +98,7 @@ function KipSecim({ sec }) {
         setVo(acik);
         if (!acik) {
           Ses.ayarla({ kip: 'kendi' });
-          Ses.hemen(`${OYUN_ADI}'a hoş geldin. Ekranın sol yarısına dokunursan görerek oynarsın. Sağ yarısına dokunursan oyun kendi sesiyle konuşur ve sesle oynarsın.`);
+          Ses.hemen(`${OYUN_ADI}'a hoş geldin. Ekranın üst yarısına dokunursan görerek oynarsın. Alt yarısına dokunursan oyun kendi sesiyle konuşur ve sesle oynarsın.`);
         }
       })
       .catch(() => {});
@@ -110,7 +110,7 @@ function KipSecim({ sec }) {
     return (
       <View style={st.kipKap}>
         <Baslik>{OYUN_ADI}</Baslik>
-        <Okunur stil={st.metin}>VoiceOver açık. İstersen VoiceOver ile oynayabilirsin. Oyunun kendi sesini tercih edersen önce VoiceOver'ı kapat, sonra ekranın sağ yarısına dokun.</Okunur>
+        <Okunur stil={st.metin}>VoiceOver açık. İstersen VoiceOver ile oynayabilirsin. Oyunun kendi sesini tercih edersen önce VoiceOver'ı kapat, sonra ekranın alt yarısına dokun.</Okunur>
         <View style={st.kipSatir}>
           <Pressable accessibilityRole="button" accessibilityLabel="VoiceOver ile oyna" onPress={() => sec('voiceover')} style={[st.kipYari, { backgroundColor: '#24342a' }]}>
             <Text style={st.kipYazi}>VoiceOver ile oyna</Text>
@@ -123,15 +123,15 @@ function KipSecim({ sec }) {
     );
   }
   return (
-    <View style={{ flex: 1, flexDirection: 'row' }}>
+    <View style={{ flex: 1, flexDirection: 'column' }}>
       <Pressable accessibilityRole="button" accessibilityLabel="Görerek oyna" onPress={() => sec('gorerek')} style={[st.kipYari, { backgroundColor: '#24342a' }]}>
         <Text style={st.kipBuyuk}>{OYUN_ADI}</Text>
         <Text style={st.kipYazi}>Görerek oyna</Text>
-        <Text style={st.kipAlt}>Ekranın sol yarısı</Text>
+        <Text style={st.kipAlt}>Ekranın üst yarısı</Text>
       </Pressable>
       <Pressable accessibilityRole="button" accessibilityLabel="Sesle oyna" onPress={() => sec('kendi')} style={[st.kipYari, { backgroundColor: '#3a2e1c' }]}>
         <Text style={st.kipYazi}>Sesle oyna</Text>
-        <Text style={st.kipAlt}>Oyun kendi sesiyle konuşur. Ekranın sağ yarısı.</Text>
+        <Text style={st.kipAlt}>Oyun kendi sesiyle konuşur. Ekranın alt yarısı.</Text>
       </Pressable>
     </View>
   );
@@ -158,8 +158,8 @@ function AnaMenu({ kayitVar, kayitOzet, devam, yeni, ayarlar, nasil }) {
 
 const NASIL = [
   'Amaç: Afrika savanındaki hayvanları gözlemlemek, her bireyi tanımlayıp kimlik numarasıyla kaydetmek, davranışlarını belgelemek, fotoğraflarını çekmek ve seslerini kaydetmek. Avlanma ya da savaş yoktur; hayvanları rahatsız etmeden izlersin.',
-  'Telefonu yatay tut ve kulaklık tak. Hayvanlar bulundukları yönden ses verir: soldaki sol kulaktan, arkadaki boğuk gelir, uzaktaki kısık duyulur.',
-  'Hareket: sol alttaki hareket alanına parmağını koyup kaydır. Yukarı ileri, aşağı geri, sağa ve sola döndürür. Araçtayken aynı alanla sürersin.',
+  'Telefonu dik tut ve kulaklık tak. Hayvanlar bulundukları yönden ses verir: soldaki sol kulaktan, arkadaki boğuk gelir, uzaktaki kısık duyulur.',
+  'Hareket: ekranın en altındaki hareket alanına parmağını koyup kaydır. Yukarı ileri, aşağı geri, sağa ve sola döndürür. Araçtayken aynı alanla sürersin.',
   'Gözlemle: dürbünle görebildiğin en yakın hayvanı seçer; her basışta sıradakine geçer. Bir hayvanı birkaç saniye izleyince tanımlanır ve kimlik numarası alır, örneğin Zebra 3. Yeni davranışları izledikçe ansiklopedine kaydedilir.',
   'Yaklaş: seçili hayvana ürkütmeden yürür ve güvenli izleme mesafesinde durur. Çok yaklaşırsan hayvanlar kaçar. Fil, manda, su aygırı, gergedan ve aslan gibi tehlikeli hayvanlar önce uyarır; geri çekilmezsen sana doğru hamle yapar.',
   'Fotoğraf çek: seçili hayvanı fotoğraflar. İyi bir fotoğraf için yeterince yakın ama ürkütmeyecek kadar uzak ol. Nadir davranışların fotoğrafı çok değerlidir.',
@@ -522,14 +522,19 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         accessibilityElementsHidden={!!panel}
         importantForAccessibility={panel ? 'no-hide-descendants' : 'auto'}
       >
-        <View style={st.ustSatir}>
+        <View style={st.ust}>
           <Dugme etiket={`Durum. ${M.durumOzeti(d)}`} onEtkin={() => Ses.hemen(M.durumOzeti(d))} stil={st.hud}>
-            <Text style={st.hudAd} numberOfLines={1}>
-              {k.ad} · {M.gunNo(k.dk)}. gün {M.saatMetni(k.dk)}
-            </Text>
+            <View style={st.satir}>
+              <Text style={st.hudAd} numberOfLines={1}>
+                {k.ad} · {M.gunNo(k.dk)}. gün {M.saatMetni(k.dk)}
+              </Text>
+              <Text style={st.hudKucuk} numberOfLines={1}>
+                itibar {k.itibar}
+              </Text>
+            </View>
             <Text style={st.hudKucuk} numberOfLines={1}>
               {M.bolgeAdi(d.oyuncu.x, d.oyuncu.y)}
-              {k.aracta ? ' · araçta' : ''} · itibar {k.itibar}
+              {k.aracta ? ' · araçta' : ''}
             </Text>
             {gb && (
               <Text style={st.hudHedef} numberOfLines={2}>
@@ -538,11 +543,10 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
             )}
             {d.sesKayit && <Text style={st.hudHedef}>Ses kaydı sürüyor…</Text>}
           </Dugme>
-          <View style={{ flex: 1 }} />
           <View style={st.baglamSatir}>
-            {k.aracta && <Dugme etiket="Araçtan in" onEtkin={() => M.aractanIn(d)} stil={st.baglamDugme} />}
-            {!k.aracta && aracYakin && <Dugme etiket="Araca bin" onEtkin={() => M.aracaBin(d)} stil={st.baglamDugme} />}
-            {!k.aracta && !aracYakin && !d.rota && <Dugme etiket="Araca git" ipucu="Arazi aracının yanına yürür" onEtkin={() => M.yerGit(d, 'arac')} stil={st.baglamDugme} />}
+            {k.aracta && <Dugme etiket="Araçtan in" onEtkin={() => M.aractanIn(d)} stil={st.baglamDugme} kisa />}
+            {!k.aracta && aracYakin && <Dugme etiket="Araca bin" onEtkin={() => M.aracaBin(d)} stil={st.baglamDugme} kisa />}
+            {!k.aracta && !aracYakin && !d.rota && <Dugme etiket="Araca git" ipucu="Arazi aracının yanına yürür" onEtkin={() => M.yerGit(d, 'arac')} stil={st.baglamDugme} kisa />}
             {(d.rota || d.yaklasId) && (
               <Dugme
                 etiket="Dur"
@@ -552,6 +556,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
                   Ses.soyle('Durdun.', 2);
                 }}
                 stil={st.baglamDugme}
+                kisa
               />
             )}
             {gb && !d.yaklasId && (
@@ -562,6 +567,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
                   Ses.soyle('Gözlem bitti.', 2);
                 }}
                 stil={st.baglamDugme}
+                kisa
               />
             )}
           </View>
@@ -569,57 +575,51 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
 
         <View style={{ flex: 1 }} />
 
-        <View style={st.alt}>
-          {kip === 'voiceover' ? (
-            <View style={st.solVo}>
-              <Dugme etiket={k.aracta ? 'İleri sür' : 'İleri yürü'} ipucu={k.aracta ? 'Bir süre ileri sürer' : 'Yaklaşık 4 metre ilerler'} onEtkin={() => adimAt(1, 0, k.aracta ? 1500 : 900)} kisa stil={st.voDugme} />
-              <View style={st.satir}>
-                <Dugme etiket="Sola dön" onEtkin={() => adimAt(k.aracta ? 0.5 : 0, -1, k.aracta ? 900 : 360)} kisa stil={[st.voDugme, { flex: 1 }]} />
-                <Dugme etiket="Sağa dön" onEtkin={() => adimAt(k.aracta ? 0.5 : 0, 1, k.aracta ? 900 : 360)} kisa stil={[st.voDugme, { flex: 1 }]} />
-              </View>
-              <Dugme etiket="Geri git" onEtkin={() => adimAt(-1, 0, 800)} kisa stil={st.voDugme} />
-            </View>
-          ) : (
-            <DogrudanAlan
-              etiket={`Hareket alanı. Parmağını koyup kaydır: yukarı ileri, aşağı geri, sağ ve sol döndürür${k.aracta ? '. Araçtasın' : ''}`}
-              basla={jBasla}
-              tasi={jTasi}
-              birak={jBirak}
-              stil={st.sol}
-            >
-              {topuz ? (
-                <View pointerEvents="none" style={[st.topuzKap, { left: topuz.x - 55, top: topuz.y - 55 }]}>
-                  <View style={[st.topuz, { transform: [{ translateX: topuz.dx }, { translateY: topuz.dy }] }]} />
-                </View>
-              ) : (
-                <Text style={st.solYazi} pointerEvents="none">
-                  {k.aracta ? 'Sür' : 'Hareket'}
-                  {'\n'}parmağını kaydır
-                </Text>
-              )}
-            </DogrudanAlan>
+        <View style={st.altyaziKap}>
+          {!!altyazi && (
+            <Text style={st.altyazi} numberOfLines={3} accessibilityElementsHidden importantForAccessibility="no">
+              {altyazi}
+            </Text>
           )}
-          <View style={st.orta}>
-            {!!altyazi && (
-              <Text style={st.altyazi} numberOfLines={3} accessibilityElementsHidden importantForAccessibility="no">
-                {altyazi}
+        </View>
+        <View style={st.izgara}>
+          <Dugme etiket="Gözlemle" ipucu="Dürbünle sıradaki hayvanı seçer ve izler" onEtkin={() => M.gozlemBaslat(d)} kisa stil={[st.eylem, st.ana]} />
+          <Dugme etiket="Yaklaş" ipucu="Seçili hayvana ürkütmeden yaklaşır" onEtkin={() => M.yaklas(d)} kisa stil={st.eylem} />
+          <Dugme etiket="Fotoğraf çek" onEtkin={() => M.fotografCek(d)} kisa stil={st.eylem} />
+          <Dugme etiket={d.sesKayit ? 'Kayıt sürüyor' : 'Ses kaydı'} devre={!!d.sesKayit} ipucu="6 saniye dinler ve sesleri çözümler" onEtkin={() => M.sesKaydiBaslat(d)} kisa stil={st.eylem} />
+          <Dugme etiket="Etrafı tara" onEtkin={() => Ses.hemen(M.etrafiTara(d))} kisa stil={st.eylem} />
+          <Dugme etiket="Neredeyim" onEtkin={() => Ses.hemen(M.konumOzeti(d))} kisa stil={st.eylem} />
+          <Dugme etiket="Yerler" ipucu="Bir yere yürür ya da sürer" onEtkin={() => panelAc('yerler', 'Yerler. Gitmek istediğin yeri seç.')} kisa stil={st.eylem} />
+          <Dugme etiket="Arşiv" ipucu="Ansiklopedi, bireyler, fotoğraflar, ses kayıtları" onEtkin={() => panelAc('arsiv', 'Arşiv.')} kisa stil={st.eylem} />
+          <Dugme etiket="Menü" onEtkin={() => panelAc('menu', 'Menü. Zaman durdu.')} kisa stil={st.eylem} />
+        </View>
+        {kip === 'voiceover' ? (
+          <View style={st.voSatir}>
+            <Dugme etiket="Sola dön" onEtkin={() => adimAt(k.aracta ? 0.5 : 0, -1, k.aracta ? 900 : 360)} kisa stil={st.voDugme} />
+            <Dugme etiket={k.aracta ? 'İleri sür' : 'İleri yürü'} ipucu={k.aracta ? 'Bir süre ileri sürer' : 'Yaklaşık 4 metre ilerler'} onEtkin={() => adimAt(1, 0, k.aracta ? 1500 : 900)} kisa stil={st.voDugme} />
+            <Dugme etiket="Sağa dön" onEtkin={() => adimAt(k.aracta ? 0.5 : 0, 1, k.aracta ? 900 : 360)} kisa stil={st.voDugme} />
+            <Dugme etiket="Geri git" onEtkin={() => adimAt(-1, 0, 800)} kisa stil={st.voDugme} />
+          </View>
+        ) : (
+          <DogrudanAlan
+            etiket={`Hareket alanı. Parmağını koyup kaydır: yukarı ileri, aşağı geri, sağ ve sol döndürür${k.aracta ? '. Araçtasın' : ''}`}
+            basla={jBasla}
+            tasi={jTasi}
+            birak={jBirak}
+            stil={st.hareket}
+          >
+            {topuz ? (
+              <View pointerEvents="none" style={[st.topuzKap, { left: topuz.x - 55, top: topuz.y - 55 }]}>
+                <View style={[st.topuz, { transform: [{ translateX: topuz.dx }, { translateY: topuz.dy }] }]} />
+              </View>
+            ) : (
+              <Text style={st.solYazi} pointerEvents="none">
+                {k.aracta ? 'Sürmek için' : 'Yürümek için'}
+                {'\n'}parmağını koyup kaydır
               </Text>
             )}
-          </View>
-          <View style={st.sag}>
-            <View style={st.izgara}>
-              <Dugme etiket="Gözlemle" ipucu="Dürbünle sıradaki hayvanı seçer ve izler" onEtkin={() => M.gozlemBaslat(d)} kisa stil={[st.eylem, st.ana]} />
-              <Dugme etiket="Yaklaş" ipucu="Seçili hayvana ürkütmeden yaklaşır" onEtkin={() => M.yaklas(d)} kisa stil={st.eylem} />
-              <Dugme etiket="Fotoğraf çek" onEtkin={() => M.fotografCek(d)} kisa stil={st.eylem} />
-              <Dugme etiket={d.sesKayit ? 'Kayıt sürüyor' : 'Ses kaydı'} devre={!!d.sesKayit} ipucu="6 saniye dinler ve sesleri çözümler" onEtkin={() => M.sesKaydiBaslat(d)} kisa stil={st.eylem} />
-              <Dugme etiket="Etrafı tara" onEtkin={() => Ses.hemen(M.etrafiTara(d))} kisa stil={st.eylem} />
-              <Dugme etiket="Neredeyim" onEtkin={() => Ses.hemen(M.konumOzeti(d))} kisa stil={st.eylem} />
-              <Dugme etiket="Yerler" ipucu="Bir yere yürür ya da sürer" onEtkin={() => panelAc('yerler', 'Yerler. Gitmek istediğin yeri seç.')} kisa stil={st.eylem} />
-              <Dugme etiket="Arşiv" ipucu="Ansiklopedi, bireyler, fotoğraflar, ses kayıtları" onEtkin={() => panelAc('arsiv', 'Arşiv.')} kisa stil={st.eylem} />
-              <Dugme etiket="Menü" onEtkin={() => panelAc('menu', 'Menü. Zaman durdu.')} kisa stil={st.eylem} />
-            </View>
-          </View>
-        </View>
+          </DogrudanAlan>
+        )}
       </SafeAreaView>
 
       {panel && (
@@ -904,7 +904,7 @@ export default function App() {
       .then(() => setIsAudioActiveAsync(true))
       .catch(() => {});
     try {
-      ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE).catch(() => {});
+      ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP).catch(() => {});
     } catch (e) {}
     (async () => {
       let a = VARSAYILAN_AYAR;
@@ -1035,30 +1035,28 @@ const st = StyleSheet.create({
   adDugme: { paddingVertical: 12, paddingHorizontal: 16 },
   girdi: { backgroundColor: R.panel, color: R.yazi, fontSize: 18, borderRadius: 10, padding: 14, borderWidth: 1, borderColor: R.cizgi },
   kipKap: { flex: 1, padding: 18, gap: 12, justifyContent: 'center' },
-  kipSatir: { flex: 1, flexDirection: 'row', gap: 12 },
+  kipSatir: { flex: 1, flexDirection: 'column', gap: 12 },
   kipYari: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 },
   kipBuyuk: { color: R.vurgu, fontSize: 40, fontWeight: '800', marginBottom: 16 },
   kipYazi: { color: R.yazi, fontSize: 28, fontWeight: '800', textAlign: 'center' },
   kipAlt: { color: R.soluk, fontSize: 16, marginTop: 8, textAlign: 'center' },
-  ustSatir: { flexDirection: 'row', alignItems: 'flex-start', paddingHorizontal: 8, paddingTop: 6, gap: 8 },
-  hud: { width: 300, padding: 10, backgroundColor: 'rgba(21,23,26,0.82)', borderRadius: 12, gap: 4 },
-  hudAd: { color: R.yazi, fontSize: 16, fontWeight: '800' },
+  ust: { paddingHorizontal: 8, paddingTop: 4, gap: 6 },
+  hud: { padding: 10, backgroundColor: 'rgba(21,23,26,0.82)', borderRadius: 12, gap: 3 },
+  hudAd: { color: R.yazi, fontSize: 16, fontWeight: '800', flexShrink: 1 },
   hudKucuk: { color: R.soluk, fontSize: 13 },
   hudHedef: { color: '#ffe08a', fontSize: 14, fontWeight: '700' },
-  altyazi: { color: '#fff', backgroundColor: 'rgba(0,0,0,0.55)', padding: 8, borderRadius: 8, fontSize: 14 },
-  orta: { flex: 1, justifyContent: 'flex-end', paddingBottom: 4 },
-  baglamSatir: { flexDirection: 'column', gap: 6, width: 200 },
-  baglamDugme: { backgroundColor: '#33381f', borderColor: '#6b6a2e', paddingVertical: 10 },
-  alt: { flexDirection: 'row', height: 214, paddingHorizontal: 8, paddingBottom: 6, gap: 10, alignItems: 'flex-end' },
-  sol: { width: 250, height: 208, backgroundColor: 'rgba(21,23,26,0.25)', borderRadius: 16, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
-  solVo: { width: 250, gap: 6, justifyContent: 'flex-end' },
-  voDugme: { backgroundColor: 'rgba(31,35,32,0.9)' },
-  solYazi: { color: 'rgba(255,255,255,0.7)', fontSize: 14, textAlign: 'center' },
+  baglamSatir: { flexDirection: 'row', gap: 6 },
+  baglamDugme: { flex: 1, backgroundColor: '#33381f', borderColor: '#6b6a2e', paddingVertical: 10 },
+  altyaziKap: { paddingHorizontal: 8, paddingBottom: 6, minHeight: 4 },
+  altyazi: { color: '#fff', backgroundColor: 'rgba(0,0,0,0.6)', padding: 8, borderRadius: 8, fontSize: 14 },
+  izgara: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, paddingHorizontal: 8, justifyContent: 'space-between' },
+  eylem: { width: '32%', height: 54, paddingHorizontal: 4, paddingVertical: 4, alignItems: 'center', backgroundColor: 'rgba(31,35,32,0.9)' },
+  ana: { backgroundColor: 'rgba(60,72,32,0.95)', borderColor: '#9aa84a' },
+  hareket: { height: 165, marginHorizontal: 8, marginTop: 6, marginBottom: 6, backgroundColor: 'rgba(21,23,26,0.35)', borderRadius: 16, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+  voSatir: { flexDirection: 'row', gap: 6, paddingHorizontal: 8, marginTop: 6, marginBottom: 6 },
+  voDugme: { flex: 1, height: 64, backgroundColor: 'rgba(31,35,32,0.9)', alignItems: 'center' },
+  solYazi: { color: 'rgba(255,255,255,0.75)', fontSize: 15, textAlign: 'center' },
   topuzKap: { position: 'absolute', width: 110, height: 110, borderRadius: 55, borderWidth: 2, borderColor: 'rgba(255,255,255,0.5)', alignItems: 'center', justifyContent: 'center' },
   topuz: { width: 50, height: 50, borderRadius: 25, backgroundColor: 'rgba(255,255,255,0.7)' },
-  sag: { width: 262, justifyContent: 'flex-end' },
-  izgara: { flexDirection: 'row', flexWrap: 'wrap', gap: 5, justifyContent: 'flex-end' },
-  eylem: { width: 84, height: 66, paddingHorizontal: 4, paddingVertical: 4, alignItems: 'center', backgroundColor: 'rgba(31,35,32,0.9)' },
-  ana: { backgroundColor: 'rgba(60,72,32,0.95)', borderColor: '#9aa84a' },
   panelOrt: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(21,23,26,0.97)' },
 });

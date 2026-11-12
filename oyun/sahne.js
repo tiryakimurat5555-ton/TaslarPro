@@ -253,10 +253,14 @@ export function sahneKur(gl, d) {
   const sahne = new THREE.Scene();
   sahne.background = new THREE.Color('#9ec9ea');
   sahne.fog = new THREE.Fog('#9ec9ea', 60, 170);
+  // Dikey ekran: alt yarıyı düğmeler kapladığı için görüntünün merkezi yukarı kaydırılır, görüş açısı genişletilir
   const kamera = new THREE.PerspectiveCamera(60, genislik / yukseklik, 0.1, 260);
   const merkezKaydir = (w, h) => {
-    const o = Math.round(h * 0.06);
+    const dikey = h > w;
+    kamera.fov = dikey ? 74 : 60;
+    const o = Math.round(h * (dikey ? 0.14 : 0.06));
     kamera.setViewOffset(w, h + 2 * o, 0, 2 * o, w, h);
+    kamera.updateProjectionMatrix();
   };
   merkezKaydir(genislik, yukseklik);
 
@@ -448,8 +452,9 @@ export function sahneKur(gl, d) {
       insan.rotation.y = -o.yon;
 
       // Kamera
-      const geri = k.aracta ? 12 : 8;
-      kamKonum.set(o.x - Math.sin(o.yon) * geri, k.aracta ? 6 : 4.4, R(o.y - Math.cos(o.yon) * geri));
+      const dikey = kamera.aspect < 1 ? 1.35 : 1; // dikey ekranda kamera biraz daha geride ve yüksekte
+      const geri = (k.aracta ? 12 : 8) * dikey;
+      kamKonum.set(o.x - Math.sin(o.yon) * geri, (k.aracta ? 6 : 4.4) * dikey, R(o.y - Math.cos(o.yon) * geri));
       kamHedef.set(o.x + Math.sin(o.yon) * 1.5, 1.5, R(o.y + Math.cos(o.yon) * 1.5));
       if (ilk) {
         kamera.position.copy(kamKonum);

@@ -85,5 +85,5 @@ export async function getAvailableVoicesAsync() {
 }
 
 // expo-screen-orientation
-export const OrientationLock = { LANDSCAPE: 'yatay' };
+export const OrientationLock = { LANDSCAPE: 'yatay', PORTRAIT_UP: 'dikey' };
 export async function lockAsync() {}

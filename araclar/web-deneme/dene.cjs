@@ -7,7 +7,7 @@ const O = process.argv[3] || '/tmp/claude-0/ekran';
 fs.mkdirSync(O, { recursive: true });
 (async () => {
   const b = await chromium.launch({ args: ['--use-gl=swiftshader', '--enable-webgl', '--ignore-gpu-blocklist'] });
-  const c = await b.newContext({ viewport: { width: 844, height: 390 } });
+  const c = await b.newContext({ viewport: { width: 390, height: 844 } });
   const s = await c.newPage();
   const h = [];
   s.on('pageerror', (e) => h.push('PE ' + e.message + ' ' + (e.stack || '').split('\n').slice(1, 3).join(' ')));

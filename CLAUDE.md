@@ -5,7 +5,13 @@ tasarım brifini (PDF "Vahşi Yaşam — Oyun Tasarımı ve Proje Brifi") verdi,
 Brif ana karar kaynağıdır: kararları kendiliğinden değiştirme, kapsamı daraltma; teknik sınırlamayı Murat'a açıkla.
 Aynı gün yapılan savaş oyunu Vahşi Topraklar `arsiv/vahsi-topraklar/` altına taşındı (sesleri assets/efekt'te, yeniden kullanılıyor).
 Önceki oyunlar: İki Sancak `arsiv/iki-sancak/`, Renkli Taşlar `arsiv/renkli-taslar/`, Diyarın Kaderi (commit da1e9e1).
-Slug/EAS projesi aynı (taslarpro), app.json'daki görünen ad "Vahşi Yaşam", yatay ekran.
+Slug/EAS projesi aynı (taslarpro), app.json'daki görünen ad "Vahşi Yaşam".
+DİKEY ekran (12 Kasım, Murat "dikey ekran istiyorum, bu oyun aslında Kayıp Okyanus'un karada geçen versiyonu" dedi):
+app.json portrait + açılışta lockAsync(PORTRAIT_UP). Oyun ekranı yukarıdan aşağıya: durum kutusu (tam genişlik), bağlam düğmeleri
+satırı, 3B görüntü, altyazı, 3×3 eylem ızgarası (her biri %32 × 54), en altta hareket alanı (165 yüksek; VoiceOver kipinde 4 düğmelik
+satır). Kip seçimi üst yarı görerek, alt yarı sesle. Sahne dikeyde fov 74, görüntü merkezi %14 yukarı, kamera 1,35 kat geri ve yüksek.
+Tarayıcı denemesi 390×844. Kayıp Okyanus (ayrı depo tiryakimurat5555-ton/kayip-okyanus) tam ekran dokunma hareketleriyle oynanır
+(tek parmak sürükle yüz/dön, dokun tarif, çift dokun fotoğraf, iki parmak çift dokun menü); bu oyuna o denetim düzeni henüz uygulanmadı.
 
 ## Murat ile çalışma
 - Murat'ın yalnızca iPhone'u var; kodu elle düzenleyemez. Bütün dosyaları ben yazar, depoya gönderirim.

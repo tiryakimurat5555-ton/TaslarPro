@@ -23,7 +23,7 @@ NODE_PATH=/opt/npm-tools/node_modules /opt/npm-tools/node_modules/.bin/esbuild "
   --alias:react-native-svg="$T/svg-taklit.js" \
   --loader:.js=jsx --loader:.m4a=file --loader:.mp3=file --loader:.jpg=file --asset-names=[name] --loader:.png=empty --log-level=warning
 cat > "$CIKIS/index.html" <<'H'
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=844">
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=390">
 <style>html,body,#kok{margin:0;height:100%;font-family:-apple-system,Helvetica,Arial,sans-serif}</style></head>
 <body><div id="kok"></div><script src="paket.js"></script></body></html>
 H
