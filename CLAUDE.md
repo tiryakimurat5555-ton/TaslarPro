@@ -294,6 +294,13 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   'oyun' > Yenilikler; 'deneme' Deneme araçları: zamanı 1/6/24 saat ileri al (dinlenBaslat), bütçe +20.000, itibar 120 (saha gezileri
   açılır), bütün ekipman (adetliler stok +2); k.denemeKullanildi. Yeni özellik eklenince YENILIKLER'e satır ekle. Tarayıcıda uçtan uca:
   scratchpad deneme-arac.cjs (itibar → ekipman → Saha gezileri → Yola çık → yolculuk sonunda Kızıl Tuz Gölü'nde) hatasız.
+- Aşama 17 küçük canlı sesleri (13 Kasım, Murat "ses üretimi" dedi): ElevenLabs (akış "Vahşi Yaşam sesleri", 2,5-4 sn,
+  prompt_influence 0.6) 24 küçük canlı k_<id> (kucukler.js KUCUK_SESLI) → sesleri-isle.sh k_* 3B (en çok 3,6 sn, -17 LUFS) + ortam_galeri,
+  ortam_kayalik (ortam-dongu.py). efekt.js sure(): k_ 0,05 (konuşmayı bekletmez). App: 9-23 sn'de bir bulunabilirler(bölge/oda/alan,
+  evre, mevsim, yağmur) ∩ KUCUK_SESLI'den biri oyuncunun 14-44 m çevresinde rastgele yönde Efekt.yonlu (KUCUK_DUZEY 0,5), d.sonDuyulan
+  (kesif kucukAra 60 sn içinde o canlının ağırlığı ×5), altyazı; bulununca (olay yeniKucuk/kucuk ek.kucuk) sesi önünden; ayar
+  canliSesleri (Ses ve konuşma); ortamSec gündüz galeri → ortam_galeri, kayalık → ortam_kayalik. Tarayıcıda (scratchpad ses-dene.cjs)
+  gece gölette kurbağalar, gündüz galeride kolobus/vervet + ortam_galeri çaldı. YENILIKLER ve Yardım satırı. Telefonda doğrulanmadı.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

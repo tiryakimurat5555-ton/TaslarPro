@@ -33,12 +33,12 @@ export function kucukKaydet(d, id, metinOn = '') {
     M.arsivOlay(d, `Yeni küçük canlı: ${c.ad}${c.nadir ? ' (nadir)' : ''}, ${yer}.`);
     const ses = c.ses ? ` Sesi: ${c.ses}` : '';
     const m = `${metinOn}${c.nadir ? 'Nadir bir keşif! ' : ''}Yeni tür: ${c.ad}, bilimsel adı ${c.bilimsel}, ${kucukHarf(c.grup)}. ${c.tarif}${ses}`;
-    M.olay(d, 'yeniKucuk', m, 4, { nadir: !!c.nadir });
+    M.olay(d, 'yeniKucuk', m, 4, { nadir: !!c.nadir, kucuk: id });
     return m;
   }
   a.sayi += 1;
   const m = `${metinOn}${c.ad}. ${c.tarif.split('. ')[0].replace(/\.$/, '')}.`;
-  M.olay(d, 'kucuk', m, 3);
+  M.olay(d, 'kucuk', m, 3, { kucuk: id });
   return m;
 }
 export function kucukAra(d) {
@@ -76,7 +76,9 @@ export function kucukAra(d) {
   }
   const agirlik = liste.map((id) => {
     const c = KUCUKLER[id];
-    return c.sik * (yagmur && c.yagmur ? 3 : 1) * (k.arsiv.kucukler[id] ? 1 : 1.6);
+    // Az önce sesini duyduğun canlıyı aramak onu bulmayı kolaylaştırır (Aşama 17)
+    const duyulan = d.sonDuyulan && d.sonDuyulan.id === id && d.zaman - d.sonDuyulan.zaman < 60 ? 5 : 1;
+    return c.sik * (yagmur && c.yagmur ? 3 : 1) * (k.arsiv.kucukler[id] ? 1 : 1.6) * duyulan;
   });
   let r = d.rng() * agirlik.reduce((a, b) => a + b, 0);
   let id = liste[0];

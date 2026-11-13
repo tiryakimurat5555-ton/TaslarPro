@@ -14,6 +14,7 @@ UC_B="kurt tilki domuz ayi yilan akrep sirtlan timsah leopar kartal aslan gerged
 hedef() {
   case "$1" in
     ortam_*) echo -26 ;;
+    k_*) echo -17 ;;
     yarali) echo -17 ;;
     iska) echo -19 ;;
     altin) echo -20 ;;
@@ -43,9 +44,12 @@ for f in "$GIRDI"/*.mp3; do
       ;;
   esac
   KIS=""
-  if echo " $UC_B " | grep -q " $ad "; then KIS="atrim=0:2.6,afade=t=out:st=2.2:d=0.4,"; fi
+  UC=0
+  if echo " $UC_B " | grep -q " $ad "; then UC=1; KIS="atrim=0:2.6,afade=t=out:st=2.2:d=0.4,"; fi
+  # Küçük canlı çağrıları (k_): 3B, en çok 3,6 sn (Aşama 17)
+  case "$ad" in k_*) UC=1; KIS="atrim=0:3.6,afade=t=out:st=3.1:d=0.5," ;; esac
   ffmpeg -loglevel error -y -i "$f" -af "silenceremove=start_periods=1:start_threshold=-45dB,${KIS}volume=${KAZANC}dB,alimiter=limit=0.79:level=false,areverse,silenceremove=start_periods=1:start_threshold=-55dB,afade=t=in:d=0.08,areverse" -ac 1 -ar 44100 "$GECICI/m.wav"
-  if echo " $UC_B " | grep -q " $ad "; then
+  if [ "$UC" = 1 ]; then
     for i in 0 1 2 3 4; do
       read SOL SAG GS GD <<< $(python3 -c "
 import math

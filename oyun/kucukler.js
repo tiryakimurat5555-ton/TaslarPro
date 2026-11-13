@@ -259,3 +259,6 @@ for (const [id, c] of Object.entries(UZAK_CANLILAR)) {
   KUCUK_SIRASI.push(id);
 }
 export const alanCanlilari = (alan) => KUCUK_SIRASI.filter((id) => KUCUKLER[id].alan === alan);
+
+// Aşama 17: gerçek sesi olan küçük canlılar (assets/efekt/k_<id>_0..4, 3B). App uzaktan duyulan çağrılarda ve bulununca çalar.
+export const KUCUK_SESLI = ['devekusu', 'tacliTurna', 'yerBoynuzgagasi', 'goAway', 'becTavugu', 'alacaYalicapkini', 'misirKazi', 'maviTurako', 'vervet', 'agustosBocegi', 'kayaHyraksi', 'cuceFiravunfaresi', 'puhu', 'cobanaldatan', 'galago', 'agacDamani', 'bogaKurbagasi', 'kamisKurbagasi', 'karaSirtliCakal', 'pabucGaga', 'turako', 'kolobus', 'papirusGonolegi', 'sykesMaymunu'];

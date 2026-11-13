@@ -26,7 +26,8 @@ const SURE = {
   fil: 0.7, zebra: 0.8, suaygiri: 0.8, manda: 1.8, ceylan: 1.4, zurafa: 0.8,
   kurt: 1.6, tilki: 0.9, domuz: 1.4, ayi: 1.4, yilan: 1.2, akrep: 1.0, sirtlan: 1.2, timsah: 1.8, leopar: 1.4, kartal: 1.2, aslan: 1.8, gergedan: 1.2,
 };
-const sure = (ad) => SURE[ad] || SURE[ad.replace(/_\d+a?$/, '')] || 0.4;
+// Küçük canlı çağrıları (k_) arka plan sesidir; konuşmayı bekletmez (Aşama 17)
+const sure = (ad) => SURE[ad] || SURE[ad.replace(/_\d+a?$/, '')] || (ad.startsWith('k_') ? 0.05 : 0.4);
 
 konusmaBaslarken(() => {
   Object.entries(oynaticilar).forEach(([ad, p]) => {
