@@ -766,7 +766,6 @@ export const SESLER = {
   'sonar_4': require('../assets/efekt/sonar_4.mp3'),
   'sonar_4a': require('../assets/efekt/sonar_4a.mp3'),
   'sopa': require('../assets/efekt/sopa.m4a'),
-  'su_akis': require('../assets/efekt/su_akis.m4a'),
   'suaygiri_0': require('../assets/efekt/suaygiri_0.m4a'),
   'suaygiri_0a': require('../assets/efekt/suaygiri_0a.m4a'),
   'suaygiri_1': require('../assets/efekt/suaygiri_1.m4a'),

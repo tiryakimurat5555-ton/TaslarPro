@@ -78,10 +78,10 @@ function gundelikSesSec(d, son, simdi) {
       ses = 'h_fil_hortum';
       duzey = 0.8;
       duyma = 45;
-    } else if (g.plan === 'su' && g.icti && !t.kus) {
+    } else if (g.plan === 'su' && g.icti && !t.kus && Math.random() < 0.5) {
       ses = 'h_suIcme';
-      duzey = 0.65;
-      duyma = 30;
+      duzey = 0.6;
+      duyma = 20;
     } else if (YAVRU_SESI[g.tur] && Math.random() < 0.35 && M.uyeler(d, g).some((b) => b.evre === 'yavru')) {
       ses = YAVRU_SESI[g.tur];
       duzey = 0.7;
@@ -176,7 +176,7 @@ function ortamHedefleri(d) {
   return h;
 }
 // Konumlu sürekli sesler: her biri 0-1 düzey (uzaklığa göre). Döngü çalarken yön değişmez, yalnız düzey.
-const KONUMLU_DONGULER = ['su_akis', 'jenerator', 'kamp_ates', 'selale'];
+const KONUMLU_DONGULER = ['jenerator', 'kamp_ates', 'selale'];
 function konumluDonguler(d) {
   const k = d.k;
   const o = d.oyuncu;
@@ -191,9 +191,7 @@ function konumluDonguler(d) {
     return r;
   }
   const yakinlik = (m, menzil) => (m >= menzil ? 0 : Math.pow(1 - m / menzil, 1.5));
-  let gm = Infinity;
-  for (const g of GECITLER) gm = Math.min(gm, Math.hypot(o.x - g.x, o.y - nehirY(g.x)));
-  r.su_akis = 0.5 * yakinlik(gm, 45);
+  // Geçit şırıltısı (su_akis) kaldırıldı: 8,5 sn'lik döngüsü sürekli tekrar ediyordu; suyu artık katmanlı nehir sesi veriyor
   r.jenerator = 0.3 * yakinlik(Math.hypot(o.x - ISTASYON.x, o.y - ISTASYON.y), 50);
   const ev = M.gunEvresi(k.dk);
   if (k.kamp && (ev === 'aksam' || ev === 'gece')) r.kamp_ates = 0.45 * yakinlik(M.mesafe(o, k.kamp), 25);
@@ -274,6 +272,7 @@ const kucuk = (s) => s.toLocaleLowerCase('tr-TR');
 
 // ---------------- Yenilikler (en yeniler üstte): Murat denerken neyin nerede olduğunu bulsun diye ----------------
 const YENILIKLER = [
+  { baslik: 'Durmayan su ve koşu sesi düzeltildi', metin: 'Oyun yeniden açılınca bazı hayvanlar (özellikle gölet ve nehir kıyısındaki filler) eski oturumdan kalan bir zaman yüzünden saatlerce koşuyor sayılıyordu; çamurda koşu sesi hiç durmuyordu. Düzeltildi. Nehir geçidinin kısa şırıltı döngüsü kaldırıldı (su sesini artık katmanlı nehir sesi veriyor). Bütün ortam döngülerinin sonundaki kısa sessizlik giderildi, döngü dönerken kesinti olmamalı. Hayvanların su içme ve otlama sesleri seyreltildi.', nerede: 'sahada, özellikle nehir ve gölet kıyısında.' },
   { baslik: 'Zemine göre hayvan koşu sesleri', metin: 'Kaçan, kovalayan ve hamle yapan hayvanların koşu sesi artık bastıkları zemine göre: otta ve ormanda boğuk tok vuruşlar ve ot hışırtısı, kuru toprakta ve kayalıkta sert toynak sesi, suda ve çamurda şapırtı. Her biri toynaklı, hafif ceylan, ağır fil ve manda, pati (kediler, sırtlan, yaban köpeği) olarak ayrı. Arkadan gelen seslerdeki metalik çınlama giderildi.', nerede: 'sahada, hayvanlar koşarken.' },
   { baslik: 'Katmanlı ortam sesi', metin: 'Ortam sesleri artık gerçekteki gibi birbirine karışıyor: nehrin ya da göletin sesi 60 metreden hafifçe duyulmaya başlar, yaklaştıkça yükselir; galeri ormanı ve kayalığın sesleri 40 metreden. Su ve orman sesi geldiği yönden duyulur: nehir sağındaysa sağ kulağında, ona dönünce iki kulağında. Kıyıda savan, orman ve su sesi bir arada. Bölge sınırında ses artık birden değişmiyor.', nerede: 'sahada kendiliğinden; kulaklıkla yön daha iyi duyulur.' },
   { baslik: 'Yeni ses efektleri', metin: 'Hayvanların gündelik sesleri: su içen sürüler, otlayan zebralar, fil, zebra ve aslan yavrularının çağrısı, leşte kavga eden sırtlanlar, sudaki su aygırları, hortumuyla su püskürten filler, suya kayan timsahlar; impala, ceylan, zebra ve gnu tehlikeyi görünce alarm verir, av anında boğuşma duyulur. Hepsi geldiği yönden. Aletlerin sesleri: dürbünün odak çarkı, deklanşör, ses kaydının başlama ve bitiş bipi, video kamerası, numune şişesi, fener, kamera tuzağı, GPS tasması, tel tuzak sökme, dronun kalkışı ve inişi, ziyaretçi gelince telsiz. Şafakta kuş korosu, akşamüstü kumrular; yağmurun ilk damlaları, uzak gök gürültüsü, yangının çıtırtısı. Nehir geçitlerinde su şırıltısı, istasyonda jeneratör, gece kamp ateşi, çadır fermuarı; Bulutlu Dağ Ormanı\'nda şelale. Menülerin tık sesleri ve mesaj ile görev bildirimleri yenilendi.', nerede: 'sahada ve menülerde kendiliğinden; hayvanların gündelik sesleri Ayarlar, Ses ve konuşma, Küçük canlıların sesleri ayarıyla birlikte kapanır.' },
@@ -1221,8 +1220,11 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
           gundelikSayac = 1;
           if (a.efekt !== false && a.canliSesleri !== false && !d.k.magara) {
             const sec = gundelikSesSec(d, gundelikSon, simdi);
-            if (sec) {
-              gundelikSon.set(sec.g.id, simdi + 9000 + Math.random() * 11000);
+            // Seyrek tut: her grup 20-40 sn'de bir, aynı ses 15 sn'de bir, herhangi bir gündelik ses 5 sn'de bir
+            if (sec && simdi - (gundelikSon.get('ses:' + sec.ses) || 0) > 15000) {
+              gundelikSayac = 5;
+              gundelikSon.set('ses:' + sec.ses, simdi);
+              gundelikSon.set(sec.g.id, simdi + 20000 + Math.random() * 20000);
               Efekt.yonlu(sec.ses, d.oyuncu, sec.nokta, sec.duzey, sec.duyma);
             }
             if (gundelikSon.size > 80) gundelikSon.clear();

@@ -8,14 +8,17 @@ for ad in sys.argv[1:] or ['ortam_gunduz', 'ortam_gece', 'ortam_nehir']:
     a = np.frombuffer(open(f'{ad}.raw','rb').read(), dtype=np.int16).reshape(-1,2).astype(np.float32)/32768
     # Sol/sağ dengesizliği: kanalların gücü eşitlenir (sağdan soldan atlama olmasın)
     rms = np.sqrt((a**2).mean(axis=0)); a = a * (rms.mean()/np.maximum(rms,1e-6))
-    n = int(X*44100); t = np.linspace(0, np.pi/2, n)[:,None]
+    n = round(X*44100/1024)*1024; t = np.linspace(0, np.pi/2, n)[:,None]
+    # Döngü uzunluğu AAC çerçevesinin (1024 örnek) tam katı olsun: yoksa kodlayıcı sona sessizlik ekliyor ve
+    # her turda kısa bir kesinti duyuluyordu (Murat "nehirdeki döngü güzel yapılmamış" dedi, 13 Kasım)
+    a = a[: n + ((len(a) - 2 * n) // 1024) * 1024 + n]
     bas = a[:n]*np.sin(t) + a[-n:]*np.cos(t)
     dongu = np.concatenate([bas, a[n:-n]])
     # Yükseklik: ölç, sabit kazanç ile -22 LUFS
     open(f'{ad}_d.raw','wb').write((np.clip(dongu,-1,1)*32767).astype(np.int16).tobytes())
     o = subprocess.run(['ffmpeg','-hide_banner','-f','s16le','-ar','44100','-ac','2','-i',f'{ad}_d.raw','-af','loudnorm=print_format=json','-f','null','-'],capture_output=True,text=True).stderr
     I = float(json.loads(o[o.rindex('{'):])['input_i'])
-    k = 10**(((-24 if ad in ('ortam_yagmur', 'ortam_magara') else -22) - I)/20)
+    k = 10**(((-24 if ad in ('ortam_yagmur', 'ortam_magara', 'ortam_yangin') else -22) - I)/20)
     dongu = np.tanh(dongu*k*1.1)/1.1
     open(f'{ad}_d.raw','wb').write((dongu*32767).astype(np.int16).tobytes())
     subprocess.run(['ffmpeg','-loglevel','error','-y','-f','s16le','-ar','44100','-ac','2','-i',f'{ad}_d.raw','-c:a','aac','-b:a','128k',f'/home/claude/taslarpro/assets/efekt/{ad}.m4a'],check=True)

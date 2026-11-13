@@ -402,10 +402,25 @@ function ozelBireyleriAta(k) {
   for (const b of k.hayvanlar) if (b.ozellik && !OZEL_BIREYLER[b.ozellik]) delete b.ozellik;
 }
 
+// Oturum saatine (d.zaman, her açılışta 0'dan başlar) bağlı alanlar kayıtta kalırsa yeniden açılışta bayatlar:
+// eski oturumdan b.kosu = 5000 gibi bir değer, yeni oturumda saatlerce "koşuyor" sayılıp koşu sesi durmadan çalıyordu
+// (Murat, 13 Kasım: nehir tarafında hiç durmayan su/adım sesi). Kısa süreli davranışlar ve meydan kavgası da sıfırlanır.
+function oturumZamanlariniSifirla(k) {
+  for (const b of k.hayvanlar || []) {
+    if (!b) continue;
+    delete b.kosu;
+    delete b.uyardi;
+    delete b.sakin;
+    delete b.tehdit;
+    delete b.ozel;
+  }
+  for (const g of k.gruplar || []) if (g && g.meydan && g.meydan.evre === 'kavga') g.meydan = null;
+}
 export function dunyaOlustur(k) {
   const rng = tohumluUretec(77); // arazi sabittir: her açılışta aynı
   if (!k.hayvanlar || !k.gruplar) nufusOlustur(k);
   asama8Onar(k);
+  oturumZamanlariniSifirla(k);
   ozelBireyleriAta(k);
   if (!Array.isArray(k.yuvalar) || k.yuvalar.some((y) => !y || !TURLER[y.tur] || !sayiMi(y.x) || !sayiMi(y.y))) yuvalariKur(k);
   k.yuvalar.forEach((y) => {

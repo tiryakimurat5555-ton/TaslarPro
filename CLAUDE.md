@@ -335,6 +335,13 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   su/çamur→su). ElevenLabs toprak ve su kayıtları iyi; ot kayıtları neredeyse yalnız hışırtıydı (-35..-45 LUFS) → ot = toprak kaydı alçak
   geçiren (1100 Hz, ağırda 800) + ot kaydının tizi %30 (scipy, /tmp'de). sesleri-isle.sh kosu_*: 3B 2,2 sn, arka sürümde aecho yok (35 ms yankı
   metalik çınlatıyordu; başka sesler hâlâ yankılı). Telefonda doğrulanmadı.
+- Durmayan su sesi (13 Kasım, Murat "nehir tarafında sürekli döngü halinde bir ses var, hiç durmuyor, döngü güzel yapılmamış" dedi):
+  (1) asıl sebep: b.kosu (ve b.ozel, uyardi, sakin, tehdit, g.meydan kavga) oturum saatine (d.zaman, her açılışta 0) göre yazılıp kayıtta
+  kalıyordu; yeniden açılınca eski b.kosu yeni d.zaman'dan çok büyük → hayvan saatlerce kosanlar'da (gölet kıyısındaki filler çamurda koşu
+  sesi). mantik oturumZamanlariniSifirla(k) dunyaOlustur'da siler (tanı: /tmp/claude-0/kosu-neden.js). (2) su_akis (8,5 sn) kaldırıldı.
+  (3) ortam-dongu.py: crossfade n ve döngü uzunluğu 1024'ün katı (AAC sona 10-20 ms sessizlik ekliyordu); bütün döngüler yeniden üretildi
+  (ortam_*, motor, jenerator, kamp_ates, selale; yangın -24), _sol/_sag yeniden. (4) gündelik sesler: grup 20-40 sn, aynı ses 15 sn, herhangi
+  biri 5 sn; su içme 20 m ve %50. Telefonda doğrulanmadı (expo-audio döngüsünün kendisi de dönerken kısa boşluk bırakabilir).
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)
