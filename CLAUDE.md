@@ -330,6 +330,11 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   yönsüz), yangın 100 m'den; temel (evre ya da yağmur) 1-0,75·baskın, en az 0,2; yağmurda diğerleri ×0,55; güç toplamı 1'i geçerse ölçeklenir.
   araclar/ortam-yon.py ortam_nehir/galeri/kayalik → _sol/_sag (karşı kanal %30). Tarayıcı: scratchpad ortam-dene.cjs (doğuya bakarken güneydeki
   nehir sağda). Telefonda doğrulanmadı.
+- Zemine göre koşu sesleri (13 Kasım, Murat "ormanda koşuyorlar ama adım sesleri metal yüzeyden geliyor gibi" dedi): eski kosu_<tür> silindi;
+  kosu_<toynak|hafif|agir|pati>_<ot|toprak|su> (M.kosuSesiAdi(d, b): zeminTuru(d, nokta) → KOSU_ZEMIN ot/yaprak→ot, toprak/kaya→toprak,
+  su/çamur→su). ElevenLabs toprak ve su kayıtları iyi; ot kayıtları neredeyse yalnız hışırtıydı (-35..-45 LUFS) → ot = toprak kaydı alçak
+  geçiren (1100 Hz, ağırda 800) + ot kaydının tizi %30 (scipy, /tmp'de). sesleri-isle.sh kosu_*: 3B 2,2 sn, arka sürümde aecho yok (35 ms yankı
+  metalik çınlatıyordu; başka sesler hâlâ yankılı). Telefonda doğrulanmadı.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

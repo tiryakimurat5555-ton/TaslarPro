@@ -274,6 +274,7 @@ const kucuk = (s) => s.toLocaleLowerCase('tr-TR');
 
 // ---------------- Yenilikler (en yeniler üstte): Murat denerken neyin nerede olduğunu bulsun diye ----------------
 const YENILIKLER = [
+  { baslik: 'Zemine göre hayvan koşu sesleri', metin: 'Kaçan, kovalayan ve hamle yapan hayvanların koşu sesi artık bastıkları zemine göre: otta ve ormanda boğuk tok vuruşlar ve ot hışırtısı, kuru toprakta ve kayalıkta sert toynak sesi, suda ve çamurda şapırtı. Her biri toynaklı, hafif ceylan, ağır fil ve manda, pati (kediler, sırtlan, yaban köpeği) olarak ayrı. Arkadan gelen seslerdeki metalik çınlama giderildi.', nerede: 'sahada, hayvanlar koşarken.' },
   { baslik: 'Katmanlı ortam sesi', metin: 'Ortam sesleri artık gerçekteki gibi birbirine karışıyor: nehrin ya da göletin sesi 60 metreden hafifçe duyulmaya başlar, yaklaştıkça yükselir; galeri ormanı ve kayalığın sesleri 40 metreden. Su ve orman sesi geldiği yönden duyulur: nehir sağındaysa sağ kulağında, ona dönünce iki kulağında. Kıyıda savan, orman ve su sesi bir arada. Bölge sınırında ses artık birden değişmiyor.', nerede: 'sahada kendiliğinden; kulaklıkla yön daha iyi duyulur.' },
   { baslik: 'Yeni ses efektleri', metin: 'Hayvanların gündelik sesleri: su içen sürüler, otlayan zebralar, fil, zebra ve aslan yavrularının çağrısı, leşte kavga eden sırtlanlar, sudaki su aygırları, hortumuyla su püskürten filler, suya kayan timsahlar; impala, ceylan, zebra ve gnu tehlikeyi görünce alarm verir, av anında boğuşma duyulur. Hepsi geldiği yönden. Aletlerin sesleri: dürbünün odak çarkı, deklanşör, ses kaydının başlama ve bitiş bipi, video kamerası, numune şişesi, fener, kamera tuzağı, GPS tasması, tel tuzak sökme, dronun kalkışı ve inişi, ziyaretçi gelince telsiz. Şafakta kuş korosu, akşamüstü kumrular; yağmurun ilk damlaları, uzak gök gürültüsü, yangının çıtırtısı. Nehir geçitlerinde su şırıltısı, istasyonda jeneratör, gece kamp ateşi, çadır fermuarı; Bulutlu Dağ Ormanı\'nda şelale. Menülerin tık sesleri ve mesaj ile görev bildirimleri yenilendi.', nerede: 'sahada ve menülerde kendiliğinden; hayvanların gündelik sesleri Ayarlar, Ses ve konuşma, Küçük canlıların sesleri ayarıyla birlikte kapanır.' },
   { baslik: 'Küçük canlıların sesleri', metin: 'Kuşlar, kurbağalar, böcekler ve maymunlar dahil 24 küçük canlının gerçek sesi: bulundukları yerde, saate ve mevsime göre ara sıra uzaktan seslenirler, ses geldiği yönden duyulur. Sesini duyduktan hemen sonra Küçük canlı ara dersen onu bulman çok kolaylaşır. Galeri ormanı ve kayalığın kendi ortam sesleri var.', nerede: 'sahada kendiliğinden; kapatmak için Ayarlar, Ses ve konuşma, Küçük canlıların sesleri.' },
@@ -1182,7 +1183,8 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
             const son = kosuSesi.get(b.id) || 0;
             if (simdi - son < 1850) continue;
             kosuSesi.set(b.id, simdi + Math.random() * 120);
-            Efekt.yonlu(M.KOSU_SESI[b.tur], d.oyuncu, b, KOSU_DUZEY[M.KOSU_SESI[b.tur]], 55);
+            // Zemine göre: otta boğuk, kuru toprakta tok, suda ve çamurda şapırtılı
+            Efekt.yonlu(M.kosuSesiAdi(d, b), d.oyuncu, b, KOSU_DUZEY[M.KOSU_SESI[b.tur]], 55);
           }
           if (kosuSesi.size > 60) kosuSesi.clear();
         }

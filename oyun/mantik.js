@@ -2970,10 +2970,11 @@ export function kayittanYukle(v) {
 
 // ---------- Adım ve dönüş sesleri ----------
 // Ayağının altındaki zemin: adım sesi buna göre seçilir (assets/efekt/adim_<zemin>_<n>.mp3)
-export function zeminTuru(d) {
+// p verilirse o noktanın zemini (hayvanların koşu sesi için); verilmezse oyuncunun
+export function zeminTuru(d, p) {
   const k = d.k;
-  if (k.magara) return k.magara.alan ? UZAK_ALANLAR[k.magara.alan].zemin : 'magara';
-  const o = d.oyuncu;
+  if (k.magara && !p) return k.magara.alan ? UZAK_ALANLAR[k.magara.alan].zemin : 'magara';
+  const o = p || d.oyuncu;
   if (nehirdeMi(o.x, o.y) || (GOLET.su > 0 && Math.hypot(o.x - GOLET.x, o.y - GOLET.y) < GOLET.su + 0.5)) return 'su';
   const b = bolgeBul(o.x, o.y);
   if (b === 'kayalik') return 'kaya';
@@ -3026,6 +3027,12 @@ export const KOSU_SESI = {
   fil: 'kosu_agir', gergedan: 'kosu_agir', suAygiri: 'kosu_agir', manda: 'kosu_agir',
   aslan: 'kosu_pati', leopar: 'kosu_pati', cita: 'kosu_pati', sirtlan: 'kosu_pati', yabanKopegi: 'kosu_pati', babun: 'kosu_pati',
 };
+// Koşu sesinin zemini: ot ve yaprak yumuşak (ot), toprak ve kaya sert toprak (toprak), su ve çamur (su)
+const KOSU_ZEMIN = { ot: 'ot', yaprak: 'ot', toprak: 'toprak', kaya: 'toprak', istasyon: 'toprak', su: 'su', camur: 'su' };
+export function kosuSesiAdi(d, b) {
+  const t = KOSU_SESI[b.tur];
+  return t ? `${t}_${KOSU_ZEMIN[zeminTuru(d, b)] || 'ot'}` : null;
+}
 // Yakında koşan hayvanlar (en yakın önce): sesleri için
 export function kosanlar(d, menzil = 55) {
   if (d.k.magara) return [];

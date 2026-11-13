@@ -10,7 +10,7 @@ GIRDI=${1:-.sesler/ham}
 CIKTI=assets/efekt
 GECICI=$(mktemp -d)
 mkdir -p "$CIKTI"
-UC_B="kurt tilki domuz ayi yilan akrep sirtlan timsah leopar kartal aslan gergedan dustu fil zebra suaygiri manda ceylan zurafa gnu cita impala yabankopegi babun kosu_toynak kosu_hafif kosu_agir kosu_pati dron yangin_citirti"
+UC_B="kurt tilki domuz ayi yilan akrep sirtlan timsah leopar kartal aslan gergedan dustu fil zebra suaygiri manda ceylan zurafa gnu cita impala yabankopegi babun dron yangin_citirti"
 hedef() {
   case "$1" in
     ortam_*) echo -26 ;;
@@ -54,6 +54,8 @@ for f in "$GIRDI"/*.mp3; do
   # Küçük canlı çağrıları (k_): 3B, en çok 3,6 sn (Aşama 17)
   case "$ad" in k_*) UC=1; KIS="atrim=0:3.6,afade=t=out:st=3.1:d=0.5," ;; esac
   # Hayvanların gündelik sesleri (h_): 3B, en çok 4 sn (Ses efektleri genişlemesi)
+  # Hayvanların zemine göre koşu sesleri (kosu_<tür>_<zemin>): 3B, 2 sn; arka sürümde yankı yok (yankı metalik çınlatıyordu)
+  case "$ad" in kosu_*) UC=1; KIS="atrim=0:2.2,afade=t=out:st=1.9:d=0.3," ;; esac
   case "$ad" in h_*) UC=1; KIS="atrim=0:4,afade=t=out:st=3.4:d=0.6," ;; esac
   ffmpeg -loglevel error -y -i "$f" -af "silenceremove=start_periods=1:start_threshold=-45dB,${KIS}volume=${KAZANC}dB,alimiter=limit=0.79:level=false,areverse,silenceremove=start_periods=1:start_threshold=-55dB,afade=t=in:d=0.08,areverse" -ac 1 -ar 44100 "$GECICI/m.wav"
   if [ "$UC" = 1 ]; then
@@ -66,7 +68,8 @@ a=(p+1)*math.pi/4
 gs=round(max(0,p)*0.6,2); gd=round(max(0,-p)*0.6,2)
 print(round(math.cos(a)*1.25,3), round(math.sin(a)*1.25,3), gs, gd)")
       ffmpeg -loglevel error -y -i "$GECICI/m.wav" -af "pan=stereo|c0=${SOL}*c0|c1=${SAG}*c0,adelay=${GS}|${GD},alimiter=limit=0.89:level=false" -c:a aac -b:a 96k "$CIKTI/${ad}_${i}.m4a"
-      ffmpeg -loglevel error -y -i "$GECICI/m.wav" -af "lowpass=f=1300,lowpass=f=1800,volume=-2dB,pan=stereo|c0=${SOL}*c0|c1=${SAG}*c0,adelay=${GS}|${GD},aecho=0.8:0.6:35:0.25,alimiter=limit=0.89:level=false" -c:a aac -b:a 96k "$CIKTI/${ad}_${i}a.m4a"
+      YANKI=",aecho=0.8:0.6:35:0.25"; case "$ad" in kosu_*) YANKI="" ;; esac
+      ffmpeg -loglevel error -y -i "$GECICI/m.wav" -af "lowpass=f=1300,lowpass=f=1800,volume=-2dB,pan=stereo|c0=${SOL}*c0|c1=${SAG}*c0,adelay=${GS}|${GD}${YANKI},alimiter=limit=0.89:level=false" -c:a aac -b:a 96k "$CIKTI/${ad}_${i}a.m4a"
     done
     echo "$ad: 3B (10 dosya), $I -> $H LUFS"
   else
