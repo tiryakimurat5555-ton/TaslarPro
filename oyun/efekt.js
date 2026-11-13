@@ -70,17 +70,18 @@ export function onYukle(adlar) {
   adlar.forEach((a) => oynatici(a));
 }
 
-export function cal(ad, ses = 1) {
+// arkaPlan: adım gibi kısa ve sürekli sesler oyun konuşurken de çalar (yoksa yürürken rehber konuştukça adımlar kesiliyordu)
+export function cal(ad, ses = 1, arkaPlan = false) {
   if (!durum.acik) return;
   const voiceover = sesAyarlari().kip === 'voiceover';
-  if (durum.kis && !voiceover && konusuyorMu()) return;
+  if (durum.kis && !voiceover && !arkaPlan && konusuyorMu()) return;
   const p = oynatici(ad);
   if (!p) return;
   try {
     p.volume = Math.max(0, Math.min(1, ses * durum.genel));
     p.seekTo(0);
     p.play();
-    if (durum.kis && !voiceover) efektCalindi(Math.min(sure(ad), 0.6) * 1000);
+    if (durum.kis && !voiceover && !arkaPlan) efektCalindi(Math.min(sure(ad), 0.6) * 1000);
   } catch (e) {}
 }
 

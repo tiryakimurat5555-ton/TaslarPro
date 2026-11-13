@@ -301,6 +301,12 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   (kesif kucukAra 60 sn içinde o canlının ağırlığı ×5), altyazı; bulununca (olay yeniKucuk/kucuk ek.kucuk) sesi önünden; ayar
   canliSesleri (Ses ve konuşma); ortamSec gündüz galeri → ortam_galeri, kayalık → ortam_kayalik. Tarayıcıda (scratchpad ses-dene.cjs)
   gece gölette kurbağalar, gündüz galeride kolobus/vervet + ortam_galeri çaldı. YENILIKLER ve Yardım satırı. Telefonda doğrulanmadı.
+- Adım sesi düzeltmesi (13 Kasım, Murat "sürekli yürürken iki adım atıp duraksıyor, sonra üç adım" dedi): sebep efekt.cal'ın oyun
+  konuşurken efekt çalmaması (efektKis); yürürken rehber 7 sn'de bir konuştuğu için adımlar düşüyordu (tarayıcıda 15 sn'de 31 adım,
+  740/1100 ms boşluklar). Efekt.cal(ad, ses, arkaPlan) arkaPlan=true konuşmada da çalar, efektCalindi bildirmez; adimCal bunu kullanır,
+  dört adım karışık torbadan (her oynatıcı ≥3 adım dinlenir), adimYol artanı bir sonrakine aktarır (ADIM_ARALIK 1,5 m), ADIM_DUZEY ot/yaprak
+  artırıldı. araclar/adim-esitle.py en yüksek 80 ms pencereyi eşitler (+1-3 dB). Sonra: 15 sn'de 42 adım, aralıklar 340-380 ms
+  (scratchpad adim-dene.cjs). Telefonda doğrulanmadı.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

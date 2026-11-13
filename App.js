@@ -50,7 +50,8 @@ const ORTAM_DUZEY = { dusuk: 0.2, orta: 0.35, yuksek: 0.5 };
 const KUCUK_DUZEY = 0.5; // küçük canlıların uzaktan çağrıları
 const KOSU_DUZEY = { kosu_toynak: 0.8, kosu_hafif: 0.7, kosu_agir: 0.95, kosu_pati: 0.65 };
 // Adım sesi düzeyleri zemine göre (su ve çamur doğal olarak daha gür)
-const ADIM_DUZEY = { ot: 0.3, toprak: 0.3, camur: 0.28, su: 0.3, kaya: 0.32, yaprak: 0.3, magara: 0.4 };
+const ADIM_DUZEY = { ot: 0.4, toprak: 0.3, camur: 0.32, su: 0.32, kaya: 0.32, yaprak: 0.38, magara: 0.4 }; // ot ve yaprak doğası gereği daha yumuşak
+const ADIM_ARALIK = 1.5; // metre
 const HASSASIYET = { dusuk: 130, orta: 90, yuksek: 60 }; // tam hız için sürükleme (piksel)
 
 // ---------- Hata kayıtları (Aşama 7, çevrim dışı dayanıklılık): Murat'ın bana okuyabilmesi için ----------
@@ -866,12 +867,17 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
   };
 
   // Zemine göre adım sesi: her zeminin 4 farklı adımı sırayla karışık çalınır (aynı ses art arda gelmez)
-  const sonAdim = useRef(-1);
+  // Torba: dört adım karışık sırayla, her biri bir kez; böylece aynı oynatıcı en az üç adım dinlenir, art arda aynı ses gelmez
+  const adimTorba = useRef({ sira: [], son: -1 });
   const adimCal = (zemin, duzey = ADIM_DUZEY[zemin] || 0.3) => {
-    let n = Math.floor(Math.random() * 4);
-    if (n === sonAdim.current) n = (n + 1) % 4;
-    sonAdim.current = n;
-    Efekt.cal(`adim_${zemin}_${n}`, duzey);
+    const t = adimTorba.current;
+    if (!t.sira.length) {
+      t.sira = [0, 1, 2, 3].sort(() => Math.random() - 0.5);
+      if (t.sira[0] === t.son) t.sira.push(t.sira.shift());
+    }
+    const n = t.sira.shift();
+    t.son = n;
+    Efekt.cal(`adim_${zemin}_${n}`, duzey, true);
   };
   // Mağarada oda değiştirirken birkaç adım (yankılı)
   const adimDizisi = (zemin, kac) => {
@@ -976,9 +982,10 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
             Efekt.cal('gok', 0.45 + Math.random() * 0.4);
           }
         }
+        // Adım aralığı yürünen yola göre; artan yol bir sonraki adıma aktarılır (ritim kare hızından etkilenmesin)
         adimYol += sonuc.yurudu;
-        if (adimYol > 1.5) {
-          adimYol = 0;
+        if (adimYol >= ADIM_ARALIK) {
+          adimYol = Math.min(adimYol - ADIM_ARALIK, ADIM_ARALIK * 0.5);
           adimCal(M.zeminTuru(d));
         }
         // Kaçan, kovalayan ve hamle yapan hayvanların koşu sesleri, hayvanın yönünden ve uzaklığına göre (3B).
