@@ -1,0 +1,15 @@
+# Expo'nun kendi makinesinde JS güncellemesi (13 Kasım 2026, GitHub Actions dakikası bitince).
+# Claude, Expo bağlantısıyla (workflow_run, appFullName @murat5561/taslarpro, fileName guncelle.yml, gitRef = tam commit) başlatır.
+name: Guncelleme
+jobs:
+  yayinla:
+    name: Guncellemeyi yayinla
+    steps:
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      - name: Yayinla
+        run: |
+          npx -y eas-cli@latest update --branch main --message "EAS guncelleme" --non-interactive --json > sonuc.json
+          cat sonuc.json
+          GRUP="$(node -e "const s=require('./sonuc.json'); const a=Array.isArray(s)?s:[s]; console.log(a[0].group)")"
+          echo "EXPO_GO_BAGLANTISI=exp://u.expo.dev/e9796050-d2e8-4278-aa86-6a58bcc22c0a/group/${GRUP}"

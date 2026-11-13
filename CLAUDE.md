@@ -365,6 +365,11 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   adımlar düzenli): olası sebep iOS'ta expo-audio seekTo'nun eşzamansız olması; sona varmış oynatıcıda seekTo(0) bitmeden play() → sessiz.
   efekt.js basaSarVeCal(p): çalıyorsa pause, seekTo(0).then(play) (en geç 120 ms'de play), bitişten 150 ms sonra önceden seekTo(0)
   (geriSarZaman Map). Bütün cal/yonlu bundan geçer. Telefonda doğrulanmadı; düzelmezse sebep hareketin kendisi (kare takılması/yurudu) olabilir.
+- Alet değiştirme (13 Kasım akşam, Murat "her alete geçtiğimde aynı uzun açıklamaları duymak istemiyorum"): iki parmak kaydırınca yalnızca
+  aletin adı söylenir (aletSec); açıklama (ALETLER ipucu) Alet menüsünde satıra uzun basınca okunur.
+- EXPO'DA YAYIN (13 Kasım 2026, GitHub Actions dakikası bitti; Murat "GitHub dakikam yok, zorlama"): `.eas/workflows/guncelle.yml` Expo'nun makinesinde
+  `eas update --branch main`; Expo bağlantısı workflow_run (appFullName @murat5561/taslarpro, fileName guncelle.yml, gitRef = TAM COMMIT SHA), durum
+  workflow_info, Expo Go grup bağlantısı workflow_logs'ta. GitHub iş akışı dakika gelince yine çalışır.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

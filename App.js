@@ -1438,7 +1438,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     aletRef.current = i;
     const a = aletlerAl(d.k)[i];
     Efekt.cal('odak', 0.6);
-    Ses.hemen(`${a.ad}. ${a.ipucu}`);
+    Ses.hemen(a.ad); // yalnızca adı (Murat: her geçişte uzun açıklama yorucu; açıklama Alet menüsünde uzun basınca)
     yenile((x) => x + 1);
   };
   const sahaJest = useJestler(
