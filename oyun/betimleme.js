@@ -4,7 +4,7 @@
 import { GOLET, nehirY, ISTASYON, MAGARA, TERMITLER, KAYALIK, TURLER, YERLER } from './veri.js';
 import * as M from './mantik.js';
 import * as E from './ekosistem.js';
-import { MAGARA_ODALARI } from './kucukler.js';
+import { MAGARA_ODALARI, UZAK_ALANLAR, aktifOda } from './kucukler.js';
 
 const yt = (o, h) => `${M.saatSozu(M.saatYonu(o, h))}, ${M.metreSozu(M.mesafe(o, h))}`;
 const kucuk = (s) => s.toLocaleLowerCase('tr-TR');
@@ -141,6 +141,10 @@ function hayvanSozu(d) {
 export function betimle(d, aletAdi) {
   const k = d.k;
   d.betimlemeSayisi = (d.betimlemeSayisi || 0) + 1;
+  if (k.magara && k.magara.alan) {
+    const n = aktifOda(k);
+    return `${UZAK_ALANLAR[k.magara.alan].ad}, ${n.ad}. ${M.saatMetni(k.dk)}. ${n.tarif}${aletAdi ? ` Elindeki alet: ${aletAdi}.` : ''}`;
+  }
   if (k.magara) {
     const oda = MAGARA_ODALARI[k.magara.oda];
     return `${oda.ad}. ${oda.tarif} Kafa lambanın ışığı birkaç metreyi aydınlatıyor; ötesi karanlık. Duyduğun sesler: damlaların suya düşüşü${oda.id === 'yarasa' ? ', tepende binlerce yarasanın kıpırtısı' : ''}.${aletAdi ? ` Elindeki alet: ${aletAdi}.` : ''}`;

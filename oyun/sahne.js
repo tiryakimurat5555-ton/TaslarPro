@@ -618,6 +618,68 @@ export function sahneKur(gl, d, secenek = {}) {
   yeraltiGol.rotation.x = -Math.PI / 2;
   yeraltiGol.position.set(0, 0.05, odaZ[3] - 1);
   magaraGrup.add(yeraltiGol);
+  // ---- Uzak araştırma alanları (Aşama 12): ana sahneden uzakta ayrı küçük dünyalar; noktalar -z boyunca 30 m arayla ----
+  const UX = 6000;
+  const uzakGruplar = {};
+  const uzakKur = (alan, zeminRenk, kur) => {
+    const g = new THREE.Group();
+    g.visible = false;
+    const z = new THREE.Mesh(new THREE.PlaneGeometry(260, 260), mat(zeminRenk));
+    z.rotation.x = -Math.PI / 2;
+    z.position.set(UX, 0, -60);
+    g.add(z);
+    kur(g);
+    sahne.add(g);
+    uzakGruplar[alan] = g;
+  };
+  const rs = (n) => {
+    const x = Math.sin(n * 127.1) * 43758.5453;
+    return x - Math.floor(x);
+  };
+  uzakKur('tuzla', '#ddd3c2', (g) => {
+    const su = new THREE.Mesh(new THREE.PlaneGeometry(70, 170), new THREE.MeshLambertMaterial({ color: '#b56552' }));
+    su.rotation.x = -Math.PI / 2;
+    su.position.set(UX - 43, 0.03, -70);
+    g.add(su);
+    const flamingo = new THREE.InstancedMesh(new THREE.ConeGeometry(0.18, 0.9, 5), mat('#f08aa0'), 240);
+    for (let i = 0; i < 240; i++) {
+      m4.makeTranslation(UX - 14 - rs(i) * 50, 0.6, -10 - rs(i + 99) * 120);
+      flamingo.setMatrixAt(i, m4);
+    }
+    g.add(flamingo);
+    const yanardag = new THREE.Mesh(new THREE.ConeGeometry(40, 55, 10), mat('#6a5a4a'));
+    yanardag.position.set(UX + 60, 27, -150);
+    g.add(yanardag);
+  });
+  uzakKur('dag', '#34432a', (g) => {
+    for (let i = 0; i < 140; i++) {
+      const x = UX + (rs(i) - 0.5) * 70;
+      if (Math.abs(x - UX) < 4) continue;
+      const zz = 10 - rs(i + 7) * 150;
+      const boy = 8 + rs(i + 3) * 10;
+      const govde = parca(g, new THREE.CylinderGeometry(0.3, 0.45, boy, 6), '#4a3b2a', x, boy / 2, zz);
+      parca(g, new THREE.SphereGeometry(2.6 + rs(i + 5) * 1.5, 7, 5), '#2f5a2c', x, boy, zz);
+    }
+    for (let i = 0; i < 60; i++) parca(g, new THREE.CylinderGeometry(0.06, 0.06, 5, 4), '#7a9a4a', UX + (rs(i + 300) - 0.5) * 20, 2.5, -55 - rs(i + 301) * 25); // bambu
+  });
+  uzakKur('bataklik', '#2f3b2a', (g) => {
+    const su = new THREE.Mesh(new THREE.PlaneGeometry(30, 170), new THREE.MeshLambertMaterial({ color: '#3d4a3c' }));
+    su.rotation.x = -Math.PI / 2;
+    su.position.set(UX, 0.03, -65);
+    g.add(su);
+    const sap = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.04, 0.05, 4, 4), mat('#5f7a35'), 420);
+    const pus = new THREE.InstancedMesh(new THREE.SphereGeometry(0.45, 6, 4), mat('#7f9a45'), 420);
+    for (let i = 0; i < 420; i++) {
+      const yan = rs(i) < 0.5 ? -1 : 1;
+      const x = UX + yan * (4 + rs(i + 11) * 30);
+      const zz = 10 - rs(i + 17) * 160;
+      m4.makeTranslation(x, 2, zz);
+      sap.setMatrixAt(i, m4);
+      m4.makeTranslation(x, 4.1, zz);
+      pus.setMatrixAt(i, m4);
+    }
+    g.add(sap, pus);
+  });
   const fener = new THREE.PointLight('#fff1d0', 0, 22, 1.6);
   sahne.add(fener);
   // ---- Yangın: alev konileri ve dumanlar; yanmış alanlar koyu yamalar ----
@@ -737,6 +799,24 @@ export function sahneKur(gl, d, secenek = {}) {
         }
       }
 
+      // Uzak alan: kamera o alanın noktasında, gün ışığıyla
+      const uzakAlan = k.magara && k.magara.alan;
+      for (const [a, g] of Object.entries(uzakGruplar)) g.visible = a === uzakAlan;
+      if (uzakAlan) {
+        magaraGrup.visible = false;
+        fener.intensity = 0;
+        const z = -k.magara.oda * 30 + 4;
+        kamKonum.set(UX, 1.7, z);
+        kamera.position.lerp(kamKonum, Math.min(1, dt * 2.5));
+        kamera.lookAt(UX, 1.5, z - 20);
+        sahne.fog.near = uzakAlan === 'dag' ? 4 : 20;
+        sahne.fog.far = uzakAlan === 'dag' ? 45 : 160;
+        insan.visible = false;
+        arac.visible = false;
+        ciz.render(sahne, kamera);
+        if (gl.endFrameEXP) gl.endFrameEXP();
+        return;
+      }
       // Mağara: kamera tünelin içinde, fener ışığıyla
       magaraGrup.visible = !!k.magara;
       fener.intensity = k.magara ? 45 : 0;

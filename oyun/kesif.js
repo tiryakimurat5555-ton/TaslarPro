@@ -4,7 +4,7 @@
 import { TURLER, MAGARA, ISTASYON, YARICAP, nehirY, NEHIR_YARI } from './veri.js';
 import * as M from './mantik.js';
 import * as E from './ekosistem.js';
-import { KUCUKLER, MAGARA_ODALARI, bulunabilirler } from './kucukler.js';
+import { KUCUKLER, MAGARA_ODALARI, UZAK_ALANLAR, UZAK_SIRASI, bulunabilirler, odaListesi, aktifOda, bolumAdi, alanCanlilari } from './kucukler.js';
 
 const kucukHarf = (s) => s.toLocaleLowerCase('tr-TR');
 const yerTarifi = (o, h) => `${M.saatSozu(M.saatYonu(o, h))}, ${M.metreSozu(M.mesafe(o, h))}`;
@@ -13,14 +13,17 @@ export function kesifHazirla(k) {
   if (!k.arsiv.kucukler || typeof k.arsiv.kucukler !== 'object') k.arsiv.kucukler = {};
   if (!k.arsiv.magara || !Array.isArray(k.arsiv.magara.odalar)) k.arsiv.magara = { odalar: [] };
   if (!k.kacak || !Array.isArray(k.kacak.tuzaklar)) k.kacak = { tuzaklar: [], bulunan: 0, kurtarilan: 0, olen: 0, izler: 0 };
-  if (k.magara && typeof k.magara.oda !== 'number') k.magara = null;
+  if (k.magara && (typeof k.magara.oda !== 'number' || (k.magara.alan && !UZAK_ALANLAR[k.magara.alan]))) k.magara = null;
+  if (k.magara) k.magara.oda = Math.max(0, Math.min(odaListesi(k.magara.alan).length - 1, Math.floor(k.magara.oda) || 0));
+  if (!k.arsiv.uzak || typeof k.arsiv.uzak !== 'object' || Array.isArray(k.arsiv.uzak)) k.arsiv.uzak = {};
+  for (const a of Object.keys(k.arsiv.uzak)) if (!UZAK_ALANLAR[a] || !Array.isArray(k.arsiv.uzak[a])) delete k.arsiv.uzak[a];
 }
 
 // ---------- Küçük canlılar ----------
 export function kucukKaydet(d, id, metinOn = '') {
   const k = d.k;
   const c = KUCUKLER[id];
-  const yer = k.magara ? MAGARA_ODALARI[k.magara.oda].ad : M.bolgeAdi(d.oyuncu.x, d.oyuncu.y);
+  const yer = k.magara ? (k.magara.alan ? `${bolumAdi(k)}, ${aktifOda(k).ad}` : aktifOda(k).ad) : M.bolgeAdi(d.oyuncu.x, d.oyuncu.y);
   let a = k.arsiv.kucukler[id];
   d.sonKucuk = { id, zaman: d.zaman };
   d.sonKucukAd = c.ad;
@@ -49,7 +52,8 @@ export function kucukAra(d) {
   const evre = M.gunEvresi(k.dk);
   const tk = E.takvim(M.gunNo(k.dk));
   const yagmur = !!(k.eko && (k.eko.yagmurVar || k.eko.yagisBugun > 4));
-  const oda = k.magara ? MAGARA_ODALARI[k.magara.oda].id : null;
+  const oda = k.magara ? aktifOda(k).id : null;
+  const alan = k.magara ? k.magara.alan || null : null;
   const bolge = M.bolgeBul(d.oyuncu.x, d.oyuncu.y);
   // Termitlerin çiftleşme uçuşu: yağmurdan sonraki gece termit tepelerinde
   if (!oda && bolge === 'termit' && evre === 'gece' && k.eko && k.eko.yagisBugun > 3 && !k.arsiv.kucukler.termitUcusu) {
@@ -61,12 +65,12 @@ export function kucukAra(d) {
     M.olay(d, 'yeniKucuk', m, 4, { nadir: true });
     return m;
   }
-  const liste = bulunabilirler({ bolge, oda, evre, mevsim: tk.mevsim, yagmur });
+  const liste = bulunabilirler({ bolge, oda, evre, mevsim: tk.mevsim, yagmur, alan });
   let basari = oda ? 0.85 : 0.75;
   if (!oda && evre === 'gece' && !(k.ekipman.geceDurbunu || k.ekipman.termal)) basari = 0.5;
   basari += M.zorlukCarpani(k, 'kesif', [0.12, 0, -0.1]);
   if (!liste.length || d.rng() > basari) {
-    const m = oda ? 'Fenerinle kayaların çatlaklarına baktın ama bu kez bir şey göremedin.' : evre === 'gece' ? 'Karanlıkta otların arasına baktın; yalnızca cırcır böceklerini duyuyorsun.' : 'Otların ve taşların arasına baktın ama bu kez bir şey göremedin. Başka bir yerde ya da başka bir saatte dene.';
+    const m = alan ? 'Dürbünle ve sabırla çevreni taradın ama bu kez bir şey göremedin. Başka bir noktada ya da başka bir saatte dene.' : oda ? 'Fenerinle kayaların çatlaklarına baktın ama bu kez bir şey göremedin.' : evre === 'gece' ? 'Karanlıkta otların arasına baktın; yalnızca cırcır böceklerini duyuyorsun.' : 'Otların ve taşların arasına baktın ama bu kez bir şey göremedin. Başka bir yerde ya da başka bir saatte dene.';
     M.olay(d, 'kucuk', m, 2);
     return m;
   }
@@ -103,6 +107,7 @@ export function magarayaGir(d) {
 }
 function odaGir(d, i) {
   const k = d.k;
+  if (k.magara.alan) return noktaGir(d, i);
   const oda = MAGARA_ODALARI[i];
   k.magara.oda = i;
   let ek = '';
@@ -120,8 +125,8 @@ function odaGir(d, i) {
 export function magaraIlerle(d) {
   const k = d.k;
   if (!k.magara) return 'Mağarada değilsin.';
-  if (k.magara.oda >= MAGARA_ODALARI.length - 1) {
-    const m = 'Mağaranın en iç noktasındasın; daha ileri gidilmiyor.';
+  if (k.magara.oda >= odaListesi(k.magara.alan).length - 1) {
+    const m = k.magara.alan ? 'Bu alanın son noktasındasın; geri dönebilirsin.' : 'Mağaranın en iç noktasındasın; daha ileri gidilmiyor.';
     M.olay(d, 'hata', m, 2);
     return m;
   }
@@ -130,7 +135,14 @@ export function magaraIlerle(d) {
 export function magaraGeri(d) {
   const k = d.k;
   if (!k.magara) return 'Mağarada değilsin.';
-  if (k.magara.oda === 0) return magaradanCik(d);
+  if (k.magara.oda === 0) {
+    if (k.magara.alan) {
+      const m = 'Bu alanın ilk noktasındasın. İstasyona dönmek için menüde İstasyona dön satırını seç.';
+      M.olay(d, 'hata', m, 2);
+      return m;
+    }
+    return magaradanCik(d);
+  }
   return odaGir(d, k.magara.oda - 1);
 }
 export function magaradanCik(d) {
@@ -141,7 +153,88 @@ export function magaradanCik(d) {
   M.olay(d, 'magara', m, 3, { cikis: true });
   return m;
 }
-export const odaTarifi = (k) => (k.magara ? `${MAGARA_ODALARI[k.magara.oda].ad}. ${MAGARA_ODALARI[k.magara.oda].tarif}` : '');
+export const odaTarifi = (k) => (k.magara ? `${k.magara.alan ? bolumAdi(k) + ', ' : ''}${aktifOda(k).ad}. ${aktifOda(k).tarif}` : '');
+
+// ---------- Uzak araştırma alanları (Aşama 12, karar 17) ----------
+// Ayrı bölümler: istasyondan araçla yolculuk (zaman akar, App bunu dinlenme döngüsüyle hesaplar), orada nokta nokta gezilir.
+export const istasyondaMi = (d) => !d.k.magara && !d.k.teknede && M.mesafe(d.oyuncu, ISTASYON) < 30;
+export function uzakDurumu(k, alan) {
+  const a = UZAK_ALANLAR[alan];
+  if (!a) return { acik: false, neden: 'Böyle bir alan yok.' };
+  if (k.itibar < a.itibar) return { acik: false, neden: 'Bu alana izin için bilimsel itibarın henüz yetmiyor.' };
+  return { acik: true, neden: '' };
+}
+// Yola çıkmadan önceki denetim ve yakıt ücreti; hata metni ya da null
+export function uzakHazirla(d, alan) {
+  const k = d.k;
+  const a = UZAK_ALANLAR[alan];
+  const dur = uzakDurumu(k, alan);
+  if (!dur.acik) return dur.neden;
+  if (!istasyondaMi(d)) return 'Saha gezilerine istasyondan çıkılır. Önce istasyona dön.';
+  if (k.butce < a.ucret) return `Yakıt ve izin için ${a.ucret.toLocaleString('tr-TR')} lira gerekli; bütçe yetmiyor.`;
+  k.butce -= a.ucret;
+  d.rota = null;
+  d.yaklasId = null;
+  M.gozlemBitir(d);
+  if (k.aracta) {
+    k.aracta = false;
+    d.aracHiz = 0;
+  }
+  return null;
+}
+export function uzagaVar(d, alan) {
+  const k = d.k;
+  k.magara = { oda: 0, alan };
+  const ilk = !k.arsiv.uzak[alan];
+  const a = UZAK_ALANLAR[alan];
+  const m0 = noktaGir(d, 0, true);
+  const m = `${a.ad} alanına vardın. ${ilk ? a.tarif + ' ' : ''}${m0}`;
+  M.arsivOlay(d, `Saha gezisi: ${a.ad}.`);
+  M.olay(d, 'magara', m, 3, { oda: a.noktalar[0].id, alan });
+  return m;
+}
+function noktaGir(d, i, sessiz) {
+  const k = d.k;
+  const l = odaListesi(k.magara.alan);
+  const n = l[i];
+  k.magara.oda = i;
+  const ziyaret = (k.arsiv.uzak[k.magara.alan] = k.arsiv.uzak[k.magara.alan] || []);
+  let ek = '';
+  if (!ziyaret.includes(n.id)) {
+    ziyaret.push(n.id);
+    M.itibarEkle(d, 3);
+    ek = ' İlk kez buradasın.';
+  }
+  const bulunan = alanCanlilari(k.magara.alan).filter((id) => KUCUKLER[id].oda.includes(n.id) && k.arsiv.kucukler[id]).length;
+  const toplam = alanCanlilari(k.magara.alan).filter((id) => KUCUKLER[id].oda.includes(n.id)).length;
+  const m = `${n.ad}, ${i + 1}. nokta, ${l.length} noktadan.${ek} ${n.tarif} Burada bulduğun canlı: ${bulunan} / ${toplam}.${i < l.length - 1 ? ' Yukarı kaydırırsan sonraki noktaya geçersin.' : ' Burası son nokta.'}`;
+  if (!sessiz) M.olay(d, 'magara', m, 3, { oda: n.id, alan: k.magara.alan });
+  return m;
+}
+export function uzaktanDon(d) {
+  const k = d.k;
+  if (!k.magara || !k.magara.alan) return 'Saha gezisinde değilsin.';
+  const a = UZAK_ALANLAR[k.magara.alan];
+  k.magara = null;
+  const m = `${a.ad} gezisinden istasyona döndün.`;
+  M.olay(d, 'magara', m, 3, { cikis: true });
+  return m;
+}
+export function uzakSatirlari(k) {
+  return UZAK_SIRASI.map((id) => {
+    const a = UZAK_ALANLAR[id];
+    const dur = uzakDurumu(k, id);
+    const z = (k.arsiv.uzak && k.arsiv.uzak[id]) || [];
+    const c = alanCanlilari(id);
+    const bulunan = c.filter((x) => k.arsiv.kucukler[x]).length;
+    return { id, a, dur, metin: `${a.ad}: ${dur.acik ? `yol ${String(Math.round((a.yol / 60) * 10) / 10).replace('.', ',')} saat, yakıt ve izin ${a.ucret.toLocaleString('tr-TR')} lira` : 'kilitli'}. Gezilen nokta ${z.length} / ${a.noktalar.length}, bulunan canlı ${bulunan} / ${c.length}.` };
+  });
+}
+export const uzakIlerleme = (k, alan) => {
+  const z = (k.arsiv.uzak && k.arsiv.uzak[alan]) || [];
+  const bulunan = alanCanlilari(alan).filter((x) => k.arsiv.kucukler && k.arsiv.kucukler[x]).length;
+  return Math.min(5, z.length) + Math.min(4, bulunan);
+};
 
 // ---------- Kaçak avcılık: tel tuzaklar (karar 60) ----------
 const OTCULLAR = ['zebra', 'ceylan', 'impala', 'gnu', 'domuz', 'manda', 'zurafa'];
@@ -292,7 +385,7 @@ export function yarasaGuncelle(d) {
   if (saat < 18.3 || saat > 19.2 || k.yarasaGunu === gun) return;
   k.yarasaGunu = gun;
   const m = M.mesafe(d.oyuncu, MAGARA);
-  if (k.magara && MAGARA_ODALARI[k.magara.oda].id === 'yarasa') {
+  if (k.magara && !k.magara.alan && aktifOda(k).id === 'yarasa') {
     M.olay(d, 'yarasaCikisi', 'Tepende bir hışırtı başladı: binlerce yarasa uyanıp mağaranın ağzına doğru akın ediyor. Kanat rüzgârı yüzüne vuruyor.', 4);
     kucukKaydet(d, 'misirYarasasi');
   } else if (m < 60 && !k.magara) {

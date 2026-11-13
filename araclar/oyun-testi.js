@@ -6,6 +6,7 @@ import * as G from '../oyun/genisleme.js';
 import * as Iz from '../oyun/izler.js';
 import * as H from '../oyun/hikaye.js';
 import * as S from '../oyun/su.js';
+import * as Y from '../oyun/yonetim.js';
 import { TURLER, YERLER } from '../oyun/veri.js';
 import * as K from '../oyun/kesif.js';
 
@@ -36,6 +37,7 @@ for (let t = 0; t < toplam; t += adim) {
     Iz.guncelle(d, 0.1);
     H.guncelle(d, 0.1);
     S.guncelle(d, 0.1);
+    Y.guncelle(d, 0.1);
   const gecen = performance.now() - t0;
   sureTop += gecen;
   sureSayi++;
@@ -56,6 +58,17 @@ for (let t = 0; t < toplam; t += adim) {
     if (k.ekipman && Mz.ekipmanDurumu(k, 'tuzak').alinir && k.stok.tuzak + k.tuzaklar.length < 3 && k.butce > 10000) Mz.ekipmanAl(k, 'tuzak');
     if (k.stok.tuzak && k.tuzaklar.length < 3 && Math.hypot(d.oyuncu.x, d.oyuncu.y) > 20) console.log(Mz.tuzakKur(d));
     if (Mz.ekipmanDurumu(k, 'tasma').alinir && !k.stok.tasma && k.butce > 10000) Mz.ekipmanAl(k, 'tasma');
+    // Aşama 12: istasyondayken açık bir saha gezisine "ışınlanarak" git, noktaları gez, canlı ara, dön; yönetim eylemleri
+    if (K.istasyondaMi(d) && Math.random() < 0.3) {
+      const acik = K.uzakSatirlari(k).filter((x) => x.dur.acik);
+      if (acik.length && !K.uzakHazirla(d, acik[0].id)) {
+        const alan = acik[Math.floor(Math.random() * acik.length)].id;
+        K.uzagaVar(d, alan);
+        for (let j = 0; j < 5; j++) { d.sonArama = -9; K.kucukAra(d); M.fotografCek(d); K.magaraIlerle(d); }
+        say('gezi:' + K.uzaktanDon(d).slice(0, 20));
+      }
+    }
+    Object.keys(Y.EYLEMLER).forEach((id) => Y.eylemDurumu(d, id).yapilir && k.butce > 12000 && say('yon:' + Y.eylemYap(d, id).slice(0, 25)));
     if (k.stok.tasma && M.gozlenen(d)) { const r = Mz.tasmaTak(d); if (r.startsWith('Veteriner ekip')) console.log(r); }
   }
   if (t - sonEylem > 4) {
@@ -136,6 +149,8 @@ console.log(`Performans: kare başına mantık ortalama ${(sureTop / sureSayi).t
 k.mesajlar.forEach((m) => KOTU.test(m.metin) && kotu.add(m.metin.slice(0, 160)));
 console.log(`Hikâye: gizemler ${JSON.stringify(Object.fromEntries(Object.entries(k.hikaye.gizemler).map(([a, g]) => [a, g.bitti ? 'çözüldü' : g.adim + 1 + '. adım'])))}, başarılar ${Object.keys(k.hikaye.basarilar).join(',')}, görüşme ${k.hikaye.gorusmeler}, sayaç ${JSON.stringify(k.hikaye.sayac)}`);
 console.log(`Su: ${S.suRaporu(k)}`);
+console.log(`Gezi: ${K.uzakSatirlari(k).map((x) => x.metin).join(' | ')}`);
+console.log(`Yönetim: lantana ${Object.keys(k.eko.istilaci || {}).length}, yakma ${k.eko.kontrolluYakmaYil}, gölet ${!!k.eko.goletRestore}, raporlar ${JSON.stringify(Y.raporSatirlari(k))}`);
 console.log(`Bozuk metin: ${kotu.size}`);
 [...kotu].slice(0, 10).forEach((m) => console.log('  ' + m));
 if (process.env.KAYIT_YAZ) require('fs').writeFileSync(process.env.KAYIT_YAZ, JSON.stringify(M.kayitHazirla(k)));

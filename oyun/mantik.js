@@ -7,6 +7,7 @@ import {
   BOLGE_ADLARI, DAVRANISLAR, GALERI, TERMITLER, SES_TURLERI, TURLER, TUR_SIRASI, KISILIKLER, EVRELER, EKIPMAN, ARAC, YURUME,
 } from './veri.js';
 import * as E from './ekosistem.js';
+import { UZAK_ALANLAR } from './kucukler.js';
 
 export const KAYIT_SURUMU = 1;
 const LOD_UZAKLIK = 130; // bu uzaklığın ötesindeki gruplar seyrek güncellenir
@@ -2041,13 +2042,13 @@ export function fotografCek(d) {
     d.sonFoto = d.zaman;
     const id = d.sonKucuk.id;
     const kalite = d.rng() < 0.5 ? 'iyi' : d.rng() < 0.6 ? 'çok iyi' : 'orta';
-    k.arsiv.fotolar.unshift({ id: k.sonrakiId++, kucuk: id, tur: null, davranis: null, bolge: k.magara ? 'Mağara' : bolgeAdi(d.oyuncu.x, d.oyuncu.y), dk: k.dk, kalite });
+    k.arsiv.fotolar.unshift({ id: k.sonrakiId++, kucuk: id, tur: null, davranis: null, bolge: k.magara ? (k.magara.alan ? UZAK_ALANLAR[k.magara.alan].ad : 'Mağara') : bolgeAdi(d.oyuncu.x, d.oyuncu.y), dk: k.dk, kalite });
     if (k.arsiv.fotolar.length > 300) k.arsiv.fotolar.length = 300;
     olay(d, 'foto', `Fotoğraf çekildi: ${d.sonKucukAd || 'küçük canlı'}, yakın çekim. Kalite ${kalite}.`, 3, { cekildi: true });
     return;
   }
   if (k.magara) {
-    olay(d, 'foto', 'Mağarada önce fenerinle bir canlı bul, sonra fotoğrafını çek.', 3, { cekildi: false });
+    olay(d, 'foto', k.magara.alan ? 'Önce dürbünle bir canlı bul, sonra fotoğrafını çek.' : 'Mağarada önce fenerinle bir canlı bul, sonra fotoğrafını çek.', 3, { cekildi: false });
     return;
   }
   const menzil = Math.min(kameraMenzili(k), durbunMenzili(k.dk, k) + 4);
@@ -2101,7 +2102,7 @@ export function fotografCek(d) {
 // ---------- Ses kaydı ve analizi (karar 49, 87) ----------
 export function sesKaydiBaslat(d) {
   if (d.k.magara) {
-    olay(d, 'hata', 'Mağarada yankı çok güçlü; kayıt çözümlenemiyor. Yarasaların seslerini dışarıda, akşam çıkışında kaydedebilirsin.', 3);
+    olay(d, 'hata', d.k.magara.alan ? 'Ses kayıt cihazı savandaki büyük hayvanlar için ayarlı. Buradaki canlıların seslerini bulduğunda tarifleri anlatır.' : 'Mağarada yankı çok güçlü; kayıt çözümlenemiyor. Yarasaların seslerini dışarıda, akşam çıkışında kaydedebilirsin.', 3);
     return;
   }
   if (d.sesKayit) {
@@ -2181,7 +2182,7 @@ export function yerGit(d, id) {
     return;
   }
   if (d.k.magara) {
-    olay(d, 'hata', 'Önce mağaradan çıkmalısın.', 3);
+    olay(d, 'hata', d.k.magara.alan ? 'Saha gezisindesin. Önce istasyona dön.' : 'Önce mağaradan çıkmalısın.', 3);
     return;
   }
   d.rota = hedef;
@@ -2765,7 +2766,7 @@ export function kayittanYukle(v) {
 // Ayağının altındaki zemin: adım sesi buna göre seçilir (assets/efekt/adim_<zemin>_<n>.mp3)
 export function zeminTuru(d) {
   const k = d.k;
-  if (k.magara) return 'magara';
+  if (k.magara) return k.magara.alan ? UZAK_ALANLAR[k.magara.alan].zemin : 'magara';
   const o = d.oyuncu;
   if (nehirdeMi(o.x, o.y) || (GOLET.su > 0 && Math.hypot(o.x - GOLET.x, o.y - GOLET.y) < GOLET.su + 0.5)) return 'su';
   const b = bolgeBul(o.x, o.y);

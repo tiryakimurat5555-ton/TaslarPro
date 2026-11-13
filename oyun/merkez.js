@@ -216,6 +216,31 @@ export const ARASTIRMALAR = [
     odul: { itibar: 15, fon: 6000 },
     sonuc: 'Savan yangınlarının ölü otu temizleyip taze sürgünleri uyardığı, otçulların yanmış alanlara akın ettiği gösterildi.',
   },
+  // Aşama 12: uzak araştırma alanları (karar 17)
+  {
+    id: 'tuzGolu',
+    ad: 'Soda gölünün flamingoları',
+    kosulMetni: 'Kızıl Tuz Gölü gezisinde 5 noktayı gez ve 4 canlı bul',
+    ilerleme: (k) => [K.uzakIlerleme(k, 'tuzla'), 9],
+    odul: { itibar: 15, fon: 6000 },
+    sonuc: 'Küçük flamingoların yalnızca soda göllerindeki alglerle beslendiği ve yuvalarını yırtıcıların ulaşamadığı tuz adacıklarına kurduğu belgelendi. Gölün suyunu azaltacak her proje bu türü tehdit eder.',
+  },
+  {
+    id: 'dagOrmani',
+    ad: 'Dağ ormanının biyolojik çeşitliliği',
+    kosulMetni: 'Bulutlu Dağ Ormanı gezisinde 5 noktayı gez ve 4 canlı bul',
+    ilerleme: (k) => [K.uzakIlerleme(k, 'dag'), 9],
+    odul: { itibar: 15, fon: 7000 },
+    sonuc: 'Dağ ormanının savanın su kulesi olduğu gösterildi: sis yapraklarda yoğunlaşıp derelere, oradan savandaki nehre akıyor. Orman kesilirse kurak mevsimde nehir de kurur.',
+  },
+  {
+    id: 'papirusBatakligi',
+    ad: 'Papirüs bataklığının sırları',
+    kosulMetni: 'Papirüs Bataklığı gezisinde 5 noktayı gez ve 4 canlı bul',
+    ilerleme: (k) => [K.uzakIlerleme(k, 'bataklik'), 9],
+    odul: { itibar: 18, fon: 8000 },
+    sonuc: 'Papirüs bataklığının suyu süzen dev bir arıtma sistemi olduğu ve pabuç gagalı leylek gibi yalnızca burada yaşayan türlerin akciğerli balığa bağlı olduğu gösterildi.',
+  },
   // Aşama 11: nehir ve gölet araştırmaları (karar 94, 99)
   {
     id: 'suAtlasi',

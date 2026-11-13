@@ -11,6 +11,7 @@ import * as G from '../oyun/genisleme.js';
 import * as Iz from '../oyun/izler.js';
 import * as H from '../oyun/hikaye.js';
 import * as S from '../oyun/su.js';
+import * as Y from '../oyun/yonetim.js';
 
 const deneme = +(process.argv[2] || 200);
 const KOTU = /undefined|NaN|\[object|null\b|  |\.\.(?!\.)| ,|^ /;
@@ -28,6 +29,7 @@ function oynat(d, adim) {
     Iz.guncelle(d, 0.1);
     H.guncelle(d, 0.1);
     S.guncelle(d, 0.1);
+    Y.guncelle(d, 0.1);
     for (const o of M.olaylariAl(d)) metinDenetle(o.metin, o.tur);
     if (i % 60 === 0) {
       metinDenetle(B.betimle(d, 'Dürbün'), 'betimleme');
@@ -72,6 +74,42 @@ function oynat(d, adim) {
       Object.assign(d.oyuncu, eskiKonum);
       S.noktaSatirlari(d).forEach((x) => metinDenetle(x.metin, 'su noktası'));
       metinDenetle(S.suRaporu(d.k), 'su raporu');
+      // Aşama 12: saha gezisi ve ekolojik yönetim
+      const eskiK = { x: d.oyuncu.x, y: d.oyuncu.y, b: d.k.butce, i: d.k.itibar };
+      d.k.magara = null;
+      d.oyuncu.x = 2;
+      d.oyuncu.y = 2;
+      d.k.butce = 50000;
+      d.k.itibar = 500;
+      K.uzakSatirlari(d.k).forEach((x) => metinDenetle(x.metin, 'gezi satırı'));
+      const alan = ['tuzla', 'dag', 'bataklik'][i % 3];
+      const hz = K.uzakHazirla(d, alan);
+      if (hz) metinDenetle(hz, 'gezi hazırlık');
+      else {
+        metinDenetle(K.uzagaVar(d, alan), 'gezi varış');
+        for (let j = 0; j < 6; j++) {
+          metinDenetle(K.magaraIlerle(d), 'gezi ilerle');
+          d.sonArama = -9;
+          metinDenetle(K.kucukAra(d), 'gezi ara');
+          M.fotografCek(d);
+          metinDenetle(B.betimle(d, 'Dürbün'), 'gezi betimle');
+          metinDenetle(K.odaTarifi(d.k), 'gezi tarif');
+        }
+        for (let j = 0; j < 6; j++) metinDenetle(K.magaraGeri(d), 'gezi geri');
+        metinDenetle(K.uzaktanDon(d), 'gezi dönüş');
+      }
+      Object.keys(Y.EYLEMLER).forEach((id) => metinDenetle(Y.eylemYap(d, id), 'yönetim'));
+      const lh = Y.istilaciSatirlari(d)[0];
+      if (lh) {
+        d.oyuncu.x = lh.p.x;
+        d.oyuncu.y = lh.p.y;
+        metinDenetle(Y.eylemYap(d, 'istilaci'), 'lantana');
+      }
+      Y.nufusSatirlari(d).forEach((m) => metinDenetle(m, 'nüfus'));
+      Y.raporSatirlari(d.k).forEach((m) => metinDenetle(m, 'rapor'));
+      Object.assign(d.oyuncu, { x: eskiK.x, y: eskiK.y });
+      d.k.butce = eskiK.b;
+      d.k.itibar = eskiK.i;
       const bs = H.basariSatirlari(d.k);
       [...bs.kazanilan, ...bs.kalan].forEach((x) => metinDenetle(x.metin, 'başarı'));
       const b0 = d.k.hayvanlar.find((b) => !b.olu);

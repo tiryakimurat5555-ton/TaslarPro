@@ -335,7 +335,7 @@ export const dronVar = (k) => !!k.ekipman.drone;
 export function dronBaslat(d) {
   const k = d.k;
   if (!dronVar(k)) return 'Dronun yok. Araştırma merkezinden alabilirsin.';
-  if (k.magara) return 'Mağarada dron uçurulmaz.';
+  if (k.magara) return k.magara.alan ? 'Dron istasyonda kaldı.' : 'Mağarada dron uçurulmaz.';
   if (d.dron) return 'Dron zaten havada.';
   if (k.drone.sarj <= 0) return 'Dronun bataryası bitti. İstasyonda ya da saha kampında kendiliğinden dolar.';
   if (k.eko && k.eko.yagmurVar && k.eko.siddet > 0.8) return 'Sağanakta dron uçurulmaz.';
@@ -483,7 +483,7 @@ export function dinlenmeHedefi(k, tur) {
   return gunDk < 5 * 60 + 30 ? bas + 5 * 60 + 30 : bas + 1440 + 5 * 60 + 30; // sabah
 }
 // Dinlenirken olanların özeti (App biriktirir)
-const OZET_TURLERI = ['tanik', 'avBasladi', 'meydan', 'meydanSonuc', 'rekabet', 'hava', 'mevsim', 'yangin', 'gorevBitti', 'analizBitti', 'kacakTuzak', 'saldiri', 'belirti', 'basari', 'gizem', 'gizemCozuldu', 'insan'];
+const OZET_TURLERI = ['tanik', 'avBasladi', 'meydan', 'meydanSonuc', 'rekabet', 'hava', 'mevsim', 'yangin', 'gorevBitti', 'analizBitti', 'kacakTuzak', 'saldiri', 'belirti', 'basari', 'gizem', 'gizemCozuldu', 'insan', 'yonetim'];
 export const dinlenmeOzetiSec = (o) => OZET_TURLERI.includes(o.tur);
 
 // =====================================================================

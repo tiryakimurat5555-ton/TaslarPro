@@ -45,7 +45,7 @@ function izBirak(d) {
 // "İzleri incele": 12 metre içindeki en taze izler
 export function izAra(d) {
   const k = d.k;
-  if (k.magara) return 'Mağaranın taş zemininde iz kalmıyor.';
+  if (k.magara) return k.magara.alan ? 'Burada iz okumak zor; canlıları dürbünle aramak daha verimli.' : 'Mağaranın taş zemininde iz kalmıyor.';
   if (k.aracta || k.teknede) return 'İzleri incelemek için yere inmelisin.';
   const o = d.oyuncu;
   const bulunan = [];

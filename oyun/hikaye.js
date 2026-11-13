@@ -73,7 +73,7 @@ export const BASARILAR = [
   { id: 'ses8', ad: 'Savanın sesleri', alan: 'Ses', kosul: '8 türün sesini kaydet', ilerleme: (k) => [sesTuru(k), 8], odul: { itibar: 5, fon: 2500, ekipman: 'parabolik' } },
   { id: 'kucuk25', ad: 'Küçük dünyalar', alan: 'Küçük canlılar', kosul: '25 küçük canlı türü bul', ilerleme: (k) => [kucukSayisi(k), 25], odul: { itibar: 6, fon: 3000 } },
   { id: 'saat10', ad: 'Sabırlı gözlemci', alan: 'Uzun süreli gözlem', kosul: 'Hayvanları toplam 10 saat gözle', ilerleme: (k) => [Math.floor(gozlemSaat(k)), 10], odul: { itibar: 8, fon: 4000 } },
-  { id: 'yil', ad: 'Bir tam yıl', alan: 'Ekolojik değişim', kosul: 'Sahada bir yılı (24 gün, iki mevsim) tamamla', ilerleme: (k) => [Math.min(gunu(k) - 1, 24), 24], odul: { itibar: 10, fon: 6000, arastirma: 'Uzun dönem ekoloji fonu: günlük destek kalıcı olarak artar.' } },
+  { id: 'yil', ad: 'Bir tam yıl', alan: 'Ekolojik değişim', kosul: 'Sahada bir yılı (24 gün, iki mevsim) tamamla', ilerleme: (k) => [Math.min(gunu(k) - 1, 24), 24], odul: { itibar: 10, fon: 6000, arastirma: 'uzun dönem ekoloji fonu, günlük destek kalıcı olarak artar' } },
   { id: 'gizem3', ad: 'Sırların çözücüsü', alan: 'Gizemler', kosul: '3 gizemi çöz', ilerleme: (k) => [gizemBitti(k), 3], odul: { itibar: 10, fon: 5000 } },
 ];
 

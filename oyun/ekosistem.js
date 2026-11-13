@@ -250,7 +250,7 @@ export function ekoAdim(eko, kap, gun, gunDk, dtDk, rng = Math.random) {
   // Buharlaşma ve kuruma
   const sicak = eko.hava ? eko.hava.sicaklik : 28;
   const buhar = 0.025 + Math.max(0, sicak - 26) * 0.005 + (tk.mevsim === 'kurak' ? 0.008 : 0);
-  eko.golet = Math.max(0, eko.golet - buhar * gunOrani);
+  eko.golet = Math.max(0, eko.golet - buhar * gunOrani * (eko.goletRestore ? 0.8 : 1)); // Aşama 12: dibi temizlenip kıyısı ağaçlandırılan gölet daha geç kurur
   eko.islaklik = Math.max(0, eko.islaklik - (0.08 + Math.max(0, sicak - 26) * 0.012) * gunOrani);
   // Sıcak ve sığ suda alg çoğalır
   if (eko.golet < 0.45 && sicak >= 31) eko.alg = Math.min(1, eko.alg + 0.1 * gunOrani);
@@ -264,7 +264,8 @@ export function ekoAdim(eko, kap, gun, gunDk, dtDk, rng = Math.random) {
   // Ot ve yaprak büyümesi (karar 40: bitki yenilenmesi ve otçul baskısı)
   const buyume = (0.13 * eko.islaklik - (eko.islaklik < 0.2 ? 0.025 : 0)) * gunOrani;
   for (let h = 0; h < eko.ot.length; h++) {
-    const kp = kap.ot[h];
+    // Aşama 12: istilacı bitkinin (lantana) yayıldığı hücrede otlak kapasitesi düşer; temizlenince geri gelir
+    const kp = kap.ot[h] * (eko.istilaci && eko.istilaci[h] ? 0.65 : 1);
     if (!kp) continue;
     // Yanmış alanda yağmurla taze sürgünler daha hızlı çıkar (karar 76)
     if (buyume > 0) eko.ot[h] = Math.min(kp, eko.ot[h] + buyume * (1 - eko.ot[h] / kp) * 1.4 * (eko.yanik && eko.yanik[h] ? 1.8 : 1));
@@ -548,7 +549,7 @@ export function yanginRiski(eko, kap, gun, rng) {
   let p = 0;
   let neden = '';
   if (tk.mevsim === 'kurak' && tk.mevsimGunu >= 7 && eko.islaklik < 0.12) {
-    p = (eko.hava && eko.hava.tur === 'sicak' ? 0.18 : 0.08) * (eko.yil && eko.yil.kuraklik ? 1.6 : 1);
+    p = (eko.hava && eko.hava.tur === 'sicak' ? 0.18 : 0.08) * (eko.yil && eko.yil.kuraklik ? 1.6 : 1) * (eko.kontrolluYakmaYil === tk.yil ? 0.3 : 1); // Aşama 12: erken kontrollü yakma kuru yakıtı azaltır
     neden = 'kuru otlar tutuştu';
   } else if (tk.mevsim === 'yagisli' && tk.mevsimGunu <= 3 && eko.hava && eko.hava.tur === 'saganak' && eko.islaklik < 0.3) {
     p = 0.45;

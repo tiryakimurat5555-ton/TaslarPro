@@ -113,7 +113,7 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   Eski kayıtlara eksik türlerin grubu dunyaOlustur'da turGrubuKur ile eklenir. Av: yoğunluğa bağlı (bölgede ≤4 kalan türü avlamazlar);
   kalabalık otçul sürülerinde yağışlı mevsimde birden çok doğum. HASTALIKLAR + distemper (köpek gençlik hastalığı; yaban köpeği, sırtlan,
   aslan; k.asili aşılananlar). `oyun/kucukler.js`: KUCUKLER 105 (kuş 32, sürüngen 11, amfibi 6, balık 6, böcek 20, örümcek/akrep 5,
-  diğer 4, memeli 22 (Aşama 10'da ağaç damanı); yer, oda, zaman gunduz/gece/her/alaca, mevsim, sik, yagmur, ses, nadir), MAGARA_ODALARI 5, bulunabilirler().
+  diğer 4, memeli 22 (Aşama 10'da ağaç damanı); Aşama 12'de uzak alanların 19 canlısı; yer, oda, zaman gunduz/gece/her/alaca, mevsim, sik, yagmur, ses, nadir), MAGARA_ODALARI 5, bulunabilirler().
   `oyun/kesif.js` (mantik'i ve ekosistemi kullanır; merkez onu çağırır): kucukAra (alet "Büyüteç ve fener", menüde Küçük canlı ara;
   bölge/saat/mevsim/yağmura göre ağırlıklı, 3,5 sn bekleme, %75 başarı, gece ekipmansız %50; özel anlar: termitlerin çiftleşme uçuşu,
   yarasaların akşam çıkışı 18:20-19:10), ardından fotoğraf (d.sonKucuk, 25 sn). Mağara: ekipman magaraTakimi (2.500), girişin 14 m'sinde
@@ -244,6 +244,24 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   bir ('istasyonAni' ya da ilk kez görülürse kucukKaydet). App: Doğa > Su araştırması (Suyu ölç, Suda yaşayanları gözle, Hayvan
   geçişlerini say, rapor, noktalara rota), Yardım "Nehir, gölet ve istasyonun çevresi". Testler: dayanıklılık 300/300, bot 5 gün,
   menu-tara 236 sayfa iki kipte sorun 0 (/tmp/claude-0/zengin10.json). Telefonda doğrulanmadı.
+- Aşama 12 uzak alanlar ve ekolojik yönetim (13 Kasım, Murat "devam" dedi; kararlar 17, 64, 65; sayılar ÖNERİ). Uzak araştırma alanları
+  mağara altyapısını kullanır: k.magara = {oda, alan}; kucukler.js UZAK_ALANLAR (tuzla Kızıl Tuz Gölü itibar 40 / 800 lira / yol 120 dk,
+  dag Bulutlu Dağ Ormanı 70 / 1.000 / 150, bataklik Papirüs Bataklığı 100 / 1.200 / 150; her biri 5 nokta, zemin, ortam), odaListesi(alan),
+  aktifOda(k), bolumAdi(k); UZAK_CANLILAR 19 küçük canlı (alan alanı, yer [], yalnız orada; KUCUKLER'e eklenir, toplam 125; mevcut
+  kimliklerle çakışmasın: uzunbacak, karaSirtliCakal, kolobus, akcigerliBalik, jakana savanda var). bulunabilirler({alan}) alan canlıları
+  ve saat filtresi. kesif: odaGir alanda noktaGir, uzakDurumu/uzakHazirla (istasyondaMi 30 m, ücret, araçtan iner)/uzagaVar/uzaktanDon,
+  uzakSatirlari, uzakIlerleme, k.arsiv.uzak {alan: [nokta]}; magaraGeri ilk noktada dönmez (menüden). App: Merkez > Saha gezileri
+  (Yola çık → dinlenBaslat(hedef, {metin, bitince}) yolculuk dinlenme döngüsüyle; dokunuş iptal etmez), alan menüsü (Dürbünle canlı
+  ara, sonraki/önceki/Git, bulunanlar, İstasyona dön), ortam UZAK_ALANLAR[alan].ortam, adım zemini, VoiceOver satırı İstasyona dön.
+  Sahne: UX 6000'de alan başına grup (tuz gölü kızıl su + flamingolar + yanardağ, dağ ormanı ağaçlar + bambu + yoğun sis, bataklık
+  papirüsler), kamera nokta i'de z = -30i. Merkez 3 araştırma (tuzGolu, dagOrmani, papirusBatakligi: 5 nokta + 4 canlı). Sesler
+  ortam_tuzla/dag/bataklik (ElevenLabs 30 sn loop, ortam-dongu.py). `oyun/yonetim.js` (saf; Y.guncelle 4 sn'de bir): IUCN tablosu (tür
+  sayfasında), TEHDITLI 8 tür; k.yonetim {taban, raporlar, yil, temizlenen}; yıl dönünce yıllık koruma raporu (korunan tür başına itibar 3,
+  800 lira). EYLEMLER: istilaci (lantana, eko.istilaci hücreleri yeni/eski kayıtta tohum 4242 %14 otlak/akasyalık; hücrede ot kapasitesi
+  ×0,65; 1.500), yakma (kurak mevsim 1-5. gün, sıcak/yağmurlu değil; eko.kontrolluYakmaYil → o yıl yangın olasılığı ×0,3; 6 otlak hücresi
+  yanık; 1.000), golet (eko.goletRestore → buharlaşma ×0,8; 4.000). Merkez > Ekolojik yönetim (eylemler, lantanalı alanlara rota, nüfus
+  dengesi, raporlar); Yardım "Saha gezileri ve ekolojik yönetim". Testler: dayanıklılık 300/300 (gezi ve yönetim metinleri), bot,
+  menu-tara 196 sayfa iki kipte sorun 0, uzak sahne görüntüleri (scratchpad uzak-goruntu.cjs). Telefonda doğrulanmadı.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

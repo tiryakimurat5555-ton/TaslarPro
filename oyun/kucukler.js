@@ -151,15 +151,19 @@ export const MAGARA_ODALARI = [
 ];
 
 // Bu koşullarda bulunabilecek küçük canlılar (ağırlıklı); oda yalnızca mağarada
-export function bulunabilirler({ bolge, oda, evre, mevsim, yagmur }) {
+export function bulunabilirler({ bolge, oda, evre, mevsim, yagmur, alan }) {
   return KUCUK_SIRASI.filter((id) => {
     const c = KUCUKLER[id];
-    if (oda) {
+    if (alan) {
+      if (c.alan !== alan) return false;
+      if (c.oda && !c.oda.includes(oda)) return false;
+    } else if (c.alan) return false;
+    else if (oda) {
       if (!c.yer.includes('magara')) return false;
       if (c.oda && !c.oda.includes(oda)) return false;
       if (!c.oda && oda !== 'giris') return false;
     } else if (!c.yer.includes(bolge)) return false;
-    if (!oda && c.zaman !== 'her') {
+    if ((!oda || alan) && c.zaman !== 'her') {
       const gece = evre === 'gece';
       const alaca = evre === 'safak' || evre === 'aksam';
       if (c.zaman === 'gunduz' && gece) return false;
@@ -170,3 +174,88 @@ export function bulunabilirler({ bolge, oda, evre, mevsim, yagmur }) {
     return true;
   });
 }
+
+// ---------- Uzak araştırma alanları (Aşama 12, karar 17) ----------
+// Ana savandan ayrı bölümler; mağara gibi nokta nokta gezilir (k.magara = {oda, alan}). Canlıları yalnız orada bulunur (alan alanı).
+export const UZAK_ALANLAR = {
+  tuzla: {
+    ad: 'Kızıl Tuz Gölü',
+    tarif: 'Rift vadisinin dibinde, volkanların arasında çok sıcak ve tuzlu bir soda gölü. Suyu yer yer kan kırmızısıdır; bu renk tuzu seven mikroplardan gelir. Doğu Afrika küçük flamingolarının en büyük yuvalama yeri.',
+    yol: 120,
+    ucret: 800,
+    itibar: 40,
+    zemin: 'toprak',
+    ortam: 'ortam_tuzla',
+    noktalar: [
+      { id: 'kiyi', ad: 'Tuzlu kıyı', tarif: 'Beyaz tuz kabuğu ayağının altında çıtırdıyor. Kıyı boyunca kara bir bulut gibi küçük sinekler uçuşuyor; hava kavurucu ve tuz kokulu.' },
+      { id: 'sig', ad: 'Sığ lagün', tarif: 'Diz boyu, ılık ve bulanık su. Uzakta binlerce pembe flamingo başları suda, gagalarıyla suyu süzerek yürüyor.' },
+      { id: 'kaynak', ad: 'Sıcak kaynaklar', tarif: 'Kayaların arasından buhar tüten sıcak su fışkırıyor; su elini yakacak kadar sıcak. Kaynak ağızlarında küçük balıklar kıpırdıyor.' },
+      { id: 'adacik', ad: 'Tuz adacıkları', tarif: 'Gölün ortasındaki çamur ve tuz adacıklarında flamingoların çamurdan konik yuvaları sıralanıyor. Yuvalar kolayca terk edilir; uzaktan, dürbünle bak.' },
+      { id: 'yamac', ad: 'Yanardağ eteği', tarif: 'Gölü çevreleyen kurak, kayalık yamaç. Yukarıda hâlâ etkin bir yanardağın konisi yükseliyor; yamaçtan bütün göl görünüyor.' },
+    ],
+  },
+  dag: {
+    ad: 'Bulutlu Dağ Ormanı',
+    tarif: 'Savanın kuzeyindeki dağın yamaçlarında, sisin hiç eksik olmadığı serin bir orman. Ağaçlar yosun ve eğrelti otlarıyla kaplı; yukarıda bambu kuşağı ve zirvede dev bitkili bir fundalık var.',
+    yol: 150,
+    ucret: 1000,
+    itibar: 70,
+    zemin: 'yaprak',
+    ortam: 'ortam_dag',
+    noktalar: [
+      { id: 'kenar', ad: 'Orman kenarı', tarif: 'Savanın bittiği, ağaçların başladığı yer. Ağaçların tepesinde bir şeyler kıpırdıyor; hava birden serinledi.' },
+      { id: 'sisli', ad: 'Sisli orman', tarif: 'Dallardan yosun perdeleri sarkıyor, her yaprak damlıyor. Görüş birkaç on metre; sesler yakından ve boğuk geliyor.' },
+      { id: 'bambu', ad: 'Bambu kuşağı', tarif: 'Sık bambu sapları rüzgârda birbirine çarpıp tıkırdıyor. Yerde iri toynak izleri ve kazılmış topraklar var.' },
+      { id: 'selale', ad: 'Şelale', tarif: 'Buz gibi bir dere kayalardan dökülüyor; serpinti yüzüne değiyor. Suyun içinde gölgeler kıpırdıyor.' },
+      { id: 'zirve', ad: 'Zirve fundalığı', tarif: 'Ağaç sınırının üstünde rüzgârlı bir açıklık. İnsan boyunu aşan dev lobelyalar ve kanarya otları, gece donan, gündüz güneşte ısınan bir dünya.' },
+    ],
+  },
+  bataklik: {
+    ad: 'Papirüs Bataklığı',
+    tarif: 'Büyük gölün kıyısında, insan boyunun iki katı papirüslerle örtülü uçsuz bucaksız bir bataklık. Kanallarda kanoyla ilerlenir; su sessiz ve kahverengidir.',
+    yol: 150,
+    ucret: 1200,
+    itibar: 100,
+    zemin: 'camur',
+    ortam: 'ortam_bataklik',
+    noktalar: [
+      { id: 'kanal', ad: 'Kanal ağzı', tarif: 'Kanonun burnu papirüslerin arasındaki dar kanala giriyor. Suyun yüzünde hava kabarcıkları; altta bir şey nefes alıyor.' },
+      { id: 'papirus', ad: 'Papirüs duvarı', tarif: 'İki yanında papirüsler duvar gibi yükseliyor, tepelerindeki püsküller güneşi kesiyor. İçeriden kuş düetleri geliyor.' },
+      { id: 'acik', ad: 'Açık su', tarif: 'Papirüslerin açıldığı geniş, durgun bir göl parçası. Nilüferler yüzüyor; kıyıda kıpırdamadan duran iri bir gri gölge var.' },
+      { id: 'ada', ad: 'Yüzen adalar', tarif: 'Kökleri birbirine dolanmış papirüs kümeleri suyun üstünde yüzen adalar oluşturuyor. Bastıkça sallanıyorlar.' },
+      { id: 'camur', ad: 'Çamur düzlüğü', tarif: 'Suyun çekildiği kıyıda yumuşak, siyah çamur. Çamurun içinde açılmış delikler var; kuraklıkta bazı canlılar buraya gömülür.' },
+    ],
+  },
+};
+export const UZAK_SIRASI = Object.keys(UZAK_ALANLAR);
+export const odaListesi = (alan) => (alan && UZAK_ALANLAR[alan] ? UZAK_ALANLAR[alan].noktalar : MAGARA_ODALARI);
+export const aktifOda = (k) => (k.magara ? odaListesi(k.magara.alan)[k.magara.oda] || odaListesi(k.magara.alan)[0] : null);
+export const bolumAdi = (k) => (k.magara ? (k.magara.alan && UZAK_ALANLAR[k.magara.alan] ? UZAK_ALANLAR[k.magara.alan].ad : 'Mağara') : null);
+
+// Uzak alanların canlıları (yer boş: ana haritada çıkmazlar)
+const UZAK_CANLILAR = {
+  kucukFlamingo: { ad: 'Küçük flamingo', bilimsel: 'Phoeniconaias minor', grup: 'Kuş', alan: 'tuzla', oda: ['sig', 'adacik'], zaman: 'gunduz', sik: 6, ses: 'Binlerce kuşun bir ağızdan çıkardığı uğultulu, kaz sesine benzer gevezelik.', tarif: 'Tuzlu gölün mavi-yeşil alglerini gagasıyla süzerek yer; pembe rengini bu alglerdeki pigmentten alır. Doğu Afrika\'nın soda gölleri dünyadaki küçük flamingoların çoğunu barındırır.' },
+  buyukFlamingo: { ad: 'Büyük flamingo', bilimsel: 'Phoenicopterus roseus', grup: 'Kuş', alan: 'tuzla', oda: ['sig', 'kiyi'], zaman: 'gunduz', sik: 3, tarif: 'Küçük flamingodan iri ve daha soluk pembe. Gagasını ters çevirip dipteki küçük kabukluları ve kurtçukları süzer.' },
+  kilicgaga: { ad: 'Kılıçgaga', bilimsel: 'Recurvirostra avosetta', grup: 'Kuş', alan: 'tuzla', oda: ['kiyi', 'sig'], zaman: 'gunduz', sik: 4, tarif: 'Siyah beyaz bir kıyı kuşu. Yukarı kıvrık ince gagasını suda sağa sola savurarak küçük kabukluları ve larvaları süzer.' },
+  sodaTilapyasi: { ad: 'Soda gölü tilapyası', bilimsel: 'Alcolapia grahami', grup: 'Balık', alan: 'tuzla', oda: ['kaynak'], zaman: 'her', sik: 4, tarif: 'Neredeyse hiçbir balığın yaşayamadığı sıcak ve çok tuzlu kaynak ağızlarında yaşar; 40 dereceye yakın suya dayanır.' },
+  tuzSinegi: { ad: 'Tuz sineği', bilimsel: 'Ephydridae', grup: 'Böcek', alan: 'tuzla', oda: ['kiyi', 'kaynak'], zaman: 'gunduz', sik: 6, tarif: 'Kıyıyı kara bir bulut gibi kaplayan küçük sinekler. Larvaları tuzlu suda alglerle beslenir; kıyı kuşlarının başlıca besinidir.' },
+  cizgiliSirtlan: { ad: 'Çizgili sırtlan', bilimsel: 'Hyaena hyaena', grup: 'Memeli', alan: 'tuzla', oda: ['yamac'], zaman: 'alaca', sik: 1, nadir: true, tarif: 'Benekli sırtlandan küçük, sırtı yeleli, ürkek ve yalnız bir leşçi. Kurak yamaçlarda seyrek görülür; güçlü çeneleriyle kemikleri bile kırıp yer.' },
+  sykesMaymunu: { ad: 'Sykes maymunu', bilimsel: 'Cercopithecus albogularis', grup: 'Memeli', alan: 'dag', oda: ['kenar', 'sisli'], zaman: 'gunduz', sik: 5, ses: 'Erkeklerin ormanda yankılanan yüksek, patlamalı çağrıları.', tarif: 'Beyaz boğazlı, gümüşi gri bir orman maymunu. Meyve, yaprak ve böcek yer; gruplar hâlinde ağaç tepelerinde dolaşır.' },
+  turako: { ad: 'Hartlaub turakosu', bilimsel: 'Tauraco hartlaubi', grup: 'Kuş', alan: 'dag', oda: ['sisli', 'kenar'], zaman: 'gunduz', sik: 4, ses: 'Ormanda yankılanan boğuk, kesik havlamalar.', tarif: 'Yeşil gövdeli bir kuş; uçarken kanatlarının altındaki parlak kırmızı tüyler görünür. Bu kırmızı yalnızca turakolarda bulunan, bakır içeren bir pigmentten gelir.' },
+  bongo: { ad: 'Dağ bongosu', bilimsel: 'Tragelaphus eurycerus isaaci', grup: 'Memeli', alan: 'dag', oda: ['bambu'], zaman: 'alaca', sik: 1, nadir: true, tarif: 'Beyaz çizgili kızıl kahverengi postu ve sarmal boynuzlarıyla çok ürkek bir orman antilobu. Yabanda yalnızca yüz kadar birey kaldı; kritik tehlike altında.' },
+  jacksonBukalemunu: { ad: 'Jackson bukalemunu', bilimsel: 'Trioceros jacksonii', grup: 'Sürüngen', alan: 'dag', oda: ['kenar', 'sisli'], zaman: 'gunduz', sik: 3, tarif: 'Erkeğin başında üç boynuz vardır. Gözlerini birbirinden bağımsız döndürür, dilini gövdesi kadar uzağa fırlatır. Yumurta değil, canlı yavru doğurur.' },
+  devOrmanDomuzu: { ad: 'Dev orman domuzu', bilimsel: 'Hylochoerus meinertzhageni', grup: 'Memeli', alan: 'dag', oda: ['bambu', 'sisli'], zaman: 'alaca', sik: 2, nadir: true, tarif: 'Dünyanın en iri yaban domuzu; 250 kiloya ulaşır. Sık ormanda küçük aileler hâlinde yaşar, ot ve yaprakla beslenir.' },
+  malakitGunesKusu: { ad: 'Malakit güneş kuşu', bilimsel: 'Nectarinia famosa', grup: 'Kuş', alan: 'dag', oda: ['zirve'], zaman: 'gunduz', sik: 4, tarif: 'Uzun kuyruklu, metalik yeşil bir güneş kuşu. Zirve fundalığındaki dev lobelyaların çiçeklerinden nektar içer.' },
+  gokkusagiAlabaligi: { ad: 'Gökkuşağı alabalığı', bilimsel: 'Oncorhynchus mykiss', grup: 'Balık', alan: 'dag', oda: ['selale'], zaman: 'her', sik: 3, tarif: 'Sömürge döneminde soğuk dağ derelerine bırakılmış bir Kuzey Amerika balığı. Burada istilacıdır; yerli küçük balıklarla ve kurbağa larvalarıyla beslenir.' },
+  pabucGaga: { ad: 'Pabuç gagalı leylek', bilimsel: 'Balaeniceps rex', grup: 'Kuş', alan: 'bataklik', oda: ['acik', 'ada'], zaman: 'gunduz', sik: 1, nadir: true, ses: 'Gagasını makineli tüfek gibi takırdatır.', tarif: 'Tahta bir pabuca benzeyen dev gagasıyla saatlerce kıpırdamadan durur, sonra öne atılıp akciğerli balık yakalar. Yalnızca papirüs bataklıklarında yaşar; tehlike altında.' },
+  sitatunga: { ad: 'Sitatunga', bilimsel: 'Tragelaphus spekii', grup: 'Memeli', alan: 'bataklik', oda: ['papirus', 'ada'], zaman: 'alaca', sik: 2, tarif: 'Uzun, yayvan toynakları çamura batmasını önler. Tehlikede yalnızca burnu dışarıda kalacak biçimde suya dalar.' },
+  nilLevregi: { ad: 'Nil levreği', bilimsel: 'Lates niloticus', grup: 'Balık', alan: 'bataklik', oda: ['acik', 'kanal'], zaman: 'her', sik: 3, tarif: 'İki metreyi aşabilen yırtıcı bir balık. Büyük göllere sonradan bırakıldı ve yüzlerce yerli balık türünün yok olmasına yol açtı; bataklıklar yerli balıklar için son sığınaklardır.' },
+  sultanTavugu: { ad: 'Afrika sultan tavuğu', bilimsel: 'Porphyrio madagascariensis', grup: 'Kuş', alan: 'bataklik', oda: ['ada', 'papirus'], zaman: 'gunduz', sik: 4, tarif: 'Parlak mor-mavi tüylü, kırmızı gagalı iri bir su tavuğu. Uzun parmaklarıyla papirüs saplarına tırmanır, taze filizleri yer.' },
+  papirusGonolegi: { ad: 'Papirüs gonoleği', bilimsel: 'Laniarius mufumbiri', grup: 'Kuş', alan: 'bataklik', oda: ['papirus'], zaman: 'gunduz', sik: 2, ses: 'Çiftin birbirine yanıt veren ıslıklı düetleri.', tarif: 'Yalnızca papirüs bataklıklarında yaşayan siyah-kırmızı bir ötücü. Erkek ve dişi o kadar uyumlu düet söyler ki tek bir kuş sanılır.' },
+  benekliSuSamuru: { ad: 'Benekli boyunlu su samuru', bilimsel: 'Hydrictis maculicollis', grup: 'Memeli', alan: 'bataklik', oda: ['kanal', 'acik'], zaman: 'alaca', sik: 2, tarif: 'Boynu krem benekli, ince bir su samuru. Temiz ve açık suda balık avlar; varlığı suyun temizliğinin göstergesidir.' },
+};
+for (const [id, c] of Object.entries(UZAK_CANLILAR)) {
+  KUCUKLER[id] = { yer: [], ...c };
+  KUCUK_SIRASI.push(id);
+}
+export const alanCanlilari = (alan) => KUCUK_SIRASI.filter((id) => KUCUKLER[id].alan === alan);

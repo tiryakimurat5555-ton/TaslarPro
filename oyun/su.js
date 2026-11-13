@@ -28,7 +28,7 @@ export function suAlani(k) {
   if (!k.su.gecisler || typeof k.su.gecisler !== 'object' || Array.isArray(k.su.gecisler)) k.su.gecisler = {};
   for (const [id, l] of Object.entries(k.su.olcumler)) {
     if (!NOKTA[id] || !Array.isArray(l)) delete k.su.olcumler[id];
-    else k.su.olcumler[id] = l.filter((o) => o && Number.isFinite(o.dk) && Number.isFinite(o.sicaklik) && (o.mevsim === 'yagisli' || o.mevsim === 'kurak')).slice(0, 12);
+    else k.su.olcumler[id] = l.filter((o) => o && ['dk', 'sicaklik', 'bulaniklik', 'akis', 'duzey', 'oksijen'].every((a) => Number.isFinite(o[a])) && (o.mevsim === 'yagisli' || o.mevsim === 'kurak')).slice(0, 12);
   }
   for (const [id, t] of Object.entries(k.su.gecisler)) {
     if (!NOKTA[id] || !t || typeof t !== 'object') delete k.su.gecisler[id];
