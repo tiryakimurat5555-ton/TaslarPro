@@ -367,9 +367,8 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   (geriSarZaman Map). Bütün cal/yonlu bundan geçer. Telefonda doğrulanmadı; düzelmezse sebep hareketin kendisi (kare takılması/yurudu) olabilir.
 - Alet değiştirme (13 Kasım akşam, Murat "her alete geçtiğimde aynı uzun açıklamaları duymak istemiyorum"): iki parmak kaydırınca yalnızca
   aletin adı söylenir (aletSec); açıklama (ALETLER ipucu) Alet menüsünde satıra uzun basınca okunur.
-- EXPO'DA YAYIN (13 Kasım 2026, GitHub Actions dakikası bitti; Murat "GitHub dakikam yok, zorlama"): `.eas/workflows/guncelle.yml` Expo'nun makinesinde
-  `eas update --branch main`; Expo bağlantısı workflow_run (appFullName @murat5561/taslarpro, fileName guncelle.yml, gitRef = TAM COMMIT SHA), durum
-  workflow_info, Expo Go grup bağlantısı workflow_logs'ta. GitHub iş akışı dakika gelince yine çalışır.
+- YAYIN YALNIZCA GITHUB'DAN (13 Kasım 2026, Murat "TaslarPro açık depo, bu oyunun güncellemelerini Expo üzerinden yapma"): açık depoda
+  GitHub Actions dakikası ücretsiz; Expo workflow_run KULLANMA. Yayın: main'e push → expo-guncelleme.yml.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)
