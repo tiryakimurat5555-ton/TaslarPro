@@ -272,6 +272,7 @@ const kucuk = (s) => s.toLocaleLowerCase('tr-TR');
 
 // ---------------- Yenilikler (en yeniler üstte): Murat denerken neyin nerede olduğunu bulsun diye ----------------
 const YENILIKLER = [
+  { baslik: 'Araç motoru ve dron sesi', metin: 'Araç motorunun döngüsü yenilendi: eski döngüde her 4,5 saniyede bir gaz verip bırakma sesi tekrar ediyordu; artık sabit devirli bir bölümden, dikişsiz ve 15 saniyelik. Hızlandıkça perdesi yine yükselir. Dron artık uçtuğu sürece kesintisiz duyulur: havalanıp uzaklaştıkça sesi giderek kısılır ve perdesi biraz düşer, dönerken giderek yaklaşır, yükselir; ses dronun bulunduğu yönden gelir.', nerede: 'araç sürerken; dronu aletlerden seçip çift dokununca.' },
   { baslik: 'Durmayan su ve koşu sesi düzeltildi', metin: 'Oyun yeniden açılınca bazı hayvanlar (özellikle gölet ve nehir kıyısındaki filler) eski oturumdan kalan bir zaman yüzünden saatlerce koşuyor sayılıyordu; çamurda koşu sesi hiç durmuyordu. Düzeltildi. Nehir geçidinin kısa şırıltı döngüsü kaldırıldı (su sesini artık katmanlı nehir sesi veriyor). Bütün ortam döngülerinin sonundaki kısa sessizlik giderildi, döngü dönerken kesinti olmamalı. Hayvanların su içme ve otlama sesleri seyreltildi.', nerede: 'sahada, özellikle nehir ve gölet kıyısında.' },
   { baslik: 'Zemine göre hayvan koşu sesleri', metin: 'Kaçan, kovalayan ve hamle yapan hayvanların koşu sesi artık bastıkları zemine göre: otta ve ormanda boğuk tok vuruşlar ve ot hışırtısı, kuru toprakta ve kayalıkta sert toynak sesi, suda ve çamurda şapırtı. Her biri toynaklı, hafif ceylan, ağır fil ve manda, pati (kediler, sırtlan, yaban köpeği) olarak ayrı. Arkadan gelen seslerdeki metalik çınlama giderildi.', nerede: 'sahada, hayvanlar koşarken.' },
   { baslik: 'Katmanlı ortam sesi', metin: 'Ortam sesleri artık gerçekteki gibi birbirine karışıyor: nehrin ya da göletin sesi 60 metreden hafifçe duyulmaya başlar, yaklaştıkça yükselir; galeri ormanı ve kayalığın sesleri 40 metreden. Su ve orman sesi geldiği yönden duyulur: nehir sağındaysa sağ kulağında, ona dönünce iki kulağında. Kıyıda savan, orman ve su sesi bir arada. Bölge sınırında ses artık birden değişmiyor.', nerede: 'sahada kendiliğinden; kulaklıkla yön daha iyi duyulur.' },
@@ -841,6 +842,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       Ses.altyaziDinle(null);
       Efekt.ortamDurdur();
       Efekt.motorDurdur();
+      Efekt.yonluDonguDurdur('dron_dongu');
       alt.remove();
       kaydet();
     };
@@ -1067,6 +1069,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     let sesAltyaziSon = 0;
     const kosuSesi = new Map(); // hayvan kimliği → son koşu sesi zamanı
     let dronSesSon = 0;
+    const dronOnceki = { m: null, vr: 0 };
     let kucukSesSayac = 6;
     // Ses efektleri genişlemesi: hayvanların gündelik sesleri, konumlu döngüler, hava ve yangın
     let gundelikSayac = 3;
@@ -1093,6 +1096,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         girdi.current = { ileri: 0, don: 0 };
       }
       if (menuRef.current || dinlenRef.current || !d.k.aracta || ayarRef.current.efekt === false) Efekt.motorDurdur();
+      if (menuRef.current || dinlenRef.current) Efekt.yonluDonguDurdur('dron_dongu');
       if (menuRef.current || dinlenRef.current || ayarRef.current.efekt === false) Efekt.donguleriDurdur();
       // Eylem sesleri (dürbün, deklanşör, numune şişesi, tuzak, tasma...) menüden yapılsa da hemen çalar
       for (const e of M.efektleriAl(d)) {
@@ -1257,9 +1261,23 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
           if (yy && yy.m < 90) Efekt.yonlu('yangin_citirti', d.oyuncu, yy, 1, 90);
         }
         // Dronun pervane sesi uçtuğu yerden gelir; teknede kürek sesi
-        if (d.dron && a.efekt !== false && simdi - dronSesSon > 1700) {
+        // Dron sürekli duyulur: uzaklaştıkça kısılır ve perdesi biraz düşer, dönerken yaklaştıkça yükselir (Doppler);
+        // sesi dronun olduğu yönden gelir. Dron 10 metre yüksekte uçar.
+        if (d.dron && a.efekt !== false) {
+          const o = d.oyuncu;
+          const m = Math.hypot(Math.hypot(d.dron.x - o.x, d.dron.y - o.y), 10);
+          const vr = dronOnceki.m !== null && dt > 0 ? (m - dronOnceki.m) / dt : 0;
+          dronOnceki.m = m;
+          dronOnceki.vr = dronOnceki.vr * 0.8 + vr * 0.2;
+          const rel = Math.atan2(d.dron.x - o.x, d.dron.y - o.y) - (o.yon || 0);
+          const yatay = Math.hypot(d.dron.x - o.x, d.dron.y - o.y);
+          const kalkis = Math.min(1, (simdi - dronSesSon) / 1500); // kalkış sesi bitene doğru pervane sesi yavaşça açılır
+          Efekt.yonluDongu('dron_dongu', 0.85 * kalkis * Math.min(1, Math.pow(12 / m, 1.1)), Math.sin(rel) * Math.min(1, yatay / 8), 1 - (dronOnceki.vr / 340) * 1.6);
+        } else {
+          Efekt.yonluDonguDurdur('dron_dongu');
+          dronOnceki.m = null;
+          dronOnceki.vr = 0;
           dronSesSon = simdi;
-          Efekt.yonlu('dron', d.oyuncu, d.dron, 0.75, 160);
         }
         // Araç motoru: araçtayken rölanti, hızlandıkça yükselir (düzey ve perde)
         if (d.k.aracta && a.efekt !== false) Efekt.motorDuzey(0.28 + 0.72 * Math.min(1, Math.abs(d.aracHiz) / ARAC.hiz));

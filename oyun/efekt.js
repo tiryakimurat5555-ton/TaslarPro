@@ -289,8 +289,65 @@ export function donguleriDurdur() {
   });
 }
 
+// Hareket eden kaynağın sürekli sesi (dron pervanesi): sola ve sağa yatık iki sürüm (<ad>_sol/_sag) birlikte döner;
+// düzey uzaklığa, iki yarının oranı yöne, çalma hızı yaklaşma/uzaklaşmaya (Doppler) göre. oran 0 → susar.
+const yonluDonguler = {};
+export function yonluDongu(ad, oran, pan = 0, hiz = 1) {
+  let x = yonluDonguler[ad];
+  const acik = durum.acik && oran > 0.003;
+  if (!x) {
+    if (!acik) return;
+    const yap = (yon) => {
+      const k = SESLER[`${ad}_${yon}`];
+      if (!k) return null;
+      const p = createAudioPlayer(k, { keepAudioSessionActive: true });
+      p.loop = true;
+      p.volume = 0;
+      return p;
+    };
+    try {
+      const sol = yap('sol');
+      const sag = yap('sag');
+      if (!sol || !sag) return;
+      x = yonluDonguler[ad] = { sol, sag, hiz: 1 };
+      sol.play();
+      sag.play();
+    } catch (e) {
+      return;
+    }
+  }
+  const v = acik ? Math.min(1, oran) * durum.genel : 0;
+  const p = Math.max(-0.9, Math.min(0.9, pan));
+  const a = ((p + 1) * Math.PI) / 4;
+  try {
+    x.sol.volume = v * Math.cos(a);
+    x.sag.volume = v * Math.sin(a);
+    const h = Math.round(Math.max(0.85, Math.min(1.15, hiz)) * 50) / 50;
+    if (h !== x.hiz) {
+      x.hiz = h;
+      for (const q of [x.sol, x.sag]) {
+        if (typeof q.setPlaybackRate === 'function') q.setPlaybackRate(h, 'low');
+        else q.playbackRate = h;
+      }
+    }
+    if (!acik) {
+      x.sol.pause();
+      x.sag.pause();
+      x.sol.release();
+      x.sag.release();
+      delete yonluDonguler[ad];
+    }
+  } catch (e) {
+    delete yonluDonguler[ad];
+  }
+}
+export function yonluDonguDurdur(ad) {
+  if (yonluDonguler[ad]) yonluDongu(ad, 0);
+}
+
 export function birak() {
   ortamDurdur();
+  Object.keys(yonluDonguler).forEach((a) => yonluDonguDurdur(a));
   Object.keys(donguler).forEach((a) => {
     try {
       donguler[a].p.release();
@@ -313,4 +370,5 @@ export function birak() {
 // Tarayıcı denemeleri için (telefonda etkisiz)
 try {
   globalThis.__ortamDurumu = ortamDurumu;
+  globalThis.__yonluDurum = () => Object.fromEntries(Object.entries(yonluDonguler).map(([a, x]) => [a, { sol: Math.round(x.sol.volume * 100) / 100, sag: Math.round(x.sag.volume * 100) / 100, hiz: x.hiz }]));
 } catch (e) {}

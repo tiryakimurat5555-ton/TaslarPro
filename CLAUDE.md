@@ -342,6 +342,14 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   (3) ortam-dongu.py: crossfade n ve döngü uzunluğu 1024'ün katı (AAC sona 10-20 ms sessizlik ekliyordu); bütün döngüler yeniden üretildi
   (ortam_*, motor, jenerator, kamp_ates, selale; yangın -24), _sol/_sag yeniden. (4) gündelik sesler: grup 20-40 sn, aynı ses 15 sn, herhangi
   biri 5 sn; su içme 20 m ve %50. Telefonda doğrulanmadı (expo-audio döngüsünün kendisi de dönerken kısa boşluk bırakabilir).
+- Motor ve dron (13 Kasım, Murat "araç sesi güzel luplansın; dron uzaklaşırken/yaklaşırken giderek" dedi; ElevenLabs bağlayıcısı o an
+  koptu, mevcut ham seslerle yapıldı): eski motor döngüsü ham kaydın 3-4,6 sn'deki hızlanma tepesini içeriyordu (her turda "vrum").
+  araclar/dongu-kes.py <ad> <bas> <bit> <cikti> [hedef sn] [LUFS]: kaydın sabit bölümünden, sonu başla en ilintili noktadan (1024 katı)
+  seçilir; ilinti ≥0,5 doğrusal, değilse eşit güçlü 0,12 sn geçiş; gövde ~hedef sn'ye kadar art arda (oynatıcı başa seyrek dönsün).
+  motor = motor 0,85-2,85 sn (gövde 1,39 sn, ilinti 0,94, 15,3 sn). Dron: dron_dongu (dron 0,2-2,1, 11,9 sn, -20) + ortam-yon.py _sol/_sag;
+  efekt.js yonluDongu(ad, oran, pan, hiz) iki yarı birlikte, düzey/pan/setPlaybackRate (0,85-1,15); App her karede: m = hypot(yatay, 10 m
+  yükseklik), oran 0,85·min(1,(12/m)^1,1), kalkış 1,5 sn'de açılır, Doppler 1 - vr/340·1,6; menü/dinlenmede durur. Eski 3B 'dron' parçaları
+  silindi (UC_B'den çıktı). Tarayıcı: scratchpad dron-dene.cjs (11 m 0,2 → 110 m 0,07, dönüşte 0,39; hız 0,9/1,1). Telefonda doğrulanmadı.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)
