@@ -5,6 +5,7 @@ import * as Mz from '../oyun/merkez.js';
 import * as G from '../oyun/genisleme.js';
 import * as Iz from '../oyun/izler.js';
 import * as H from '../oyun/hikaye.js';
+import * as S from '../oyun/su.js';
 import { TURLER, YERLER } from '../oyun/veri.js';
 import * as K from '../oyun/kesif.js';
 
@@ -34,6 +35,7 @@ for (let t = 0; t < toplam; t += adim) {
     G.guncelle(d, 0.1);
     Iz.guncelle(d, 0.1);
     H.guncelle(d, 0.1);
+    S.guncelle(d, 0.1);
   const gecen = performance.now() - t0;
   sureTop += gecen;
   sureSayi++;
@@ -99,6 +101,12 @@ for (let t = 0; t < toplam; t += adim) {
           for (let i = 0; i < 5; i++) K.magaraGeri(d);
         }
         if (Math.random() < 0.3) M.sesKaydiBaslat(d);
+        // Aşama 11: su noktasındaysa ölç, gözle, geçiş say
+        if (S.yakinNokta(d)) {
+          say('su:' + S.suOlc(d).slice(0, 20));
+          S.suyuGozle(d);
+          if (S.yakinNokta(d).tip === 'gecit') say('gecis:' + S.gecisSay(d).slice(0, 25));
+        }
         M.gozlemBitir(d);
         const y = YERLER[yerSira++ % YERLER.length];
         M.yerGit(d, y.id);
@@ -127,6 +135,7 @@ Object.entries(k.arsiv.turler).forEach(([t, v]) => console.log(`  ${t}: ${v.davr
 console.log(`Performans: kare başına mantık ortalama ${(sureTop / sureSayi).toFixed(2)} ms, en çok ${sureEnCok.toFixed(1)} ms (hayvan ${k.hayvanlar.filter((b) => !b.olu).length})`);
 k.mesajlar.forEach((m) => KOTU.test(m.metin) && kotu.add(m.metin.slice(0, 160)));
 console.log(`Hikâye: gizemler ${JSON.stringify(Object.fromEntries(Object.entries(k.hikaye.gizemler).map(([a, g]) => [a, g.bitti ? 'çözüldü' : g.adim + 1 + '. adım'])))}, başarılar ${Object.keys(k.hikaye.basarilar).join(',')}, görüşme ${k.hikaye.gorusmeler}, sayaç ${JSON.stringify(k.hikaye.sayac)}`);
+console.log(`Su: ${S.suRaporu(k)}`);
 console.log(`Bozuk metin: ${kotu.size}`);
 [...kotu].slice(0, 10).forEach((m) => console.log('  ' + m));
 if (process.env.KAYIT_YAZ) require('fs').writeFileSync(process.env.KAYIT_YAZ, JSON.stringify(M.kayitHazirla(k)));

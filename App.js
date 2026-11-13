@@ -22,6 +22,7 @@ import * as K from './oyun/kesif.js';
 import * as G from './oyun/genisleme.js';
 import * as Iz from './oyun/izler.js';
 import * as H from './oyun/hikaye.js';
+import * as S from './oyun/su.js';
 import { KUCUKLER, KUCUK_SIRASI, GRUPLAR, MAGARA_ODALARI } from './oyun/kucukler.js';
 import * as Efekt from './oyun/efekt.js';
 import { sahneKur } from './oyun/sahne.js';
@@ -221,6 +222,16 @@ const YARDIM = [
       'İnsanlar: bölgede insan çok azdır. Bazı günler bir korucu, yerli bir çoban ya da komşu istasyondan bir araştırmacı birkaç saatliğine bir yerde bulunur; telsizle haber gelir. Yerler menüsünden yanına gidip ana menüdeki Konuş satırıyla konuşursun. Korucu kaçak avcı izlerini, çoban görmediğin hayvanları, araştırmacı bilinmeyen yuvaları anlatır.',
       'Bilimsel başarılar: tür keşfi, bireysel kimlik, nadir davranış, göç, üreme yuvaları, hastalık teşhisi, fotoğraf, video, ses, küçük canlılar, uzun gözlem ve bir tam yıl için. Her biri itibarın yanında fon, bağış ekipman, personel bursu ya da kalıcı destek getirir. Araştırma merkezi, Bilimsel başarılar bölümünde ilerlemen yazar.',
       'Araç sesleri: araca binerken ve inerken kapı sesi duyulur; sürerken motor sesi hızlandıkça yükselir, durunca rölantiye iner.',
+    ],
+  },
+  {
+    id: 'su',
+    baslik: 'Nehir, gölet ve istasyonun çevresi',
+    satirlar: [
+      'Su araştırması: Doğa menüsünde. Yedi ölçüm noktası var: batı nehir yatağı, iki geçidin sığlıkları, kumsal kıvrım, galeri ormanı kıyısı, gölet ve güneydeki sulak alan. Noktaya gidip Suyu ölç seçince su sıcaklığı, berraklık, akış, çözünmüş oksijen ve su düzeyi okunur. Her noktayı iki mevsimde de ölçünce Nehir ve sulak alan atlası araştırması analize hazır olur.',
+      'Suda yaşayanları gözle: kıyıdan balık, kurbağa, su kuşu ve su böceklerine bakarsın; yeni görülenler küçük canlılar arşivine yazılır. Dalış yoktur.',
+      'Hayvan geçiş noktaları: nehrin iki sığ geçidinde Hayvan geçişlerini say seçilirse son bir günde karşıya geçen türler izlerden sayılır. Geçitlerdeki sayımlar ve balık türleri Hayvan geçiş noktaları araştırmasını doldurur.',
+      'İstasyonun çevresi: istasyondayken ara sıra çevredeki küçük canlılar anlatılır: akasyada yuva ören dokumacı kuşlar, çatıda baş sallayan agama, gece lambanın çevresinde avlanan geckolar. İlk kez görülenler arşive yazılır.',
     ],
   },
   {
@@ -742,6 +753,8 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         return;
       case 'gizem':
       case 'insan':
+      case 'suOlcum':
+      case 'gecisSayim':
         Efekt.cal('odak', 0.5);
         return;
       case 'arac':
@@ -846,6 +859,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
           G.guncelle(d, dt);
           Iz.guncelle(d, dt);
           H.guncelle(d, dt);
+          S.guncelle(d, dt);
         } catch (e) {
           if (hataKaydet(e, 'oyun döngüsü')) Ses.soyle('Oyunda beklenmedik bir hata oldu. Hata kaydedildi; Ayarlar, Hata kayıtları bölümünden bana okuyabilirsin. Oyun sürüyor.', 4);
         }
@@ -1281,6 +1295,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         { id: 'ara', etiket: 'Küçük canlı ara', ipucu: 'Böcek, kuş, kurbağa, sürüngen ve küçük memelileri arar.', sec: kapatVe(() => K.kucukAra(d)) },
         { id: 'izAra', etiket: 'İzleri incele', ipucu: 'Yakındaki ayak izlerini okur: hangi hayvan, ne kadar taze, hangi yöne gitmiş.', sec: yap(() => Iz.izAra(d)) },
         ...(d.sonIz ? [{ id: 'izTakip', etiket: 'İzi takip et', ipucu: 'İzlerin gittiği yöne yürürsün; izler bir ine çıkıyorsa oraya.', sec: kapatVe(() => Ses.hemen(Iz.izTakip(d))) }] : []),
+        altMenu('su', `Su araştırması${S.yakinNokta(d) ? `: ${S.yakinNokta(d).ad}` : ''}`, menu.ac),
         altMenu('yuvalar', `Bilinen inler ve yuvalar: ${Iz.bilinenYuvalar(k).length} / ${(k.yuvalar || []).length}`, menu.ac),
         altMenu('bitkiler', `Çevredeki bitkiler: ${Mz.cevredekiBitkiler(d).length}`, menu.ac),
         altMenu('numune', `Numune ve veteriner${k.numuneKutusu.length ? `: kutuda ${k.numuneKutusu.length} numune` : ''}`, menu.ac),
@@ -1395,6 +1410,31 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       ogeler.push(altMenu('basarilar', `Bilimsel başarılar: ${Object.keys(H.hikayeAlani(k).basarilar).length} / ${H.BASARILAR.length}`, menu.ac));
       ogeler.push(altMenu('koruma', `Koruma projeleri: ${Object.values(k.koruma.projeler).filter((p) => p.durum === 'surer').length} süren, ${Object.values(k.koruma.projeler).filter((p) => p.durum === 'tamam').length} tamamlanan`, menu.ac));
       return liste(u, 'Araştırma merkezi', ogeler);
+    }
+    if (u === 'su') {
+      const n = S.yakinNokta(d);
+      const ogeler = [];
+      if (n) {
+        ogeler.push({ id: 'olc', etiket: `Suyu ölç: ${n.ad}`, ipucu: 'Sıcaklık, berraklık, akış, oksijen ve su düzeyi. Her nokta günde bir kez.', sec: yap(() => S.suOlc(d)) });
+        ogeler.push({ id: 'gozle', etiket: 'Suda yaşayanları gözle', ipucu: 'Balık, kurbağa, su kuşu ve su böceklerinden birini arar.', sec: yap(() => S.suyuGozle(d)) });
+        if (n.tip === 'gecit') ogeler.push({ id: 'gecis', etiket: 'Hayvan geçişlerini say', ipucu: 'Son bir günde geçitten karşıya geçen türleri izlerden sayar.', sec: yap(() => S.gecisSay(d)) });
+      } else ogeler.push(bilgi('uzak', 'Bir ölçüm noktasında değilsin. Aşağıdaki noktalardan birine git; kıyıya 16 metre yaklaşınca ölçüm yapılır, teknedeyken daha uzaktan.'));
+      ogeler.push(bilgi('rapor', S.suRaporu(k)));
+      S.noktaSatirlari(d).forEach(({ n: p, konum, metin }) => {
+        ogeler.push(bilgi('n' + p.id, `${metin}. ${M.BuyukHarf(yerTarifi(konum))}`, p.tarif));
+        if (!k.teknede && !k.magara)
+          ogeler.push({
+            id: 'git' + p.id,
+            etiket: `${p.ad}: oraya ${k.aracta ? 'sür' : 'yürü'}`,
+            sec: kapatVe(() => {
+              const yan = p.tip === 'golet' || p.tip === 'sulak' ? 0 : 7; // nehirde kıyıya, kuzey yakasına
+              d.rota = { x: konum.x, y: konum.y + yan, ad: p.ad, yakin: p.tip === 'golet' ? 14 : 5 };
+              d.yaklasId = null;
+              M.olay(d, 'rota', `${p.ad} yönüne gidiyorsun. ${M.BuyukHarf(yerTarifi(konum))}.`, 3);
+            }),
+          });
+      });
+      return liste(u, 'Su araştırması', ogeler, 'Nehrin farklı habitatları, gölet ve sulak alan. Dalış yok; ölçümler kıyıdan ya da tekneden yapılır.');
     }
     if (u === 'gizemler') {
       const l = H.gizemSatirlari(k);
@@ -1754,14 +1794,12 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       >
         <View style={st.ust} pointerEvents={jestli ? 'none' : 'auto'}>
           <View style={[st.hud, ayar.kontrast && st.hudK]} accessible accessibilityLabel={`Durum. ${M.durumOzeti(d)}`}>
-            <View style={st.satir}>
-              <Text style={st.hudAd} numberOfLines={1}>
-                {k.ad} · {M.gunNo(k.dk)}. gün {M.saatMetni(k.dk)}
-              </Text>
-              <Text style={st.hudKucuk} numberOfLines={1}>
-                {Mz.liraSozu(k.butce)} · itibar {k.itibar}
-              </Text>
-            </View>
+            <Text style={st.hudAd} numberOfLines={1}>
+              {k.ad} · {M.gunNo(k.dk)}. gün {M.saatMetni(k.dk)}
+            </Text>
+            <Text style={st.hudKucuk} numberOfLines={1}>
+              {Mz.liraSozu(k.butce)} · itibar {k.itibar}
+            </Text>
             <Text style={st.hudKucuk} numberOfLines={1}>
               {k.magara ? `Mağara · ${MAGARA_ODALARI[k.magara.oda].ad}` : M.bolgeAdi(d.oyuncu.x, d.oyuncu.y)}
               {k.aracta ? ' · araçta' : ''}

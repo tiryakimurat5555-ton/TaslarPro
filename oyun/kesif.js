@@ -17,7 +17,7 @@ export function kesifHazirla(k) {
 }
 
 // ---------- Küçük canlılar ----------
-function kucukKaydet(d, id, metinOn = '') {
+export function kucukKaydet(d, id, metinOn = '') {
   const k = d.k;
   const c = KUCUKLER[id];
   const yer = k.magara ? MAGARA_ODALARI[k.magara.oda].ad : M.bolgeAdi(d.oyuncu.x, d.oyuncu.y);

@@ -17,7 +17,12 @@ export function hikayeAlani(k) {
   for (const a of ['gizemler', 'basarilar', 'sayac']) if (!h[a] || typeof h[a] !== 'object' || Array.isArray(h[a])) h[a] = {};
   for (const [id, g] of Object.entries(h.gizemler)) {
     if (!GIZEMLER[id] || !g || typeof g !== 'object' || !Number.isFinite(g.adim) || !Number.isFinite(g.bas)) delete h.gizemler[id];
-    else g.adim = Math.max(0, Math.min(GIZEMLER[id].adimlar.length, Math.floor(g.adim)));
+    else {
+      const n = GIZEMLER[id].adimlar.length;
+      g.adim = Math.max(0, Math.min(n, Math.floor(g.adim)));
+      if (typeof g.bitti !== 'boolean') g.bitti = g.adim >= n;
+      if (!g.bitti && g.adim >= n) g.adim = n - 1;
+    }
   }
   for (const [id, b] of Object.entries(h.basarilar)) if (!BASARILAR.some((x) => x.id === id) || !Number.isFinite(b)) delete h.basarilar[id];
   for (const [id, n] of Object.entries(h.sayac)) if (!Number.isFinite(n)) delete h.sayac[id];
@@ -272,7 +277,7 @@ export function gizemSatirlari(k) {
     const g = k.hikaye.gizemler[id];
     if (!g) continue;
     const gz = GIZEMLER[id];
-    if (g.bitti) l.push({ id, bitti: true, metin: `${gz.ad}, çözüldü. ${gz.cozum}` });
+    if (g.bitti || !gz.adimlar[g.adim]) l.push({ id, bitti: true, metin: `${gz.ad}, çözüldü. ${gz.cozum}` });
     else l.push({ id, bitti: false, metin: `${gz.ad}, ${g.adim + 1}. adım / ${gz.adimlar.length}. ${gz.adimlar[g.adim].metin}` });
   }
   return l.sort((a, b) => a.bitti - b.bitti);

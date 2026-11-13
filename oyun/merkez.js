@@ -7,6 +7,7 @@ import * as M from './mantik.js';
 import * as E from './ekosistem.js';
 import * as K from './kesif.js';
 import * as G from './genisleme.js';
+import * as S from './su.js';
 import { KUCUKLER } from './kucukler.js';
 
 const lira = (n) => `${Math.round(n).toLocaleString('tr-TR')} lira`;
@@ -214,6 +215,23 @@ export const ARASTIRMALAR = [
     ilerleme: (k) => [(k.eko && k.eko.yanginGoruldu ? 1 : 0) + (k.eko && k.eko.filizGoruldu ? 1 : 0), 2],
     odul: { itibar: 15, fon: 6000 },
     sonuc: 'Savan yangınlarının ölü otu temizleyip taze sürgünleri uyardığı, otçulların yanmış alanlara akın ettiği gösterildi.',
+  },
+  // Aşama 11: nehir ve gölet araştırmaları (karar 94, 99)
+  {
+    id: 'suAtlasi',
+    ad: 'Nehir ve sulak alan atlası',
+    kosulMetni: `${S.SU_NOKTALARI.length} su ölçüm noktasının her birini iki mevsimde de ölç (Doğa menüsü, Su araştırması)`,
+    ilerleme: (k) => [S.olcumIlerleme(k), S.SU_NOKTALARI.length * 2],
+    odul: { itibar: 15, fon: 6000 },
+    sonuc: 'Kurak mevsimde göletin ısınıp oksijeninin düştüğü, nehrin geçitlerde serin ve oksijenli kaldığı belgelendi. Kuraklığın sonunda balıklar ve hayvanlar nehre sığınıyor.',
+  },
+  {
+    id: 'gecisNoktalari',
+    ad: 'Hayvan geçiş noktaları',
+    kosulMetni: 'Nehir geçitlerinde 6 farklı türün geçişini say, 6 balık ya da kurbağa türü bul',
+    ilerleme: (k) => [Math.min(6, S.gecisTurSayisi(k)) + Math.min(6, S.suCanlisiSayisi(k)), 12],
+    odul: { itibar: 12, fon: 5000 },
+    sonuc: 'Nehrin iki sığ geçidinin savanın can damarı olduğu gösterildi: otçullar da yırtıcılar da yalnızca buradan geçiyor, timsahlar da bunu biliyor. Geçitlerin korunması önerildi.',
   },
 ];
 export const ANALIZ_DK = 8 * 60; // temel analiz süresi (oyun dakikası)

@@ -232,6 +232,18 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   Merkez'de Gizemler ve Bilimsel başarılar; Yardım "Gizemler, insanlar ve bilimsel başarılar". Olaylar basari/gizemCozuldu (kesif sesi +
   titreşim), gizem/insan (odak); dinlenme özetinde. Testler: dayanıklılık 300/300 (konuşma, gizem, başarı metinleri), bot 6 gün
   (leopar gizemi çözüldü, 10 başarı), menu-tara 149 sayfa iki kipte sorun 0. Telefonda doğrulanmadı.
+- Aşama 11 su ve istasyon çevresi (13 Kasım, Murat "devam" dedi; kararlar 92, 94, 99; sayılar ÖNERİ). Durum kutusunda ad/gün/saat ve
+  bütçe/itibar artık ayrı satırlarda (Expo Go dişlisi itibarı kapatıyordu). `oyun/su.js` (saf; M, E, K'yı kullanır, merkez onu içe
+  aktarır; S.guncelle 3 sn'de bir): SU_NOKTALARI 7 (batiYatak, batiGecit, kumKivrim, doguGecit, galeriKiyi nehirde y = nehirY(x);
+  golet; sulak (-20, nehirY-35)), yakinNokta (16 m, teknede 30, gölet r+14, sulak 30). k.su {olcumler {id: son 12}, gecisler {id: {tur: n}},
+  istasyonSon}, suAlani onarır. suOlc: olcumHesapla hava sıcaklığı, güneş, gölge, gölet düzeyi, alg, nehir debisi, yağmur, taşkından
+  sıcaklık/bulanıklık/akış/oksijen/düzey; nokta başına günde bir; ilk ölçüm itibar 3, yeni mevsim 2. suyuGozle: noktanın tipine uyan
+  Balık/Amfibi/Kuş/Sürüngen/Böcek küçük canlılarından ağırlıklı seçim → K.kucukKaydet (artık dışa aktarılıyor). gecisSay (yalnız
+  geçitlerde): son 24 saatin grup iz noktaları ±14 m + göçte b.gecis. Merkez ARASTIRMALAR + suAtlasi (7 nokta × 2 mevsim) ve
+  gecisNoktalari (6 tür geçiş + 6 balık/kurbağa). İstasyon çevresi: ISTASYON_ANLARI 15 küçük canlı sahnesi, istasyondayken 40-70 oyun dk'da
+  bir ('istasyonAni' ya da ilk kez görülürse kucukKaydet). App: Doğa > Su araştırması (Suyu ölç, Suda yaşayanları gözle, Hayvan
+  geçişlerini say, rapor, noktalara rota), Yardım "Nehir, gölet ve istasyonun çevresi". Testler: dayanıklılık 300/300, bot 5 gün,
+  menu-tara 236 sayfa iki kipte sorun 0 (/tmp/claude-0/zengin10.json). Telefonda doğrulanmadı.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

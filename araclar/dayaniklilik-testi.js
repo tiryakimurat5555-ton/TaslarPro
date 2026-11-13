@@ -10,6 +10,7 @@ import * as Eg from '../oyun/egitim.js';
 import * as G from '../oyun/genisleme.js';
 import * as Iz from '../oyun/izler.js';
 import * as H from '../oyun/hikaye.js';
+import * as S from '../oyun/su.js';
 
 const deneme = +(process.argv[2] || 200);
 const KOTU = /undefined|NaN|\[object|null\b|  |\.\.(?!\.)| ,|^ /;
@@ -26,6 +27,7 @@ function oynat(d, adim) {
     G.guncelle(d, 0.1);
     Iz.guncelle(d, 0.1);
     H.guncelle(d, 0.1);
+    S.guncelle(d, 0.1);
     for (const o of M.olaylariAl(d)) metinDenetle(o.metin, o.tur);
     if (i % 60 === 0) {
       metinDenetle(B.betimle(d, 'Dürbün'), 'betimleme');
@@ -57,6 +59,19 @@ function oynat(d, adim) {
       metinDenetle(H.konus(d), 'konuşma 2');
       H.GIZEM_SIRASI.forEach((id) => H.gizemBaslat(d, id));
       H.gizemSatirlari(d.k).forEach((x) => metinDenetle(x.metin, 'gizem'));
+      // Aşama 11: her su noktasına ışınlanıp ölç, gözle, geçiş say
+      const eskiKonum = { x: d.oyuncu.x, y: d.oyuncu.y };
+      for (const n of S.SU_NOKTALARI) {
+        const p = S.noktaKonumu(n);
+        d.oyuncu.x = p.x;
+        d.oyuncu.y = p.y + (n.tip === 'nehir' || n.tip === 'gecit' ? 6 : 0);
+        metinDenetle(S.suOlc(d), 'su ölçüm');
+        metinDenetle(S.suyuGozle(d), 'su gözlem');
+        metinDenetle(S.gecisSay(d), 'geçiş');
+      }
+      Object.assign(d.oyuncu, eskiKonum);
+      S.noktaSatirlari(d).forEach((x) => metinDenetle(x.metin, 'su noktası'));
+      metinDenetle(S.suRaporu(d.k), 'su raporu');
       const bs = H.basariSatirlari(d.k);
       [...bs.kazanilan, ...bs.kalan].forEach((x) => metinDenetle(x.metin, 'başarı'));
       const b0 = d.k.hayvanlar.find((b) => !b.olu);
