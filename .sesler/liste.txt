@@ -1,0 +1,3 @@
+ortam_tuzla https://elevenlabsusercontent.com/database/workspace/c6890a9e7d7c47f7a13c4c65b132fa4f/content_generation/vNdaHZoJE2tI2lwWQ9ll/DHS6jLFD4zOntya0ialP/content.mp3?Expires=1794556800&KeyName=assets-cdn-key-1&Signature=glOTbhKxd4PdyA1cMnmeD70jZ0s=
+ortam_dag https://elevenlabsusercontent.com/database/workspace/c6890a9e7d7c47f7a13c4c65b132fa4f/content_generation/4vZBZWP6EuLeRUrSquKY/tpnnUoQuZJkZTkfhW26n/content.mp3?Expires=1794556800&KeyName=assets-cdn-key-1&Signature=rcAnEJVaMKR4Q2h29SlJQv0NM9w=
+ortam_bataklik https://elevenlabsusercontent.com/database/workspace/c6890a9e7d7c47f7a13c4c65b132fa4f/content_generation/xHIA6R0vGcWikCHfYjab/Kuuqo9N5fpWv4ukogKTG/content.mp3?Expires=1794556800&KeyName=assets-cdn-key-1&Signature=uT2NDUTCOZoy7Co1hDcytrH7goE=
