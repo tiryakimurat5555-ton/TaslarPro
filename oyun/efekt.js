@@ -20,7 +20,7 @@ const SURE = {
   adim_ot: 0.05, adim_toprak: 0.05, adim_camur: 0.05, adim_su: 0.05, adim_kaya: 0.05, adim_yaprak: 0.05, adim_magara: 0.05,
   donus_tik: 0.02, hedef_onde: 0.1,
   kosu_toynak: 0.05, kosu_hafif: 0.05, kosu_agir: 0.05, kosu_pati: 0.05,
-  dron: 0.05, kurek: 0.1, kesif: 0.6,
+  dron: 0.05, kurek: 0.1, kesif: 0.6, kapi_bin: 0.5, kapi_in: 0.5,
   gok: 0.3, // gök gürültüsü uzun ama arka plan sesi; konuşmayı bekletmesin
   gnu: 1.5, cita: 1.2, impala: 1.4, yabankopegi: 1.6, babun: 1.4, yarasa: 0.4,
   fil: 0.7, zebra: 0.8, suaygiri: 0.8, manda: 1.8, ceylan: 1.4, zurafa: 0.8,
@@ -156,8 +156,58 @@ export function ortamDurdur(yavas) {
   sesiKaydir(p, v, 0, GECIS_MS, kapat);
 }
 
+// Aracın motor sesi (Kayıp Okyanus'taki itici döngüsü gibi): sürerken sürekli çalar, düzeyi ve perdesi hıza göre.
+let motorOynatici = null;
+let motorSon = { ses: -1, hiz: -1 };
+export function motorDuzey(oran) {
+  if (!durum.acik) return motorDurdur();
+  try {
+    if (!motorOynatici) {
+      const k = SESLER.motor;
+      if (!k) return;
+      motorOynatici = createAudioPlayer(k, { keepAudioSessionActive: true });
+      motorOynatici.loop = true;
+      motorOynatici.volume = 0;
+      motorSon = { ses: -1, hiz: -1 };
+    }
+    const p = motorOynatici;
+    const ses = Math.max(0, Math.min(1, oran)) * 0.55 * durum.genel;
+    if (Math.abs(ses - motorSon.ses) > 0.02) {
+      p.volume = ses;
+      motorSon.ses = ses;
+    }
+    // Hızlandıkça motor perdesi yükselir (0,8-1,25); desteklemeyen sürümde yalnız düzey değişir
+    const hiz = Math.round((0.8 + 0.45 * Math.max(0, Math.min(1, oran))) * 20) / 20;
+    if (hiz !== motorSon.hiz) {
+      motorSon.hiz = hiz;
+      try {
+        if (typeof p.setPlaybackRate === 'function') p.setPlaybackRate(hiz, 'low');
+        else p.playbackRate = hiz;
+      } catch (e) {}
+    }
+    if (!p.playing) p.play();
+  } catch (e) {
+    motorOynatici = null;
+  }
+}
+export function motorDurdur() {
+  const p = motorOynatici;
+  if (!p) return;
+  try {
+    if (p.playing) p.pause();
+    p.volume = 0;
+    motorSon.ses = 0;
+  } catch (e) {}
+}
+
 export function birak() {
   ortamDurdur();
+  if (motorOynatici) {
+    try {
+      motorOynatici.release();
+    } catch (e) {}
+    motorOynatici = null;
+  }
   Object.keys(oynaticilar).forEach((a) => {
     try {
       oynaticilar[a].release();

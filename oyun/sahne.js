@@ -524,6 +524,16 @@ export function sahneKur(gl, d, secenek = {}) {
   const kamp = kampModeli();
   kamp.visible = false;
   sahne.add(kamp);
+  // Aşama 10: nadir ziyaretçi (korucu, çoban, araştırmacı); giysi rengi kişiye göre
+  const ziyaretciler = {
+    korucu: insanModeli('#4f5a2a'),
+    coban: insanModeli('#a02a24'),
+    arastirmaci: insanModeli('#3a5f8a'),
+  };
+  Object.values(ziyaretciler).forEach((m) => {
+    m.visible = false;
+    sahne.add(m);
+  });
 
   // Hayvanlar: gerektikçe kurulur (doğumlar sonradan eklenir)
   const modeller = new Map();
@@ -718,6 +728,14 @@ export function sahneKur(gl, d, secenek = {}) {
       }
       kamp.visible = !!k.kamp;
       if (k.kamp) kamp.position.set(k.kamp.x, 0, R(k.kamp.y));
+      const zy = k.hikaye && k.hikaye.ziyaretci && k.dk < k.hikaye.ziyaretci.bitis ? k.hikaye.ziyaretci : null;
+      for (const [kim, m] of Object.entries(ziyaretciler)) {
+        m.visible = !!zy && zy.kim === kim && !k.magara;
+        if (m.visible) {
+          m.position.set(zy.x, 0, R(zy.y));
+          m.rotation.y = -Math.atan2(o.x - zy.x, o.y - zy.y); // oyuncuya dönük
+        }
+      }
 
       // Mağara: kamera tünelin içinde, fener ışığıyla
       magaraGrup.visible = !!k.magara;

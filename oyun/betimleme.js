@@ -91,6 +91,11 @@ function isaretSozu(d) {
   ekle('mağaranın ağzı', MAGARA);
   ekle('kayalık', KAYALIK, 70);
   ekle('termit tepeleri', TERMITLER, 70);
+  const z = k.hikaye && k.hikaye.ziyaretci; // Aşama 10: nadir ziyaretçi
+  if (z && k.dk < z.bitis) {
+    const zm = M.mesafe(o, z);
+    if (zm < 90) l.push({ ad: z.kim === 'korucu' ? 'bir korucu' : z.kim === 'coban' ? 'bir çoban' : 'bir araştırmacı', h: z, m: Math.max(zm, 0.1) });
+  }
   const y = M.yanginYakin(d);
   if (y && y.m < 120) l.push({ ad: 'yangın', h: y, m: y.m });
   l.sort((a, b) => a.m - b.m);

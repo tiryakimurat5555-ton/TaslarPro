@@ -113,7 +113,7 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   Eski kayıtlara eksik türlerin grubu dunyaOlustur'da turGrubuKur ile eklenir. Av: yoğunluğa bağlı (bölgede ≤4 kalan türü avlamazlar);
   kalabalık otçul sürülerinde yağışlı mevsimde birden çok doğum. HASTALIKLAR + distemper (köpek gençlik hastalığı; yaban köpeği, sırtlan,
   aslan; k.asili aşılananlar). `oyun/kucukler.js`: KUCUKLER 105 (kuş 32, sürüngen 11, amfibi 6, balık 6, böcek 20, örümcek/akrep 5,
-  diğer 4, memeli 21; yer, oda, zaman gunduz/gece/her/alaca, mevsim, sik, yagmur, ses, nadir), MAGARA_ODALARI 5, bulunabilirler().
+  diğer 4, memeli 22 (Aşama 10'da ağaç damanı); yer, oda, zaman gunduz/gece/her/alaca, mevsim, sik, yagmur, ses, nadir), MAGARA_ODALARI 5, bulunabilirler().
   `oyun/kesif.js` (mantik'i ve ekosistemi kullanır; merkez onu çağırır): kucukAra (alet "Büyüteç ve fener", menüde Küçük canlı ara;
   bölge/saat/mevsim/yağmura göre ağırlıklı, 3,5 sn bekleme, %75 başarı, gece ekipmansız %50; özel anlar: termitlerin çiftleşme uçuşu,
   yarasaların akşam çıkışı 18:20-19:10), ardından fotoğraf (d.sonKucuk, 25 sn). Mağara: ekipman magaraTakimi (2.500), girişin 14 m'sinde
@@ -214,6 +214,24 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   Videolar; harita bölgesinde bilinen yuvalar. HATA DÜZELTMESİ: olay() ekindeki `tur` olay türünü eziyordu ('yeniTur' ve 'goc' olayları
   hayvan adına dönüşüp sessiz kalıyordu); artık ek.tur → hayvanTur. Ses: kesif (ElevenLabs, kalimba vurgusu). Testler: dayanıklılık
   300/300, bot 5 gün, ekosistem 25 gün, menu-tara 146 sayfa iki kipte sorun 0, /tmp/claude-0/g9-dene.js. Telefonda doğrulanmadı.
+- Aşama 10 hikâye ve sesler (13 Kasım, Murat "devam; araca binme/inme kapı sesi ve sürerken araç sesi" dedi; kararlar 26, 27, 58, 91;
+  sayılar ÖNERİ). Araç sesleri (ElevenLabs akış "Vahşi Yaşam sesleri"): kapi_bin, kapi_in (sesleri-isle.sh, 3B değil), motor (6 sn loop,
+  ortam-dongu.py ile 4,5 sn kesintisiz döngü). efekt.js motorDuzey(oran) / motorDurdur (KO itici döngüsü gibi; düzey ve setPlaybackRate
+  0,8-1,25 hıza göre), App olay 'arac' bindi/indi → kapı sesi; araçtayken oran 0,28 + 0,72·|aracHiz|/ARAC.hiz; menü, dinlenme, araç dışı
+  ya da efekt kapalıyken durur. `oyun/hikaye.js` (saf; M'yi kullanır, App ve testler H.guncelle(d, dt) her karede; d.olaylar'ı sayar
+  (_sayildi), işleri 2 sn'de bir): k.hikaye {gizemler, basarilar, sayac, ziyaretci, sonZiyaretGun, zarGun, gorusmeler}, hikayeAlani onarır.
+  BASARILAR 16 (tür, birey, davranış, nadir davranış, göç, yuva, teşhis, foto, video, ses, küçük canlı, gözlem saati, bir yıl, 3 gizem):
+  ödül itibar + fon + bağış ekipman (varsa +2.000 fon) + personel bursu (1.500) ; "Bir tam yıl" merkez gunlukDestek'e +400.
+  GIZEMLER 4 (adım adım tamam(d, g)): golet (alg > 0,3 → kıyı, su numunesi, analiz; siyanobakteri), gece (2. gün gece → galeri ormanı
+  gece, küçük canlı ara → yeni kucuk agacDamani; 106 küçük canlı), leopar (5. gün, leopar kayıtlı → iz takibi sonu (sayac.izSonu), leopar
+  ini), kacak (ilk tel tuzak → 3 tuzak, devriye ya da korucuyla konuşma; çözülünce 6 gün tuzak olasılığı ×0,2, kesif tuzakKurulumu
+  sayac.kacakBaski). Aynı anda en çok 2 açık gizem. Ziyaretçi (karar 27): günde bir zar 8-15 arası, ZIYARET_SANSI 0,3, 2. günden;
+  KISILER korucu (en yakın tel tuzağın yönü + kacak gizemi; yoksa tehlikeli sürü uyarısı), coban (kaydedilmemiş türün yönü + gece gizemi),
+  arastirmaci (600 lira, bulunmamış yuvanın yönü + leopar gizemi); bir YER yakınında 180 oyun dk; 7 m'de ana menüde "Konuş: ...";
+  Yerler'de "Ziyaretçi:" (yerGit 'ziyaretci'); betimlemede "bir korucu" vb.; sahnede giysi rengi kişiye göre insanModeli, oyuncuya dönük.
+  Merkez'de Gizemler ve Bilimsel başarılar; Yardım "Gizemler, insanlar ve bilimsel başarılar". Olaylar basari/gizemCozuldu (kesif sesi +
+  titreşim), gizem/insan (odak); dinlenme özetinde. Testler: dayanıklılık 300/300 (konuşma, gizem, başarı metinleri), bot 6 gün
+  (leopar gizemi çözüldü, 10 başarı), menu-tara 149 sayfa iki kipte sorun 0. Telefonda doğrulanmadı.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

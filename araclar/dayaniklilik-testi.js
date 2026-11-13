@@ -9,6 +9,7 @@ import * as B from '../oyun/betimleme.js';
 import * as Eg from '../oyun/egitim.js';
 import * as G from '../oyun/genisleme.js';
 import * as Iz from '../oyun/izler.js';
+import * as H from '../oyun/hikaye.js';
 
 const deneme = +(process.argv[2] || 200);
 const KOTU = /undefined|NaN|\[object|null\b|  |\.\.(?!\.)| ,|^ /;
@@ -24,6 +25,7 @@ function oynat(d, adim) {
     Mz.guncelle(d);
     G.guncelle(d, 0.1);
     Iz.guncelle(d, 0.1);
+    H.guncelle(d, 0.1);
     for (const o of M.olaylariAl(d)) metinDenetle(o.metin, o.tur);
     if (i % 60 === 0) {
       metinDenetle(B.betimle(d, 'Dürbün'), 'betimleme');
@@ -47,6 +49,16 @@ function oynat(d, adim) {
       d.k.hayvanlar.slice(0, 3).forEach((b) => metinDenetle(M.ruzgarUyarisi(d, b).trim(), 'rüzgâr'));
       G.haritaBolgeleri(d).forEach((x) => G.haritaBolgeSatirlari(d, x.id).forEach((m) => metinDenetle(m, 'harita bölgesi')));
       G.hakimiyetSatirlari(d).forEach((m) => metinDenetle(m, 'hâkimiyet'));
+      // Aşama 10: ziyaretçi oyuncunun yanına konur, konuşulur; gizem ve başarı satırları
+      const kimler = Object.keys(H.KISILER);
+      d.k.hikaye.ziyaretci = { kim: kimler[i % 3], x: d.oyuncu.x + 2, y: d.oyuncu.y, yer: 'Gölet', bitis: d.k.dk + 60, konusuldu: false };
+      metinDenetle(H.ziyaretciTarifi(d), 'ziyaretçi');
+      metinDenetle(H.konus(d), 'konuşma');
+      metinDenetle(H.konus(d), 'konuşma 2');
+      H.GIZEM_SIRASI.forEach((id) => H.gizemBaslat(d, id));
+      H.gizemSatirlari(d.k).forEach((x) => metinDenetle(x.metin, 'gizem'));
+      const bs = H.basariSatirlari(d.k);
+      [...bs.kazanilan, ...bs.kalan].forEach((x) => metinDenetle(x.metin, 'başarı'));
       const b0 = d.k.hayvanlar.find((b) => !b.olu);
       if (b0) {
         b0.dna = true;

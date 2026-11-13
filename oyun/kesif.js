@@ -150,7 +150,8 @@ export function tuzakKurulumu(d) {
   const k = d.k;
   const devriye = k.koruma && k.koruma.devriye;
   const mucadele = k.koruma && k.koruma.projeler && k.koruma.projeler.kacakMucadele && k.koruma.projeler.kacakMucadele.durum === 'tamam';
-  const sans = 0.3 * (devriye ? 0.35 : 1) * (mucadele ? 0.5 : 1) * M.zorlukCarpani(k, 'afet', [0.25, 1, 1.5]);
+  const baski = k.hikaye && k.hikaye.sayac && k.hikaye.sayac.kacakBaski >= M.gunNo(k.dk); // Aşama 10: gizem çözülünce kamp boşaltıldı
+  const sans = 0.3 * (devriye ? 0.35 : 1) * (mucadele ? 0.5 : 1) * (baski ? 0.2 : 1) * M.zorlukCarpani(k, 'afet', [0.25, 1, 1.5]);
   if (k.kacak.tuzaklar.length >= 4 || d.rng() > sans) return;
   const tur = OTCULLAR[Math.floor(d.rng() * OTCULLAR.length)];
   const h = TURLER[tur].habitat;

@@ -227,7 +227,9 @@ export function gunlukGider(k) {
   return Math.round(M.zorlukCarpani(k, 'ekonomi', [0.6, 1, 1.3]) * (300 + (k.koruma && k.koruma.devriye ? 200 : 0) + k.personel.reduce((s, p) => s + PERSONEL[p.rol].maas, 0) + k.tesisler.reduce((s, t) => s + TESISLER[t].bakim, 0)));
 }
 // İtibar arttıkça bilimsel kuruluşlar günlük destek verir (karar 61, 91)
-export const gunlukDestek = (k) => Math.round(Math.min(2500, Math.floor(k.itibar / 10) * 100) * M.zorlukCarpani(k, 'ekonomi', [1.4, 1, 0.8]));
+// Aşama 10: "Bir tam yıl" başarısı uzun dönem ekoloji fonu olarak günde 400 lira ekler
+export const gunlukDestek = (k) =>
+  Math.round((Math.min(2500, Math.floor(k.itibar / 10) * 100) + (k.hikaye && k.hikaye.basarilar && k.hikaye.basarilar.yil ? 400 : 0)) * M.zorlukCarpani(k, 'ekonomi', [1.4, 1, 0.8]));
 export const okunmamis = (k) => k.mesajlar.filter((m) => !m.okundu).length;
 
 function kilitNedeni(k, oge) {

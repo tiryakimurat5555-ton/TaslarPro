@@ -21,10 +21,11 @@ import * as E from './oyun/ekosistem.js';
 import * as K from './oyun/kesif.js';
 import * as G from './oyun/genisleme.js';
 import * as Iz from './oyun/izler.js';
+import * as H from './oyun/hikaye.js';
 import { KUCUKLER, KUCUK_SIRASI, GRUPLAR, MAGARA_ODALARI } from './oyun/kucukler.js';
 import * as Efekt from './oyun/efekt.js';
 import { sahneKur } from './oyun/sahne.js';
-import { TURLER, TUR_SIRASI, YERLER, DAVRANISLAR, EVRELER, BOLGE_ADLARI } from './oyun/veri.js';
+import { TURLER, TUR_SIRASI, YERLER, DAVRANISLAR, EVRELER, BOLGE_ADLARI, ARAC } from './oyun/veri.js';
 import { useJestler } from './oyun/jestler.js';
 import { Liste, useMenuYigini, altMenu, sayfali, RENK, GORUNUM } from './oyun/SesliListe.js';
 import * as B from './oyun/betimleme.js';
@@ -210,6 +211,16 @@ const YARDIM = [
       'Duyular: hayvanlar seni koku, görme ve işitmeyle fark eder. Rüzgâr arkandan esiyorsa kokun onlara gider; fil, gergedan ve sırtlan gibi koku duyusu güçlü türler çok uzaktan kaçar. Rüzgâr yüzüne gelecek biçimde yaklaş, kıpırdamadan bekle; uzun otlar seni gizler. Avcıdan kaçıp kurtulan ya da tuzağa düşen hayvan bir süre ürkek olur; sürüler avlandıkları yerden birkaç gün uzak durur. Bir sürünün alarm sesi yakındaki başka türleri de kaçırır.',
       'Video: aletlerde Video kamera var; gözlediğin hayvanı 10 saniye çeker. Nadir bir davranışın ilk videosu bilimsel olarak çok değerlidir. Videolar Arşiv bölümünde.',
       'Saha kampı: kamp takımıyla Doğa bölümünden kurulur. Kamptayken hayvanlar seni daha az fark eder. Kampta ya da istasyonda ana menüden Dinlen seçilince zaman hızla akar; uyanınca olanlar özetlenir.',
+    ],
+  },
+  {
+    id: 'hikaye',
+    baslik: 'Gizemler, insanlar ve bilimsel başarılar',
+    satirlar: [
+      'Gizemler: sahada geçirdiğin günler, gözlemlerin ve karşılaştığın insanlar gizemler başlatır: göletteki ölü kuşlar, ormandan gelen gece çığlıkları, kaybolan bir leopar, tel tuzaklarını kuranlar. Her gizem adım adım çözülür; Araştırma merkezi, Gizemler bölümü sıradaki adımı söyler. Çözülen gizem itibar ve fon getirir.',
+      'İnsanlar: bölgede insan çok azdır. Bazı günler bir korucu, yerli bir çoban ya da komşu istasyondan bir araştırmacı birkaç saatliğine bir yerde bulunur; telsizle haber gelir. Yerler menüsünden yanına gidip ana menüdeki Konuş satırıyla konuşursun. Korucu kaçak avcı izlerini, çoban görmediğin hayvanları, araştırmacı bilinmeyen yuvaları anlatır.',
+      'Bilimsel başarılar: tür keşfi, bireysel kimlik, nadir davranış, göç, üreme yuvaları, hastalık teşhisi, fotoğraf, video, ses, küçük canlılar, uzun gözlem ve bir tam yıl için. Her biri itibarın yanında fon, bağış ekipman, personel bursu ya da kalıcı destek getirir. Araştırma merkezi, Bilimsel başarılar bölümünde ilerlemen yazar.',
+      'Araç sesleri: araca binerken ve inerken kapı sesi duyulur; sürerken motor sesi hızlandıkça yükselir, durunca rölantiye iner.',
     ],
   },
   {
@@ -615,6 +626,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     return () => {
       Ses.altyaziDinle(null);
       Efekt.ortamDurdur();
+      Efekt.motorDurdur();
       alt.remove();
       kaydet();
     };
@@ -723,6 +735,20 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       case 'dronRapor':
         Efekt.cal('odak', 0.5);
         return;
+      case 'basari':
+      case 'gizemCozuldu':
+        Efekt.cal('kesif', 0.6);
+        titret('iyi', ayarRef.current);
+        return;
+      case 'gizem':
+      case 'insan':
+        Efekt.cal('odak', 0.5);
+        return;
+      case 'arac':
+        // Araç kapısı: binerken açılıp kapanır, inerken açılır, adım, kapanır
+        if (o.bindi) Efekt.cal('kapi_bin', 0.8);
+        else if (o.indi) Efekt.cal('kapi_in', 0.8);
+        return;
       default:
     }
   };
@@ -791,6 +817,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         adimBitis.current = 0;
         girdi.current = { ileri: 0, don: 0 };
       }
+      if (menuRef.current || dinlenRef.current || !d.k.aracta || ayarRef.current.efekt === false) Efekt.motorDurdur();
       if (dinlenRef.current && !menuRef.current) {
         // Dinlenme: her karede 20 oyun dakikası hesaplanır (gerçekte yaklaşık 2 saat başına 6 kare)
         const r = dinlenRef.current;
@@ -800,6 +827,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
             if (i % 5 === 0) Mz.guncelle(d);
             G.guncelle(d, 0.1);
             Iz.guncelle(d, 0.1);
+            H.guncelle(d, 0.1);
             for (const o of M.olaylariAl(d)) if (G.dinlenmeOzetiSec(o) && r.ozet.length < 12 && !r.ozet.includes(o.metin)) r.ozet.push(o.metin);
           }
         } catch (e) {
@@ -817,6 +845,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
           Mz.guncelle(d);
           G.guncelle(d, dt);
           Iz.guncelle(d, dt);
+          H.guncelle(d, dt);
         } catch (e) {
           if (hataKaydet(e, 'oyun döngüsü')) Ses.soyle('Oyunda beklenmedik bir hata oldu. Hata kaydedildi; Ayarlar, Hata kayıtları bölümünden bana okuyabilirsin. Oyun sürüyor.', 4);
         }
@@ -872,6 +901,8 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
           dronSesSon = simdi;
           Efekt.yonlu('dron', d.oyuncu, d.dron, 0.75, 160);
         }
+        // Araç motoru: araçtayken rölanti, hızlandıkça yükselir (düzey ve perde)
+        if (d.k.aracta && a.efekt !== false) Efekt.motorDuzey(0.28 + 0.72 * Math.min(1, Math.abs(d.aracHiz) / ARAC.hiz));
         kurekYol += sonuc.kurek || 0;
         if (kurekYol > 2.4) {
           kurekYol = 0;
@@ -1162,6 +1193,8 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       if (d.rota || d.yaklasId || gb) ogeler.push({ id: 'dur', etiket: 'Dur ve gözlemi bitir', sec: kapatVe(durVeBitir) });
       if (k.teknede) ogeler.push({ id: 'tekneIn', etiket: 'Tekneden in, karaya çık', sec: kapatVe(() => G.tekneden(d)) });
       else if (G.tekneYakin(d)) ogeler.push({ id: 'tekneBin', etiket: 'Tekneye bin', sec: kapatVe(() => G.tekneyeBin(d)) });
+      const zk = H.konusulabilir(d);
+      if (zk) ogeler.push({ id: 'konus', etiket: `Konuş: ${H.KISILER[zk.kim].ad}`, ipucu: H.KISILER[zk.kim].unvan, sec: yap(() => H.konus(d)) });
       if (G.dinlenebilirMi(d)) ogeler.push(altMenu('dinlen', `Dinlen: ${k.kamp && M.mesafe(d.oyuncu, k.kamp) < 10 ? 'saha kampında' : 'istasyonda'}`, menu.ac));
       if (Eg.egitimSuruyor(k)) ogeler.push({ id: 'egitim', etiket: Eg.adimMetni(k, kip), ipucu: 'Eğitimin sıradaki adımı.' });
       const ok = Mz.okunmamis(k);
@@ -1295,6 +1328,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       const ogeler = [];
       if (!k.aracta) ogeler.push({ id: 'arac', etiket: `Arazi aracı, ${yerTarifi(k.arac)}`, sec: kapatVe(() => M.yerGit(d, 'arac')) });
       if (k.kamp) ogeler.push({ id: 'kamp', etiket: `Saha kampı, ${k.kamp.bolge}, ${yerTarifi(k.kamp)}`, sec: kapatVe(() => M.yerGit(d, 'kamp')) });
+      if (H.ziyaretci(d) && !k.teknede) ogeler.push({ id: 'ziyaretci', etiket: `Ziyaretçi: ${H.ziyaretciTarifi(d)}`, ipucu: H.KISILER[H.ziyaretci(d).kim].unvan, sec: kapatVe(() => M.yerGit(d, 'ziyaretci')) });
       if (G.tekneVar(k) && !k.teknede) ogeler.push({ id: 'tekne', etiket: `Tekne, ${yerTarifi(k.tekne)}`, ipucu: 'Teknenin bağlı olduğu kıyıya yürürsün; yanına varınca iki parmakla yukarı kaydırıp binersin.', sec: kapatVe(() => M.yerGit(d, 'tekne')) });
       YERLER.forEach((y) => ogeler.push({ id: y.id, etiket: `${y.ad}, ${yerTarifi(y)}`, ipucu: y.tarif, sec: kapatVe(() => M.yerGit(d, y.id)) }));
       Mz.gpsListesi(d)
@@ -1357,8 +1391,19 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         altMenu('saglik', `Hayvan sağlığı ve salgın takibi${k.eko.salgin && k.eko.salgin.bilinen ? ': salgın var' : ''}`, menu.ac),
       ];
       if (Mz.tesisVar(k, 'rehab') || k.rehab.length) ogeler.push(altMenu('rehab', `Rehabilitasyon: ${k.rehab.length} hayvan`, menu.ac));
+      ogeler.push(altMenu('gizemler', `Gizemler: ${H.acikGizemSayisi(k)} çözülmemiş`, menu.ac));
+      ogeler.push(altMenu('basarilar', `Bilimsel başarılar: ${Object.keys(H.hikayeAlani(k).basarilar).length} / ${H.BASARILAR.length}`, menu.ac));
       ogeler.push(altMenu('koruma', `Koruma projeleri: ${Object.values(k.koruma.projeler).filter((p) => p.durum === 'surer').length} süren, ${Object.values(k.koruma.projeler).filter((p) => p.durum === 'tamam').length} tamamlanan`, menu.ac));
       return liste(u, 'Araştırma merkezi', ogeler);
+    }
+    if (u === 'gizemler') {
+      const l = H.gizemSatirlari(k);
+      return liste(u, 'Gizemler', l.length ? l.map((g) => bilgi('g' + g.id, g.metin)) : [bilgi('yok', 'Henüz bir gizem yok. Sahada geçirdiğin günler, gözlemlerin ve karşılaştığın insanlar yeni gizemler ortaya çıkarır.')], 'Çözülmemiş gizemler üstte; her satır sıradaki adımı söyler.');
+    }
+    if (u === 'basarilar') {
+      const { kazanilan, kalan } = H.basariSatirlari(k);
+      const ogeler = [...kalan.map((x) => bilgi('b' + x.b.id, x.metin)), ...kazanilan.map((x) => bilgi('k' + x.b.id, x.metin))];
+      return liste(u, 'Bilimsel başarılar', ogeler, 'Başarılar itibarın yanında fon, ekipman, personel bursu ve yeni araştırma imkânı getirir. Kazanılmamışlar üstte, ilerlemesiyle.');
     }
     if (u === 'mesajlar' || u.startsWith('mesajlar~')) {
       const tum = k.mesajlar.map((m) => {

@@ -2161,6 +2161,12 @@ export function yerGit(d, id) {
   }
   if (id === 'arac') hedef = { x: d.k.arac.x, y: d.k.arac.y, ad: 'Arazi aracı', yakin: 2.5 };
   else if (id === 'kamp' && d.k.kamp) hedef = { x: d.k.kamp.x, y: d.k.kamp.y, ad: 'Saha kampı', yakin: 3 };
+  else if (id === 'ziyaretci') {
+    // Aşama 10: nadir ziyaretçinin yanına
+    const z = d.k.hikaye && d.k.hikaye.ziyaretci;
+    if (!z || d.k.dk >= z.bitis) return;
+    hedef = { x: z.x, y: z.y, ad: 'Ziyaretçi', yakin: 3 };
+  }
   else if (id === 'tekne') {
     const t = d.k.tekne;
     const yan = t.y >= nehirY(t.x) ? 1 : -1;
