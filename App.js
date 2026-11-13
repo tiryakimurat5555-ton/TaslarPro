@@ -28,7 +28,7 @@ import * as Sy from './oyun/sosyal.js';
 import { KUCUKLER, KUCUK_SIRASI, GRUPLAR, MAGARA_ODALARI, UZAK_ALANLAR, odaListesi, aktifOda, bolumAdi, KUCUK_SESLI, bulunabilirler } from './oyun/kucukler.js';
 import * as Efekt from './oyun/efekt.js';
 import { sahneKur } from './oyun/sahne.js';
-import { TURLER, TUR_SIRASI, YERLER, DAVRANISLAR, EVRELER, BOLGE_ADLARI, ARAC, OZEL_BIREYLER, GECITLER, ISTASYON, nehirY } from './oyun/veri.js';
+import { TURLER, TUR_SIRASI, YERLER, DAVRANISLAR, EVRELER, BOLGE_ADLARI, ARAC, OZEL_BIREYLER, GECITLER, ISTASYON, nehirY, GOLET, GALERI, KAYALIK, NEHIR_YARI } from './oyun/veri.js';
 import { useJestler } from './oyun/jestler.js';
 import { Liste, useMenuYigini, altMenu, sayfali, RENK, GORUNUM } from './oyun/SesliListe.js';
 import * as B from './oyun/betimleme.js';
@@ -99,6 +99,81 @@ function gundelikSesSec(d, son, simdi) {
   const uy = M.uyeler(d, en.g).filter((b) => !b.olu);
   const nokta = uy.length ? uy.reduce((a, b) => (M.mesafe(o, b) < M.mesafe(o, a) ? b : a)) : en.g;
   return { ...en, nokta };
+}
+// ---------- Katmanlı ortam sesi ----------
+// Temel ses (günün evresine göre savan ya da yağmur) her zaman çalar. Nehir ve gölet suyu, galeri ormanı ve kayalık
+// katmanları oraya uzaklığa göre yükselir; kaynağın yönüne göre sola ya da sağa yatar. Yakındaki yangın da bir katman.
+const ORTAM_MENZIL = { su: 60, galeri: 40, kayalik: 40 };
+const sinirla01 = (x) => Math.max(0, Math.min(1, x));
+// Eşit güçlü pan: kaynak önde ya da arkadaysa iki yarı eşit, yanda kaldıkça o taraf baskın. guc 0 = yönsüz (içindeyken).
+function yonluKatman(h, ad, w, o, nokta, guc) {
+  if (w <= 0.001) return;
+  let rel = Math.atan2(nokta.x - o.x, nokta.y - o.y) - (o.yon || 0);
+  const p = Math.max(-0.85, Math.min(0.85, Math.sin(rel) * guc));
+  const a = ((p + 1) * Math.PI) / 4;
+  h[ad + '_sol'] = (h[ad + '_sol'] || 0) + w * Math.cos(a);
+  h[ad + '_sag'] = (h[ad + '_sag'] || 0) + w * Math.sin(a);
+}
+// En yakın su: nehir eğrisi (yatay tarama) ya da gölet suyu. { m: kıyıya uzaklık, nokta }
+function enYakinSu(d) {
+  const o = d.oyuncu;
+  let en = { m: Infinity, nokta: null };
+  for (let x = o.x - 70; x <= o.x + 70; x += 2.5) {
+    const y = nehirY(x);
+    const m = Math.hypot(x - o.x, y - o.y) - NEHIR_YARI;
+    if (m < en.m) en = { m, nokta: { x, y } };
+  }
+  if (GOLET.su > 0) {
+    const m = Math.hypot(o.x - GOLET.x, o.y - GOLET.y) - GOLET.su;
+    if (m < en.m) en = { m, nokta: { x: GOLET.x, y: GOLET.y } };
+  }
+  return en;
+}
+function ortamHedefleri(d) {
+  const k = d.k;
+  const o = d.oyuncu;
+  if (k.magara) return { [k.magara.alan ? UZAK_ALANLAR[k.magara.alan].ortam : 'ortam_magara']: 1 };
+  const h = {};
+  const ev = M.gunEvresi(k.dk);
+  const gunduz = ev === 'gunduz' || ev === 'safak';
+  const yagmur = !!(k.eko && k.eko.yagmurVar);
+  let baskin = 0; // diğer katmanların en güçlüsü; temel ses ona göre kısılır
+  // Su: kıyıya 60 metreden yükselir; kıyıda ya da suyun içindeyken yönsüz. Nehrin güneyindeki sulak alanda hep hafif su sesi.
+  const su = enYakinSu(d);
+  let ws = Math.pow(sinirla01(1 - Math.max(0, su.m) / ORTAM_MENZIL.su), 1.6);
+  if (M.guneydeMi(o.x, o.y)) ws = Math.max(ws, 0.35);
+  if (k.teknede) ws = 1;
+  if (su.nokta) yonluKatman(h, 'ortam_nehir', ws, o, su.nokta, sinirla01((su.m - 3) / 15));
+  baskin = Math.max(baskin, ws);
+  // Galeri ormanı (gündüz): şeridin içinde yönsüz, dışında en yakın kenarından
+  if (gunduz) {
+    const ny = nehirY(Math.max(GALERI.x0, Math.min(GALERI.x1, o.x)));
+    const gx = Math.max(GALERI.x0, Math.min(GALERI.x1, o.x));
+    const gy = Math.max(ny, Math.min(ny + GALERI.derinlik, o.y));
+    const m = Math.hypot(o.x - gx, o.y - gy);
+    const wg = 0.9 * Math.pow(sinirla01(1 - m / ORTAM_MENZIL.galeri), 1.4);
+    yonluKatman(h, 'ortam_galeri', wg, o, { x: gx, y: gy }, sinirla01(m / 12));
+    baskin = Math.max(baskin, wg);
+    const mk = Math.hypot(o.x - KAYALIK.x, o.y - KAYALIK.y) - KAYALIK.r;
+    const wk = 0.85 * Math.pow(sinirla01(1 - Math.max(0, mk) / ORTAM_MENZIL.kayalik), 1.4);
+    yonluKatman(h, 'ortam_kayalik', wk, o, KAYALIK, sinirla01(mk / 12));
+    baskin = Math.max(baskin, wk);
+  }
+  // Yangın: 100 metreden yükselir
+  const yy = M.yanginYakin(d);
+  if (yy && yy.m < 100) {
+    const wy = Math.pow(sinirla01(1 - yy.m / 100), 0.8);
+    h.ortam_yangin = wy;
+    baskin = Math.max(baskin, wy);
+  }
+  // Temel ses: yağmurda yağmur, yoksa günün evresine göre savan; diğer katmanlar baskınlaştıkça kısılır
+  const temel = yagmur ? 'ortam_yagmur' : ev === 'safak' ? 'ortam_safak' : ev === 'aksam' ? 'ortam_aksam' : ev === 'gece' ? 'ortam_gece' : 'ortam_gunduz';
+  h[temel] = Math.max(0.2, 1 - 0.75 * baskin);
+  if (yagmur) for (const a of Object.keys(h)) if (a !== temel) h[a] *= 0.55;
+  // Katmanlar üst üste binince toplam ses yükselmesin: güç toplamı 1'i geçerse hepsi orantılı kısılır
+  const guc = Object.values(h).reduce((t, v) => t + v * v, 0);
+  if (guc > 1) for (const a of Object.keys(h)) h[a] /= Math.sqrt(guc);
+  return h;
 }
 // Konumlu sürekli sesler: her biri 0-1 düzey (uzaklığa göre). Döngü çalarken yön değişmez, yalnız düzey.
 const KONUMLU_DONGULER = ['su_akis', 'jenerator', 'kamp_ates', 'selale'];
@@ -199,6 +274,7 @@ const kucuk = (s) => s.toLocaleLowerCase('tr-TR');
 
 // ---------------- Yenilikler (en yeniler üstte): Murat denerken neyin nerede olduğunu bulsun diye ----------------
 const YENILIKLER = [
+  { baslik: 'Katmanlı ortam sesi', metin: 'Ortam sesleri artık gerçekteki gibi birbirine karışıyor: nehrin ya da göletin sesi 60 metreden hafifçe duyulmaya başlar, yaklaştıkça yükselir; galeri ormanı ve kayalığın sesleri 40 metreden. Su ve orman sesi geldiği yönden duyulur: nehir sağındaysa sağ kulağında, ona dönünce iki kulağında. Kıyıda savan, orman ve su sesi bir arada. Bölge sınırında ses artık birden değişmiyor.', nerede: 'sahada kendiliğinden; kulaklıkla yön daha iyi duyulur.' },
   { baslik: 'Yeni ses efektleri', metin: 'Hayvanların gündelik sesleri: su içen sürüler, otlayan zebralar, fil, zebra ve aslan yavrularının çağrısı, leşte kavga eden sırtlanlar, sudaki su aygırları, hortumuyla su püskürten filler, suya kayan timsahlar; impala, ceylan, zebra ve gnu tehlikeyi görünce alarm verir, av anında boğuşma duyulur. Hepsi geldiği yönden. Aletlerin sesleri: dürbünün odak çarkı, deklanşör, ses kaydının başlama ve bitiş bipi, video kamerası, numune şişesi, fener, kamera tuzağı, GPS tasması, tel tuzak sökme, dronun kalkışı ve inişi, ziyaretçi gelince telsiz. Şafakta kuş korosu, akşamüstü kumrular; yağmurun ilk damlaları, uzak gök gürültüsü, yangının çıtırtısı. Nehir geçitlerinde su şırıltısı, istasyonda jeneratör, gece kamp ateşi, çadır fermuarı; Bulutlu Dağ Ormanı\'nda şelale. Menülerin tık sesleri ve mesaj ile görev bildirimleri yenilendi.', nerede: 'sahada ve menülerde kendiliğinden; hayvanların gündelik sesleri Ayarlar, Ses ve konuşma, Küçük canlıların sesleri ayarıyla birlikte kapanır.' },
   { baslik: 'Küçük canlıların sesleri', metin: 'Kuşlar, kurbağalar, böcekler ve maymunlar dahil 24 küçük canlının gerçek sesi: bulundukları yerde, saate ve mevsime göre ara sıra uzaktan seslenirler, ses geldiği yönden duyulur. Sesini duyduktan hemen sonra Küçük canlı ara dersen onu bulman çok kolaylaşır. Galeri ormanı ve kayalığın kendi ortam sesleri var.', nerede: 'sahada kendiliğinden; kapatmak için Ayarlar, Ses ve konuşma, Küçük canlıların sesleri.' },
   { baslik: 'Sürülerin günlük rutinleri', metin: 'Her sürü belli saatte belli su başına iner ve belli bir ağacın gölgesinde dinlenir; sıcak öğlelerde gölgeye çekilir.', nerede: 'tanımlı bir hayvanın Arşiv sayfasında, sürüsünün alışkanlığı ve ağacın yönü.' },
@@ -733,21 +809,8 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
 
   const ortamSec = () => {
     if (ayarRef.current.ortam === false) return Efekt.ortamDurdur();
-    // Nehir, sulak alan ve gölet kıyısında su; başka yerde gündüz ya da gece savanı (30 sn'lik kesintisiz döngüler)
-    const b = M.bolgeBul(d.oyuncu.x, d.oyuncu.y);
-    if (d.k.magara) return Efekt.ortamBaslat(d.k.magara.alan ? UZAK_ALANLAR[d.k.magara.alan].ortam : 'ortam_magara');
-    const yy = M.yanginYakin(d);
-    if (yy && yy.m < 70) return Efekt.ortamBaslat('ortam_yangin');
-    if (d.k.eko && d.k.eko.yagmurVar) return Efekt.ortamBaslat('ortam_yagmur');
-    const gece = M.geceMi(d.k.dk) || M.gunEvresi(d.k.dk) === 'aksam';
-    if (b === 'sulak' || b === 'nehir' || b === 'golet') Efekt.ortamBaslat('ortam_nehir');
-    else if (b === 'galeri' && !gece) Efekt.ortamBaslat('ortam_galeri');
-    else if (b === 'kayalik' && !gece) Efekt.ortamBaslat('ortam_kayalik');
-    else {
-      // Şafakta kuş korosu, akşamüstü kumrular ve ilk cırcır böcekleri; gece ve gündüz kendi döngüleri
-      const ev = M.gunEvresi(d.k.dk);
-      Efekt.ortamBaslat(ev === 'safak' ? 'ortam_safak' : ev === 'aksam' ? 'ortam_aksam' : ev === 'gece' ? 'ortam_gece' : 'ortam_gunduz');
-    }
+    // Katmanlı ortam (yukarıda ortamHedefleri): yürürken her 0,25 sn'de yeniden hesaplanır, sesler birbirine karışır
+    Efekt.ortamKatmanlar(ortamHedefleri(d));
   };
 
   useEffect(() => {
@@ -1167,6 +1230,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         dongulerSayac -= dt;
         if (dongulerSayac <= 0) {
           dongulerSayac = 0.25;
+          if (a.ortam !== false) Efekt.ortamKatmanlar(ortamHedefleri(d));
           const dz = konumluDonguler(d);
           for (const ad of KONUMLU_DONGULER) Efekt.dongu(ad, a.efekt === false ? 0 : dz[ad] || 0);
         }

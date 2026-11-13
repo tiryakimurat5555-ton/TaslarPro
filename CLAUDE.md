@@ -322,6 +322,14 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   ortam-dongu.py ile), menüde ve dinlenmede durur. Tarayıcıda (jest-dene SESLER satırı, scratchpad ses2/ses3-dene.cjs) menü, deklanşör,
   dürbün, fener, numune, h_suIcme, h_yavru_fil, jeneratör, su_akis, kamp ateşi, ortam_safak/aksam, yağmur başlangıcı, yangın çıtırtısı
   çaldı. Bot 4 günde: zebra alarmı 351, impala 129, boğuşma 8 (App 2,5 sn sınırı). Telefonda doğrulanmadı.
+- Katmanlı ortam (13 Kasım, Murat "nehrin sesi uzaktan duyuluyor mu, ambiyanslar yaklaştıkça karışsın" dedi): efekt.js tek ortam kanalı
+  yerine ortamKatmanlar({ad: 0-1}) (katman başına oynatıcı, 100 ms'de 0,05 adımla geçiş, 15 sn susan bırakılır; yönlü çiftler <ad>_sol/_sag
+  birlikte başlatılır ve birlikte bırakılır; ortamBaslat(ad) = tek katman, mağara/uzak alan; globalThis.__ortamDurumu tanı). App
+  ortamHedefleri(d) 0,25 sn'de bir: su (enYakinSu: nehir eğrisi ±70 m tarama ya da gölet suyu; 60 m'den, ^1,6; güney yakada en az 0,35;
+  teknede 1), galeri (gündüz/şafak, şerit kenarından 40 m) ve kayalık (40 m) yönlü (yonluKatman eşit güçlü pan, |p| ≤ 0,85; içindeyken
+  yönsüz), yangın 100 m'den; temel (evre ya da yağmur) 1-0,75·baskın, en az 0,2; yağmurda diğerleri ×0,55; güç toplamı 1'i geçerse ölçeklenir.
+  araclar/ortam-yon.py ortam_nehir/galeri/kayalik → _sol/_sag (karşı kanal %30). Tarayıcı: scratchpad ortam-dene.cjs (doğuya bakarken güneydeki
+  nehir sağda). Telefonda doğrulanmadı.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

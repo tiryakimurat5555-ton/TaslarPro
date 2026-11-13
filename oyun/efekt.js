@@ -9,8 +9,6 @@ import { konusuyorMu, efektCalindi, konusmaBaslarken, ayarlar as sesAyarlari } f
 
 const durum = { acik: true, genel: 0.9, kis: true, ortam: 0.35 };
 const oynaticilar = {};
-let ortamOynatici = null;
-let ortamAdi = null;
 
 // Yaklaşık süreler (saniye). Konuşma, çalan kısa efekt bitince başlar.
 const SURE = {
@@ -47,11 +45,7 @@ export function efektAyarla({ acik, genel, kis, ortam } = {}) {
   if (typeof kis === 'boolean') durum.kis = kis;
   if (typeof genel === 'number') durum.genel = genel;
   if (typeof ortam === 'number') durum.ortam = ortam;
-  if (ortamOynatici) {
-    try {
-      ortamOynatici.volume = durum.acik ? durum.ortam : 0;
-    } catch (e) {}
-  }
+  if (Object.keys(katmanlar).length && !katmanSayac) katmanSayac = setInterval(katmanAdim, 100);
 }
 
 function oynatici(ad) {
@@ -106,60 +100,109 @@ export function yonlu(taban, kim, hedef, ses = 1, duyma = 45) {
   return true;
 }
 
-// Haritanın ortam sesi: sürekli döngü. Bölge ya da gün değişince eskisi 2 saniyede kısılır, yenisi yavaşça açılır.
-const GECIS_MS = 2000;
-let gecisSayac = null;
-function sesiKaydir(p, bas, son, sure, bitince) {
-  const t0 = Date.now();
-  const t = setInterval(() => {
-    const k = Math.min(1, (Date.now() - t0) / sure);
-    try {
-      p.volume = bas + (son - bas) * k;
-    } catch (e) {}
-    if (k >= 1) {
-      clearInterval(t);
-      if (bitince) bitince();
+// Haritanın ortam sesi: katmanlı döngüler. Savanın (ya da yağmurun) temel sesi her zaman çalar; nehir, galeri ormanı ve
+// kayalık katmanları oraya uzaklığa göre yükselir ve birbirine karışır. Yönlü katmanlar (<ad>_sol / <ad>_sag) birlikte
+// başlatılır, düzeyleri kaynağın yönüne göre ayarlanır. Düzey değişimleri 100 ms'lik adımlarla, tam geçiş 2 saniyede.
+const ORTAM_ADIM = 0.05;
+const katmanlar = {}; // ad -> { p, ses, sifir (ms) }
+let katmanHedef = {};
+let katmanSayac = null;
+const esi = (ad) => (ad.endsWith('_sol') ? ad.slice(0, -4) + '_sag' : ad.endsWith('_sag') ? ad.slice(0, -4) + '_sol' : null);
+function katmanAdim() {
+  const simdi = Date.now();
+  let devam = false;
+  for (const [ad, x] of Object.entries(katmanlar)) {
+    const hedef = durum.acik ? Math.max(0, Math.min(1, katmanHedef[ad] || 0)) * durum.ortam : 0;
+    const yeni = x.ses + Math.max(-ORTAM_ADIM, Math.min(ORTAM_ADIM, hedef - x.ses));
+    if (Math.abs(yeni - x.ses) > 1e-4) {
+      x.ses = yeni;
+      try {
+        x.p.volume = yeni;
+      } catch (e) {}
     }
-  }, 50);
-  return t;
+    if (x.ses !== hedef) devam = true;
+    if (x.ses <= 0.001 && hedef === 0) x.sifir = x.sifir || simdi;
+    else x.sifir = 0;
+  }
+  // 15 saniyedir susan katmanlar bırakılır (yönlü çiftin ikisi birlikte, eşzamanlı kalsınlar)
+  for (const [ad, x] of Object.entries(katmanlar)) {
+    if (!x.sifir || simdi - x.sifir < 15000) continue;
+    const e = esi(ad);
+    if (e && katmanlar[e] && (!katmanlar[e].sifir || simdi - katmanlar[e].sifir < 15000)) continue;
+    for (const a of [ad, e]) {
+      if (!a || !katmanlar[a]) continue;
+      try {
+        katmanlar[a].p.pause();
+        katmanlar[a].p.release();
+      } catch (er) {}
+      delete katmanlar[a];
+    }
+  }
+  if (!devam && !Object.values(katmanlar).some((x) => x.sifir)) {
+    clearInterval(katmanSayac);
+    katmanSayac = null;
+  }
 }
-export function ortamBaslat(ad) {
-  if (ortamAdi === ad && ortamOynatici) return;
+function katmanKur(ad) {
   const k = SESLER[ad];
-  ortamDurdur(true);
-  if (!k) return;
+  if (!k) return null;
   try {
     const p = createAudioPlayer(k, { keepAudioSessionActive: true });
     p.loop = true;
     p.volume = 0;
-    p.play();
-    ortamOynatici = p;
-    ortamAdi = ad;
-    gecisSayac = sesiKaydir(p, 0, durum.acik ? durum.ortam : 0, GECIS_MS);
+    return { p, ses: 0, sifir: 0 };
   } catch (e) {
-    ortamOynatici = null;
+    return null;
   }
 }
-export function ortamDurdur(yavas) {
-  if (gecisSayac) clearInterval(gecisSayac);
-  gecisSayac = null;
-  const p = ortamOynatici;
-  ortamOynatici = null;
-  ortamAdi = null;
-  if (!p) return;
-  const kapat = () => {
+// hedef: { ortam_gunduz: 0.4, ortam_nehir_sol: 0.7, ortam_nehir_sag: 0.3, ... } (0-1; ortam düzeyiyle çarpılır)
+export function ortamKatmanlar(hedef) {
+  katmanHedef = hedef || {};
+  // Yeni katmanlar aynı anda başlatılır (yönlü çiftin iki yarısı eşzamanlı çalsın)
+  const yeniler = [];
+  for (const [ad, v] of Object.entries(katmanHedef)) {
+    if (v > 0 && !katmanlar[ad]) {
+      const x = katmanKur(ad);
+      if (x) {
+        katmanlar[ad] = x;
+        yeniler.push(x);
+      }
+      const e = esi(ad);
+      if (e && !katmanlar[e]) {
+        const y = katmanKur(e);
+        if (y) {
+          katmanlar[e] = y;
+          yeniler.push(y);
+        }
+      }
+    }
+  }
+  yeniler.forEach((x) => {
     try {
-      p.pause();
-      p.release();
+      x.p.play();
     } catch (e) {}
-  };
-  if (!yavas) return kapat();
-  let v = 0;
-  try {
-    v = p.volume;
-  } catch (e) {}
-  sesiKaydir(p, v, 0, GECIS_MS, kapat);
+  });
+  if (!katmanSayac) katmanSayac = setInterval(katmanAdim, 100);
 }
+export function ortamBaslat(ad) {
+  ortamKatmanlar({ [ad]: 1 });
+}
+export function ortamDurdur(yavas) {
+  katmanHedef = {};
+  if (yavas) {
+    if (!katmanSayac) katmanSayac = setInterval(katmanAdim, 100);
+    return;
+  }
+  for (const a of Object.keys(katmanlar)) {
+    try {
+      katmanlar[a].p.pause();
+      katmanlar[a].p.release();
+    } catch (e) {}
+    delete katmanlar[a];
+  }
+}
+// Test ve tanı için: çalan katmanlar ve düzeyleri
+export const ortamDurumu = () => Object.fromEntries(Object.entries(katmanlar).map(([a, x]) => [a, Math.round(x.ses * 100) / 100]));
 
 // Aracın motor sesi (Kayıp Okyanus'taki itici döngüsü gibi): sürerken sürekli çalar, düzeyi ve perdesi hıza göre.
 let motorOynatici = null;
@@ -267,3 +310,7 @@ export function birak() {
     delete oynaticilar[a];
   });
 }
+// Tarayıcı denemeleri için (telefonda etkisiz)
+try {
+  globalThis.__ortamDurumu = ortamDurumu;
+} catch (e) {}
