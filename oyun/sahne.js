@@ -154,14 +154,16 @@ function dortAyak(g, b, renk, bacak, araX, araZ, kalin = 0.14) {
 function hayvanModeli(b) {
   const t = TURLER[b.tur];
   const s = t.boy;
-  const r = (b.ozellik && OZEL_BIREYLER[b.ozellik] && OZEL_BIREYLER[b.ozellik].renk) || t.renk; // Aşama 14: kara leopar, beyaz zürafa, benekli zebra
+  const ozelRenk = b.ozellik && OZEL_BIREYLER[b.ozellik] && OZEL_BIREYLER[b.ozellik].renk; // Aşama 14: kara leopar, beyaz zürafa, benekli zebra
+  const ton = b.gen && Number.isFinite(b.gen.ton) ? b.gen.ton : 0; // Aşama 19: kalıtsal renk tonu
+  const r = ozelRenk || '#' + new THREE.Color(t.renk).offsetHSL(0, 0, -ton * 0.07).getHexString();
   const g = new THREE.Group();
   const erkek = b.cinsiyet === 'erkek';
   switch (t.sekil) {
     case 'kedi':
       parca(g, new THREE.BoxGeometry(0.5 * s, 0.45 * s, 1.4 * s), r, 0, 0.75 * s, 0);
       parca(g, new THREE.BoxGeometry(0.42 * s, 0.4 * s, 0.42 * s), r, 0, 0.98 * s, -0.82 * s);
-      if (b.tur === 'aslan' && erkek && b.evre !== 'yavru') parca(g, new THREE.DodecahedronGeometry(0.42 * s, 0), '#7a4a1e', 0, 0.98 * s, -0.68 * s);
+      if (b.tur === 'aslan' && erkek && b.evre !== 'yavru') parca(g, new THREE.DodecahedronGeometry(0.42 * s, 0), '#' + new THREE.Color('#7a4a1e').offsetHSL(0, 0, -ton * 0.12).getHexString(), 0, 0.98 * s, -0.68 * s);
       if (b.tur === 'leopar') for (let i = 0; i < 6; i++) parca(g, new THREE.BoxGeometry(0.1 * s, 0.03 * s, 0.1 * s), '#3a2a18', (i % 2 ? 0.12 : -0.12) * s, 0.99 * s, (-0.5 + i * 0.2) * s);
       parca(g, new THREE.BoxGeometry(0.08 * s, 0.08 * s, 0.9 * s), r, 0, 0.85 * s, 1.05 * s, 0.5);
       gozler(g, s, 0.11, 1.05, -1.04, '#c8f05a');

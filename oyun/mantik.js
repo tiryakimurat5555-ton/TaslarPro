@@ -235,7 +235,7 @@ function bireyOlustur(k, rng, tur, grup, evre, cinsiyet, x, y, anne) {
     yetim: false,
     // Aşama 8 genetik (karar 39): baba DNA ile doğrulanır; h = genetik çeşitlilik (heterozigotluk), tasiyici = kalıtsal hastalık geni
     baba: null,
-    gen: { h: 0.55 + rng() * 0.3, tasiyici: rng() < 0.06 },
+    gen: { h: 0.55 + rng() * 0.3, tasiyici: rng() < 0.06, ton: Math.round((rng() * 2 - 1) * 0.8 * 100) / 100 },
     dna: false,
     kalitsal: null,
   };
@@ -341,6 +341,8 @@ function asama8Onar(k) {
   const genVer = (b) => {
     if (!b || typeof b !== 'object') return;
     if (!b.gen || !sayiMi(b.gen.h)) b.gen = { h: 0.6 + ((b.id * 37) % 25) / 100, tasiyici: (b.id * 13) % 17 === 0 };
+    if (!sayiMi(b.gen.ton)) b.gen.ton = Math.round((((b.id * 53) % 161) / 100 - 0.8) * 100) / 100; // Aşama 19: görünüş geni (eski kayıtlarda kimlikten)
+    if (b.stres !== undefined && !sayiMi(b.stres)) b.stres = 0;
     if (b.baba === undefined) b.baba = null;
     if (b.korku !== undefined && !sayiMi(b.korku)) b.korku = 0;
     if (b.aracAlisma !== undefined && !sayiMi(b.aracAlisma)) b.aracAlisma = 0;
@@ -922,6 +924,7 @@ export function kacisMesafesi(d, b) {
   if (b.evre === 'yavru') m *= 1.2;
   m *= duyuCarpani(d, b);
   if (b.korku) m *= 1 + 0.6 * b.korku; // öğrenilmiş korku (karar 109)
+  if (b.stres) m *= 1 + 0.25 * b.stres; // Aşama 19: stresli hayvan daha tetikte
   if (d.k.aracta && b.aracAlisma) m *= 1 - 0.4 * b.aracAlisma; // araçları tanır (karar 47)
   m *= zorlukCarpani(d.k, 'tehlike', [0.7, 1, 1.2]);
   return Math.max(4, m);
@@ -1285,7 +1288,15 @@ function kalitim(d, y, anne, baba) {
   const h = ((ag.h + bg.h) / 2) * (1 - f) + (d.rng() - 0.5) * 0.06;
   const geciA = ag.tasiyici && d.rng() < 0.5;
   const geciB = bg.tasiyici && d.rng() < 0.5;
-  y.gen = { h: sinirla(h, 0.1, 0.95), tasiyici: geciA || geciB };
+  // Aşama 19 (karar 113): görünüş (renk tonu, yele, çizgi, diş) iki ebeveynin ortalaması + küçük sapma; kişilik çoğunlukla anneden
+  const at = sayiMi(ag.ton) ? ag.ton : 0;
+  const bt = baba && sayiMi(bg.ton) ? bg.ton : (d.rng() * 2 - 1) * 0.6;
+  const ton = sinirla((at + bt) / 2 + (d.rng() - 0.5) * 0.5, -1, 1);
+  y.gen = { h: sinirla(h, 0.1, 0.95), tasiyici: geciA || geciB, ton: Math.round(ton * 100) / 100 };
+  const r = d.rng();
+  if (r < 0.5 && anne.kisilik) y.kisilik = anne.kisilik;
+  else if (r < 0.75 && baba && baba.kisilik) y.kisilik = baba.kisilik;
+  y.kisilikKaynak = r < 0.5 ? 'anne' : r < 0.75 && baba ? 'baba' : null;
   if (geciA && geciB) {
     y.kalitsal = 'zayiflik';
     y.kondisyon = 0.5;
@@ -2194,7 +2205,42 @@ export const gozlenen = (d) => {
 export function gozlemTarifi(d, b) {
   const dv = DAVRANISLAR[b.davranis] || DAVRANISLAR.dinleniyor;
   const oz = b.ozellik && OZEL_BIREYLER[b.ozellik];
-  return `${BuyukHarf(bireyAdi(b))}${oz ? `, ${oz.gorunus},` : ''} ${dv.fiil}${saglikGorunusu(b)}, ${yerTarifi(d.oyuncu, b)}`;
+  const gr = !oz && gorunusSozu(b);
+  return `${BuyukHarf(bireyAdi(b))}${oz ? `, ${oz.gorunus},` : gr ? `, ${gr},` : ''} ${dv.fiil}${saglikGorunusu(b)}, ${yerTarifi(d.oyuncu, b)}`;
+}
+// Aşama 19 (karar 113): kalıtsal görünüş. ton -1 (açık) .. +1 (koyu); belirgin olanlar dürbünde söylenir ve bireyi tanımayı kolaylaştırır.
+export const GORUNUS = {
+  aslan: { erkek: ['açık sarı yeleli', 'kara yeleli'], disi: ['açık tüylü', 'koyu tüylü'] },
+  leopar: ['açık zeminli, seyrek benekli', 'koyu zeminli, sık benekli'],
+  cita: ['açık tüylü', 'koyu, sık benekli'],
+  sirtlan: ['açık, seyrek benekli', 'koyu, sık benekli'],
+  fil: { erkek: ['kısa dişli', 'uzun, kalın dişli'], disi: ['kısa dişli', 'uzun dişli'] },
+  zurafa: ['açık, küçük lekeli', 'koyu, iri lekeli'],
+  zebra: ['ince, açık çizgili', 'kalın, koyu çizgili'],
+  gnu: ['açık gri', 'koyu, belirgin çizgili'],
+  impala: { erkek: ['kısa boynuzlu', 'uzun, kıvrık boynuzlu'], disi: ['açık kızıl tüylü', 'koyu kızıl tüylü'] },
+  ceylan: ['açık tüylü', 'belirgin kara yan çizgili'],
+  manda: { erkek: ['ince boynuzlu', 'kalın, kalkan gibi boynuzlu'], disi: ['ince boynuzlu', 'geniş boynuzlu'] },
+  gergedan: ['kısa boynuzlu', 'uzun ön boynuzlu'],
+  yabanKopegi: ['açık lekeli', 'koyu lekeli'],
+  babun: ['açık tüylü', 'koyu tüylü'],
+  domuz: ['kısa dişli', 'uzun, kıvrık dişli'],
+};
+export function gorunusSozu(b) {
+  const g = GORUNUS[b.tur];
+  const ton = b.gen && sayiMi(b.gen.ton) ? b.gen.ton : 0;
+  if (!g || Math.abs(ton) < 0.45 || b.evre === 'yavru') return '';
+  const l = Array.isArray(g) ? g : g[b.cinsiyet] || g.disi;
+  return ton < 0 ? l[0] : l[1];
+}
+export function gorunusSatiri(d, b) {
+  const s = gorunusSozu(b);
+  const anne = b.anne ? birey(d, b.anne) : null;
+  const baba = b.baba ? birey(d, b.baba) : null;
+  let m = s ? `Görünüş: ${s}.` : 'Görünüş: türünün ortalamasında, belirgin bir özelliği yok.';
+  if (s && ((anne && gorunusSozu(anne) === s) || (baba && gorunusSozu(baba) === s))) m += ` Bu özelliği ${anne && gorunusSozu(anne) === s ? 'annesinden' : 'babasından'} almış.`;
+  if (b.kisilikKaynak && KISILIKLER[b.kisilik]) m += ` ${BuyukHarf(KISILIKLER[b.kisilik].ad)} mizacı ${b.kisilikKaynak === 'anne' ? 'annesine' : 'babasına'} benziyor.`;
+  return m;
 }
 // Dürbünle görülen sağlık belirtisi (karar 28)
 export function saglikGorunusu(b) {

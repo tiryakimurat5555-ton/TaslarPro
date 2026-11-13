@@ -14,6 +14,7 @@ import * as S from '../oyun/su.js';
 import * as Y from '../oyun/yonetim.js';
 import * as Sy from '../oyun/sosyal.js';
 import * as Il from '../oyun/iletisim.js';
+import * as Ps from '../oyun/psikoloji.js';
 
 const deneme = +(process.argv[2] || 200);
 const KOTU = /undefined|NaN|\[object|null\b|  |\.\.(?!\.)| ,|^ /;
@@ -34,6 +35,7 @@ function oynat(d, adim) {
     Y.guncelle(d, 0.1);
     Sy.guncelle(d, 0.1);
     Il.guncelle(d, 0.1);
+    Ps.guncelle(d, 0.1);
     for (const o of M.olaylariAl(d)) metinDenetle(o.metin, o.tur);
     if (i % 60 === 0) {
       metinDenetle(B.betimle(d, 'Dürbün'), 'betimleme');

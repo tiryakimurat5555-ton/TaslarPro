@@ -115,6 +115,9 @@ export const DAVRANISLAR = {
   selamlasma: { fiil: 'sürü arkadaşlarıyla selamlaşıyor', ad: 'Selamlaşma' },
   kukremeKorosu: { fiil: 'sürüsüyle birlikte kükrüyor', ad: 'Kükreme korosu', nadir: true },
   infrasesDinleme: { fiil: 'kulaklarını açmış, kıpırdamadan uzaktaki sürüleri dinliyor', ad: 'Uzak çağrıyı dinleme', nadir: true },
+  teselliEdiyor: { fiil: 'stresli bir grup arkadaşını teselli ediyor', ad: 'Teselli etme', nadir: true },
+  teselliEdiliyor: { fiil: 'grup arkadaşının yanında sakinleşiyor', ad: 'Teselli görme' },
+  arkadasCagiriyor: { fiil: 'sürüsünden ayrı düşmüş, uzun uzun çağırıyor', ad: 'Sürüyü çağırma' },
   bedenDiliUyari: { fiil: 'kuyruğunu dikip başını kaldırarak sürüye tehlikeyi bildiriyor', ad: 'Beden diliyle uyarı' },
 };
 

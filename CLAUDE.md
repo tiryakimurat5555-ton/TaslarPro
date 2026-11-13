@@ -383,6 +383,17 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   bedenDiliUyari (impala/ceylan/zebra/gnu, 60 m'de avcı varken); olay 'iletisim' {ses, duyma} → App 3B tür sesi; tür sayfasında Il.turSatirlari.
   Testler: bot 3 gün (Bozuk 0, 46 iletişim olayı), dayanıklılık 300/300, ekosistem 20 gün, menu-tara 246 sayfa iki kipte sorun 0
   (/tmp/claude-0/zengin18.json), araç görüntüleri scratchpad arac/goruntu.cjs. Telefonda doğrulanmadı.
+- Aşama 19 stres ve kalıtsal görünüş (13 Kasım gece, Murat "devam"; kararlar 109, 113; sayılar ÖNERİ). `oyun/psikoloji.js`
+  (Ps.guncelle 2 sn'de bir, gün dönünce gunluk): b.stres 0-1 (günlük ×TOPARLANMA kişiliğe göre; yalnızlık +0,18 (sosyal türde grubunda tek,
+  b.yalniz), yetim +0,12; >0,5 kondisyon -0,02·stres), travmaEkle(d, b, neden avci|tuzak|anne|kavga, şiddet) → b.travma {neden, gun}
+  (korku birden >0,35 artınca avci/tuzak; sosyal.js sıralama kavgasını kaybeden 'kavga' 0,2; ilk 3 gün korkuyu besler; 6 gün (ürkekte 10)
+  sonra ve stres <0,25 iken b.iyilesti), teselli (fil/babun/aslan/zebra/yaban köpeği, stres >0,3, 'teselliEdiyor'/'teselliEdiliyor', stres
+  -0,2), yalnız kalan 'arkadasCagiriyor' (olay 'iletisim' ses). kacisMesafesi ×(1+0,25 stres). sosyal.saglikDosyasi Ps.bireySatirlari
+  (stres, nedenler, BASA_CIKMA, iyileşme). Görünüş (karar 113): gen.ton -1..1 (yeni birey rastgele, eski kayıtta kimlikten), kalitim
+  ebeveyn ortalaması ±0,25; kişilik %50 anne, %25 baba (b.kisilikKaynak). mantik GORUNUS (tür/cinsiyete göre açık-koyu sözcükler),
+  gorunusSozu (|ton| ≥ 0,45, yavru değil) gözlem tarifinde, gorunusSatiri birey sayfasında; sahne hayvanModeli rengi offsetHSL(-ton·0,07),
+  aslan yelesi ×0,12. Testler: bot 3 gün, dayanıklılık 300/300, menu-tara 246 sayfa iki kipte sorun 0, scratchpad gol/ps.js (2 saatte 3
+  teselli; 112 bireyin 35'inde belirgin görünüş). Telefonda doğrulanmadı.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

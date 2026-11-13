@@ -4,6 +4,7 @@
 import * as M from './mantik.js';
 import { TURLER, KISILIKLER } from './veri.js';
 import * as E from './ekosistem.js';
+import * as Ps from './psikoloji.js';
 
 const KAVGA_TURLERI = { babun: 0.006, aslan: 0.002, zebra: 0.002, fil: 0.001, impala: 0.002 }; // 2 sn başına grup olasılığı
 const OGRETEN = ['cita', 'leopar', 'aslan'];
@@ -52,6 +53,7 @@ function anlik(d) {
         const [a, b] = y.sort(() => Math.random() - 0.5);
         a.ozel = { davranis: 'siraKavgasi', bitis: d.zaman + 8 };
         b.ozel = { davranis: 'siraKavgasi', bitis: d.zaman + 8 };
+        Ps.travmaEkle(d, b, 'kavga', 0.2); // kaybeden sosyal baskı yaşar
         // Babunlar ve filler kavgadan sonra barışır (uzlaşma), kaybeden kazananı tımar eder
         if (g.tur === 'babun' || g.tur === 'fil' || g.tur === 'aslan') setTimeoutYerine(d, b, 'uzlasma', 8, 12);
         if (M.mesafe(d.oyuncu, a) <= M.durbunMenzili(k.dk, k) && !k.magara)
@@ -137,7 +139,7 @@ export function saglikDosyasi(d, b) {
   const gecmis = Array.isArray(b.gecmis) ? b.gecmis.filter((x) => x && typeof x.metin === 'string' && /yaral|parazit|uyuz|tuzak|tedavi|hasta|şarbon|distemper/i.test(x.metin)) : [];
   if (gecmis.length) l.push(`Sağlık geçmişi: ${gecmis.slice(0, 4).map((x) => `${x.metin.replace(/\.$/, '')} (${M.gunNo(x.dk)}. gün)`).join('; ')}.`);
   if (b.kalitsal) l.push('Kalıtsal zayıflık taşıyor.');
-  if ((b.korku || 0) > 0.4) l.push('Stres düzeyi yüksek: yakın zamanda bir tehlike atlatmış, ürkek davranıyor.');
+  Ps.bireySatirlari(d, b).forEach((x) => l.push(x));
   if (Array.isArray(b.bagisik) && b.bagisik.length) l.push(`Bağışık olduğu hastalıklar: ${b.bagisik.filter((h) => E.HASTALIKLAR[h]).map((h) => E.HASTALIKLAR[h].ad).join(', ')}.`);
   return l;
 }

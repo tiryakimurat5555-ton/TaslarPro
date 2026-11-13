@@ -26,6 +26,7 @@ import * as S from './oyun/su.js';
 import * as Y from './oyun/yonetim.js';
 import * as Sy from './oyun/sosyal.js';
 import * as Il from './oyun/iletisim.js';
+import * as Ps from './oyun/psikoloji.js';
 import { KUCUKLER, KUCUK_SIRASI, GRUPLAR, MAGARA_ODALARI, UZAK_ALANLAR, odaListesi, aktifOda, bolumAdi, KUCUK_SESLI, bulunabilirler } from './oyun/kucukler.js';
 import * as Efekt from './oyun/efekt.js';
 import { sahneKur } from './oyun/sahne.js';
@@ -273,6 +274,8 @@ const kucuk = (s) => s.toLocaleLowerCase('tr-TR');
 
 // ---------------- Yenilikler (en yeniler üstte): Murat denerken neyin nerede olduğunu bulsun diye ----------------
 const YENILIKLER = [
+  { baslik: 'Stres, travma ve teselli', metin: 'Hayvanların artık bir stres düzeyi var. Sürüsünden ayrı düşmek, annesini kaybetmek, sıralama kavgasını kaybetmek, avcıdan kıl payı kurtulmak ya da tel tuzağa düşmek stres verir; stresli hayvan daha tetiktedir, daha uzaktan kaçar ve uzun sürerse zayıflar. Her birey kişiliğine göre toparlanır: cesurlar çabuk, ürkekler yavaş. Filler, babunlar, aslanlar, zebralar ve yaban köpekleri stresli grup arkadaşlarını teselli eder; bunu dürbünle görebilirsin. Sürüsünden ayrı kalan hayvan durup uzun uzun çağırır.', nerede: 'sahada dürbünle; Arşiv, birey sayfasında sağlık dosyası.' },
+  { baslik: 'Kalıtsal görünüş', metin: 'Her hayvanın kalıtsal bir görünüşü var: kara ya da açık yeleli aslanlar, kalın ya da ince çizgili zebralar, uzun dişli filler, koyu ve iri lekeli zürafalar. Yavrular bu özelliği anne ve babasından alır, mizaçları da çoğunlukla anneye benzer. Belirgin olanlar dürbünle gözlerken söylenir; bireyleri ayırt etmeyi kolaylaştırır. Ekranda da hayvanların rengi biraz farklıdır.', nerede: 'gözlem tarifinde; Arşiv, birey sayfasında Görünüş satırı.' },
   { baslik: 'Garaj: ATV, arazi motosikleti ve araştırma kamyonu', metin: 'Merkezden üç yeni araç alınabilir. ATV arazi aracından hızlı ve çeviktir; arazi motosikleti en hızlısıdır ama gürültülüdür. İkisi de açık olduğu için hayvanlar seni daha kolay fark eder, sürücü selede görünür. Araştırma kamyonu yavaştır ama arkasında mobil laboratuvar vardır: numunelerini istasyona dönmeden kamyona teslim edersin, dronun kamyonda şarj olur ve hayvanlar onu en az fark eder. Her aracın motor sesi farklı perdededir. Sahada tek araç durur; istasyondayken garajdan değiştirirsin.', nerede: 'Merkez, Ekipman bölümünde satın al; Merkez, Garaj bölümünde seç.' },
   { baslik: 'Hayvanlar arasında iletişim', metin: 'Hayvanlar artık birbirleriyle haberleşir. Aslanlar, leoparlar, çitalar, sırtlanlar, yaban köpekleri ve gergedanlar bölgelerini kokuyla işaretler; İzleri incele bu koku işaretlerini de bulur ve bölgenin sahipli olduğunu söyler. Filler, aslanlar, zebralar ve sırtlanlar selamlaşır; yaban köpekleri ava çıkmadan önce selamlaşma töreni yapar. Geceleri aslanlar hep birlikte kükrer, uzaktan duyarsın. Filler bazen durup uzaktaki sürülerin alçak gürlemelerini dinler. Yakında yırtıcı varken impala, ceylan, zebra ve gnu beden diliyle sürüyü uyarır. Tür sayfasında türün iletişim biçimleri yazar.', nerede: 'sahada dürbünle; Doğa, İzleri incele; Arşiv, tür sayfası.' },
   { baslik: 'Su başında tedirginlik', metin: 'Su içmeye gelen otçullar su başında timsah görürse ya da orada kısa süre önce av olmuşsa hemen içmez; durup tedirgin bekler. Çok susamışlarsa başlarını sık sık kaldırarak hızlı hızlı içip uzaklaşırlar, değilse öbür su kaynağına giderler. Sıcak günlerde ve kurak mevsimde hayvanlar daha sık susar, yağmurlu günlerde daha az; yavrulu sürüler daha çok içer.', nerede: 'gölet ve nehir kıyısında dürbünle.' },
@@ -394,6 +397,7 @@ const YARDIM = [
       'Duyular: hayvanlar seni koku, görme ve işitmeyle fark eder. Rüzgâr arkandan esiyorsa kokun onlara gider; fil, gergedan ve sırtlan gibi koku duyusu güçlü türler çok uzaktan kaçar. Rüzgâr yüzüne gelecek biçimde yaklaş, kıpırdamadan bekle; uzun otlar seni gizler. Avcıdan kaçıp kurtulan ya da tuzağa düşen hayvan bir süre ürkek olur; sürüler avlandıkları yerden birkaç gün uzak durur. Bir sürünün alarm sesi yakındaki başka türleri de kaçırır.',
       'Video: aletlerde Video kamera var; gözlediğin hayvanı 10 saniye çeker. Nadir bir davranışın ilk videosu bilimsel olarak çok değerlidir. Videolar Arşiv bölümünde.',
       'Garaj: Merkez, Ekipman bölümünden ATV, arazi motosikleti ve araştırma kamyonu alınır; Merkez, Garaj bölümünde seçilir. Sahada tek araç durur, değiştirmek için istasyonda olmalısın. ATV ve motosiklet hızlıdır ama açıktır, hayvanlar seni daha kolay fark eder. Kamyon yavaştır; numuneleri ona teslim edersin, dron onda şarj olur.',
+      'Stres ve görünüş: hayvanlar yalnızlık, kayıp, kavga ve tehlikeden stres yaşar, kişiliğine göre toparlanır, grup arkadaşları teselli eder. Görünüşleri (yele, çizgi, diş, ton) kalıtsaldır ve gözlem tarifinde söylenir; birey sayfasında Görünüş satırında kimden aldığı yazar.',
       'İletişim: hayvanlar kokuyla bölge işaretler, selamlaşır, gece kükrer, beden diliyle tehlikeyi bildirir. İzleri incele koku işaretlerini de bulur. Su başında timsah görenler tedirgin bekler.',
       'Saha kampı: kamp takımıyla Doğa bölümünden kurulur. Kamptayken hayvanlar seni daha az fark eder. Kampta ya da istasyonda ana menüden Dinlen seçilince zaman hızla akar; uyanınca olanlar özetlenir.',
     ],
@@ -1131,6 +1135,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
             Y.guncelle(d, 0.1);
             Sy.guncelle(d, 0.1);
             Il.guncelle(d, 0.1);
+            Ps.guncelle(d, 0.1);
             for (const o of M.olaylariAl(d)) if (G.dinlenmeOzetiSec(o) && r.ozet.length < 12 && !r.ozet.includes(o.metin)) r.ozet.push(o.metin);
           }
         } catch (e) {
@@ -1153,6 +1158,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
           Y.guncelle(d, dt);
           Sy.guncelle(d, dt);
           Il.guncelle(d, dt);
+          Ps.guncelle(d, dt);
         } catch (e) {
           if (hataKaydet(e, 'oyun döngüsü')) Ses.soyle('Oyunda beklenmedik bir hata oldu. Hata kaydedildi; Ayarlar, Hata kayıtları bölümünden bana okuyabilirsin. Oyun sürüyor.', 4);
         }
@@ -2017,6 +2023,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
           `İlk tanımlama ${ab.ilkDk !== undefined ? zamanKisa(ab.ilkDk) : 'bilinmiyor'}. Son görülme ${ab.sonDk !== undefined ? `${zamanKisa(ab.sonDk)}, ${ab.sonBolge}` : 'bilinmiyor'}. Toplam gözlem ${Math.max(1, Math.round((ab.gozlemSn || 0) / 60))} dakika. Sana alışması ${b.alisma > 0.6 ? 'yüksek' : b.alisma > 0.25 ? 'orta' : 'düşük'}.`
         ),
       ];
+      ogeler.push(bilgi('gorunus', M.gorunusSatiri(d, b)));
       Sy.bireySatirlari(d, b).forEach((m, i) => ogeler.push(bilgi('sy' + i, m)));
       const rm = !b.olu && M.rutinMetni(d, k.gruplar.find((g) => g.id === b.grup));
       if (rm) ogeler.push(bilgi('rutin', rm));
