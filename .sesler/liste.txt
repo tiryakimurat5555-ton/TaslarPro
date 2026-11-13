@@ -1,0 +1,3 @@
+kapi_bin https://elevenlabsusercontent.com/database/workspace/c6890a9e7d7c47f7a13c4c65b132fa4f/content_generation/HwBSELlmXzdDpRZ99IXF/TdlNRAbpYODl5tVHAO7k/content.mp3?Expires=1794553200&KeyName=assets-cdn-key-1&Signature=0lkNwwp7vonFQW-FCZgG1KoCJeQ=
+kapi_in https://elevenlabsusercontent.com/database/workspace/c6890a9e7d7c47f7a13c4c65b132fa4f/content_generation/v1AiPaeBGszpSwMdNTGE/BZqHlOijCENxPwIDDjE2/content.mp3?Expires=1794553200&KeyName=assets-cdn-key-1&Signature=IELnr1V2QBVJ2sMzn4fyF1-DZRs=
+motor https://elevenlabsusercontent.com/database/workspace/c6890a9e7d7c47f7a13c4c65b132fa4f/content_generation/mLmYtBaGZlMYIX3OXUAH/Nu1ZmZMa8QeNpCc96tK5/content.mp3?Expires=1794553200&KeyName=assets-cdn-key-1&Signature=2BbUIOAhDi2inGZrgpVGa1RShLg=
