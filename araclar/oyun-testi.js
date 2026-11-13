@@ -26,6 +26,7 @@ const baslangicNufus = {};
 k.hayvanlar.forEach((b) => (baslangicNufus[b.tur] = (baslangicNufus[b.tur] || 0) + 1));
 
 const KOTU = /undefined|NaN|\[object|null\b|  |\.\.(?!\.)| ,/;
+const efektSay = {};
 const kotu = new Set();
 let sureTop = 0;
 let sureSayi = 0;
@@ -44,6 +45,7 @@ for (let t = 0; t < toplam; t += adim) {
   sureTop += gecen;
   sureSayi++;
   if (gecen > sureEnCok) sureEnCok = gecen;
+  for (const e of M.efektleriAl(d)) efektSay[e.ad] = (efektSay[e.ad] || 0) + 1;
   for (const o of M.olaylariAl(d)) {
     if (o.metin && KOTU.test(o.metin)) kotu.add(o.metin.slice(0, 160));
     say(o.tur);
@@ -157,6 +159,7 @@ console.log(`Sosyal: ${['aslan', 'sirtlan', 'yabanKopegi', 'cita', 'leopar'].map
 console.log(`Beceri: ${k.hayvanlar.filter((b) => !b.olu && Number.isFinite(b.beceri)).map((b) => b.tur + ':' + b.beceri.toFixed(2)).join(' ')}; anneler ${k.hayvanlar.filter((b) => b.yavruBuyuttu).length}; savunma ${k.gruplar.filter((g) => g.savunmaDeneyim).map((g) => g.tur + ':' + g.savunmaDeneyim.toFixed(2)).join(' ')}`);
 console.log(`Gezi: ${K.uzakSatirlari(k).map((x) => x.metin).join(' | ')}`);
 console.log(`Yönetim: lantana ${Object.keys(k.eko.istilaci || {}).length}, yakma ${k.eko.kontrolluYakmaYil}, gölet ${!!k.eko.goletRestore}, raporlar ${JSON.stringify(Y.raporSatirlari(k))}`);
+console.log(`Eylem ve hayvan sesleri: ${JSON.stringify(efektSay)}`);
 console.log(`Bozuk metin: ${kotu.size}`);
 [...kotu].slice(0, 10).forEach((m) => console.log('  ' + m));
 if (process.env.KAYIT_YAZ) require('fs').writeFileSync(process.env.KAYIT_YAZ, JSON.stringify(M.kayitHazirla(k)));

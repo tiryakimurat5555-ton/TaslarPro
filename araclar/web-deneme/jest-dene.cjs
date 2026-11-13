@@ -241,6 +241,7 @@ fs.mkdirSync(O, { recursive: true });
     return { kucuk: Object.keys(k.arsiv.kucukler || {}), magara: k.arsiv.magara, bitki: Object.keys(k.arsiv.bitkiler), numune: k.numuneKutusu.length, golet: k.eko.golet, hava: k.eko.hava.tur, tur: Object.keys(k.arsiv.turler), birey: Object.keys(k.arsiv.bireyler).length, foto: k.arsiv.fotolar.length, butce: k.butce, ekipman: k.ekipman, gorev: k.teklifler.map((t) => t.durum) };
   });
   console.log('ÖZET', JSON.stringify(ozet));
+  console.log('SESLER', await s.evaluate(() => [...new Set(window.__sesler.map((x) => String(x).replace(/_\d+a?$/, '')))].sort().join(' ')));
   if (h.length) console.log('HATALAR:', h.join('\n'));
   await b.close();
 })();

@@ -10,11 +10,16 @@ GIRDI=${1:-.sesler/ham}
 CIKTI=assets/efekt
 GECICI=$(mktemp -d)
 mkdir -p "$CIKTI"
-UC_B="kurt tilki domuz ayi yilan akrep sirtlan timsah leopar kartal aslan gergedan dustu fil zebra suaygiri manda ceylan zurafa gnu cita impala yabankopegi babun kosu_toynak kosu_hafif kosu_agir kosu_pati dron"
+UC_B="kurt tilki domuz ayi yilan akrep sirtlan timsah leopar kartal aslan gergedan dustu fil zebra suaygiri manda ceylan zurafa gnu cita impala yabankopegi babun kosu_toynak kosu_hafif kosu_agir kosu_pati dron yangin_citirti"
 hedef() {
   case "$1" in
     ortam_*) echo -26 ;;
     k_*) echo -17 ;;
+    h_*) echo -16 ;;
+    menu_*) echo -24 ;;
+    bildirim_*|deklansor|durbun_odak|kayit_*|fener_tik|fermuar|numune_sise|video_kamera) echo -20 ;;
+    gok_uzak) echo -22 ;;
+    yagmur_baslangic|tasma|tel_sok|tuzak_kur|telsiz|dron_*) echo -19 ;;
     yarali) echo -17 ;;
     iska) echo -19 ;;
     altin) echo -20 ;;
@@ -48,6 +53,8 @@ for f in "$GIRDI"/*.mp3; do
   if echo " $UC_B " | grep -q " $ad "; then UC=1; KIS="atrim=0:2.6,afade=t=out:st=2.2:d=0.4,"; fi
   # Küçük canlı çağrıları (k_): 3B, en çok 3,6 sn (Aşama 17)
   case "$ad" in k_*) UC=1; KIS="atrim=0:3.6,afade=t=out:st=3.1:d=0.5," ;; esac
+  # Hayvanların gündelik sesleri (h_): 3B, en çok 4 sn (Ses efektleri genişlemesi)
+  case "$ad" in h_*) UC=1; KIS="atrim=0:4,afade=t=out:st=3.4:d=0.6," ;; esac
   ffmpeg -loglevel error -y -i "$f" -af "silenceremove=start_periods=1:start_threshold=-45dB,${KIS}volume=${KAZANC}dB,alimiter=limit=0.79:level=false,areverse,silenceremove=start_periods=1:start_threshold=-55dB,afade=t=in:d=0.08,areverse" -ac 1 -ar 44100 "$GECICI/m.wav"
   if [ "$UC" = 1 ]; then
     for i in 0 1 2 3 4; do

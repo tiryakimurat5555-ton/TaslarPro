@@ -549,6 +549,20 @@ export function olay(d, tur, metin, oncelik = 1, ek = {}) {
   const { tur: hayvanTur, ...geri } = ek || {};
   d.olaylar.push({ ...geri, ...(hayvanTur ? { hayvanTur } : {}), tur, metin, oncelik, zaman: d.zaman });
 }
+// Eylem sesleri (dürbün, deklanşör, numune şişesi...): App her karede çalar, konuşma beklemez
+// konum verilirse ses o noktadan 3B duyulur (duyma metre içinde)
+export function efekt(d, ad, duzey = 0.8, konum = null, duyma = 60) {
+  if (d.dinleniyor) return;
+  const q = (d.efektKuyruk = d.efektKuyruk || []);
+  if (q.length < 20) q.push(konum ? { ad, duzey, x: konum.x, y: konum.y, duyma } : { ad, duzey });
+}
+// Alarm sesi veren otçullar (Ses efektleri genişlemesi): impala ve ceylan havlar gibi homurdanır, zebra ve gnu kişner
+const ALARM_SESI = { impala: 'h_alarm_impala', ceylan: 'h_alarm_impala', zebra: 'h_alarm_zebra', gnu: 'h_alarm_zebra' };
+export function efektleriAl(d) {
+  const l = d.efektKuyruk || [];
+  d.efektKuyruk = [];
+  return l;
+}
 export function olaylariAl(d) {
   const l = d.olaylar;
   d.olaylar = [];
@@ -933,6 +947,7 @@ function duyuCarpani(d, b) {
 }
 function grupAlarm(d, g, kaynak, sure = 6, gecikme = 0, zincir = true) {
   if (g.alarm > 0.5 && g.kaynak && mesafe(g.kaynak, kaynak) < 3) return;
+  if (ALARM_SESI[g.tur] && !(g.alarm > 0.5)) efekt(d, ALARM_SESI[g.tur], 0.9, g, 120);
   g.alarm = sure;
   g.alarmGecikme = gecikme;
   g.kaynak = { x: kaynak.x, y: kaynak.y };
@@ -977,6 +992,8 @@ function hayvanOldu(d, b, neden, avci) {
   const les = { id: d.k.sonrakiId++, x: b.x, y: b.y, tur: b.tur, bireyId: b.id, dk: d.k.dk, kalan: 1, neden, hastalik: b.hastalik ? b.hastalik.id : null };
   d.k.lesler.push(les);
   gecmisEkle(d.k, b, `Öldü: ${neden}`);
+  // Av anı: avcının yakaladığı yerden boğuşma sesi
+  if (avci) efekt(d, 'h_bogusma', 1, b, 110);
   // Yas (karar 68): fil, babun ve zürafa grubu ölenin başında toplanır
   if (YAS_TURLERI.includes(b.tur) && !/avlandı/.test(neden)) {
     const g = d.k.gruplar.find((x) => x.id === b.grup);
@@ -1926,6 +1943,14 @@ function bireyGuncelle(d, b, g, dt) {
     const a = yonAcisi(g.kaynak, b) + (b.ofs.x * 0.04);
     const hiz = t.hiz * saglikHiz * (b.evre === 'yavru' || b.evre === 'yasli' ? 0.8 : 1) * (t.suCanlisi && nehirdeMi(b.x, b.y) ? 0.6 : 1);
     b.kosu = d.zaman + 0.6; // koşu sesi için (App)
+    if (b.tur === 'timsah' && !nehirdeMi(b.x, b.y)) {
+      // Kıyıdan suya kayan timsahın sıçratması (oturumluk; kayda yazılmaz)
+      const ds = (d.timsahDalis = d.timsahDalis || {});
+      if (d.zaman - (ds[b.id] || -99) > 25) {
+        ds[b.id] = d.zaman;
+        efekt(d, 'h_timsah_dalis', 0.9, b, 60);
+      }
+    }
     if (t.suCanlisi) bireyYuru(d, b, b.x + Math.sin(a) * 6, nehirY(b.x + Math.sin(a) * 6), hiz, dt); // suya dalar
     else bireyYuru(d, b, b.x + Math.sin(a) * 20, b.y + Math.cos(a) * 20, hiz, dt);
   } else if (g.plan === 'av' && g.av && g.av.evre === 'kovala' && (g.av.avciId === b.id || (g.av.yardimcilar || []).includes(b.id))) {

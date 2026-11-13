@@ -49,6 +49,7 @@ export function kucukAra(d) {
     return m;
   }
   d.sonArama = d.zaman;
+  M.efekt(d, 'fener_tik', 0.7);
   const evre = M.gunEvresi(k.dk);
   const tk = E.takvim(M.gunNo(k.dk));
   const yagmur = !!(k.eko && (k.eko.yagmurVar || k.eko.yagisBugun > 4));
@@ -328,6 +329,7 @@ export function tuzakSok(d) {
   }
   k.kacak.tuzaklar = k.kacak.tuzaklar.filter((x) => x !== t);
   k.kacak.bulunan += 1;
+  M.efekt(d, 'tel_sok', 0.9);
   M.itibarEkle(d, 4);
   M.arsivOlay(d, 'Kaçak avcı tel tuzağı söküldü ve bildirildi.');
   return `Tel tuzağı söktün, konumuyla birlikte yaban hayatı servisine bildirdin. Servis bölgedeki devriyeyi artıracak. Şimdiye kadar ${k.kacak.bulunan} tuzak söktün.`;
@@ -355,6 +357,7 @@ export function tuzaktanKurtar(d) {
   M.gecmisEkle(k, b, 'Tel tuzaktan kurtarıldı, yarası tedavi edildi');
   M.itibarEkle(d, 8);
   M.arsivOlay(d, `${M.BuyukHarf(M.bireyAdi(b))} tel tuzaktan kurtarıldı.`);
+  M.efekt(d, 'tel_sok', 0.9);
   return `Veteriner ekip ${M.bireyAdi(b)} hayvanını uyuttu, bacağına dolanan teli kesti, yarasını temizleyip ilaç verdi. Hayvan uyanınca topallayarak sürüsüne döndü. Tuzak söküldü ve bildirildi.`;
 }
 // Günlük: servis ekibinin müdahalesi, yeni tuzaklar

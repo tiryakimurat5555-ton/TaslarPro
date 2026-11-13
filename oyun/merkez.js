@@ -449,6 +449,7 @@ export function tuzakKur(d) {
   k.stok.tuzak -= 1;
   const t = { id: k.sonrakiId++, x: o.x, y: o.y, bolge: M.bolgeAdi(o.x, o.y), dk: k.dk, foto: 0, sonKontrol: k.dk, gunluk: {} };
   k.tuzaklar.push(t);
+  M.efekt(d, 'tuzak_kur', 0.85);
   return `Kamera tuzağı kuruldu: ${t.bolge}. Önünden geçen hayvanları fotoğraflayacak.`;
 }
 export function tuzakTopla(d, id) {
@@ -473,6 +474,7 @@ export function tasmaTak(d) {
   if (M.mesafe(d.oyuncu, b) > 40) return 'Veteriner ekibin hayvana yaklaşabilmesi için 40 metre içinde olmalısın.';
   k.stok.tasma -= 1;
   k.gpsli.push(b.id);
+  M.efekt(d, 'tasma', 0.85);
   M.itibarEkle(d, 3);
   M.arsivOlay(d, `${M.bireyAdi(b)} hayvanına GPS tasması takıldı.`);
   return `Veteriner ekip ${M.bireyAdi(b)} hayvanını kısa süreli uyuttu ve GPS tasmasını taktı. Hayvan uyanıp sürüsüne döndü. Artık nerede olduğunu her an bilirsin.`;
@@ -669,6 +671,7 @@ function numuneEkle(d, numune, metin) {
   const k = d.k;
   if (k.numuneKutusu.length >= NUMUNE_KUTUSU) return `Numune kutun dolu (${NUMUNE_KUTUSU} numune). Önce istasyona dönüp laboratuvara teslim et.`;
   const tk = E.takvim(gunu(k));
+  M.efekt(d, 'numune_sise', 0.8);
   k.numuneKutusu.push({ id: k.sonrakiId++, dk: k.dk, gun: gunu(k), bolge: M.bolgeAdi(d.oyuncu.x, d.oyuncu.y), durum: 'kutuda', ...numune, veri: { mevsim: tk.mevsim, ...numune.veri } });
   return `${metin} Numune kutunda ${k.numuneKutusu.length} numune var; istasyona dönünce laboratuvara teslim edilir.`;
 }

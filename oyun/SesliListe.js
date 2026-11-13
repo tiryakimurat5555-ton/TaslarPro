@@ -98,7 +98,7 @@ function SesliListeIc({ baslik, giris, ogeler, onGeri, rehberAcik = true, ilkOda
     gorunurYap(yeni);
     if (onOdak) onOdak(yeni);
     if (sesli) {
-      if (degisti) Efekt.cal('odak', 0.4);
+      if (degisti) Efekt.cal('menu_odak', 0.45);
       oku(yeni);
     }
   };
@@ -110,7 +110,7 @@ function SesliListeIc({ baslik, giris, ogeler, onGeri, rehberAcik = true, ilkOda
       oku(i, null, true);
       return;
     }
-    Efekt.cal('etkinles', 0.5);
+    Efekt.cal(oge.id === 'geri' ? 'menu_geri' : 'menu_sec', 0.55);
     const sonuc = oge.sec();
     if (sonuc !== 'sessiz') {
       yenile((v) => v + 1);
@@ -129,7 +129,7 @@ function SesliListeIc({ baslik, giris, ogeler, onGeri, rehberAcik = true, ilkOda
   };
 
   const kenar = () => {
-    Efekt.cal('sinir', 0.4);
+    Efekt.cal('menu_sinir', 0.45);
     oku(odakRef.current);
   };
 
@@ -177,7 +177,7 @@ function SesliListeIc({ baslik, giris, ogeler, onGeri, rehberAcik = true, ilkOda
     onCiftDokun: (parmak) => {
       if (parmak >= 2) {
         if (onGeri) {
-          Efekt.cal('etkinles', 0.5);
+          Efekt.cal('menu_geri', 0.55);
           onGeri();
         } else soyle('Bu ekrandan geri dönülmez.');
         return;

@@ -28,7 +28,7 @@ import * as Sy from './oyun/sosyal.js';
 import { KUCUKLER, KUCUK_SIRASI, GRUPLAR, MAGARA_ODALARI, UZAK_ALANLAR, odaListesi, aktifOda, bolumAdi, KUCUK_SESLI, bulunabilirler } from './oyun/kucukler.js';
 import * as Efekt from './oyun/efekt.js';
 import { sahneKur } from './oyun/sahne.js';
-import { TURLER, TUR_SIRASI, YERLER, DAVRANISLAR, EVRELER, BOLGE_ADLARI, ARAC, OZEL_BIREYLER } from './oyun/veri.js';
+import { TURLER, TUR_SIRASI, YERLER, DAVRANISLAR, EVRELER, BOLGE_ADLARI, ARAC, OZEL_BIREYLER, GECITLER, ISTASYON, nehirY } from './oyun/veri.js';
 import { useJestler } from './oyun/jestler.js';
 import { Liste, useMenuYigini, altMenu, sayfali, RENK, GORUNUM } from './oyun/SesliListe.js';
 import * as B from './oyun/betimleme.js';
@@ -49,6 +49,81 @@ const ORTAM_DUZEY = { dusuk: 0.2, orta: 0.35, yuksek: 0.5 };
 // Hayvan koşu sesleri (3B, uzaklıkla kısılır)
 const KUCUK_DUZEY = 0.5; // küçük canlıların uzaktan çağrıları
 const KOSU_DUZEY = { kosu_toynak: 0.8, kosu_hafif: 0.7, kosu_agir: 0.95, kosu_pati: 0.65 };
+
+// ---------- Ses efektleri genişlemesi ----------
+// Hayvanların gündelik sesleri: o an yaptıklarına göre (su içme, otlama, yavru çağrısı, leş başı, su aygırı, fil hortumu).
+// En yakın uygun grup seçilir; her grup kendi aralığıyla (gundelikSon) ses verir.
+const YAVRU_SESI = { fil: 'h_yavru_fil', zebra: 'h_yavru_zebra', aslan: 'h_yavru_aslan' };
+function gundelikSesSec(d, son, simdi) {
+  const o = d.oyuncu;
+  let en = null;
+  for (const g of d.k.gruplar) {
+    if (g.goc || (son.get(g.id) || 0) > simdi) continue;
+    const t = TURLER[g.tur];
+    if (!t) continue;
+    const m = M.mesafe(o, g);
+    if (m > 80) continue;
+    let ses = null;
+    let duzey = 0.7;
+    let duyma = 30;
+    if (g.tur === 'sirtlan' && g.plan === 'les') {
+      ses = 'h_sirtlan_les';
+      duzey = 0.9;
+      duyma = 80;
+    } else if (g.tur === 'suAygiri' && (g.plan === 'suda' || g.plan === 'camur')) {
+      ses = 'h_suaygiri_su';
+      duzey = 0.85;
+      duyma = 60;
+    } else if (g.tur === 'fil' && (g.plan === 'camur' || (g.plan === 'su' && g.icti)) && Math.random() < 0.6) {
+      ses = 'h_fil_hortum';
+      duzey = 0.8;
+      duyma = 45;
+    } else if (g.plan === 'su' && g.icti && !t.kus) {
+      ses = 'h_suIcme';
+      duzey = 0.65;
+      duyma = 30;
+    } else if (YAVRU_SESI[g.tur] && Math.random() < 0.35 && M.uyeler(d, g).some((b) => b.evre === 'yavru')) {
+      ses = YAVRU_SESI[g.tur];
+      duzey = 0.7;
+      duyma = 45;
+    } else if (g.plan === 'otla' && !t.yirtici && !t.kus) {
+      ses = 'h_otlama';
+      duzey = 0.55;
+      duyma = 22;
+    }
+    if (!ses || m > duyma) continue;
+    if (!en || m < en.m) en = { g, ses, duzey, duyma, m };
+  }
+  if (!en) return null;
+  // Ses grubun en yakın üyesinden gelir
+  const uy = M.uyeler(d, en.g).filter((b) => !b.olu);
+  const nokta = uy.length ? uy.reduce((a, b) => (M.mesafe(o, b) < M.mesafe(o, a) ? b : a)) : en.g;
+  return { ...en, nokta };
+}
+// Konumlu sürekli sesler: her biri 0-1 düzey (uzaklığa göre). Döngü çalarken yön değişmez, yalnız düzey.
+const KONUMLU_DONGULER = ['su_akis', 'jenerator', 'kamp_ates', 'selale'];
+function konumluDonguler(d) {
+  const k = d.k;
+  const o = d.oyuncu;
+  const r = {};
+  if (k.magara) {
+    if (k.magara.alan === 'dag') {
+      const l = odaListesi('dag');
+      const i = l.findIndex((x) => x.id === 'selale');
+      const fark = Math.abs((k.magara.oda || 0) - i);
+      r.selale = fark === 0 ? 0.6 : fark === 1 ? 0.18 : 0;
+    }
+    return r;
+  }
+  const yakinlik = (m, menzil) => (m >= menzil ? 0 : Math.pow(1 - m / menzil, 1.5));
+  let gm = Infinity;
+  for (const g of GECITLER) gm = Math.min(gm, Math.hypot(o.x - g.x, o.y - nehirY(g.x)));
+  r.su_akis = 0.5 * yakinlik(gm, 45);
+  r.jenerator = 0.3 * yakinlik(Math.hypot(o.x - ISTASYON.x, o.y - ISTASYON.y), 50);
+  const ev = M.gunEvresi(k.dk);
+  if (k.kamp && (ev === 'aksam' || ev === 'gece')) r.kamp_ates = 0.45 * yakinlik(M.mesafe(o, k.kamp), 25);
+  return r;
+}
 // Adım sesi düzeyleri zemine göre (su ve çamur doğal olarak daha gür)
 const ADIM_DUZEY = { ot: 0.4, toprak: 0.3, camur: 0.32, su: 0.32, kaya: 0.32, yaprak: 0.38, magara: 0.4 }; // ot ve yaprak doğası gereği daha yumuşak
 const ADIM_ARALIK = 1.5; // metre
@@ -124,6 +199,7 @@ const kucuk = (s) => s.toLocaleLowerCase('tr-TR');
 
 // ---------------- Yenilikler (en yeniler üstte): Murat denerken neyin nerede olduğunu bulsun diye ----------------
 const YENILIKLER = [
+  { baslik: 'Yeni ses efektleri', metin: 'Hayvanların gündelik sesleri: su içen sürüler, otlayan zebralar, fil, zebra ve aslan yavrularının çağrısı, leşte kavga eden sırtlanlar, sudaki su aygırları, hortumuyla su püskürten filler, suya kayan timsahlar; impala, ceylan, zebra ve gnu tehlikeyi görünce alarm verir, av anında boğuşma duyulur. Hepsi geldiği yönden. Aletlerin sesleri: dürbünün odak çarkı, deklanşör, ses kaydının başlama ve bitiş bipi, video kamerası, numune şişesi, fener, kamera tuzağı, GPS tasması, tel tuzak sökme, dronun kalkışı ve inişi, ziyaretçi gelince telsiz. Şafakta kuş korosu, akşamüstü kumrular; yağmurun ilk damlaları, uzak gök gürültüsü, yangının çıtırtısı. Nehir geçitlerinde su şırıltısı, istasyonda jeneratör, gece kamp ateşi, çadır fermuarı; Bulutlu Dağ Ormanı\'nda şelale. Menülerin tık sesleri ve mesaj ile görev bildirimleri yenilendi.', nerede: 'sahada ve menülerde kendiliğinden; hayvanların gündelik sesleri Ayarlar, Ses ve konuşma, Küçük canlıların sesleri ayarıyla birlikte kapanır.' },
   { baslik: 'Küçük canlıların sesleri', metin: 'Kuşlar, kurbağalar, böcekler ve maymunlar dahil 24 küçük canlının gerçek sesi: bulundukları yerde, saate ve mevsime göre ara sıra uzaktan seslenirler, ses geldiği yönden duyulur. Sesini duyduktan hemen sonra Küçük canlı ara dersen onu bulman çok kolaylaşır. Galeri ormanı ve kayalığın kendi ortam sesleri var.', nerede: 'sahada kendiliğinden; kapatmak için Ayarlar, Ses ve konuşma, Küçük canlıların sesleri.' },
   { baslik: 'Sürülerin günlük rutinleri', metin: 'Her sürü belli saatte belli su başına iner ve belli bir ağacın gölgesinde dinlenir; sıcak öğlelerde gölgeye çekilir.', nerede: 'tanımlı bir hayvanın Arşiv sayfasında, sürüsünün alışkanlığı ve ağacın yönü.' },
   { baslik: 'İstasyon güvenlik kamerası', metin: 'İstasyonun çevresine gelen büyük hayvanları kaydeder, sabah gecenin özetini verir.', nerede: 'Merkez, Ekolojik yönetim, İstasyon güvenlik kamerası; özet Mesajlar\'da.' },
@@ -253,6 +329,7 @@ const YARDIM = [
       'Su araştırması: Doğa menüsünde. Yedi ölçüm noktası var: batı nehir yatağı, iki geçidin sığlıkları, kumsal kıvrım, galeri ormanı kıyısı, gölet ve güneydeki sulak alan. Noktaya gidip Suyu ölç seçince su sıcaklığı, berraklık, akış, çözünmüş oksijen ve su düzeyi okunur. Her noktayı iki mevsimde de ölçünce Nehir ve sulak alan atlası araştırması analize hazır olur.',
       'Suda yaşayanları gözle: kıyıdan balık, kurbağa, su kuşu ve su böceklerine bakarsın; yeni görülenler küçük canlılar arşivine yazılır. Dalış yoktur.',
       'Hayvan geçiş noktaları: nehrin iki sığ geçidinde Hayvan geçişlerini say seçilirse son bir günde karşıya geçen türler izlerden sayılır. Geçitlerdeki sayımlar ve balık türleri Hayvan geçiş noktaları araştırmasını doldurur.',
+      'Hayvanların gündelik sesleri: yakındaki sürü su içiyor, otluyor ya da yavruları anneyi çağırıyorsa duyarsın; impala, ceylan, zebra ve gnu tehlikeyi görünce alarm verir. Nehir geçidine yaklaşınca su şırıltısı, istasyona yaklaşınca jeneratör, gece kampta ateş sesi yükselir; bunlar yön bulmana da yardım eder.',
       'Küçük canlıların sesleri: kuşlar, kurbağalar, böcekler ve küçük memeliler ara sıra uzaktan seslenir; ses geldiği yönden duyulur. Gece baykuşlar, çobanaldatanlar, galagolar ve kurbağalar; gündüz turnalar, boynuzgagalar, ağustos böcekleri öter. Sesini duyduktan hemen sonra Küçük canlı ara dersen onu bulman çok kolaylaşır. Ayarlar, Ses ve konuşma bölümünden kapatılabilir.',
       'İstasyonun çevresi: istasyondayken ara sıra çevredeki küçük canlılar anlatılır: akasyada yuva ören dokumacı kuşlar, çatıda baş sallayan agama, gece lambanın çevresinde avlanan geckolar. İlk kez görülenler arşive yazılır.',
     ],
@@ -666,11 +743,15 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     if (b === 'sulak' || b === 'nehir' || b === 'golet') Efekt.ortamBaslat('ortam_nehir');
     else if (b === 'galeri' && !gece) Efekt.ortamBaslat('ortam_galeri');
     else if (b === 'kayalik' && !gece) Efekt.ortamBaslat('ortam_kayalik');
-    else Efekt.ortamBaslat(M.geceMi(d.k.dk) || M.gunEvresi(d.k.dk) === 'aksam' ? 'ortam_gece' : 'ortam_gunduz');
+    else {
+      // Şafakta kuş korosu, akşamüstü kumrular ve ilk cırcır böcekleri; gece ve gündüz kendi döngüleri
+      const ev = M.gunEvresi(d.k.dk);
+      Efekt.ortamBaslat(ev === 'safak' ? 'ortam_safak' : ev === 'aksam' ? 'ortam_aksam' : ev === 'gece' ? 'ortam_gece' : 'ortam_gunduz');
+    }
   };
 
   useEffect(() => {
-    Efekt.onYukle(['adim_ot_0', 'adim_ot_1', 'adim_ot_2', 'adim_ot_3', 'donus_tik', 'hedef_onde', 'sonar_2', 'odak', 'etkinles', 'altin', 'seviye', 'hata', 'carpma', 'sinir']);
+    Efekt.onYukle(['adim_ot_0', 'adim_ot_1', 'adim_ot_2', 'adim_ot_3', 'donus_tik', 'hedef_onde', 'sonar_2', 'odak', 'etkinles', 'altin', 'seviye', 'hata', 'carpma', 'sinir', 'menu_odak', 'menu_sec', 'menu_geri', 'menu_sinir', 'deklansor', 'durbun_odak']);
     ortamSec();
     let silici;
     setAltyazi('');
@@ -725,15 +806,22 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         titret('orta', ayarRef.current);
         return;
       case 'gozlem':
+        // Dürbünün odak çarkı, ardından hayvanın yönünden sonar
+        Efekt.cal('durbun_odak', 0.7, true);
+        if (b) setTimeout(() => Efekt.yonlu('sonar', d.oyuncu, b, 0.6, 200), 350);
+        return;
       case 'vardin':
         if (b) Efekt.yonlu('sonar', d.oyuncu, b, 0.6, 200);
         return;
       case 'foto':
-        Efekt.cal(o.cekildi ? 'etkinles' : 'hata', 0.9);
+        if (o.cekildi) Efekt.cal('deklansor', 0.9, true);
+        else Efekt.cal('hata', 0.9);
+        return;
+      case 'gorevBitti':
+        Efekt.cal('bildirim_gorev', 0.75);
         return;
       case 'tanimlandi':
       case 'tanik':
-      case 'gorevBitti':
         Efekt.cal('altin', 0.8);
         return;
       case 'yeniTur':
@@ -742,8 +830,19 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         Efekt.cal('seviye', 0.8);
         return;
       case 'sesKayit':
+        Efekt.cal(o.basladi ? 'kayit_bas' : 'kayit_bit', 0.75, true);
+        return;
       case 'mesaj':
-        Efekt.cal('odak', 0.8);
+        Efekt.cal('bildirim_mesaj', 0.7);
+        return;
+      case 'videoBasladi':
+        Efekt.cal('video_kamera', 0.75, true);
+        return;
+      case 'dron':
+        Efekt.cal('dron_kalkis', 0.8, true);
+        return;
+      case 'dronIndi':
+        Efekt.cal('dron_inis', 0.8, true);
         return;
       case 'tehdit':
       case 'avBasladi':
@@ -817,8 +916,10 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         Efekt.cal('kesif', 0.6);
         titret('iyi', ayarRef.current);
         return;
-      case 'gizem':
       case 'insan':
+        Efekt.cal('telsiz', 0.6);
+        return;
+      case 'gizem':
       case 'suOlcum':
       case 'gecisSayim':
       case 'yonetim':
@@ -826,6 +927,9 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       case 'yalak':
       case 'kamera':
         Efekt.cal('odak', 0.5);
+        return;
+      case 'kamp':
+        Efekt.cal('fermuar', 0.75, true);
         return;
       case 'arac':
         // Araç kapısı: binerken açılıp kapanır, inerken açılır, adım, kapanır
@@ -844,6 +948,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     girdi.current = { ileri: 0, don: 0 };
     seyir.current = false;
     if (yolculuk) Ses.hemen(`${yolculuk.metin} Yolculuk yaklaşık ${String(Math.round(((hedef - d.k.dk) / 60) * 10) / 10).replace('.', ',')} saat sürecek; bu arada savanda zaman akıyor.`);
+    if (!yolculuk && d.k.kamp && M.mesafe(d.oyuncu, d.k.kamp) < 12) Efekt.cal('fermuar', 0.75, true);
     else Ses.hemen(`Dinleniyorsun. ${M.saatMetni(hedef)} kadar zaman hızla akacak. Ekrana dokunursan dinlenmeyi bırakırsın.`);
   };
   const dinlenBitir = (yarim) => {
@@ -900,6 +1005,14 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     const kosuSesi = new Map(); // hayvan kimliği → son koşu sesi zamanı
     let dronSesSon = 0;
     let kucukSesSayac = 6;
+    // Ses efektleri genişlemesi: hayvanların gündelik sesleri, konumlu döngüler, hava ve yangın
+    let gundelikSayac = 3;
+    const gundelikSon = new Map(); // grup kimliği → son gündelik ses zamanı
+    const efektSon = new Map(); // ses adı → son çalınma zamanı
+    let dongulerSayac = 0;
+    let oncekiYagmur = !!(d.k.eko && d.k.eko.yagmurVar);
+    let gokUzakSayac = 40;
+    let yanginSayac = 0;
     let kesifSon = 0;
     let kurekYol = 0;
     let kareSira = 0;
@@ -917,6 +1030,15 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         girdi.current = { ileri: 0, don: 0 };
       }
       if (menuRef.current || dinlenRef.current || !d.k.aracta || ayarRef.current.efekt === false) Efekt.motorDurdur();
+      if (menuRef.current || dinlenRef.current || ayarRef.current.efekt === false) Efekt.donguleriDurdur();
+      // Eylem sesleri (dürbün, deklanşör, numune şişesi, tuzak, tasma...) menüden yapılsa da hemen çalar
+      for (const e of M.efektleriAl(d)) {
+        // Aynı ses 2,5 sn içinde yinelenmez (sürü alarmları zincirleme gelir)
+        if (simdi - (efektSon.get(e.ad) || 0) < 2500) continue;
+        efektSon.set(e.ad, simdi);
+        if (e.x !== undefined) Efekt.yonlu(e.ad, d.oyuncu, e, e.duzey, e.duyma);
+        else Efekt.cal(e.ad, e.duzey, true);
+      }
       if (dinlenRef.current && !menuRef.current) {
         // Dinlenme: her karede 20 oyun dakikası hesaplanır (gerçekte yaklaşık 2 saat başına 6 kare)
         const r = dinlenRef.current;
@@ -1026,6 +1148,45 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
               if (a.sesAltyazi) setAltyazi(`🔊 ${KUCUKLER[id].ad} sesi, ${M.saatSozu(M.saatYonu(d.oyuncu, p))}`);
             }
           }
+        }
+        // Hayvanların gündelik sesleri: su içen sürü, otlayan zebralar, yavruların çağrısı, leşteki sırtlanlar,
+        // sudaki su aygırları, hortumla su püskürten fil. Saniyede bir bakılır; her grup 9-20 sn'de bir, yönünden duyulur.
+        gundelikSayac -= dt;
+        if (gundelikSayac <= 0) {
+          gundelikSayac = 1;
+          if (a.efekt !== false && a.canliSesleri !== false && !d.k.magara) {
+            const sec = gundelikSesSec(d, gundelikSon, simdi);
+            if (sec) {
+              gundelikSon.set(sec.g.id, simdi + 9000 + Math.random() * 11000);
+              Efekt.yonlu(sec.ses, d.oyuncu, sec.nokta, sec.duzey, sec.duyma);
+            }
+            if (gundelikSon.size > 80) gundelikSon.clear();
+          }
+        }
+        // Konumlu sürekli sesler: nehir geçidinin şırıltısı, istasyonun jeneratörü, gece kamp ateşi, dağ ormanında şelale
+        dongulerSayac -= dt;
+        if (dongulerSayac <= 0) {
+          dongulerSayac = 0.25;
+          const dz = konumluDonguler(d);
+          for (const ad of KONUMLU_DONGULER) Efekt.dongu(ad, a.efekt === false ? 0 : dz[ad] || 0);
+        }
+        // Yağmurun ilk damlaları ve uzak gök gürültüsü (bulutlu ve yağmurlu günlerde)
+        const yagiyor = !!(d.k.eko && d.k.eko.yagmurVar);
+        if (yagiyor && !oncekiYagmur && !d.k.magara && a.efekt !== false) Efekt.cal('yagmur_baslangic', 0.85, true);
+        oncekiYagmur = yagiyor;
+        gokUzakSayac -= dt;
+        if (gokUzakSayac <= 0) {
+          gokUzakSayac = 60 + Math.random() * 60;
+          const hv = d.k.eko && d.k.eko.hava;
+          if (hv && ['bulutlu', 'yagmurlu'].includes(hv.tur) && !(d.k.eko.yagmurVar && d.k.eko.siddet > 0.8) && !(d.k.magara && !d.k.magara.alan) && a.efekt !== false)
+            Efekt.cal('gok_uzak', 0.35 + Math.random() * 0.3, true);
+        }
+        // Yangının çıtırtısı yangının yönünden (90 metreye kadar)
+        yanginSayac -= dt;
+        if (yanginSayac <= 0) {
+          yanginSayac = 2.5 + Math.random() * 1.5;
+          const yy = !d.k.magara && a.efekt !== false ? M.yanginYakin(d) : null;
+          if (yy && yy.m < 90) Efekt.yonlu('yangin_citirti', d.oyuncu, yy, 1, 90);
         }
         // Dronun pervane sesi uçtuğu yerden gelir; teknede kürek sesi
         if (d.dron && a.efekt !== false && simdi - dronSesSon > 1700) {
@@ -1255,7 +1416,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
           return;
         }
         if (parmak >= 2) {
-          Efekt.cal('etkinles', 0.5);
+          Efekt.cal('menu_sec', 0.55);
           menuAc('ana');
           return;
         }

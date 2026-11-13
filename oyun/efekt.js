@@ -20,14 +20,17 @@ const SURE = {
   adim_ot: 0.05, adim_toprak: 0.05, adim_camur: 0.05, adim_su: 0.05, adim_kaya: 0.05, adim_yaprak: 0.05, adim_magara: 0.05,
   donus_tik: 0.02, hedef_onde: 0.1,
   kosu_toynak: 0.05, kosu_hafif: 0.05, kosu_agir: 0.05, kosu_pati: 0.05,
-  dron: 0.05, kurek: 0.1, kesif: 0.6, kapi_bin: 0.5, kapi_in: 0.5,
+  dron: 0.05, kurek: 0.1,
+  // Ses efektleri genişlemesi: hayvanların gündelik sesleri ve eylem sesleri arka planda çalar (konuşmayı bekletmez)
+  menu_odak: 0.02, menu_sec: 0.1, menu_geri: 0.1, menu_sinir: 0.12, deklansor: 0.2, durbun_odak: 0.05,
+  kayit_bas: 0.15, kayit_bit: 0.15, video_kamera: 0.15, bildirim_mesaj: 0.3, bildirim_gorev: 0.4, telsiz: 0.3, kesif: 0.6, kapi_bin: 0.5, kapi_in: 0.5,
   gok: 0.3, // gök gürültüsü uzun ama arka plan sesi; konuşmayı bekletmesin
   gnu: 1.5, cita: 1.2, impala: 1.4, yabankopegi: 1.6, babun: 1.4, yarasa: 0.4,
   fil: 0.7, zebra: 0.8, suaygiri: 0.8, manda: 1.8, ceylan: 1.4, zurafa: 0.8,
   kurt: 1.6, tilki: 0.9, domuz: 1.4, ayi: 1.4, yilan: 1.2, akrep: 1.0, sirtlan: 1.2, timsah: 1.8, leopar: 1.4, kartal: 1.2, aslan: 1.8, gergedan: 1.2,
 };
 // Küçük canlı çağrıları (k_) arka plan sesidir; konuşmayı bekletmez (Aşama 17)
-const sure = (ad) => SURE[ad] || SURE[ad.replace(/_\d+a?$/, '')] || (ad.startsWith('k_') ? 0.05 : 0.4);
+const sure = (ad) => SURE[ad] || SURE[ad.replace(/_\d+a?$/, '')] || (ad.startsWith('k_') || ad.startsWith('h_') ? 0.05 : 0.4);
 
 konusmaBaslarken(() => {
   Object.entries(oynaticilar).forEach(([ad, p]) => {
@@ -202,8 +205,55 @@ export function motorDurdur() {
   } catch (e) {}
 }
 
+// Konumlu sürekli sesler (nehir geçidi, şelale, jeneratör, kamp ateşi): her biri kendi döngüsünde, düzeyi uzaklığa göre.
+// dongu(ad, oran): oran 0 ya da daha az ise durur. Döngüler yumuşakça açılıp kısılır (kare başına en çok %4).
+const donguler = {};
+export function dongu(ad, oran) {
+  let x = donguler[ad];
+  const hedef = durum.acik ? Math.max(0, Math.min(1, oran)) * durum.genel : 0;
+  if (!x) {
+    if (hedef <= 0.005) return;
+    const k = SESLER[ad];
+    if (!k) return;
+    try {
+      const p = createAudioPlayer(k, { keepAudioSessionActive: true });
+      p.loop = true;
+      p.volume = 0;
+      x = donguler[ad] = { p, ses: 0 };
+    } catch (e) {
+      return;
+    }
+  }
+  const yeni = x.ses + Math.max(-0.04, Math.min(0.04, hedef - x.ses));
+  try {
+    if (Math.abs(yeni - x.ses) > 0.003 || yeni === 0) {
+      x.ses = yeni;
+      x.p.volume = yeni;
+    }
+    if (x.ses > 0.005 && !x.p.playing) x.p.play();
+    else if (x.ses <= 0.005 && x.p.playing) x.p.pause();
+  } catch (e) {
+    delete donguler[ad];
+  }
+}
+export function donguleriDurdur() {
+  Object.values(donguler).forEach((x) => {
+    try {
+      x.p.pause();
+      x.p.volume = 0;
+      x.ses = 0;
+    } catch (e) {}
+  });
+}
+
 export function birak() {
   ortamDurdur();
+  Object.keys(donguler).forEach((a) => {
+    try {
+      donguler[a].p.release();
+    } catch (e) {}
+    delete donguler[a];
+  });
   if (motorOynatici) {
     try {
       motorOynatici.release();

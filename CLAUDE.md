@@ -307,6 +307,21 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   dört adım karışık torbadan (her oynatıcı ≥3 adım dinlenir), adimYol artanı bir sonrakine aktarır (ADIM_ARALIK 1,5 m), ADIM_DUZEY ot/yaprak
   artırıldı. araclar/adim-esitle.py en yüksek 80 ms pencereyi eşitler (+1-3 dB). Sonra: 15 sn'de 42 adım, aralıklar 340-380 ms
   (scratchpad adim-dene.cjs). Telefonda doğrulanmadı.
+- Ses efektleri genişlemesi (13 Kasım, Murat "başka ne ses efektleri ekleyebiliriz" → "hepsini yap"): ElevenLabs (akış "Vahşi Yaşam
+  sesleri") 41 ses. h_* hayvan gündelik sesleri 3B (sesleri-isle.sh h_* en çok 4 sn, -16 LUFS): h_suIcme, h_otlama, h_yavru_fil/zebra/
+  aslan, h_sirtlan_les, h_suaygiri_su, h_fil_hortum (App gundelikSesSec: saniyede bir en yakın uygun grup, grup başına 9-20 sn), h_alarm_
+  impala (impala, ceylan) / h_alarm_zebra (zebra, gnu) mantik grupAlarm'da, h_bogusma hayvanOldu avcılıysa, h_timsah_dalis kıyıdan kaçan
+  timsah. M.efekt(d, ad, duzey, konum, duyma) → d.efektKuyruk (en çok 20; dinlenmede yok) → App her karede (menü açıkken de) çalar, aynı ses
+  2,5 sn'de bir; konumluysa yonlu. Eylem sesleri: durbun_odak (olay gozlem), deklansor (foto), kayit_bas/bit (sesKayit basladi), video_kamera
+  (videoBasladi; ElevenLabs'inki hışırtıydı, numpy ile bip + lens motoru), numune_sise (numuneEkle), fener_tik (kucukAra), tuzak_kur, tasma,
+  tel_sok (tuzakSok, tuzaktanKurtar), dron_kalkis/inis (olay dron/dronIndi), telsiz (olay insan), fermuar (kamp kurulunca, kampta dinlenince),
+  bildirim_mesaj/gorev (mesaj, gorevBitti). Menü: SesliListe menu_odak/menu_sec/menu_geri (geri satırı ve iki parmak çift dokunuş)/menu_sinir
+  (-24 LUFS). Doğa: ortam_safak/ortam_aksam (ortamSec evre), yagmur_baslangic (yağmur başlayınca), gok_uzak (bulutlu/yağmurlu, 60-120 sn),
+  yangin_citirti 3B (UC_B; yangının yönünden 2,5-4 sn'de bir, 90 m). efekt.js dongu(ad, oran)/donguleriDurdur: konumlu döngüler
+  (KONUMLU_DONGULER su_akis geçitlerde 45 m, jenerator istasyon 50 m, kamp_ates akşam/gece 25 m, selale dağ ormanı şelale noktası;
+  ortam-dongu.py ile), menüde ve dinlenmede durur. Tarayıcıda (jest-dene SESLER satırı, scratchpad ses2/ses3-dene.cjs) menü, deklanşör,
+  dürbün, fener, numune, h_suIcme, h_yavru_fil, jeneratör, su_akis, kamp ateşi, ortam_safak/aksam, yağmur başlangıcı, yangın çıtırtısı
+  çaldı. Bot 4 günde: zebra alarmı 351, impala 129, boğuşma 8 (App 2,5 sn sınırı). Telefonda doğrulanmadı.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)
