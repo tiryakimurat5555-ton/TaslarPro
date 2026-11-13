@@ -28,7 +28,7 @@ import * as Sy from './oyun/sosyal.js';
 import { KUCUKLER, KUCUK_SIRASI, GRUPLAR, MAGARA_ODALARI, UZAK_ALANLAR, odaListesi, aktifOda, bolumAdi } from './oyun/kucukler.js';
 import * as Efekt from './oyun/efekt.js';
 import { sahneKur } from './oyun/sahne.js';
-import { TURLER, TUR_SIRASI, YERLER, DAVRANISLAR, EVRELER, BOLGE_ADLARI, ARAC } from './oyun/veri.js';
+import { TURLER, TUR_SIRASI, YERLER, DAVRANISLAR, EVRELER, BOLGE_ADLARI, ARAC, OZEL_BIREYLER } from './oyun/veri.js';
 import { useJestler } from './oyun/jestler.js';
 import { Liste, useMenuYigini, altMenu, sayfali, RENK, GORUNUM } from './oyun/SesliListe.js';
 import * as B from './oyun/betimleme.js';
@@ -244,6 +244,9 @@ const YARDIM = [
       'Öğrenme: her av denemesi, başarısız olsa da, avcının becerisini artırır. Gruplar hangi avda başarılıysa onu daha çok seçer. Yavrular annelerinden öğrenir; çita ve leopar anneleri yavrularına av öğretir. Tür ve birey sayfalarında av kayıtları ve beceri yazar.',
       'Grup savunması: manda, fil, babun, zebra, gnu ve zürafa sürülerinin yetişkinleri bir yavruya saldırıldığında saf tutup saldırganın üstüne yürüyebilir. Saldırı yaşayan sürü savunmayı öğrenir, sonrakinde daha kararlı olur.',
       'Ebeveynlik: deneyimli ve sakin anneler yavrularını daha iyi besler; ilk kez doğuranlar zorlanır. Annenin ürkekliği yavruya geçer.',
+      'Tuz yalağı: Yerler menüsünde. Filler, mandalar, zürafalar, zebralar, gnular, impalalar ve gergedanlar birkaç günde bir buraya gelip mineralli toprağı yalar; bitkilerden alamadıkları sodyumu topraktan alırlar. Beklemek için iyi bir yer.',
+      'Özel bireyler: savanda birkaç olağanüstü hayvan yaşıyor: kapkara bir leopar, beyaz bir zürafa, benekli bir zebra, dişleri yere değen yaşlı bir fil ve üç bacaklı bir aslan. Onları tanımlarsan büyük bir keşif sayılır. Görünüşleri gözlemde söylenir.',
+      'Sağlık dosyası ve göç takibi: her tanımlı bireyin sayfasında beslenme, hastalık, yaralanma ve stres durumu yazar. Merkez, Ekolojik yönetim bölümündeki Göç takibi göçmen türlerin ne zaman çıkıp döndüğünü ve kayıplarını gösterir.',
       'Sosyal yaşam: babun, aslan, zebra ve fil gruplarında sıralama kavgaları olur; babunlar ve filler kavgadan sonra birbirini tımar ederek barışır. Fil, babun ve zürafa grupları ölen bir üyelerinin başında toplanıp bekler.',
     ],
   },
@@ -785,6 +788,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       case 'gecisSayim':
       case 'yonetim':
       case 'sosyal':
+      case 'yalak':
         Efekt.cal('odak', 0.5);
         return;
       case 'arac':
@@ -1628,6 +1632,8 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         ),
       ];
       Sy.bireySatirlari(d, b).forEach((m, i) => ogeler.push(bilgi('sy' + i, m)));
+      if (b.ozellik && OZEL_BIREYLER[b.ozellik] && M.taninmisMi(b)) ogeler.push(bilgi('ozel', `Özel birey: ${OZEL_BIREYLER[b.ozellik].ad}. ${OZEL_BIREYLER[b.ozellik].tarif}`));
+      ogeler.push(bilgi('saglik', `Sağlık dosyası. ${Sy.saglikDosyasi(d, b).join(' ')}`));
       if (k.gpsli.includes(b.id)) ogeler.push(bilgi('gps', `GPS: ${Mz.gpsTarifi(d, b)}.`));
       if (ab.olum) ogeler.push(bilgi('olum', `Ölüm kaydı: ${ab.olum}.`));
       if (b.gecmis && b.gecmis.length) ogeler.push(bilgi('gecmis', `Yaşam kaydı: ${b.gecmis.map((x) => `${zamanKisa(x.dk)}, ${x.metin}`).join('. ')}.`));
@@ -1790,6 +1796,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         ogeler.push({ id: 'e' + id, etiket: `${e.ad}, ${Mz.liraSozu(e.ucret)}${dur.yapilir ? '' : `. ${dur.neden}`}`, ipucu: e.tarif, sec: yap(() => Y.eylemYap(d, id)) });
       });
       ogeler.push(altMenu('nufus', 'Nüfus dengesi ve tehdit altındaki türler', menu.ac));
+      ogeler.push(altMenu('goc', 'Göç takibi', menu.ac));
       const l = Y.istilaciSatirlari(d);
       l.slice(0, 5).forEach(({ h, p }) =>
         ogeler.push({
@@ -1806,6 +1813,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       Y.raporSatirlari(k).forEach((m, i) => ogeler.push(bilgi('r' + i, m)));
       return liste(u, 'Ekolojik yönetim', ogeler, 'Türleri korumak, nüfus dengesini izlemek ve ekosistemi iyileştirmek için eylemler. Her yıl sonunda tehdit altındaki türler için koruma raporu gelir.');
     }
+    if (u === 'goc') return liste(u, 'Göç takibi', Y.gocSatirlari(d).map((m, i) => bilgi('g' + i, m)), 'Zebra ve gnu doğu geçidinden, ceylanlar batı geçidinden göç eder. Kurak mevsimde ayrılır, yağmurla dönerler.');
     if (u === 'nufus') {
       return liste(u, 'Nüfus dengesi', Y.nufusSatirlari(d).map((m, i) => bilgi('n' + i, m)), 'Kırmızı Liste durumu Doğu Afrika alt türlerine göredir. Yıl başındaki nüfusla karşılaştırılır.');
     }

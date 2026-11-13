@@ -3,6 +3,7 @@
 // aktarım, anne deneyimi, sıralama kavgaları ve uzlaşma, yırtıcı annelerin av öğretmesi işlenir. Sayılar ÖNERİDİR.
 import * as M from './mantik.js';
 import { TURLER, KISILIKLER } from './veri.js';
+import * as E from './ekosistem.js';
 
 const KAVGA_TURLERI = { babun: 0.006, aslan: 0.002, zebra: 0.002, fil: 0.001, impala: 0.002 }; // 2 sn başına grup olasılığı
 const OGRETEN = ['cita', 'leopar', 'aslan'];
@@ -123,4 +124,20 @@ export function guncelle(d, dt) {
   }
   anlik(d);
   sonrakileriIsle(d);
+}
+
+// ---------- Bireysel sağlık dosyası (karar 112) ----------
+export function saglikDosyasi(d, b) {
+  const l = [];
+  const kond = Number.isFinite(b.kondisyon) ? b.kondisyon : 0.7;
+  l.push(`Beslenme durumu: ${kond > 0.75 ? 'çok iyi' : kond > 0.55 ? 'iyi' : kond > 0.35 ? 'zayıf' : 'çok zayıf'}.`);
+  if (b.hastalik && b.hastalik.goruldu && E.HASTALIKLAR[b.hastalik.id]) l.push(`Şu anki sorun: ${E.HASTALIKLAR[b.hastalik.id].ad}${b.hastalik.tedavi ? ', tedavi edildi, iyileşiyor' : ''}.`);
+  else if (b.teshis && E.HASTALIKLAR[b.teshis]) l.push(`Laboratuvar teşhisi: ${E.HASTALIKLAR[b.teshis].ad}.`);
+  else l.push('Görünür bir hastalık belirtisi yok.');
+  const gecmis = Array.isArray(b.gecmis) ? b.gecmis.filter((x) => x && typeof x.metin === 'string' && /yaral|parazit|uyuz|tuzak|tedavi|hasta|şarbon|distemper/i.test(x.metin)) : [];
+  if (gecmis.length) l.push(`Sağlık geçmişi: ${gecmis.slice(0, 4).map((x) => `${x.metin.replace(/\.$/, '')} (${M.gunNo(x.dk)}. gün)`).join('; ')}.`);
+  if (b.kalitsal) l.push('Kalıtsal zayıflık taşıyor.');
+  if ((b.korku || 0) > 0.4) l.push('Stres düzeyi yüksek: yakın zamanda bir tehlike atlatmış, ürkek davranıyor.');
+  if (Array.isArray(b.bagisik) && b.bagisik.length) l.push(`Bağışık olduğu hastalıklar: ${b.bagisik.filter((h) => E.HASTALIKLAR[h]).map((h) => E.HASTALIKLAR[h].ad).join(', ')}.`);
+  return l;
 }

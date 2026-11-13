@@ -38,7 +38,19 @@ export const YERLER = [
   { id: 'galeri', ad: 'Galeri ormanı', x: 140, y: -82, tarif: 'Nehrin doğu kıyısı boyunca uzanan sık, gölgeli bir orman şeridi. Babunlar, maymunlar ve orman kuşları burada yaşar.' },
   { id: 'iskele', ad: 'İskele', x: 22, y: nehirY(22) + 7, tarif: 'Nehrin kuzey kıyısında küçük ahşap bir iskele. Araştırma teknesi burada bağlanır.' },
   { id: 'termitler', ad: 'Termit tepeleri', x: -140, y: -40, tarif: 'Batı otlaklarında boyu insanı aşan termit tepeleri. Eski tepelerde firavunfareleri ve yerdomuzu yuvaları var.' },
+  { id: 'tuzYalagi', ad: 'Tuz yalağı', x: -32, y: 58, tarif: 'Toprağı tuz ve mineral bakımından zengin, çiğnenmiş, çukurlaşmış bir açıklık. Filler, mandalar ve zürafalar buraya toprağı yalamaya gelir.' },
 ];
+// Aşama 14 (karar 103): otçulların mineral ihtiyacını karşıladığı tuz yalağı
+export const TUZ_YALAGI = { x: -32, y: 58, r: 7 };
+export const MINERAL_TURLERI = ['fil', 'manda', 'zurafa', 'zebra', 'gnu', 'impala', 'gergedan'];
+// Aşama 14 (karar 100): nadir özel bireyler; gerçek vakalardan esinlenildi
+export const OZEL_BIREYLER = {
+  benekliZebra: { tur: 'zebra', ad: 'benekli zebra', renk: '#2a2420', gorunus: 'çizgileri yerine koyu zemin üzerinde beyaz benekler taşıyor', tarif: 'Çizgileri yerine koyu zemin üzerinde beyaz benekler taşıyan çok nadir bir zebra. Pigment hücreleri normal, ama melanin dağılımı bozuk; buna psödomelanizm denir. 2019\'da Masai Mara\'da böyle bir tay fotoğraflanınca dünya bu desenle ilk kez tanıştı.' },
+  karaLeopar: { tur: 'leopar', ad: 'kara leopar', renk: '#151313', gorunus: 'kapkara; benekleri ancak ışıkta, siyahın içinde seçiliyor', tarif: 'Melanizm nedeniyle kapkara bir leopar; yakından bakınca benekleri siyahın içinde görünür. Afrika\'da son derece nadirdir; 2019\'da Kenya\'da bir asırdır ilk kez fotoğraflandı.' },
+  beyazZurafa: { tur: 'zurafa', ad: 'beyaz zürafa', renk: '#ece6da', gorunus: 'bembeyaz; yalnızca gözleri koyu', tarif: 'Lösizm nedeniyle bembeyaz bir zürafa. Gözleri koyu kaldığı için albino değildir. Kenya\'da bilinen birkaç beyaz zürafanın çoğu kaçak avcılarca öldürüldü; bu birey korunmalı.' },
+  disliFil: { tur: 'fil', cinsiyet: 'erkek', evre: 'yasli', ad: 'büyük dişli fil', gorunus: 'dişleri neredeyse yere değiyor', tarif: 'Dişleri neredeyse yere değen yaşlı bir erkek fil. Böyle büyük dişliler bir zamanlar yaygındı; fildişi avcılığı yüzünden bugün Afrika\'da yalnızca birkaç düzine kaldı.' },
+  ucBacakliAslan: { tur: 'aslan', cinsiyet: 'erkek', ad: 'üç bacaklı aslan', gorunus: 'sol ön bacağı yok, aksayarak yürüyor', tarif: 'Yıllar önce bir tel tuzakta sol ön bacağını kaybetmiş erkek aslan. Üç bacağıyla yaşamayı ve grubuyla birlikte avlanmayı öğrenmiş; kaçak avcılığın canlı bir tanığı.' },
+};
 export const GALERI = { x0: 100, x1: 190, derinlik: 36 }; // nehrin kuzey kıyısında orman şeridi
 export const TERMITLER = { x: -140, y: -40, r: 30 };
 
@@ -88,6 +100,7 @@ export const DAVRANISLAR = {
   nehirGeciyor: { fiil: 'göç sırasında nehri geçiyor', ad: 'Göçte nehir geçişi', nadir: true },
   meydanOkuyor: { fiil: 'grubun liderine meydan okuyor', ad: 'Liderlik mücadelesi', nadir: true },
   bolgeKoruyor: { fiil: 'bölgesinden rakip yırtıcıları kovalıyor', ad: 'Bölge savunması', nadir: true },
+  topragiYaliyor: { fiil: 'tuz yalağında mineralli toprağı yalıyor', ad: 'Mineral yalama', nadir: true },
   // Aşama 13: avlanma, savunma ve sosyal yaşam (karar 68, 102, 106, 107)
   kusatiyor: { fiil: 'avın önünü keserek kuşatıyor', ad: 'Sürü hâlinde kuşatma', nadir: true },
   grupSavunmasi: { fiil: 'sürünün diğer yetişkinleriyle birlikte saldırgana karşı saf tutuyor', ad: 'Grup savunması', nadir: true },

@@ -274,6 +274,15 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   sıralama kavgası (babun, aslan, zebra, fil, impala) + uzlaşma (d.sonrakiler, kayda yazılmaz); çita/leopar/aslan annesi beslenirken av
   öğretir (yavru becerisi +0,04). bireySatirlari / turSatirlari (birey ve tür sayfası). Yardım "Avlanma, savunma ve sosyal yaşam".
   Testler: dayanıklılık 300/300, bot 8 gün, ekosistem 30 gün (nüfus dengede; impala 12→6 en çok avlanan), menu-tara 241 sayfa sorun 0.
+- Aşama 14 özel bireyler, tuz yalağı, sağlık dosyası, göç takibi (13 Kasım, Murat "devam" dedi; kararlar 100, 101, 103, 112; sayılar
+  ÖNERİ). veri: OZEL_BIREYLER 5 (benekliZebra, karaLeopar, beyazZurafa renkli; disliFil yaşlı erkek; ucBacakliAslan erkek; gerçek
+  vakalardan); mantik ozelBireyleriAta (dunyaOlustur'da, k.ozelBireyler {id: bireyId}, bir kez; b.ozellik), gozlemTarifi görünüşü
+  söyler, tanımlanınca olay 'ozelBirey' (kesif, itibar 10); sahne hayvanModeli b.ozellik rengini kullanır. TUZ_YALAGI (-32,58) r 7 + YER
+  'tuzYalagi', MINERAL_TURLERI 7: g.mineral 2,5 günde dolar, >0,75 → plan 'gez' + g.yalak → varınca 'topragiYaliyor' (b.ozel), olay
+  'yalak'; sahnede kızıl toprak dairesi. sosyal.js saglikDosyasi (beslenme, hastalık/teşhis, geçmişten yaralanma vb., kalıtsal, stres,
+  bağışıklık) birey sayfasında; yonetim.js gocSatirlari (GOCMENLER durumu, son çıkış/dönüş, kayıp/yeni, GPS) Merkez > Ekolojik yönetim >
+  Göç takibi. Yardım "Avlanma, savunma ve sosyal yaşam" +3 satır. Testler: dayanıklılık 300/300, bot 8 gün (5 özel birey tanındı, yalak
+  2), menu-tara 302 sayfa iki kipte sorun 0. Telefonda doğrulanmadı.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

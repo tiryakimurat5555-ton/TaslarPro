@@ -3,7 +3,7 @@
 // hayvanlar (düşük poligonlu, sanatsal), gün ve gece ışığı. Mantık koordinatı (x doğu, y kuzey) three'de (x, 0, -y);
 // yön (0 = kuzey) three'de rotation.y = -yon. Kamera araştırmacının arkasından ve üstünden bakar (üçüncü şahıs).
 import * as THREE from 'three';
-import { TURLER, YARICAP, GOLET, NEHIR_YARI, nehirY, GECITLER, MAGARA } from './veri.js';
+import { TURLER, YARICAP, GOLET, NEHIR_YARI, nehirY, GECITLER, MAGARA, OZEL_BIREYLER, TUZ_YALAGI } from './veri.js';
 import { isikDuzeyi } from './mantik.js';
 
 const R = (y) => -y;
@@ -108,7 +108,7 @@ function dortAyak(g, b, renk, bacak, araX, araZ, kalin = 0.14) {
 function hayvanModeli(b) {
   const t = TURLER[b.tur];
   const s = t.boy;
-  const r = t.renk;
+  const r = (b.ozellik && OZEL_BIREYLER[b.ozellik] && OZEL_BIREYLER[b.ozellik].renk) || t.renk; // Aşama 14: kara leopar, beyaz zürafa, benekli zebra
   const g = new THREE.Group();
   const erkek = b.cinsiyet === 'erkek';
   switch (t.sekil) {
@@ -450,6 +450,11 @@ export function sahneKur(gl, d, secenek = {}) {
     yer.set(e.x, 0.35 * e.boy, R(e.y));
   });
   // Mağara ağzı
+  // Tuz yalağı (Aşama 14): çiğnenmiş, kızılımsı çıplak toprak
+  const yalak = new THREE.Mesh(new THREE.CircleGeometry(TUZ_YALAGI.r, 18), mat('#9a6a4a'));
+  yalak.rotation.x = -Math.PI / 2;
+  yalak.position.set(TUZ_YALAGI.x, 0.04, R(TUZ_YALAGI.y));
+  sahne.add(yalak);
   const magara = new THREE.Mesh(new THREE.BoxGeometry(3.2, 2.6, 0.4), new THREE.MeshBasicMaterial({ color: '#0e0c0a' }));
   magara.position.set(MAGARA.x, 1.3, R(MAGARA.y + 0.4));
   sahne.add(magara);

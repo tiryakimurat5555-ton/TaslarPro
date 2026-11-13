@@ -4,8 +4,7 @@
 // Kalıcı her şey araştırmacı nesnesinde (k) durur; d yalnızca o anki oturumun geçici durumunu tutar.
 import {
   YARICAP, ISTASYON, ARAC_YERI, OYUN_DK_SN, BASLANGIC_SAATI, GOLET, NEHIR_YARI, nehirY, GECITLER, KAYALIK, MAGARA, YERLER,
-  BOLGE_ADLARI, DAVRANISLAR, GALERI, TERMITLER, SES_TURLERI, TURLER, TUR_SIRASI, KISILIKLER, EVRELER, EKIPMAN, ARAC, YURUME,
-} from './veri.js';
+  BOLGE_ADLARI, DAVRANISLAR, GALERI, TERMITLER, SES_TURLERI, TURLER, TUR_SIRASI, KISILIKLER, EVRELER, EKIPMAN, ARAC, YURUME, TUZ_YALAGI, MINERAL_TURLERI, OZEL_BIREYLER } from './veri.js';
 import * as E from './ekosistem.js';
 import { UZAK_ALANLAR } from './kucukler.js';
 
@@ -386,10 +385,28 @@ function yuvalariKur(k) {
   });
 }
 
+// Aşama 14 (karar 100): her özel birey bir kez, uygun bir canlı bireye atanır (öldüyse yenisi gelmez)
+function ozelBireyleriAta(k) {
+  if (!k.ozelBireyler || typeof k.ozelBireyler !== 'object' || Array.isArray(k.ozelBireyler)) k.ozelBireyler = {};
+  const rng = tohumluUretec(9091 + (k.hayvanlar || []).length);
+  for (const [id, o] of Object.entries(OZEL_BIREYLER)) {
+    if (k.ozelBireyler[id] !== undefined) continue;
+    const adaylar = k.hayvanlar.filter((b) => !b.olu && b.tur === o.tur && !b.ozellik && (b.evre === 'yetiskin' || b.evre === 'yasli') && (!o.cinsiyet || b.cinsiyet === o.cinsiyet));
+    const tercih = o.evre ? adaylar.filter((b) => b.evre === o.evre) : [];
+    const l = tercih.length ? tercih : adaylar;
+    if (!l.length) continue;
+    const b = l[Math.floor(rng() * l.length)];
+    b.ozellik = id;
+    k.ozelBireyler[id] = b.id;
+  }
+  for (const b of k.hayvanlar) if (b.ozellik && !OZEL_BIREYLER[b.ozellik]) delete b.ozellik;
+}
+
 export function dunyaOlustur(k) {
   const rng = tohumluUretec(77); // arazi sabittir: her açılışta aynı
   if (!k.hayvanlar || !k.gruplar) nufusOlustur(k);
   asama8Onar(k);
+  ozelBireyleriAta(k);
   if (!Array.isArray(k.yuvalar) || k.yuvalar.some((y) => !y || !TURLER[y.tur] || !sayiMi(y.x) || !sayiMi(y.y))) yuvalariKur(k);
   k.yuvalar.forEach((y) => {
     y.bulundu = y.bulundu === true;
@@ -701,6 +718,14 @@ function planSec(d, g) {
       g.planBitis = sure(80, 120);
       return;
     }
+  }
+  // Mineral ihtiyacı (karar 103): otçul sürüler birkaç günde bir tuz yalağına gider
+  if (MINERAL_TURLERI.includes(g.tur) && (g.mineral || 0) > 0.75 && !g.goc && r < 0.6) {
+    g.plan = 'gez';
+    g.yalak = true;
+    g.hedef = { x: TUZ_YALAGI.x + arasi(d.rng, -4, 4), y: TUZ_YALAGI.y + arasi(d.rng, -4, 4) };
+    g.planBitis = sure(90, 140);
+    return;
   }
   if (!t.suYok && !['leopar', 'piton', 'kartal'].includes(g.tur) && g.susuzluk > 0.62) {
     g.plan = 'su';
@@ -1743,10 +1768,18 @@ function grupGuncelle(d, g, dt, dtDk) {
       g.kirliSu = k.eko && GOLET.su && mesafe(g, GOLET) < GOLET.r + 8 ? E.suKalitesi(k.eko) : 1;
       g.planBitis = Math.min(g.planBitis, k.dk + arasi(d.rng, 12, 22));
       g.susuzluk = 0;
+    } else if (g.plan === 'gez' && g.yalak) {
+      // Tuz yalağına vardı: bir süre toprağı yalarlar
+      g.yalak = false;
+      g.mineral = 0;
+      g.planBitis = k.dk + arasi(d.rng, 25, 45);
+      uyeler(d, g).forEach((b) => b.evre !== 'yavru' && (b.ozel = { davranis: 'topragiYaliyor', bitis: d.zaman + 70 + d.rng() * 30 }));
+      if (mesafe(d.oyuncu, g) <= durbunMenzili(k.dk, k)) olay(d, 'yalak', `${BuyukHarf(SOZ[g.tur])} sürüsü tuz yalağına geldi; toprağı yalıyorlar. Bitkilerden alamadıkları sodyumu ve mineralleri topraktan alırlar.`, 2, { id: (uyeler(d, g)[0] || {}).id });
     } else if (g.plan === 'gez') {
       g.planBitis = Math.min(g.planBitis, k.dk + 3);
     }
   }
+  if (MINERAL_TURLERI.includes(g.tur)) g.mineral = Math.min(1, (Number.isFinite(g.mineral) ? g.mineral : d.rng() * 0.7) + dtDk / (1440 * 2.5));
   if ((g.plan === 'beslen' || g.plan === 'les') && g.lesId) {
     const les = k.lesler.find((l) => l.id === g.lesId);
     if (les && mesafe(g, les) < 5) {
@@ -2017,7 +2050,8 @@ export const gozlenen = (d) => {
 };
 export function gozlemTarifi(d, b) {
   const dv = DAVRANISLAR[b.davranis] || DAVRANISLAR.dinleniyor;
-  return `${BuyukHarf(bireyAdi(b))} ${dv.fiil}${saglikGorunusu(b)}, ${yerTarifi(d.oyuncu, b)}`;
+  const oz = b.ozellik && OZEL_BIREYLER[b.ozellik];
+  return `${BuyukHarf(bireyAdi(b))}${oz ? `, ${oz.gorunus},` : ''} ${dv.fiil}${saglikGorunusu(b)}, ${yerTarifi(d.oyuncu, b)}`;
 }
 // Dürbünle görülen sağlık belirtisi (karar 28)
 export function saglikGorunusu(b) {
@@ -2076,6 +2110,13 @@ function gozlemGuncelle(d, dt) {
     k.arsiv.bireyler[b.id] = { ilkDk: k.dk, gozlemSn: 0, sonDk: k.dk, sonBolge: bolgeAdi(b.x, b.y) };
     itibarEkle(d, 2);
     olay(d, 'tanimlandi', `Tanımlandı: ${bireyKunye(d, b)}`, 3, { id: b.id });
+    const oz = b.ozellik && OZEL_BIREYLER[b.ozellik];
+    if (oz) {
+      itibarEkle(d, 10);
+      arsivOlay(d, `Özel birey bulundu: ${bireyAdi(b)}, ${oz.ad}.`);
+      gecmisEkle(k, b, `Araştırmacı tarafından bulundu: ${oz.ad}`);
+      olay(d, 'ozelBirey', `Olağanüstü bir keşif! ${BuyukHarf(bireyAdi(b))} bir ${oz.ad}. ${oz.tarif}`, 4, { id: b.id, kesif: true });
+    }
   }
   if (b.hastalik && E.belirtiGorunur(b.hastalik) && !b.hastalik.goruldu && g.sn > 2) {
     b.hastalik.goruldu = true;

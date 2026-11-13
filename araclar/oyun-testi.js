@@ -151,6 +151,7 @@ console.log(`Performans: kare başına mantık ortalama ${(sureTop / sureSayi).t
 k.mesajlar.forEach((m) => KOTU.test(m.metin) && kotu.add(m.metin.slice(0, 160)));
 console.log(`Hikâye: gizemler ${JSON.stringify(Object.fromEntries(Object.entries(k.hikaye.gizemler).map(([a, g]) => [a, g.bitti ? 'çözüldü' : g.adim + 1 + '. adım'])))}, başarılar ${Object.keys(k.hikaye.basarilar).join(',')}, görüşme ${k.hikaye.gorusmeler}, sayaç ${JSON.stringify(k.hikaye.sayac)}`);
 console.log(`Su: ${S.suRaporu(k)}`);
+console.log(`Özel bireyler: ${JSON.stringify(k.ozelBireyler)}; tanınan ${k.hayvanlar.filter((b) => b.ozellik && b.no).map((b) => b.ozellik).join(',')}; göç: ${Y.gocSatirlari(d).join(' ')}`);
 console.log(`Sosyal: ${['aslan', 'sirtlan', 'yabanKopegi', 'cita', 'leopar'].map((t) => t + ' ' + Sy.turSatirlari(d, t).join(' ')).join(' | ')}`);
 console.log(`Beceri: ${k.hayvanlar.filter((b) => !b.olu && Number.isFinite(b.beceri)).map((b) => b.tur + ':' + b.beceri.toFixed(2)).join(' ')}; anneler ${k.hayvanlar.filter((b) => b.yavruBuyuttu).length}; savunma ${k.gruplar.filter((g) => g.savunmaDeneyim).map((g) => g.tur + ':' + g.savunmaDeneyim.toFixed(2)).join(' ')}`);
 console.log(`Gezi: ${K.uzakSatirlari(k).map((x) => x.metin).join(' | ')}`);

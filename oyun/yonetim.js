@@ -201,3 +201,30 @@ export function guncelle(d, dt) {
   }
   yilDenetle(d);
 }
+
+// ---------- Göç takibi (karar 101): göç geçmişi, bölgede olup olmama, kayıplar, GPS ----------
+export function gocSatirlari(d) {
+  const k = d.k;
+  const l = [];
+  const gocler = ((k.eko && k.eko.gocler) || []).filter((g) => g && TURLER[g.tur] && Number.isFinite(g.gun));
+  for (const tur of Object.keys(E.GOCMENLER)) {
+    const disarida = ((k.disari && k.disari.gruplar) || []).some((g) => g && g.tur === tur);
+    const gocte = k.gruplar.some((g) => g.tur === tur && g.goc);
+    const kendi = gocler.filter((g) => g.tur === tur);
+    const cikis = kendi.find((g) => g.olay === 'cikis');
+    const donus = kendi.find((g) => g.olay === 'donus');
+    const kayip = kendi.filter((g) => g.olay === 'donus').reduce((a, g) => a + (Number.isFinite(g.kayip) ? g.kayip : 0), 0);
+    const yeni = kendi.filter((g) => g.olay === 'donus').reduce((a, g) => a + (Number.isFinite(g.yeni) ? g.yeni : 0), 0);
+    const durum = gocte ? 'şu an göç yolunda, nehre doğru' : disarida ? 'göçte, bölgenin dışında' : 'bölgede';
+    let m = `${M.BuyukHarf(M.SOZ[tur])}: ${durum}.`;
+    if (cikis) m += ` Son çıkış ${cikis.gun}. gün, ${cikis.sayi} birey.`;
+    if (donus) m += ` Son dönüş ${donus.gun}. gün, ${donus.sayi} birey.`;
+    if (kayip || yeni) m += ` Göçlerde toplam ${kayip} kayıp, ${yeni} yeni doğan.`;
+    if (!cikis && !donus) m += ' Henüz göç kaydı yok; kurak mevsimde bölgeden ayrılırlar.';
+    l.push(m);
+  }
+  const gps = (k.gpsli || []).map((id) => k.hayvanlar.find((b) => b.id === id) || ((k.disari && k.disari.hayvanlar) || []).find((b) => b && b.id === id)).filter((b) => b && E.GOCMENLER[b.tur]);
+  if (gps.length) l.push(`GPS tasmalı göçmenler: ${gps.map((b) => M.bireyAdi(b)).join(', ')}. Konumları Yerler menüsünde.`);
+  else l.push('Göç yollarını izlemenin en iyi yolu göçmen bir türe GPS tasması taktırmak; kamera tuzakları ve geçit sayımları da göçün ne zaman geçtiğini gösterir.');
+  return l;
+}
