@@ -111,6 +111,8 @@ function oynat(d, adim) {
       d.k.hayvanlar.slice(0, 20).forEach((b) => Sy.bireySatirlari(d, b).forEach((m) => metinDenetle(m, 'sosyal birey')));
       d.k.hayvanlar.slice(0, 30).forEach((b) => Sy.saglikDosyasi(d, b).forEach((m) => metinDenetle(m, 'sağlık')));
       Y.gocSatirlari(d).forEach((m) => metinDenetle(m, 'göç'));
+      d.k.gruplar.forEach((g) => metinDenetle(M.rutinMetni(d, g), 'rutin'));
+      S.kameraSatirlari(d.k).forEach((m) => metinDenetle(m, 'kamera'));
       d.k.hayvanlar.filter((b) => b.ozellik).forEach((b) => metinDenetle(M.gozlemTarifi(d, b), 'özel birey'));
       ['aslan', 'cita', 'manda', 'babun'].forEach((t) => Sy.turSatirlari(d, t).forEach((m) => metinDenetle(m, 'sosyal tür')));
       Y.raporSatirlari(d.k).forEach((m) => metinDenetle(m, 'rapor'));

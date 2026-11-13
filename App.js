@@ -246,6 +246,8 @@ const YARDIM = [
       'Ebeveynlik: deneyimli ve sakin anneler yavrularını daha iyi besler; ilk kez doğuranlar zorlanır. Annenin ürkekliği yavruya geçer.',
       'Tuz yalağı: Yerler menüsünde. Filler, mandalar, zürafalar, zebralar, gnular, impalalar ve gergedanlar birkaç günde bir buraya gelip mineralli toprağı yalar; bitkilerden alamadıkları sodyumu topraktan alırlar. Beklemek için iyi bir yer.',
       'Özel bireyler: savanda birkaç olağanüstü hayvan yaşıyor: kapkara bir leopar, beyaz bir zürafa, benekli bir zebra, dişleri yere değen yaşlı bir fil ve üç bacaklı bir aslan. Onları tanımlarsan büyük bir keşif sayılır. Görünüşleri gözlemde söylenir.',
+      'Günlük rutinler: her sürünün alışkanlıkları var: hangi saatte, gölete mi nehre mi su içmeye indiği ve hangi ağacın gölgesinde dinlendiği. Sıcak günlerin öğlesinde gölgeye çekilirler. Tanımlı bir bireyin sayfasında sürüsünün alışkanlığı ve o ağacın yönü yazar; orada beklersen gelirler.',
+      'İstasyon güvenlik kamerası: istasyonun 45 metre çevresine gelen büyük hayvanları kaydeder; sabah gecenin özeti gelir. Gece istasyondayken yakına tehlikeli bir hayvan gelirse hemen uyarır.',
       'Sağlık dosyası ve göç takibi: her tanımlı bireyin sayfasında beslenme, hastalık, yaralanma ve stres durumu yazar. Merkez, Ekolojik yönetim bölümündeki Göç takibi göçmen türlerin ne zaman çıkıp döndüğünü ve kayıplarını gösterir.',
       'Sosyal yaşam: babun, aslan, zebra ve fil gruplarında sıralama kavgaları olur; babunlar ve filler kavgadan sonra birbirini tımar ederek barışır. Fil, babun ve zürafa grupları ölen bir üyelerinin başında toplanıp bekler.',
     ],
@@ -789,6 +791,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       case 'yonetim':
       case 'sosyal':
       case 'yalak':
+      case 'kamera':
         Efekt.cal('odak', 0.5);
         return;
       case 'arac':
@@ -1632,6 +1635,8 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         ),
       ];
       Sy.bireySatirlari(d, b).forEach((m, i) => ogeler.push(bilgi('sy' + i, m)));
+      const rm = !b.olu && M.rutinMetni(d, k.gruplar.find((g) => g.id === b.grup));
+      if (rm) ogeler.push(bilgi('rutin', rm));
       if (b.ozellik && OZEL_BIREYLER[b.ozellik] && M.taninmisMi(b)) ogeler.push(bilgi('ozel', `Özel birey: ${OZEL_BIREYLER[b.ozellik].ad}. ${OZEL_BIREYLER[b.ozellik].tarif}`));
       ogeler.push(bilgi('saglik', `Sağlık dosyası. ${Sy.saglikDosyasi(d, b).join(' ')}`));
       if (k.gpsli.includes(b.id)) ogeler.push(bilgi('gps', `GPS: ${Mz.gpsTarifi(d, b)}.`));
@@ -1797,6 +1802,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       });
       ogeler.push(altMenu('nufus', 'Nüfus dengesi ve tehdit altındaki türler', menu.ac));
       ogeler.push(altMenu('goc', 'Göç takibi', menu.ac));
+      ogeler.push(altMenu('kamera', `İstasyon güvenlik kamerası: ${((k.su && k.su.kamera) || []).length} kayıt`, menu.ac));
       const l = Y.istilaciSatirlari(d);
       l.slice(0, 5).forEach(({ h, p }) =>
         ogeler.push({
@@ -1812,6 +1818,10 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       if (l.length > 5) ogeler.push(bilgi('dahaFazla', `Ve ${l.length - 5} lantanalı alan daha.`));
       Y.raporSatirlari(k).forEach((m, i) => ogeler.push(bilgi('r' + i, m)));
       return liste(u, 'Ekolojik yönetim', ogeler, 'Türleri korumak, nüfus dengesini izlemek ve ekosistemi iyileştirmek için eylemler. Her yıl sonunda tehdit altındaki türler için koruma raporu gelir.');
+    }
+    if (u === 'kamera') {
+      const l = S.kameraSatirlari(k);
+      return liste(u, 'Güvenlik kamerası', l.length ? l.map((m, i) => bilgi('c' + i, m)) : [bilgi('yok', 'Henüz istasyonun yakınına büyük bir hayvan gelmedi.')], 'İstasyonun 45 metre çevresine giren büyük hayvanlar kaydedilir. Her sabah gecenin özeti mesaj olarak gelir.');
     }
     if (u === 'goc') return liste(u, 'Göç takibi', Y.gocSatirlari(d).map((m, i) => bilgi('g' + i, m)), 'Zebra ve gnu doğu geçidinden, ceylanlar batı geçidinden göç eder. Kurak mevsimde ayrılır, yağmurla dönerler.');
     if (u === 'nufus') {

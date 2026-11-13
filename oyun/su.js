@@ -34,6 +34,9 @@ export function suAlani(k) {
     if (!NOKTA[id] || !t || typeof t !== 'object') delete k.su.gecisler[id];
     else for (const [tur, n] of Object.entries(t)) if (!TURLER[tur] || !Number.isFinite(n)) delete t[tur];
   }
+  if (!Array.isArray(k.su.kamera)) k.su.kamera = [];
+  k.su.kamera = k.su.kamera.filter((x) => x && TURLER[x.tur] && Number.isFinite(x.dk) && Number.isFinite(x.grup)).slice(0, 20);
+  if (!Number.isFinite(k.su.kameraGun)) k.su.kameraGun = 0;
   if (!Number.isFinite(k.su.istasyonSon)) k.su.istasyonSon = k.dk || 0; // açılışta hoş geldin konuşmasını bölmesin
   return k.su;
 }
@@ -271,6 +274,39 @@ export function istasyonYasami(d) {
   M.olay(d, 'istasyonAni', ISTASYON_ANLARI[id], 1);
 }
 
+// ---------- İstasyonun güvenlik kamerası (karar 78) ----------
+// İstasyonun 45 metre çevresine giren büyük hayvanlar kaydedilir; sabah 7'de gecenin özeti gelir.
+const KAMERA_MENZIL = 45;
+function kameraDenetle(d) {
+  const k = d.k;
+  const su = k.su;
+  for (const b of k.hayvanlar) {
+    if (b.olu || TURLER[b.tur].kus || Math.hypot(b.x, b.y) > KAMERA_MENZIL) continue;
+    if (su.kamera.some((x) => x.grup === b.grup && k.dk - x.dk < 120)) continue;
+    const sayi = k.hayvanlar.filter((y) => !y.olu && y.grup === b.grup && Math.hypot(y.x, y.y) < KAMERA_MENZIL + 10).length;
+    su.kamera.unshift({ tur: b.tur, grup: b.grup, dk: Math.round(k.dk), sayi });
+    if (su.kamera.length > 20) su.kamera.length = 20;
+    // Tehlikeli hayvan gece istasyonun dibine geldiyse ve oyuncu istasyondaysa hemen uyarır
+    if (TURLER[b.tur].tehlikeli && M.geceMi(k.dk) && Math.hypot(d.oyuncu.x, d.oyuncu.y) < 30 && !k.magara)
+      M.olay(d, 'kamera', `İstasyon kamerası: ${sayi > 1 ? `${sayi} ${M.kucukHarf(M.SOZ[b.tur])}` : `bir ${M.kucukHarf(M.SOZ[b.tur])}`} istasyonun çok yakınında, ${M.yerTarifi(d.oyuncu, b)}. Dışarı çıkarken dikkatli ol.`, 3, { id: b.id });
+    return;
+  }
+  // Sabah özeti
+  const gun = M.gunNo(k.dk);
+  const saat = M.gunDakikasi(k.dk) / 60;
+  if (saat >= 7 && su.kameraGun !== gun) {
+    su.kameraGun = gun;
+    const gece = su.kamera.filter((x) => k.dk - x.dk < 14 * 60 && (M.gunDakikasi(x.dk) / 60 >= 19 || M.gunDakikasi(x.dk) / 60 < 7));
+    if (gece.length) {
+      const m = `İstasyonun güvenlik kamerası, gece kayıtları: ${gece.slice(0, 5).reverse().map((x) => `${M.saatMetni(x.dk)}'de ${x.sayi > 1 ? `${x.sayi} ${M.kucukHarf(M.SOZ[x.tur])}` : `bir ${M.kucukHarf(M.SOZ[x.tur])}`}`).join(', ')} istasyonun çevresinden geçti.`;
+      M.mesajEkle(k, m, 'bilgi');
+      M.olay(d, 'kamera', m, 2);
+    }
+  }
+}
+export const kameraSatirlari = (k) =>
+  ((k.su && k.su.kamera) || []).slice(0, 10).map((x) => `${M.gunNo(x.dk)}. gün ${M.saatMetni(x.dk)}: ${x.sayi > 1 ? `${x.sayi} ${M.kucukHarf(M.SOZ[x.tur])}` : `bir ${M.kucukHarf(M.SOZ[x.tur])}`}`);
+
 let sayac = 0;
 export function guncelle(d, dt) {
   sayac += dt;
@@ -281,4 +317,5 @@ export function guncelle(d, dt) {
     d._suOnarildi = true;
   }
   istasyonYasami(d);
+  kameraDenetle(d);
 }

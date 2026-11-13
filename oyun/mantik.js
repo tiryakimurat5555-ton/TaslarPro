@@ -630,12 +630,36 @@ function suNoktasi(g) {
   const m = Math.hypot(dx, dy) || 1;
   if (!GOLET.su) return nehir; // gölet kurudu: su nehirde
   const golet = { x: GOLET.x + (dx / m) * (GOLET.su + 2.2), y: GOLET.y + (dy / m) * (GOLET.su + 2.2) };
-  return mesafe(g, golet) < mesafe(g, nehir) ? golet : nehir;
+  // Aşama 15 (karar 72): sürünün alıştığı su başı, çok uzak değilse yeğlenir
+  const gm = mesafe(g, golet);
+  const nm = mesafe(g, nehir);
+  if (g.rutin && g.rutin.su === 'nehir' && nm < gm * 1.7) return nehir;
+  if (g.rutin && g.rutin.su === 'golet' && gm < nm * 1.7) return golet;
+  return gm < nm ? golet : nehir;
+}
+// Aşama 15 (karar 72): her sürünün kendi alışkanlıkları: su başı, su saati, gölgede dinlendiği ağaç
+const SU_SAATLERI = { sabah: [6.5, 10], oglen: [11, 15], aksam: [16, 19.5] };
+export const SU_SAATI_ADI = { sabah: 'sabahları', oglen: 'öğle saatlerinde', aksam: 'akşamüstü' };
+function rutinKur(d, g) {
+  const t = TURLER[g.tur];
+  const h = (n) => {
+    const x = Math.sin((g.id + 1) * 91.7 + n * 13.3) * 43758.5;
+    return x - Math.floor(x);
+  };
+  const r = { su: h(1) < 0.5 ? 'golet' : 'nehir', suSaat: ['sabah', 'oglen', 'aksam'][Math.floor(h(2) * 3)], agac: null };
+  const merkez = t.habitat || g;
+  const agac = (d.engeller || []).filter((e) => e.tur === 'agac' && Math.hypot(e.x - merkez.x, e.y - merkez.y) < (merkez.r || 60) * 0.9 && uygunMu(g.tur, e.x + 2.5, e.y + 2.5, t.habitat));
+  if (agac.length) {
+    const a = agac[Math.floor(h(3) * agac.length)];
+    r.agac = { x: Math.round(a.x + 2.5), y: Math.round(a.y + 2.5) };
+  }
+  g.rutin = r;
 }
 function planSec(d, g) {
   const k = d.k;
   const t = TURLER[g.tur];
   const dk = k.dk;
+  if (!g.rutin || typeof g.rutin !== 'object' || !SU_SAATLERI[g.rutin.suSaat] || (g.rutin.agac && !(Number.isFinite(g.rutin.agac.x) && Number.isFinite(g.rutin.agac.y)))) rutinKur(d, g);
   const aktif = aktifMi(t, dk);
   const r = d.rng();
   g.hedef = null;
@@ -727,7 +751,10 @@ function planSec(d, g) {
     g.planBitis = sure(90, 140);
     return;
   }
-  if (!t.suYok && !['leopar', 'piton', 'kartal'].includes(g.tur) && g.susuzluk > 0.62) {
+  const saatNow = gunDakikasi(dk) / 60;
+  const suSaati = SU_SAATLERI[g.rutin.suSaat];
+  const suEsik = saatNow >= suSaati[0] && saatNow < suSaati[1] ? 0.42 : 0.62;
+  if (!t.suYok && !['leopar', 'piton', 'kartal'].includes(g.tur) && g.susuzluk > suEsik) {
     g.plan = 'su';
     g.hedef = suNoktasi(g);
     g.planBitis = sure(70, 110);
@@ -750,6 +777,13 @@ function planSec(d, g) {
     g.plan = 'camur';
     g.hedef = suNoktasi(g);
     g.planBitis = sure(30, 60);
+    return;
+  }
+  // Sıcak günün öğlesinde otçullar alıştıkları gölgeye çekilir (hava rutini etkiler)
+  if (!t.yirtici && k.eko && k.eko.hava && (k.eko.hava.tur === 'sicak' || k.eko.hava.sicaklik >= 33) && saatNow >= 12 && saatNow < 15.5 && g.rutin.agac && mesafe(g.rutin.agac, g) < 110 && d.rng() < 0.6) {
+    g.plan = 'dinlen';
+    g.hedef = { ...g.rutin.agac };
+    g.planBitis = sure(50, 90);
     return;
   }
   const r2 = d.rng();
@@ -776,9 +810,11 @@ function planSec(d, g) {
     g.planBitis = sure(40, 80);
   } else {
     g.plan = 'dinlen';
-    // Gölgede dinlen: en yakın ağaç
+    // Gölgede dinlen: alıştığı ağaç (yakınsa), yoksa en yakın ağaç
+    const fav = g.rutin && g.rutin.agac;
     const agac = d.engeller.filter((e) => e.tur === 'agac' && mesafe(e, g) < 40).sort((a, b) => mesafe(a, g) - mesafe(b, g))[0];
-    if (agac && uygunMu(g.tur, agac.x + 2.5, agac.y + 2.5, t.habitat)) g.hedef = { x: agac.x + 2.5, y: agac.y + 2.5 };
+    if (fav && mesafe(fav, g) < 110 && d.rng() < 0.7) g.hedef = { x: fav.x, y: fav.y };
+    else if (agac && uygunMu(g.tur, agac.x + 2.5, agac.y + 2.5, t.habitat)) g.hedef = { x: agac.x + 2.5, y: agac.y + 2.5 };
     g.planBitis = sure(30, 80);
   }
 }
@@ -926,6 +962,13 @@ function grupAlarm(d, g, kaynak, sure = 6, gecikme = 0, zincir = true) {
 
 // ---------- Av ve ölüm (karar 40, 46, 102) ----------
 export const hayvanOldur = (d, b, neden) => hayvanOldu(d, b, neden, null);
+export function rutinMetni(d, g) {
+  if (!g || !g.rutin || !SU_SAATLERI[g.rutin.suSaat] || TURLER[g.tur].suYok || ['leopar', 'piton', 'kartal', 'timsah', 'suAygiri'].includes(g.tur)) return '';
+  const r = g.rutin;
+  let m = `Sürünün alışkanlığı: ${SU_SAATI_ADI[r.suSaat]} ${r.su === 'golet' ? 'gölete' : 'nehre'} su içmeye iner`;
+  if (r.agac && Number.isFinite(r.agac.x) && Number.isFinite(r.agac.y)) m += `; dinlenmek için ${bolgeAdi(r.agac.x, r.agac.y).toLocaleLowerCase('tr-TR')} bölgesindeki belli bir ağacın gölgesini seçer, buradan ${saatSozu(saatYonu(d.oyuncu, r.agac))}, ${metreSozu(mesafe(d.oyuncu, r.agac))}`;
+  return m + '.';
+}
 const YAS_TURLERI = ['fil', 'babun', 'zurafa'];
 function hayvanOldu(d, b, neden, avci) {
   b.olu = true;
@@ -1013,7 +1056,8 @@ function avGuncelle(d, g, uyelerListe, dt) {
       // Aşama 13 (karar 102): grup hangi türde başarılıysa onu yeğler (av deneyimi)
       const dn = g.avDeneyim && Array.isArray(g.avDeneyim[b.tur]) ? g.avDeneyim[b.tur] : [0, 0];
       const oran = Number.isFinite(dn[0]) && Number.isFinite(dn[1]) ? (dn[1] + 1) / (dn[0] + 2) : 0.5;
-      const puan = m * (b.evre === 'yavru' || b.evre === 'yasli' ? 0.6 : 1) * (b.tur === 'manda' ? 2.2 : 1) * (b.hastalik || b.kondisyon < 0.35 ? 0.55 : 1) * (1.15 - 0.3 * oran);
+      // Av değiştirme: azalmış türü daha az, kalabalık türü daha çok avlarlar (Aşama 15, denge)
+      const puan = m * (b.evre === 'yavru' || b.evre === 'yasli' ? 0.6 : 1) * (b.tur === 'manda' ? 2.2 : 1) * (b.hastalik || b.kondisyon < 0.35 ? 0.55 : 1) * (1.15 - 0.3 * oran) * ((sayi[b.tur] || 0) < 8 ? 1.7 : (sayi[b.tur] || 0) > 14 ? 0.85 : 1);
       if (puan < enPuan) {
         enPuan = puan;
         en = b;

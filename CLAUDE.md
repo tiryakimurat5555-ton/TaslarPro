@@ -283,6 +283,13 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   bağışıklık) birey sayfasında; yonetim.js gocSatirlari (GOCMENLER durumu, son çıkış/dönüş, kayıp/yeni, GPS) Merkez > Ekolojik yönetim >
   Göç takibi. Yardım "Avlanma, savunma ve sosyal yaşam" +3 satır. Testler: dayanıklılık 300/300, bot 8 gün (5 özel birey tanındı, yalak
   2), menu-tara 302 sayfa iki kipte sorun 0. Telefonda doğrulanmadı.
+- Aşama 15 rutinler, istasyon kamerası, av dengesi (13 Kasım, Murat "devam" dedi; kararlar 72, 78; sayılar ÖNERİ). Av seçiminde av
+  değiştirme: türün bölgedeki sayısı < 8 ise puan ×1,7, > 14 ise ×0,85 (impala 30 günde 12→6 düşüyordu). mantik rutinKur (planSec
+  başında, grup kimliğinden belirlenimli): g.rutin {su gölet/nehir, suSaat sabah/oglen/aksam (SU_SAATLERI), agac (habitattaki bir ağacın
+  gölgesi)}; suNoktasi alıştığı su başını yeğler (1,7 kat uzağa kadar), su saatinde susuzluk eşiği 0,62 → 0,42, dinlenmede %70 alıştığı
+  ağaç (110 m), sıcak günün 12-15,5 arasında otçullar o gölgeye çekilir. rutinMetni(d, g) birey sayfasında. su.js kameraDenetle:
+  istasyonun 45 m çevresine giren kuş olmayan hayvan, grup başına 2 saatte bir kayıt (k.su.kamera son 20), gece istasyondayken tehlikeli
+  hayvan → anında olay 'kamera'; sabah 7'de gecenin özeti mesaj; Merkez > Ekolojik yönetim > İstasyon güvenlik kamerası. Yardım +2 satır.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)
