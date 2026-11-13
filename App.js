@@ -198,7 +198,7 @@ function konumluDonguler(d) {
   return r;
 }
 // Adım sesi düzeyleri zemine göre (su ve çamur doğal olarak daha gür)
-const ADIM_DUZEY = { ot: 0.4, toprak: 0.3, camur: 0.32, su: 0.32, kaya: 0.32, yaprak: 0.38, magara: 0.4 }; // ot ve yaprak doğası gereği daha yumuşak
+const ADIM_DUZEY = { ot: 0.3, toprak: 0.27, camur: 0.27, su: 0.28, kaya: 0.26, yaprak: 0.3, magara: 0.3 }; // adım dosyaları aynı vuruş yüksekliğine eşit (araclar/adim-yap.py); ot ve yaprak biraz yukarıda
 const ADIM_ARALIK = 1.5; // metre
 const HASSASIYET = { dusuk: 130, orta: 90, yuksek: 60 }; // tam hız için sürükleme (piksel)
 
@@ -272,6 +272,7 @@ const kucuk = (s) => s.toLocaleLowerCase('tr-TR');
 
 // ---------------- Yenilikler (en yeniler üstte): Murat denerken neyin nerede olduğunu bulsun diye ----------------
 const YENILIKLER = [
+  { baslik: 'Adım sesleri yenilendi', metin: 'Karakterin adım sesleri baştan hazırlandı: bazı adımlarda asıl basış 0,2 saniye geç geliyordu, ritim aksak duyuluyordu; artık her adım basış anında başlıyor. Bazı adımlar sert kesilip çıt sesi yapıyordu, artık yumuşakça bitiyor. Suda ve çamurda tek dosyada iki adım duyulan sesler ayrıldı. Otta ve yapraklarda ses neredeyse yalnız hışırtıydı; altına ayağın yere basış sesi eklendi. Bütün zeminlerde dört adımın yüksekliği eşit; sıkıştırma gecikmesi olmasın diye dosyalar sıkıştırılmamış.', nerede: 'sahada yürürken.' },
   { baslik: 'Araç motoru ve dron sesi', metin: 'Araç motorunun döngüsü yenilendi: eski döngüde her 4,5 saniyede bir gaz verip bırakma sesi tekrar ediyordu; artık sabit devirli bir bölümden, dikişsiz ve 15 saniyelik. Hızlandıkça perdesi yine yükselir. Dron artık uçtuğu sürece kesintisiz duyulur: havalanıp uzaklaştıkça sesi giderek kısılır ve perdesi biraz düşer, dönerken giderek yaklaşır, yükselir; ses dronun bulunduğu yönden gelir.', nerede: 'araç sürerken; dronu aletlerden seçip çift dokununca.' },
   { baslik: 'Durmayan su ve koşu sesi düzeltildi', metin: 'Oyun yeniden açılınca bazı hayvanlar (özellikle gölet ve nehir kıyısındaki filler) eski oturumdan kalan bir zaman yüzünden saatlerce koşuyor sayılıyordu; çamurda koşu sesi hiç durmuyordu. Düzeltildi. Nehir geçidinin kısa şırıltı döngüsü kaldırıldı (su sesini artık katmanlı nehir sesi veriyor). Bütün ortam döngülerinin sonundaki kısa sessizlik giderildi, döngü dönerken kesinti olmamalı. Hayvanların su içme ve otlama sesleri seyreltildi.', nerede: 'sahada, özellikle nehir ve gölet kıyısında.' },
   { baslik: 'Zemine göre hayvan koşu sesleri', metin: 'Kaçan, kovalayan ve hamle yapan hayvanların koşu sesi artık bastıkları zemine göre: otta ve ormanda boğuk tok vuruşlar ve ot hışırtısı, kuru toprakta ve kayalıkta sert toynak sesi, suda ve çamurda şapırtı. Her biri toynaklı, hafif ceylan, ağır fil ve manda, pati (kediler, sırtlan, yaban köpeği) olarak ayrı. Arkadan gelen seslerdeki metalik çınlama giderildi.', nerede: 'sahada, hayvanlar koşarken.' },

@@ -350,6 +350,13 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   efekt.js yonluDongu(ad, oran, pan, hiz) iki yarı birlikte, düzey/pan/setPlaybackRate (0,85-1,15); App her karede: m = hypot(yatay, 10 m
   yükseklik), oran 0,85·min(1,(12/m)^1,1), kalkış 1,5 sn'de açılır, Doppler 1 - vr/340·1,6; menü/dinlenmede durur. Eski 3B 'dron' parçaları
   silindi (UC_B'den çıktı). Tarayıcı: scratchpad dron-dene.cjs (11 m 0,2 → 110 m 0,07, dönüşte 0,39; hız 0,9/1,1). Telefonda doğrulanmadı.
+- Adım sesleri denetimi (13 Kasım, Murat "karakter adım seslerini de kontrol et" dedi): eski adim_*_n.mp3'lerde vuruş geç (camur, su,
+  kaya, yaprak 140-320 ms), sonu sert kesik (su/camur son 10 ms -30..-50 dB), kesik kısa parçalar (kaya_3 0,11 sn, magara_3 0,12), ot/yaprak
+  yalnız tiz hışırtı (merkez 7-8 kHz). araclar/adim-yap.py <ham> (ham adim_<zemin>.mp3 ses-dal'da): vuruş başlangıcı (tepeye 10 dB) 5. ms'ye,
+  3 ms giriş, 40 ms karesel çıkış, en çok 0,45 sn (mağara 0,7), kısa (<%55 ortanca) ve çift vuruşlu adımlar elenir/iki vuruş arasından
+  kesilir, ot ve yaprağa toprak adımının 260 Hz alçak geçiren gövdesi (×0,7 / ×0,55), hepsi 80 ms tepe -14 dB; çıktı WAV (mp3/AAC
+  dolgu gecikmesi yok; yap.sh .wav yükleyicisi eklendi; sözdizimi denetimine -e '*.wav'). ADIM_DUZEY 0,26-0,3. adim-bol.py/adim-esitle.py
+  eskidi. Tarayıcı adim-dene.cjs: 15 sn'de 42 adım, 340-361 ms. Telefonda doğrulanmadı.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)
