@@ -1,0 +1,3 @@
+adim_yaprak_a https://elevenlabsusercontent.com/database/workspace/c6890a9e7d7c47f7a13c4c65b132fa4f/content_generation/NZpqgjiBD7zv9Xi4Yc7I/9hmalJUpYU36hSUMIpNr/content.mp3?Expires=1794600000&KeyName=assets-cdn-key-1&Signature=173PtxjfDfsa2ZV2fCSaGuQgSUo=
+adim_yaprak_b https://elevenlabsusercontent.com/database/workspace/c6890a9e7d7c47f7a13c4c65b132fa4f/content_generation/OsqMDebqOvHy6rW3J3nu/wyFR4iLsYwKhznilkdA5/content.mp3?Expires=1794600000&KeyName=assets-cdn-key-1&Signature=qPTej1VED1jgjY3oRYP5iqyL5Yo=
+adim_yaprak_c https://elevenlabsusercontent.com/database/workspace/c6890a9e7d7c47f7a13c4c65b132fa4f/content_generation/PE215k7vc6DknWAcEn8x/asTRce3GKtWOPli6OYBf/content.mp3?Expires=1794600000&KeyName=assets-cdn-key-1&Signature=XIsvG6JsIdkcdt4QiGC-k4BIDBY=
