@@ -361,6 +361,10 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   (adım aralığı 0,36 sn → sürekli hışırtı). ElevenLabs'ten 3 yeni "orman tabanı adım" denemesi (adim_yaprak_a/b/c, ses-dal ham) daha da tiz
   çıktı, kullanılmadı. adim-yap.py yaprak: 6,5 kHz alçak geçiren, 1-4 kHz bant +, vuruştan 30 ms sonra 90 ms üstel sönüm, en çok 0,3 sn, toprak
   gövdesi ×0,85 → kuyruk 100-150 ms'de -34 dB, >6 kHz -12..-17 dB. Ot adımlarında benzer uzun kuyruk var (dokunulmadı). Telefonda doğrulanmadı.
+- Kesik adım (13 Kasım akşam, Murat ekran görüntüsüyle, açık otlak gece: "üç dört adım, 1/2 sn boşluk, yine üç dört adım"; tarayıcıda
+  adımlar düzenli): olası sebep iOS'ta expo-audio seekTo'nun eşzamansız olması; sona varmış oynatıcıda seekTo(0) bitmeden play() → sessiz.
+  efekt.js basaSarVeCal(p): çalıyorsa pause, seekTo(0).then(play) (en geç 120 ms'de play), bitişten 150 ms sonra önceden seekTo(0)
+  (geriSarZaman Map). Bütün cal/yonlu bundan geçer. Telefonda doğrulanmadı; düzelmezse sebep hareketin kendisi (kare takılması/yurudu) olabilir.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

@@ -67,6 +67,40 @@ export function onYukle(adlar) {
   adlar.forEach((a) => oynatici(a));
 }
 
+// Oynatıcıyı başa sarıp çalar. iOS'ta seekTo eşzamansızdır: sona varmış bir oynatıcıda seekTo(0) bitmeden play() denenirse
+// AVPlayer dosyanın sonunda kalıp hiç ses vermeyebiliyordu. Murat (13 Kasım) yürürken "üç dört adım, yarım saniye boşluk, yine üç
+// dört adım" duydu: dört adım dosyası sırayla yeniden kullanıldığı için bazı adımlar bu yüzden düşüyordu. Artık başa sarma
+// bittikten sonra çalınır (en geç 120 ms), çalma bitince de oynatıcı bir sonraki sefer için önceden başa sarılır.
+const geriSarZaman = new Map(); // oynatıcı → bekleyen başa sarma
+function basaSarVeCal(p) {
+  let oldu = false;
+  const oynat = () => {
+    if (oldu) return;
+    oldu = true;
+    try {
+      p.play();
+    } catch (e) {}
+  };
+  try {
+    if (p.playing) p.pause();
+    const s = p.seekTo(0);
+    if (s && typeof s.then === 'function') {
+      s.then(oynat, oynat);
+      setTimeout(oynat, 120);
+    } else oynat();
+  } catch (e) {
+    oynat();
+  }
+  // Önceden başa sar: çalma bittikten hemen sonra (oynatıcı sonda beklemesin)
+  const sure = Number.isFinite(p.duration) && p.duration > 0 ? p.duration : 1;
+  clearTimeout(geriSarZaman.get(p));
+  geriSarZaman.set(p, setTimeout(() => {
+    try {
+      if (!p.playing) p.seekTo(0);
+    } catch (e) {}
+  }, sure * 1000 + 150));
+}
+
 // arkaPlan: adım gibi kısa ve sürekli sesler oyun konuşurken de çalar (yoksa yürürken rehber konuştukça adımlar kesiliyordu)
 export function cal(ad, ses = 1, arkaPlan = false) {
   if (!durum.acik) return;
@@ -76,8 +110,7 @@ export function cal(ad, ses = 1, arkaPlan = false) {
   if (!p) return;
   try {
     p.volume = Math.max(0, Math.min(1, ses * durum.genel));
-    p.seekTo(0);
-    p.play();
+    basaSarVeCal(p);
     if (durum.kis && !voiceover && !arkaPlan) efektCalindi(Math.min(sure(ad), 0.6) * 1000);
   } catch (e) {}
 }
