@@ -24,6 +24,7 @@ import * as Iz from './oyun/izler.js';
 import * as H from './oyun/hikaye.js';
 import * as S from './oyun/su.js';
 import * as Y from './oyun/yonetim.js';
+import * as Sy from './oyun/sosyal.js';
 import { KUCUKLER, KUCUK_SIRASI, GRUPLAR, MAGARA_ODALARI, UZAK_ALANLAR, odaListesi, aktifOda, bolumAdi } from './oyun/kucukler.js';
 import * as Efekt from './oyun/efekt.js';
 import { sahneKur } from './oyun/sahne.js';
@@ -233,6 +234,17 @@ const YARDIM = [
       'Suda yaşayanları gözle: kıyıdan balık, kurbağa, su kuşu ve su böceklerine bakarsın; yeni görülenler küçük canlılar arşivine yazılır. Dalış yoktur.',
       'Hayvan geçiş noktaları: nehrin iki sığ geçidinde Hayvan geçişlerini say seçilirse son bir günde karşıya geçen türler izlerden sayılır. Geçitlerdeki sayımlar ve balık türleri Hayvan geçiş noktaları araştırmasını doldurur.',
       'İstasyonun çevresi: istasyondayken ara sıra çevredeki küçük canlılar anlatılır: akasyada yuva ören dokumacı kuşlar, çatıda baş sallayan agama, gece lambanın çevresinde avlanan geckolar. İlk kez görülenler arşive yazılır.',
+    ],
+  },
+  {
+    id: 'sosyal',
+    baslik: 'Avlanma, savunma ve sosyal yaşam',
+    satirlar: [
+      'Avlanma: her yırtıcının kendi stratejisi var. Aslanlar pusuya yatıp birlikte kuşatır, yaban köpekleri ve sırtlanlar avı uzun süre kovalar, çita yakına sokulup çok hızlı kısa bir koşu yapar, leopar tek başına atılır. Kuşatmaya katılanların koşu sesleri ayrı yönlerden gelir.',
+      'Öğrenme: her av denemesi, başarısız olsa da, avcının becerisini artırır. Gruplar hangi avda başarılıysa onu daha çok seçer. Yavrular annelerinden öğrenir; çita ve leopar anneleri yavrularına av öğretir. Tür ve birey sayfalarında av kayıtları ve beceri yazar.',
+      'Grup savunması: manda, fil, babun, zebra, gnu ve zürafa sürülerinin yetişkinleri bir yavruya saldırıldığında saf tutup saldırganın üstüne yürüyebilir. Saldırı yaşayan sürü savunmayı öğrenir, sonrakinde daha kararlı olur.',
+      'Ebeveynlik: deneyimli ve sakin anneler yavrularını daha iyi besler; ilk kez doğuranlar zorlanır. Annenin ürkekliği yavruya geçer.',
+      'Sosyal yaşam: babun, aslan, zebra ve fil gruplarında sıralama kavgaları olur; babunlar ve filler kavgadan sonra birbirini tımar ederek barışır. Fil, babun ve zürafa grupları ölen bir üyelerinin başında toplanıp bekler.',
     ],
   },
   {
@@ -673,6 +685,10 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       case 'hayvanSesi':
         if (b) Efekt.yonlu(TURLER[b.tur].ses, d.oyuncu, b, 0.95, 70);
         return;
+      case 'grupSavunma':
+        if (b) Efekt.yonlu(TURLER[b.tur].ses, d.oyuncu, b, 1, 90);
+        titret('orta', ayarRef.current);
+        return;
       case 'gozlem':
       case 'vardin':
         if (b) Efekt.yonlu('sonar', d.oyuncu, b, 0.6, 200);
@@ -768,6 +784,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       case 'suOlcum':
       case 'gecisSayim':
       case 'yonetim':
+      case 'sosyal':
         Efekt.cal('odak', 0.5);
         return;
       case 'arac':
@@ -865,6 +882,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
             Iz.guncelle(d, 0.1);
             H.guncelle(d, 0.1);
             Y.guncelle(d, 0.1);
+            Sy.guncelle(d, 0.1);
             for (const o of M.olaylariAl(d)) if (G.dinlenmeOzetiSec(o) && r.ozet.length < 12 && !r.ozet.includes(o.metin)) r.ozet.push(o.metin);
           }
         } catch (e) {
@@ -885,6 +903,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
           H.guncelle(d, dt);
           S.guncelle(d, dt);
           Y.guncelle(d, dt);
+          Sy.guncelle(d, dt);
         } catch (e) {
           if (hataKaydet(e, 'oyun döngüsü')) Ses.soyle('Oyunda beklenmedik bir hata oldu. Hata kaydedildi; Ayarlar, Hata kayıtları bölümünden bana okuyabilirsin. Oyun sürüyor.', 4);
         }
@@ -1576,6 +1595,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       }
       if (kayit) {
         G.genetikSatirlari(d, tur).forEach((m, i) => ogeler.push(bilgi('gen' + i, m)));
+        Sy.turSatirlari(d, tur).forEach((m, i) => ogeler.push(bilgi('sy' + i, m)));
         if (!k.koruma.genRapor && M.taninanBireyler(k, tur).filter((b) => b.dna).length >= G.GENETIK_ESIK) k.koruma.genRapor = true;
       }
       M.taninanBireyler(k, tur).forEach((b) => ogeler.push(altMenu('birey-' + b.id, `${M.bireyAdi(b)}, ${b.cinsiyet === 'erkek' ? 'erkek' : 'dişi'} ${EVRELER[b.evre]}`, menu.ac)));
@@ -1607,6 +1627,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
           `İlk tanımlama ${ab.ilkDk !== undefined ? zamanKisa(ab.ilkDk) : 'bilinmiyor'}. Son görülme ${ab.sonDk !== undefined ? `${zamanKisa(ab.sonDk)}, ${ab.sonBolge}` : 'bilinmiyor'}. Toplam gözlem ${Math.max(1, Math.round((ab.gozlemSn || 0) / 60))} dakika. Sana alışması ${b.alisma > 0.6 ? 'yüksek' : b.alisma > 0.25 ? 'orta' : 'düşük'}.`
         ),
       ];
+      Sy.bireySatirlari(d, b).forEach((m, i) => ogeler.push(bilgi('sy' + i, m)));
       if (k.gpsli.includes(b.id)) ogeler.push(bilgi('gps', `GPS: ${Mz.gpsTarifi(d, b)}.`));
       if (ab.olum) ogeler.push(bilgi('olum', `Ölüm kaydı: ${ab.olum}.`));
       if (b.gecmis && b.gecmis.length) ogeler.push(bilgi('gecmis', `Yaşam kaydı: ${b.gecmis.map((x) => `${zamanKisa(x.dk)}, ${x.metin}`).join('. ')}.`));

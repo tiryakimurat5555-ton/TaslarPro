@@ -483,7 +483,7 @@ export function dinlenmeHedefi(k, tur) {
   return gunDk < 5 * 60 + 30 ? bas + 5 * 60 + 30 : bas + 1440 + 5 * 60 + 30; // sabah
 }
 // Dinlenirken olanların özeti (App biriktirir)
-const OZET_TURLERI = ['tanik', 'avBasladi', 'meydan', 'meydanSonuc', 'rekabet', 'hava', 'mevsim', 'yangin', 'gorevBitti', 'analizBitti', 'kacakTuzak', 'saldiri', 'belirti', 'basari', 'gizem', 'gizemCozuldu', 'insan', 'yonetim'];
+const OZET_TURLERI = ['tanik', 'avBasladi', 'meydan', 'meydanSonuc', 'rekabet', 'hava', 'mevsim', 'yangin', 'gorevBitti', 'analizBitti', 'kacakTuzak', 'saldiri', 'belirti', 'basari', 'gizem', 'gizemCozuldu', 'insan', 'yonetim', 'grupSavunma', 'yas'];
 export const dinlenmeOzetiSec = (o) => OZET_TURLERI.includes(o.tur);
 
 // =====================================================================

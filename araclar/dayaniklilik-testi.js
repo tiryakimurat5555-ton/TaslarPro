@@ -12,6 +12,7 @@ import * as Iz from '../oyun/izler.js';
 import * as H from '../oyun/hikaye.js';
 import * as S from '../oyun/su.js';
 import * as Y from '../oyun/yonetim.js';
+import * as Sy from '../oyun/sosyal.js';
 
 const deneme = +(process.argv[2] || 200);
 const KOTU = /undefined|NaN|\[object|null\b|  |\.\.(?!\.)| ,|^ /;
@@ -30,6 +31,7 @@ function oynat(d, adim) {
     H.guncelle(d, 0.1);
     S.guncelle(d, 0.1);
     Y.guncelle(d, 0.1);
+    Sy.guncelle(d, 0.1);
     for (const o of M.olaylariAl(d)) metinDenetle(o.metin, o.tur);
     if (i % 60 === 0) {
       metinDenetle(B.betimle(d, 'Dürbün'), 'betimleme');
@@ -106,6 +108,8 @@ function oynat(d, adim) {
         metinDenetle(Y.eylemYap(d, 'istilaci'), 'lantana');
       }
       Y.nufusSatirlari(d).forEach((m) => metinDenetle(m, 'nüfus'));
+      d.k.hayvanlar.slice(0, 20).forEach((b) => Sy.bireySatirlari(d, b).forEach((m) => metinDenetle(m, 'sosyal birey')));
+      ['aslan', 'cita', 'manda', 'babun'].forEach((t) => Sy.turSatirlari(d, t).forEach((m) => metinDenetle(m, 'sosyal tür')));
       Y.raporSatirlari(d.k).forEach((m) => metinDenetle(m, 'rapor'));
       Object.assign(d.oyuncu, { x: eskiK.x, y: eskiK.y });
       d.k.butce = eskiK.b;

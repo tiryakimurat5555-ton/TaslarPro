@@ -181,7 +181,7 @@ function videoGuncelle(d, dt) {
 
 // ---------- Keşif anları (karar 85) ----------
 // Hangi olaylar sinematik sunulur: App kısa bir müzik vurgusu çalar, titreşir, görüntüde kamera hayvana yaklaşır
-const KESIF_OLAYLARI = ['yeniTur', 'tanik', 'meydan', 'yuvaBulundu', 'rekabet'];
+const KESIF_OLAYLARI = ['yeniTur', 'tanik', 'meydan', 'yuvaBulundu', 'rekabet', 'grupSavunma', 'yas'];
 export function kesifAni(o) {
   if (o.kesif) return true;
   if (KESIF_OLAYLARI.includes(o.tur)) return true;

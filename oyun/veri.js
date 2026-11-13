@@ -88,6 +88,13 @@ export const DAVRANISLAR = {
   nehirGeciyor: { fiil: 'göç sırasında nehri geçiyor', ad: 'Göçte nehir geçişi', nadir: true },
   meydanOkuyor: { fiil: 'grubun liderine meydan okuyor', ad: 'Liderlik mücadelesi', nadir: true },
   bolgeKoruyor: { fiil: 'bölgesinden rakip yırtıcıları kovalıyor', ad: 'Bölge savunması', nadir: true },
+  // Aşama 13: avlanma, savunma ve sosyal yaşam (karar 68, 102, 106, 107)
+  kusatiyor: { fiil: 'avın önünü keserek kuşatıyor', ad: 'Sürü hâlinde kuşatma', nadir: true },
+  grupSavunmasi: { fiil: 'sürünün diğer yetişkinleriyle birlikte saldırgana karşı saf tutuyor', ad: 'Grup savunması', nadir: true },
+  yasTutuyor: { fiil: 'ölen grup üyesinin başında bekliyor', ad: 'Yas davranışı', nadir: true },
+  siraKavgasi: { fiil: 'grup içinde sıralama için kavga ediyor', ad: 'Sıralama kavgası' },
+  uzlasma: { fiil: 'kavgadan sonra rakibini tımar ederek barışıyor', ad: 'Uzlaşma', nadir: true },
+  avOgretiyor: { fiil: 'yavrularına avlanmayı öğretiyor', ad: 'Av öğretme', nadir: true },
 };
 
 // Hayvan sesinin anlamı (ses analizi, karar 49 ve 87)

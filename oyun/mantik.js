@@ -901,6 +901,7 @@ function grupAlarm(d, g, kaynak, sure = 6, gecikme = 0, zincir = true) {
 
 // ---------- Av ve ölüm (karar 40, 46, 102) ----------
 export const hayvanOldur = (d, b, neden) => hayvanOldu(d, b, neden, null);
+const YAS_TURLERI = ['fil', 'babun', 'zurafa'];
 function hayvanOldu(d, b, neden, avci) {
   b.olu = true;
   b.olumNedeni = neden;
@@ -908,6 +909,23 @@ function hayvanOldu(d, b, neden, avci) {
   const les = { id: d.k.sonrakiId++, x: b.x, y: b.y, tur: b.tur, bireyId: b.id, dk: d.k.dk, kalan: 1, neden, hastalik: b.hastalik ? b.hastalik.id : null };
   d.k.lesler.push(les);
   gecmisEkle(d.k, b, `Öldü: ${neden}`);
+  // Yas (karar 68): fil, babun ve zürafa grubu ölenin başında toplanır
+  if (YAS_TURLERI.includes(b.tur) && !/avlandı/.test(neden)) {
+    const g = d.k.gruplar.find((x) => x.id === b.grup);
+    const yakin = d.k.hayvanlar.filter((y) => !y.olu && y.grup === b.grup && mesafe(y, b) < 70);
+    if (g && yakin.length) {
+      g.hedef = { x: b.x, y: b.y };
+      g.plan = 'dinlen';
+      g.planBitis = d.k.dk + 90;
+      g.yas = { id: b.id, bitis: d.k.dk + 90 };
+      yakin.forEach((y) => {
+        y.ozel = { davranis: 'yasTutuyor', bitis: d.zaman + 140 };
+        gecmisEkle(d.k, y, `${taninmisMi(b) ? bireyAdi(b) : 'Grubundan bir hayvan'} öldü; başında bekledi`);
+      });
+      if (mesafe(d.oyuncu, b) <= durbunMenzili(d.k.dk, d.k) + 20)
+        olay(d, 'yas', `${BuyukHarf(SOZ[b.tur])} grubu ölen ${taninmisMi(b) ? bireyAdi(b) : 'üyesinin'} başında toplandı. ${b.tur === 'fil' ? 'Hortumlarıyla ona dokunuyor, ayaklarıyla kımıldatmaya çalışıyorlar.' : b.tur === 'babun' ? 'Yakınları sessizce yanında oturuyor, ara sıra tüylerine dokunuyor.' : 'Uzun süre başında, kıpırdamadan bekliyorlar.'} ${BuyukHarf(yerTarifi(d.oyuncu, b))}.`, 3, { id: yakin[0].id });
+    }
+  }
   // Annesini kaybeden küçük yavrular yetim kalır (karar 106)
   d.k.hayvanlar.forEach((y) => {
     if (y.anne === b.id && !y.olu && y.evre === 'yavru') {
@@ -934,6 +952,24 @@ function avciMetni(av, avci) {
   return `Avlanma gözlendi. Avcı: ${avciAdi}. Av: ${avAdi}.`;
 }
 
+// Aşama 13: türlere göre av stratejisi (karar 102). sure: kovalamadan vazgeçme (sn), yardimci: kuşatmaya katılan yetişkin sayısı
+export const AV_STRATEJI = {
+  aslan: { ad: 'pusu ve ortak kuşatma', sure: 13, yardimci: 2 },
+  leopar: { ad: 'tek başına sinsice yaklaşıp kısa atılış', sure: 8, yardimci: 0 },
+  cita: { ad: 'yakına sokulup çok hızlı kısa koşu', sure: 8, yardimci: 0, hiz: 1.15 },
+  yabanKopegi: { ad: 'sürüyle uzun soluklu takip', sure: 32, yardimci: 3 },
+  sirtlan: { ad: 'grup hâlinde dayanıklı takip', sure: 24, yardimci: 2 },
+  varsayilan: { ad: 'kovalama', sure: 13, yardimci: 0 },
+};
+// Grup savunması olasılığı (saniyede, temel): güçlü ve sürü hâlinde yaşayan otçullar ve babunlar
+const GRUP_SAVUNMA = { manda: 0.14, fil: 0.3, babun: 0.1, zebra: 0.05, gnu: 0.04, zurafa: 0.05 };
+function avciDeneyimi(g, tur, basari) {
+  if (!g.avDeneyim || typeof g.avDeneyim !== 'object') g.avDeneyim = {};
+  const x = (g.avDeneyim[tur] = Array.isArray(g.avDeneyim[tur]) && g.avDeneyim[tur].every(Number.isFinite) ? g.avDeneyim[tur] : [0, 0]);
+  x[0] = Math.min(60, x[0] + 1);
+  if (basari) x[1] = Math.min(x[0], x[1] + 1);
+}
+
 function avGuncelle(d, g, uyelerListe, dt) {
   const k = d.k;
   const t = TURLER[g.tur];
@@ -949,7 +985,10 @@ function avGuncelle(d, g, uyelerListe, dt) {
       const m = mesafe(g, b);
       if (m > 170) continue;
       if (Math.hypot(b.x, b.y) < ISTASYON.r + 8) continue;
-      const puan = m * (b.evre === 'yavru' || b.evre === 'yasli' ? 0.6 : 1) * (b.tur === 'manda' ? 2.2 : 1) * (b.hastalik || b.kondisyon < 0.35 ? 0.55 : 1);
+      // Aşama 13 (karar 102): grup hangi türde başarılıysa onu yeğler (av deneyimi)
+      const dn = g.avDeneyim && Array.isArray(g.avDeneyim[b.tur]) ? g.avDeneyim[b.tur] : [0, 0];
+      const oran = Number.isFinite(dn[0]) && Number.isFinite(dn[1]) ? (dn[1] + 1) / (dn[0] + 2) : 0.5;
+      const puan = m * (b.evre === 'yavru' || b.evre === 'yasli' ? 0.6 : 1) * (b.tur === 'manda' ? 2.2 : 1) * (b.hastalik || b.kondisyon < 0.35 ? 0.55 : 1) * (1.15 - 0.3 * oran);
       if (puan < enPuan) {
         enPuan = puan;
         en = b;
@@ -990,6 +1029,9 @@ function avGuncelle(d, g, uyelerListe, dt) {
       g.av.evre = 'kovala';
       g.av.t = 0;
       g.av.avciId = avci.id;
+      // Sürü hâlinde avlanma: türün stratejisine göre birkaç yetişkin yandan kuşatır
+      const st = AV_STRATEJI[g.tur] || AV_STRATEJI.varsayilan;
+      g.av.yardimcilar = yetiskin.filter((b) => b.id !== avci.id).slice(0, st.yardimci).map((b) => b.id);
       const avGrup = k.gruplar.find((x) => x.id === av.grup);
       if (avGrup) grupAlarm(d, avGrup, avci, 9, 1.1);
       if (mesafe(d.oyuncu, avci) <= durbunMenzili(k.dk, k)) {
@@ -1005,13 +1047,65 @@ function avGuncelle(d, g, uyelerListe, dt) {
     return;
   }
   g.av.t += dt;
-  bireyYuru(d, avci, av.x, av.y, t.hiz, dt);
+  const st = AV_STRATEJI[g.tur] || AV_STRATEJI.varsayilan;
+  const bec = (b) => (Number.isFinite(b.beceri) ? b.beceri : 0.4);
+  const beceri = bec(avci);
+  bireyYuru(d, avci, av.x, av.y, t.hiz * (st.hiz || 1) * (0.92 + 0.16 * beceri), dt);
   avci.davranis = 'kovaliyor';
   avci.kosu = d.zaman + 0.6;
   av.kosu = d.zaman + 0.6;
-  const m = mesafe(avci, av);
-  if (m < 1.6) {
-    const les = hayvanOldu(d, av, `avlandı (${kucuk(SOZ[g.tur])})`, avci);
+  // Yardımcılar avın önüne ve yanlarına koşar (kuşatma)
+  let katil = avci;
+  let m = mesafe(avci, av);
+  (g.av.yardimcilar || []).forEach((id, i) => {
+    const y = birey(d, id);
+    if (!y || y.olu) return;
+    const yan = i % 2 ? 1 : -1;
+    const a = (av.yon || 0) + yan * 0.9;
+    bireyYuru(d, y, av.x + Math.sin(a) * 6, av.y + Math.cos(a) * 6, t.hiz * 0.95, dt);
+    y.davranis = 'kusatiyor';
+    y.kosu = d.zaman + 0.6;
+    const my = mesafe(y, av);
+    if (my < m) {
+      m = my;
+      katil = y;
+    }
+  });
+  // Grup savunması (karar 107): güçlü otçul sürüsünün yetişkinleri saldırgana karşı saf tutar; deneyimli sürü daha kararlı
+  const avGrubu = k.gruplar.find((x) => x.id === av.grup);
+  const sv = GRUP_SAVUNMA[av.tur];
+  if (sv && avGrubu && !Number.isFinite(avGrubu.savunmaDeneyim)) avGrubu.savunmaDeneyim = 0;
+  if (sv && avGrubu && (av.evre === 'yavru' || av.evre === 'genc' || av.tur === 'manda' || av.tur === 'fil')) {
+    const savunanlar = k.hayvanlar.filter((b) => !b.olu && b.grup === av.grup && b.id !== av.id && (b.evre === 'yetiskin' || b.evre === 'yasli') && mesafe(b, av) < 22);
+    if (savunanlar.length >= 2 && d.rng() < sv * (1 + (avGrubu.savunmaDeneyim || 0)) * dt) {
+      savunanlar.slice(0, 4).forEach((b) => {
+        b.ozel = { davranis: 'grupSavunmasi', bitis: d.zaman + 12 };
+        b.kosu = d.zaman + 1;
+      });
+      avGrubu.savunmaDeneyim = Math.min(1, (avGrubu.savunmaDeneyim || 0) + 0.15);
+      avciDeneyimi(g, av.tur, false);
+      avci.beceri = Math.min(1, beceri + 0.01);
+      if (!avci.hastalik && d.rng() < (av.tur === 'manda' || av.tur === 'fil' ? 0.2 : 0.05)) yaraVer(d, avci, `${kucuk(SOZ[av.tur])} sürüsünün savunmasında yaralandı`);
+      g.av = null;
+      g.plan = 'dinlen';
+      g.planBitis = k.dk + arasi(d.rng, 40, 80);
+      g.x = avci.x;
+      g.y = avci.y;
+      if (mesafe(d.oyuncu, av) <= durbunMenzili(k.dk, k)) {
+        olay(d, 'grupSavunma', `${BuyukHarf(SOZ[av.tur])} sürüsü saf tuttu! Yetişkinler ${kucuk(SOZ[g.tur])} grubunun üstüne yürüdü, ${av.evre === 'yavru' ? 'yavru' : 'av'} kurtuldu. ${BuyukHarf(yerTarifi(d.oyuncu, av))}.`, 4, { id: savunanlar[0].id });
+        arsivOlay(d, `Grup savunması: ${kucuk(SOZ[av.tur])} sürüsü ${kucuk(SOZ[g.tur])} saldırısını püskürttü.`);
+      }
+      return;
+    }
+  }
+  if (m < (st.yakala || 1.6)) {
+    avciDeneyimi(g, av.tur, true);
+    katil.beceri = Math.min(1, bec(katil) + 0.05);
+    (g.av.yardimcilar || []).forEach((id) => {
+      const y = birey(d, id);
+      if (y && y !== katil) y.beceri = Math.min(1, bec(y) + 0.03);
+    });
+    const les = hayvanOldu(d, av, `avlandı (${kucuk(SOZ[g.tur])})`, katil);
     const avg = k.gruplar.find((x) => x.id === av.grup);
     if (avg) tehlikeYeriEkle(k, avg, av);
     g.aclik = 0;
@@ -1022,7 +1116,9 @@ function avGuncelle(d, g, uyelerListe, dt) {
     g.av = null;
     return;
   }
-  if (g.av.t > 13 || m > 55) {
+  if (g.av.t > st.sure || m > 55) {
+    avciDeneyimi(g, av.tur, false);
+    avci.beceri = Math.min(1, beceri + 0.02); // başarısız denemeden de öğrenir
     // Kaçan av ya da (manda gibi güçlü avlarda) avcı yaralanabilir (karar 28)
     if (!av.hastalik && d.rng() < 0.12) yaraVer(d, av, 'avcıdan kaçarken yaralandı');
     av.korku = Math.min(1, (av.korku || 0) + 0.5); // kurtulan av bir süre ürkek olur
@@ -1674,7 +1770,7 @@ function davranisBelirle(d, b, g, hareketli) {
   if (b.hastalik && b.hastalik.siddet > 0.65 && g.alarm <= 0) return 'dinleniyor';
   switch (g.plan) {
     case 'av':
-      if (g.av && g.av.evre === 'kovala') return g.av.avciId === b.id ? 'kovaliyor' : 'yuruyor';
+      if (g.av && g.av.evre === 'kovala') return g.av.avciId === b.id ? 'kovaliyor' : (g.av.yardimcilar || []).includes(b.id) ? 'kusatiyor' : 'yuruyor';
       return g.av ? 'pusuda' : 'yuruyor';
     case 'beslen':
       return hareketli ? 'yuruyor' : 'besleniyor';
@@ -1755,7 +1851,7 @@ function bireyGuncelle(d, b, g, dt) {
     b.kosu = d.zaman + 0.6; // koşu sesi için (App)
     if (t.suCanlisi) bireyYuru(d, b, b.x + Math.sin(a) * 6, nehirY(b.x + Math.sin(a) * 6), hiz, dt); // suya dalar
     else bireyYuru(d, b, b.x + Math.sin(a) * 20, b.y + Math.cos(a) * 20, hiz, dt);
-  } else if (g.plan === 'av' && g.av && g.av.evre === 'kovala' && g.av.avciId === b.id) {
+  } else if (g.plan === 'av' && g.av && g.av.evre === 'kovala' && (g.av.avciId === b.id || (g.av.yardimcilar || []).includes(b.id))) {
     // avGuncelle yürütüyor
   } else {
     const sik = g.goc ? 0.35 : 1; // göçte sürü sıkışık yürür (geçitten birlikte geçsin)

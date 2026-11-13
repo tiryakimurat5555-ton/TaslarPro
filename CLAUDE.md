@@ -262,6 +262,18 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   yanık; 1.000), golet (eko.goletRestore → buharlaşma ×0,8; 4.000). Merkez > Ekolojik yönetim (eylemler, lantanalı alanlara rota, nüfus
   dengesi, raporlar); Yardım "Saha gezileri ve ekolojik yönetim". Testler: dayanıklılık 300/300 (gezi ve yönetim metinleri), bot,
   menu-tara 196 sayfa iki kipte sorun 0, uzak sahne görüntüleri (scratchpad uzak-goruntu.cjs). Telefonda doğrulanmadı.
+- Aşama 13 avlanma, savunma, sosyal yaşam (13 Kasım, Murat "devam" dedi; kararlar 68, 102, 106, 107; sayılar ÖNERİ). mantik: AV_STRATEJI
+  (aslan pusu+2 yardımcı 13 sn, leopar 8 sn tek, çita 8 sn hız ×1,15, yaban köpeği 3 yardımcı 32 sn, sırtlan 2 yardımcı 24 sn);
+  g.av.yardimcilar avın önüne/yanına koşar ('kusatiyor', koşu sesi), yakalayan en yakın avcı; b.beceri (0-1, varsayılan 0,4; hız
+  ×0,92+0,16·beceri; başarı +0,05, yardımcı +0,03, başarısız +0,02); g.avDeneyim {tür: [deneme, başarı]} av seçimini etkiler (×1,15-0,3·oran).
+  GRUP_SAVUNMA (manda, fil, babun, zebra, gnu, zürafa; yavru/genç ya da manda/fil): 22 m'de ≥2 yetişkin → saniyede olasılık ×(1+
+  g.savunmaDeneyim) kovalamayı keser, 'grupSavunmasi', olay 'grupSavunma' (3B tür sesi, keşif anı), avcı yaralanabilir. Yas (YAS_TURLERI
+  fil/babun/zürafa, av dışı ölüm): grup leşe gider, 'yasTutuyor', olay 'yas'. veri DAVRANISLAR + kusatiyor, grupSavunmasi, yasTutuyor,
+  siraKavgasi, uzlasma, avOgretiyor. `oyun/sosyal.js` (Sy.guncelle 2 sn'de bir): günlük beceri ve korku anneden yavruya, anne
+  yavruBuyuttu (büyüyen yavru), deneyim/kişilik yavru kondisyonu (ilk anne -0,012, ≥2 yavru +0,012, sakin +0,005, ürkek -0,006);
+  sıralama kavgası (babun, aslan, zebra, fil, impala) + uzlaşma (d.sonrakiler, kayda yazılmaz); çita/leopar/aslan annesi beslenirken av
+  öğretir (yavru becerisi +0,04). bireySatirlari / turSatirlari (birey ve tür sayfası). Yardım "Avlanma, savunma ve sosyal yaşam".
+  Testler: dayanıklılık 300/300, bot 8 gün, ekosistem 30 gün (nüfus dengede; impala 12→6 en çok avlanan), menu-tara 241 sayfa sorun 0.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

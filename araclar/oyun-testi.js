@@ -7,6 +7,7 @@ import * as Iz from '../oyun/izler.js';
 import * as H from '../oyun/hikaye.js';
 import * as S from '../oyun/su.js';
 import * as Y from '../oyun/yonetim.js';
+import * as Sy from '../oyun/sosyal.js';
 import { TURLER, YERLER } from '../oyun/veri.js';
 import * as K from '../oyun/kesif.js';
 
@@ -38,6 +39,7 @@ for (let t = 0; t < toplam; t += adim) {
     H.guncelle(d, 0.1);
     S.guncelle(d, 0.1);
     Y.guncelle(d, 0.1);
+    Sy.guncelle(d, 0.1);
   const gecen = performance.now() - t0;
   sureTop += gecen;
   sureSayi++;
@@ -149,6 +151,8 @@ console.log(`Performans: kare başına mantık ortalama ${(sureTop / sureSayi).t
 k.mesajlar.forEach((m) => KOTU.test(m.metin) && kotu.add(m.metin.slice(0, 160)));
 console.log(`Hikâye: gizemler ${JSON.stringify(Object.fromEntries(Object.entries(k.hikaye.gizemler).map(([a, g]) => [a, g.bitti ? 'çözüldü' : g.adim + 1 + '. adım'])))}, başarılar ${Object.keys(k.hikaye.basarilar).join(',')}, görüşme ${k.hikaye.gorusmeler}, sayaç ${JSON.stringify(k.hikaye.sayac)}`);
 console.log(`Su: ${S.suRaporu(k)}`);
+console.log(`Sosyal: ${['aslan', 'sirtlan', 'yabanKopegi', 'cita', 'leopar'].map((t) => t + ' ' + Sy.turSatirlari(d, t).join(' ')).join(' | ')}`);
+console.log(`Beceri: ${k.hayvanlar.filter((b) => !b.olu && Number.isFinite(b.beceri)).map((b) => b.tur + ':' + b.beceri.toFixed(2)).join(' ')}; anneler ${k.hayvanlar.filter((b) => b.yavruBuyuttu).length}; savunma ${k.gruplar.filter((g) => g.savunmaDeneyim).map((g) => g.tur + ':' + g.savunmaDeneyim.toFixed(2)).join(' ')}`);
 console.log(`Gezi: ${K.uzakSatirlari(k).map((x) => x.metin).join(' | ')}`);
 console.log(`Yönetim: lantana ${Object.keys(k.eko.istilaci || {}).length}, yakma ${k.eko.kontrolluYakmaYil}, gölet ${!!k.eko.goletRestore}, raporlar ${JSON.stringify(Y.raporSatirlari(k))}`);
 console.log(`Bozuk metin: ${kotu.size}`);
