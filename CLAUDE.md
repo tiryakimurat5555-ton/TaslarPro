@@ -290,6 +290,10 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   ağaç (110 m), sıcak günün 12-15,5 arasında otçullar o gölgeye çekilir. rutinMetni(d, g) birey sayfasında. su.js kameraDenetle:
   istasyonun 45 m çevresine giren kuş olmayan hayvan, grup başına 2 saatte bir kayıt (k.su.kamera son 20), gece istasyondayken tehlikeli
   hayvan → anında olay 'kamera'; sabah 7'de gecenin özeti mesaj; Merkez > Ekolojik yönetim > İstasyon güvenlik kamerası. Yardım +2 satır.
+- Aşama 16 deneme kolaylığı (13 Kasım, Murat "devam" dedi): App YENILIKLER tablosu (en yeniler üstte, her satır "Nerede:") → ana menü
+  'oyun' > Yenilikler; 'deneme' Deneme araçları: zamanı 1/6/24 saat ileri al (dinlenBaslat), bütçe +20.000, itibar 120 (saha gezileri
+  açılır), bütün ekipman (adetliler stok +2); k.denemeKullanildi. Yeni özellik eklenince YENILIKLER'e satır ekle. Tarayıcıda uçtan uca:
+  scratchpad deneme-arac.cjs (itibar → ekipman → Saha gezileri → Yola çık → yolculuk sonunda Kızıl Tuz Gölü'nde) hatasız.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

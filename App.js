@@ -120,6 +120,23 @@ const geriOgesi = (f) => ({ id: 'geri', etiket: 'Geri', ikincil: true, sec: () =
 const zamanKisa = (dk) => `${M.gunNo(dk)}. gün ${M.saatMetni(dk)}`;
 const kucuk = (s) => s.toLocaleLowerCase('tr-TR');
 
+// ---------------- Yenilikler (en yeniler üstte): Murat denerken neyin nerede olduğunu bulsun diye ----------------
+const YENILIKLER = [
+  { baslik: 'Sürülerin günlük rutinleri', metin: 'Her sürü belli saatte belli su başına iner ve belli bir ağacın gölgesinde dinlenir; sıcak öğlelerde gölgeye çekilir.', nerede: 'tanımlı bir hayvanın Arşiv sayfasında, sürüsünün alışkanlığı ve ağacın yönü.' },
+  { baslik: 'İstasyon güvenlik kamerası', metin: 'İstasyonun çevresine gelen büyük hayvanları kaydeder, sabah gecenin özetini verir.', nerede: 'Merkez, Ekolojik yönetim, İstasyon güvenlik kamerası; özet Mesajlar\'da.' },
+  { baslik: 'Özel bireyler', metin: 'Kara leopar, beyaz zürafa, benekli zebra, büyük dişli fil ve üç bacaklı aslan savanda yaşıyor.', nerede: 'sahada; onları dürbünle tanımlarsan büyük keşif olarak duyurulur.' },
+  { baslik: 'Tuz yalağı', metin: 'Otçul sürüler birkaç günde bir mineralli toprağı yalamaya gelir.', nerede: 'Yerler menüsünde Tuz yalağı.' },
+  { baslik: 'Sağlık dosyası ve göç takibi', metin: 'Bireyin beslenmesi, hastalık ve yaralanma geçmişi; göçmen türlerin çıkış, dönüş ve kayıpları.', nerede: 'birey sayfası; Merkez, Ekolojik yönetim, Göç takibi.' },
+  { baslik: 'Avlanma, savunma ve sosyal yaşam', metin: 'Sürü hâlinde kuşatma, öğrenen avcılar, grup savunması, yas, sıralama kavgası ve uzlaşma, av öğreten anneler.', nerede: 'sahada gözleyerek; tür ve birey sayfalarında av kayıtları ve beceri.' },
+  { baslik: 'Saha gezileri', metin: 'Kızıl Tuz Gölü, Bulutlu Dağ Ormanı ve Papirüs Bataklığı: her biri beş noktalı ayrı bir alan, kendine özgü canlılar ve ortam sesi.', nerede: 'Merkez, Saha gezileri; istasyondayken Yola çık. Alanda yukarı ve aşağı kaydırarak gezilir.' },
+  { baslik: 'Ekolojik yönetim', metin: 'İstilacı lantana temizliği, kontrollü yakma, gölet restorasyonu, nüfus dengesi ve yıllık koruma raporu.', nerede: 'Merkez, Ekolojik yönetim.' },
+  { baslik: 'Su araştırması', metin: 'Yedi noktada su ölçümü, suda yaşayanları gözleme ve geçitlerde hayvan geçişlerini sayma.', nerede: 'Doğa, Su araştırması.' },
+  { baslik: 'İstasyonun çevresindeki yaşam', metin: 'İstasyondayken ara sıra çevredeki küçük canlılar anlatılır.', nerede: 'istasyonda beklerken kendiliğinden.' },
+  { baslik: 'Gizemler, insanlar, başarılar', metin: 'Adım adım çözülen gizemler, nadir gelen korucu, çoban ve araştırmacı, ödüllü bilimsel başarılar.', nerede: 'Merkez, Gizemler ve Bilimsel başarılar; ziyaretçi gelince Yerler ve ana menüde Konuş.' },
+  { baslik: 'Araç sesleri', metin: 'Binerken ve inerken kapı sesi, sürerken hıza göre motor sesi.', nerede: 'araca binince; iki parmakla yukarı kaydır.' },
+  { baslik: 'Deneme araçları', metin: 'Zamanı ileri alma, bütçe, itibar ve bütün ekipman kısayolları.', nerede: 'ana menü, Durum, ayarlar, yardım ve kayıt, Deneme araçları.' },
+];
+
 // ---------------- Nasıl oynanır (Kayıp Okyanus Yardım gibi konu konu) ----------------
 const YARDIM = [
   {
@@ -1371,6 +1388,8 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         bilgi('durum', `Durum: ${M.durumOzeti(d)}`),
         altMenu('ayarlar', 'Ayarlar', menu.ac),
         altMenu('yardim', 'Nasıl oynanır', menu.ac),
+        altMenu('yenilikler', 'Yenilikler: son eklenenler ve nerede bulunur', menu.ac),
+        altMenu('deneme', 'Deneme araçları', menu.ac, 'Yeni özellikleri hızlıca denemek için zaman, bütçe ve itibar kısayolları.'),
         {
           id: 'cik',
           etiket: 'Kaydet ve ana menüye dön',
@@ -1381,6 +1400,49 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
           },
         },
       ]);
+    }
+    if (u === 'yenilikler') {
+      return liste(
+        u,
+        'Yenilikler',
+        YENILIKLER.map((y, i) => bilgi('y' + i, `${y.baslik}. ${y.metin} Nerede: ${y.nerede}`)),
+        'En yeniler üstte. Her satır özelliği ve oyunda nerede bulunduğunu söyler.'
+      );
+    }
+    if (u === 'deneme') {
+      const ileri = (dk, ad) => ({
+        id: 'z' + dk,
+        etiket: ad,
+        sec: () => {
+          menu.kapat();
+          dinlenBaslat(k.dk + dk);
+          return 'sessiz';
+        },
+      });
+      return liste(
+        u,
+        'Deneme araçları',
+        [
+          ileri(60, 'Zamanı bir saat ileri al'),
+          ileri(6 * 60, 'Zamanı altı saat ileri al'),
+          ileri(24 * 60, 'Zamanı bir gün ileri al'),
+          { id: 'para', etiket: 'Bütçeye 20.000 lira ekle', sec: yap(() => ((k.butce += 20000), (k.denemeKullanildi = true), `Bütçe ${Mz.liraSozu(k.butce)}.`)) },
+          { id: 'itibar', etiket: 'İtibarı 120 yap: bütün saha gezileri açılır', sec: yap(() => ((k.itibar = Math.max(k.itibar, 120)), (k.denemeKullanildi = true), `Bilimsel itibar ${k.itibar}. Bütün saha gezileri ve ekipmanların çoğu açıldı.`)) },
+          {
+            id: 'ekipman',
+            etiket: 'Bütün ekipmanı ver',
+            sec: yap(() => {
+              Object.keys(Mz.EKIPMANLAR).forEach((id) => {
+                if (Mz.EKIPMANLAR[id].adet) k.stok[id] = (k.stok[id] || 0) + 2;
+                else k.ekipman[id] = true;
+              });
+              k.denemeKullanildi = true;
+              return 'Bütün ekipman verildi: gece dürbünü, termal kamera, dron, tekne, kamp takımı, mağara takımı ve diğerleri; kamera tuzağı ve GPS tasmasından ikişer.';
+            }),
+          },
+        ],
+        'Bu kısayollar yalnızca yeni özellikleri hızlı denemek içindir; zaman ileri alınırken savan normal biçimde yaşar.'
+      );
     }
     if (u === 'cevre') {
       const l = M.gorunurler(d).slice(0, 20);
