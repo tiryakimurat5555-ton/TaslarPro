@@ -25,6 +25,7 @@ import * as H from './oyun/hikaye.js';
 import * as S from './oyun/su.js';
 import * as Y from './oyun/yonetim.js';
 import * as Sy from './oyun/sosyal.js';
+import * as Il from './oyun/iletisim.js';
 import { KUCUKLER, KUCUK_SIRASI, GRUPLAR, MAGARA_ODALARI, UZAK_ALANLAR, odaListesi, aktifOda, bolumAdi, KUCUK_SESLI, bulunabilirler } from './oyun/kucukler.js';
 import * as Efekt from './oyun/efekt.js';
 import { sahneKur } from './oyun/sahne.js';
@@ -272,6 +273,9 @@ const kucuk = (s) => s.toLocaleLowerCase('tr-TR');
 
 // ---------------- Yenilikler (en yeniler üstte): Murat denerken neyin nerede olduğunu bulsun diye ----------------
 const YENILIKLER = [
+  { baslik: 'Garaj: ATV, arazi motosikleti ve araştırma kamyonu', metin: 'Merkezden üç yeni araç alınabilir. ATV arazi aracından hızlı ve çeviktir; arazi motosikleti en hızlısıdır ama gürültülüdür. İkisi de açık olduğu için hayvanlar seni daha kolay fark eder, sürücü selede görünür. Araştırma kamyonu yavaştır ama arkasında mobil laboratuvar vardır: numunelerini istasyona dönmeden kamyona teslim edersin, dronun kamyonda şarj olur ve hayvanlar onu en az fark eder. Her aracın motor sesi farklı perdededir. Sahada tek araç durur; istasyondayken garajdan değiştirirsin.', nerede: 'Merkez, Ekipman bölümünde satın al; Merkez, Garaj bölümünde seç.' },
+  { baslik: 'Hayvanlar arasında iletişim', metin: 'Hayvanlar artık birbirleriyle haberleşir. Aslanlar, leoparlar, çitalar, sırtlanlar, yaban köpekleri ve gergedanlar bölgelerini kokuyla işaretler; İzleri incele bu koku işaretlerini de bulur ve bölgenin sahipli olduğunu söyler. Filler, aslanlar, zebralar ve sırtlanlar selamlaşır; yaban köpekleri ava çıkmadan önce selamlaşma töreni yapar. Geceleri aslanlar hep birlikte kükrer, uzaktan duyarsın. Filler bazen durup uzaktaki sürülerin alçak gürlemelerini dinler. Yakında yırtıcı varken impala, ceylan, zebra ve gnu beden diliyle sürüyü uyarır. Tür sayfasında türün iletişim biçimleri yazar.', nerede: 'sahada dürbünle; Doğa, İzleri incele; Arşiv, tür sayfası.' },
+  { baslik: 'Su başında tedirginlik', metin: 'Su içmeye gelen otçullar su başında timsah görürse ya da orada kısa süre önce av olmuşsa hemen içmez; durup tedirgin bekler. Çok susamışlarsa başlarını sık sık kaldırarak hızlı hızlı içip uzaklaşırlar, değilse öbür su kaynağına giderler. Sıcak günlerde ve kurak mevsimde hayvanlar daha sık susar, yağmurlu günlerde daha az; yavrulu sürüler daha çok içer.', nerede: 'gölet ve nehir kıyısında dürbünle.' },
   { baslik: 'Kesik kesik adım sesi', metin: 'Yürürken üç dört adımdan sonra yarım saniyelik boşluk olması için olası bir sebep düzeltildi: telefonda bir ses dosyası sonuna kadar çaldıktan sonra yeniden çalınırken başa sarılması bitmeden başlatılıyor, o adım sessiz kalabiliyordu. Artık başa sarma bittikten sonra çalınıyor ve her ses çalıp bitince bir sonraki sefer için önceden başa sarılıyor. Bu düzeltme bütün ses efektlerini etkiler.', nerede: 'sahada yürürken.' },
   { baslik: 'Orman adım sesi', metin: 'Galeri ormanında ve yeşil akasyalıkta, yani yaprak döküntüsü üstünde yürürken çıkan adım sesi düzeltildi: eskiden neredeyse yalnız tiz bir hışırtıydı ve her adımın kuyruğu bir sonraki adıma kadar sürdüğü için adımlar birbirine karışıp sürekli bir "şşş" sesine dönüyordu. Artık her adım kısa bir yaprak çıtırtısı ve belirgin bir ayak basışı; adımlar tek tek duyuluyor.', nerede: 'galeri ormanında ve akasyalıkta yürürken.' },
   { baslik: 'Adım sesleri yenilendi', metin: 'Karakterin adım sesleri baştan hazırlandı: bazı adımlarda asıl basış 0,2 saniye geç geliyordu, ritim aksak duyuluyordu; artık her adım basış anında başlıyor. Bazı adımlar sert kesilip çıt sesi yapıyordu, artık yumuşakça bitiyor. Suda ve çamurda tek dosyada iki adım duyulan sesler ayrıldı. Otta ve yapraklarda ses neredeyse yalnız hışırtıydı; altına ayağın yere basış sesi eklendi. Bütün zeminlerde dört adımın yüksekliği eşit; sıkıştırma gecikmesi olmasın diye dosyalar sıkıştırılmamış.', nerede: 'sahada yürürken.' },
@@ -389,6 +393,8 @@ const YARDIM = [
       'İzler: Doğa bölümünde İzleri incele, 12 metre içindeki en taze izi okur: hangi hayvan, ne kadar taze, hangi yöne gitmiş. İzi takip et seni izlerin gittiği yere götürür. Sırtlan ve yaban köpeği inleri, leoparın avını sakladığı ağaç, aslanların yavru sığınağı, balık kartalı ve timsah yuvası, babunların uyku ağaçları gizlidir; izle, gece GPS kayıtlarıyla ya da dronla bulunur. Hayvanlar geceleri buralara döner.',
       'Duyular: hayvanlar seni koku, görme ve işitmeyle fark eder. Rüzgâr arkandan esiyorsa kokun onlara gider; fil, gergedan ve sırtlan gibi koku duyusu güçlü türler çok uzaktan kaçar. Rüzgâr yüzüne gelecek biçimde yaklaş, kıpırdamadan bekle; uzun otlar seni gizler. Avcıdan kaçıp kurtulan ya da tuzağa düşen hayvan bir süre ürkek olur; sürüler avlandıkları yerden birkaç gün uzak durur. Bir sürünün alarm sesi yakındaki başka türleri de kaçırır.',
       'Video: aletlerde Video kamera var; gözlediğin hayvanı 10 saniye çeker. Nadir bir davranışın ilk videosu bilimsel olarak çok değerlidir. Videolar Arşiv bölümünde.',
+      'Garaj: Merkez, Ekipman bölümünden ATV, arazi motosikleti ve araştırma kamyonu alınır; Merkez, Garaj bölümünde seçilir. Sahada tek araç durur, değiştirmek için istasyonda olmalısın. ATV ve motosiklet hızlıdır ama açıktır, hayvanlar seni daha kolay fark eder. Kamyon yavaştır; numuneleri ona teslim edersin, dron onda şarj olur.',
+      'İletişim: hayvanlar kokuyla bölge işaretler, selamlaşır, gece kükrer, beden diliyle tehlikeyi bildirir. İzleri incele koku işaretlerini de bulur. Su başında timsah görenler tedirgin bekler.',
       'Saha kampı: kamp takımıyla Doğa bölümünden kurulur. Kamptayken hayvanlar seni daha az fark eder. Kampta ya da istasyonda ana menüden Dinlen seçilince zaman hızla akar; uyanınca olanlar özetlenir.',
     ],
   },
@@ -869,6 +875,9 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       case 'hayvanSesi':
         if (b) Efekt.yonlu(TURLER[b.tur].ses, d.oyuncu, b, 0.95, 70);
         return;
+      case 'iletisim':
+        if (b && o.ses) Efekt.yonlu(TURLER[b.tur].ses, d.oyuncu, b, 1, o.duyma || 120);
+        return;
       case 'grupSavunma':
         if (b) Efekt.yonlu(TURLER[b.tur].ses, d.oyuncu, b, 1, 90);
         titret('orta', ayarRef.current);
@@ -1121,6 +1130,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
             H.guncelle(d, 0.1);
             Y.guncelle(d, 0.1);
             Sy.guncelle(d, 0.1);
+            Il.guncelle(d, 0.1);
             for (const o of M.olaylariAl(d)) if (G.dinlenmeOzetiSec(o) && r.ozet.length < 12 && !r.ozet.includes(o.metin)) r.ozet.push(o.metin);
           }
         } catch (e) {
@@ -1142,6 +1152,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
           S.guncelle(d, dt);
           Y.guncelle(d, dt);
           Sy.guncelle(d, dt);
+          Il.guncelle(d, dt);
         } catch (e) {
           if (hataKaydet(e, 'oyun döngüsü')) Ses.soyle('Oyunda beklenmedik bir hata oldu. Hata kaydedildi; Ayarlar, Hata kayıtları bölümünden bana okuyabilirsin. Oyun sürüyor.', 4);
         }
@@ -1283,7 +1294,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
           dronSesSon = simdi;
         }
         // Araç motoru: araçtayken rölanti, hızlandıkça yükselir (düzey ve perde)
-        if (d.k.aracta && a.efekt !== false) Efekt.motorDuzey(0.28 + 0.72 * Math.min(1, Math.abs(d.aracHiz) / ARAC.hiz));
+        if (d.k.aracta && a.efekt !== false) { const AR = M.aracOzellik(d.k); Efekt.motorDuzey(0.28 + 0.72 * Math.min(1, Math.abs(d.aracHiz) / AR.hiz), AR.perde, AR.duzey); }
         kurekYol += sonuc.kurek || 0;
         if (kurekYol > 2.4) {
           kurekYol = 0;
@@ -1753,7 +1764,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     }
     if (u === 'yerler') {
       const ogeler = [];
-      if (!k.aracta) ogeler.push({ id: 'arac', etiket: `Arazi aracı, ${yerTarifi(k.arac)}`, sec: kapatVe(() => M.yerGit(d, 'arac')) });
+      if (!k.aracta) ogeler.push({ id: 'arac', etiket: `${M.aracAdi(k)}, ${yerTarifi(k.arac)}`, sec: kapatVe(() => M.yerGit(d, 'arac')) });
       if (k.kamp) ogeler.push({ id: 'kamp', etiket: `Saha kampı, ${k.kamp.bolge}, ${yerTarifi(k.kamp)}`, sec: kapatVe(() => M.yerGit(d, 'kamp')) });
       if (H.ziyaretci(d) && !k.teknede) ogeler.push({ id: 'ziyaretci', etiket: `Ziyaretçi: ${H.ziyaretciTarifi(d)}`, ipucu: H.KISILER[H.ziyaretci(d).kim].unvan, sec: kapatVe(() => M.yerGit(d, 'ziyaretci')) });
       if (G.tekneVar(k) && !k.teknede) ogeler.push({ id: 'tekne', etiket: `Tekne, ${yerTarifi(k.tekne)}`, ipucu: 'Teknenin bağlı olduğu kıyıya yürürsün; yanına varınca iki parmakla yukarı kaydırıp binersin.', sec: kapatVe(() => M.yerGit(d, 'tekne')) });
@@ -1812,6 +1823,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         altMenu('gorevler', `Görevler: ${k.teklifler.filter((t) => t.durum === 'kabul').length} süren, ${k.teklifler.filter((t) => t.durum === 'teklif').length} teklif`, menu.ac),
         altMenu('arastirmalar', `Araştırmalar: ${hazir} analize hazır, ${suren} analizde`, menu.ac),
         altMenu('ekipman', 'Ekipman', menu.ac),
+        altMenu('garaj', `Garaj: sahada ${M.aracAdi(k)}`, menu.ac),
         altMenu('tesisler', `Tesisler: ${k.tesisler.length} / ${Object.keys(Mz.TESISLER).length} kurulu`, menu.ac),
         altMenu('personel', `Personel: ${k.personel.length} / ${Mz.personelKapasitesi(k)}`, menu.ac),
         altMenu('laboratuvar', `Laboratuvar: ${k.numuneler.filter((n) => n.durum === 'analiz').length} analizde, ${k.numuneler.filter((n) => n.durum === 'sira').length} sırada, ${k.numuneKutusu.length} kutunda`, menu.ac),
@@ -1913,6 +1925,15 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       });
       return liste(u, 'Ekipman', ogeler, `Bütçe ${Mz.liraSozu(k.butce)}.`);
     }
+    if (u === 'garaj') {
+      const ogeler = G.garajSatirlari(d).map((x) => ({
+        id: x.tur,
+        etiket: x.metin,
+        ipucu: x.tarif,
+        sec: x.sahip && !x.secili ? yap(() => G.aracDegistir(d, x.tur)) : undefined,
+      }));
+      return liste(u, 'Garaj', ogeler, 'Sahada tek araç durur. Araç ancak istasyondayken, araç da garajın yakınındayken değiştirilir. Yakıt sınırsız, bakım gerekmez.');
+    }
     if (u === 'tesisler') {
       const ogeler = Object.keys(Mz.TESISLER).map((id) => {
         const dur = Mz.tesisDurumu(k, id);
@@ -1964,6 +1985,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       if (kayit) {
         G.genetikSatirlari(d, tur).forEach((m, i) => ogeler.push(bilgi('gen' + i, m)));
         Sy.turSatirlari(d, tur).forEach((m, i) => ogeler.push(bilgi('sy' + i, m)));
+        Il.turSatirlari(d, tur).forEach((m, i) => ogeler.push(bilgi('il' + i, m)));
         if (!k.koruma.genRapor && M.taninanBireyler(k, tur).filter((b) => b.dna).length >= G.GENETIK_ESIK) k.koruma.genRapor = true;
       }
       M.taninanBireyler(k, tur).forEach((b) => ogeler.push(altMenu('birey-' + b.id, `${M.bireyAdi(b)}, ${b.cinsiyet === 'erkek' ? 'erkek' : 'dişi'} ${EVRELER[b.evre]}`, menu.ac)));

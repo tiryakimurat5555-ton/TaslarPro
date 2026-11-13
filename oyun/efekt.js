@@ -240,7 +240,7 @@ export const ortamDurumu = () => Object.fromEntries(Object.entries(katmanlar).ma
 // Aracın motor sesi (Kayıp Okyanus'taki itici döngüsü gibi): sürerken sürekli çalar, düzeyi ve perdesi hıza göre.
 let motorOynatici = null;
 let motorSon = { ses: -1, hiz: -1 };
-export function motorDuzey(oran) {
+export function motorDuzey(oran, perde = 1, duzey = 1) {
   if (!durum.acik) return motorDurdur();
   try {
     if (!motorOynatici) {
@@ -252,13 +252,13 @@ export function motorDuzey(oran) {
       motorSon = { ses: -1, hiz: -1 };
     }
     const p = motorOynatici;
-    const ses = Math.max(0, Math.min(1, oran)) * 0.55 * durum.genel;
+    const ses = Math.min(1, Math.max(0, Math.min(1, oran)) * 0.55 * duzey * durum.genel);
     if (Math.abs(ses - motorSon.ses) > 0.02) {
       p.volume = ses;
       motorSon.ses = ses;
     }
     // Hızlandıkça motor perdesi yükselir (0,8-1,25); desteklemeyen sürümde yalnız düzey değişir
-    const hiz = Math.round((0.8 + 0.45 * Math.max(0, Math.min(1, oran))) * 20) / 20;
+    const hiz = Math.round(Math.min(2, (0.8 + 0.45 * Math.max(0, Math.min(1, oran))) * perde) * 20) / 20;
     if (hiz !== motorSon.hiz) {
       motorSon.hiz = hiz;
       try {

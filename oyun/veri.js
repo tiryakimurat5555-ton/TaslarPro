@@ -108,6 +108,14 @@ export const DAVRANISLAR = {
   siraKavgasi: { fiil: 'grup içinde sıralama için kavga ediyor', ad: 'Sıralama kavgası' },
   uzlasma: { fiil: 'kavgadan sonra rakibini tımar ederek barışıyor', ad: 'Uzlaşma', nadir: true },
   avOgretiyor: { fiil: 'yavrularına avlanmayı öğretiyor', ad: 'Av öğretme', nadir: true },
+  // Aşama 18: su başında tedirginlik (karar 104) ve iletişim (karar 108)
+  suBasindaTedirgin: { fiil: 'su başında içmeden, tedirgin bekliyor', ad: 'Su başında tedirginlik' },
+  tedirginIciyor: { fiil: 'başını sık sık kaldırarak, hızlı hızlı su içiyor', ad: 'Tedirgin su içme' },
+  kokuIsaretleme: { fiil: 'bölgesini kokusuyla işaretliyor', ad: 'Koku işaretleme' },
+  selamlasma: { fiil: 'sürü arkadaşlarıyla selamlaşıyor', ad: 'Selamlaşma' },
+  kukremeKorosu: { fiil: 'sürüsüyle birlikte kükrüyor', ad: 'Kükreme korosu', nadir: true },
+  infrasesDinleme: { fiil: 'kulaklarını açmış, kıpırdamadan uzaktaki sürüleri dinliyor', ad: 'Uzak çağrıyı dinleme', nadir: true },
+  bedenDiliUyari: { fiil: 'kuyruğunu dikip başını kaldırarak sürüye tehlikeyi bildiriyor', ad: 'Beden diliyle uyarı' },
 };
 
 // Hayvan sesinin anlamı (ses analizi, karar 49 ve 87)
@@ -258,5 +266,17 @@ export const EKIPMAN = {
   sesKayit: 60,
 };
 
-export const ARAC = { ad: 'Arazi aracı', hiz: 13, geri: 4, don: 1.5 };
+// Araçlar (karar 4, 24, 42): sınırsız yakıt, bakım yok. Garajda biri seçilir; sahada tek araç durur.
+// kacis: araçtaki insana karşı kaçış çarpanı (yavaşken / hızlıyken), perde: motor sesinin perdesi, duzey: motor sesi düzeyi.
+export const ARACLAR = {
+  arazi: { ad: 'Arazi aracı', hiz: 13, geri: 4, don: 1.5, kacis: 0.45, kacisHizli: 0.85, perde: 1, duzey: 1, cam: 1.3,
+    tarif: 'Kapalı kabinli dört çeker. Hayvanlar içindeki insanı pek fark etmez; tavan rafında kamp malzemesi taşır.' },
+  atv: { ad: 'ATV', hiz: 16, geri: 4, don: 2.4, kacis: 0.6, kacisHizli: 0.95, perde: 1.18, duzey: 0.85, cam: 0.9,
+    tarif: 'Dört tekerli arazi motosikleti. Arazi aracından hızlı ve çevik; dar yerlerden döner. Açık olduğu için hayvanlar seni daha kolay fark eder.' },
+  motosiklet: { ad: 'Arazi motosikleti', hiz: 20, geri: 3, don: 2.8, kacis: 0.75, kacisHizli: 1.05, perde: 1.35, duzey: 0.8, cam: 0.7,
+    tarif: 'En hızlı araç: uzak yerlere çabucak gidersin. Gürültülü ve açık; ürkek hayvanlar onu uzaktan duyar.' },
+  kamyon: { ad: 'Araştırma kamyonu', hiz: 10, geri: 3, don: 1.1, kacis: 0.4, kacisHizli: 0.8, perde: 0.8, duzey: 1.15, cam: 1.6, lab: true,
+    tarif: 'Yavaş ama arkasında mobil laboratuvar var: numuneleri kamyona teslim edersin, dronun kamyonda şarj olur. Hayvanlar onu en az fark eder.' },
+};
+export const ARAC = ARACLAR.arazi;
 export const YURUME = { hiz: 4.2, don: 2.2 };

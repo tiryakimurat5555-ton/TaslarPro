@@ -4,7 +4,7 @@
 // Kalıcı her şey araştırmacı nesnesinde (k) durur; d yalnızca o anki oturumun geçici durumunu tutar.
 import {
   YARICAP, ISTASYON, ARAC_YERI, OYUN_DK_SN, BASLANGIC_SAATI, GOLET, NEHIR_YARI, nehirY, GECITLER, KAYALIK, MAGARA, YERLER,
-  BOLGE_ADLARI, DAVRANISLAR, GALERI, TERMITLER, SES_TURLERI, TURLER, TUR_SIRASI, KISILIKLER, EVRELER, EKIPMAN, ARAC, YURUME, TUZ_YALAGI, MINERAL_TURLERI, OZEL_BIREYLER } from './veri.js';
+  BOLGE_ADLARI, DAVRANISLAR, GALERI, TERMITLER, SES_TURLERI, TURLER, TUR_SIRASI, KISILIKLER, EVRELER, EKIPMAN, ARAC, ARACLAR, YURUME, TUZ_YALAGI, MINERAL_TURLERI, OZEL_BIREYLER } from './veri.js';
 import * as E from './ekosistem.js';
 import { UZAK_ALANLAR } from './kucukler.js';
 
@@ -300,6 +300,7 @@ export function asama8Alanlari() {
     tekne: { x: 22, y: nehirY(22) + 1.5, yon: Math.PI / 2 },
     kamp: null,
     drone: { sarj: 3, ucus: 0 },
+    aracTuru: 'arazi',
     harita: { gruplar: {} },
     hakimiyet: { bolgeler: {}, varlik: {}, gun: 0, gecmis: [] },
   };
@@ -312,6 +313,7 @@ function asama8Onar(k) {
   if (k.kamp && (!sayiMi(k.kamp.x) || !sayiMi(k.kamp.y))) k.kamp = null;
   if (k.kamp === undefined) k.kamp = null;
   if (!k.drone || !sayiMi(k.drone.sarj)) k.drone = v.drone;
+  if (!ARACLAR[k.aracTuru] || (k.aracTuru !== 'arazi' && !(k.ekipman && k.ekipman[k.aracTuru]))) k.aracTuru = 'arazi'; // Aşama 18
   if (!k.harita || typeof k.harita.gruplar !== 'object' || !k.harita.gruplar) k.harita = v.harita;
   if (!k.hakimiyet || typeof k.hakimiyet.bolgeler !== 'object' || !k.hakimiyet.bolgeler || !Array.isArray(k.hakimiyet.gecmis)) k.hakimiyet = v.hakimiyet;
   if (!k.hakimiyet.varlik || typeof k.hakimiyet.varlik !== 'object') k.hakimiyet.varlik = {};
@@ -415,6 +417,7 @@ function oturumZamanlariniSifirla(k) {
     delete b.ozel;
   }
   for (const g of k.gruplar || []) if (g && g.meydan && g.meydan.evre === 'kavga') g.meydan = null;
+  for (const g of k.gruplar || []) if (g && g.suBekle) g.suBekle = 0; // Aşama 18: oturum saatine bağlı
 }
 export function dunyaOlustur(k) {
   const rng = tohumluUretec(77); // arazi sabittir: her açılışta aynı
@@ -788,6 +791,8 @@ function planSec(d, g) {
     g.hedef = suNoktasi(g);
     g.planBitis = sure(70, 110);
     g.icti = false;
+    g.suBekle = 0;
+    g.suDegisti = false;
     return;
   }
   const evreSimdi = gunEvresi(dk);
@@ -910,7 +915,7 @@ function bireyYuru(d, b, hx, hy, hiz, dt) {
 export function kacisMesafesi(d, b) {
   const t = TURLER[b.tur];
   let m = t.kacis * KISILIKLER[b.kisilik].kacis * (1 - 0.6 * b.alisma);
-  if (d.k.aracta) m *= d.aracHiz > 4 ? 0.85 : 0.45; // araç içindeki insanı daha az tehdit sayarlar
+  if (d.k.aracta) m *= d.aracHiz > 4 ? aracOzellik(d.k).kacisHizli : aracOzellik(d.k).kacis; // araç içindeki insanı daha az tehdit sayarlar (açık araçlarda daha çok)
   else if (d.k.teknede) m *= 0.55; // sessiz kürekli tekne
   else if (d.k.kamp && mesafe(d.oyuncu, d.k.kamp) < 10) m *= 0.6; // kamptaki gözlem çadırı saklar
   if (geceMi(d.k.dk)) m *= 0.8;
@@ -1790,13 +1795,64 @@ function gunlukEkosistem(d) {
   });
 }
 
+// ---------- Aşama 18: su içme davranışı (karar 104) ----------
+// Su ihtiyacı sıcaklığa, mevsime, emziren annelere ve hastalığa göre değişir.
+function suIhtiyaci(d, g, u) {
+  const h = d.k.eko && d.k.eko.hava;
+  let c = 1;
+  if (h) {
+    if (h.tur === 'sicak' || h.sicaklik >= 33) c *= 1.45;
+    else if (h.sicaklik >= 29) c *= 1.15;
+    if (h.tur === 'yagmurlu' || h.tur === 'saganak') c *= 0.7;
+  }
+  if (d.k.eko && d.k.eko.islaklik < 0.25) c *= 1.15; // kuruyan otlar daha az su taşır
+  if (u.some((b) => b.evre === 'yavru')) c *= 1.1; // emziren anneler daha çok içer
+  if (u.some((b) => b.hastalik)) c *= 1.1;
+  return c;
+}
+const SUDA_RAHAT = ['timsah', 'suAygiri', 'fil', 'manda', 'piton', 'kartal'];
+// Su başına varan sürü timsah görürse ya da orada yakında av olmuşsa önce bekler; susuzluk ağırsa hızlıca içer,
+// değilse başka suya yönelir. true dönerse o karede içmezler.
+function suBasiTehlikesi(d, g, u) {
+  const k = d.k;
+  if (SUDA_RAHAT.includes(g.tur) || TURLER[g.tur].yirtici) return false;
+  if (g.suBekle === -1) return false; // bekleme bitti, içiyorlar
+  const timsah = k.gruplar.find((x) => x.tur === 'timsah' && mesafe(x, g) < 20 && uyeler(d, x).length);
+  const avYeri = (g.tehlikeYerleri || []).find((y) => k.dk - y.dk < 1440 && mesafe(y, g) < 30);
+  if (!timsah && !avYeri) return false;
+  if (!g.suBekle) {
+    g.suBekle = d.zaman + 18 + d.rng() * 14;
+    g.planBitis = Math.max(g.planBitis, k.dk + 25);
+    u.forEach((b) => b.evre !== 'yavru' && !(b.ozel && b.ozel.bitis > d.zaman) && (b.ozel = { davranis: 'suBasindaTedirgin', bitis: g.suBekle }));
+    if (mesafe(d.oyuncu, g) <= durbunMenzili(k.dk, k) && !k.magara)
+      olay(d, 'sosyal', `${BuyukHarf(SOZ[g.tur])} sürüsü su başında durdu, içmeden bekliyor: ${timsah ? 'yakında timsah var; kulaklar dikili, suya bakıyorlar' : 'burada kısa süre önce av olmuş, ürkekler'}. ${BuyukHarf(yerTarifi(d.oyuncu, g))}.`, 2, { id: (u[0] || {}).id });
+    return true;
+  }
+  if (d.zaman < g.suBekle) return true;
+  // Bekleme bitti: çok susamışlarsa hızlıca içerler, değilse öbür su kaynağına giderler
+  if (g.susuzluk < 0.85 && timsah) {
+    const ote = mesafe(g, GOLET) < GOLET.r + 25 ? nehirNoktasi(sinirla(g.x, -170, 170), !!TURLER[g.tur].habitat.guneyde, 1.8) : GOLET.su ? { x: GOLET.x + GOLET.su + 2.2, y: GOLET.y } : null;
+    if (ote && mesafe(ote, g) < 160 && !g.suDegisti) {
+      g.suDegisti = true;
+      g.suBekle = 0;
+      g.hedef = ote;
+      g.planBitis = k.dk + 60;
+      return true;
+    }
+  }
+  g.suBekle = -1;
+  u.forEach((b) => b.evre !== 'yavru' && (b.ozel = { davranis: 'tedirginIciyor', bitis: d.zaman + 14 }));
+  g.planBitis = Math.min(g.planBitis, k.dk + 8); // tedirgin olanlar kısa içip uzaklaşır
+  return false;
+}
+
 // ---------- Grup ve birey güncellemesi ----------
 function grupGuncelle(d, g, dt, dtDk) {
   const k = d.k;
   const t = TURLER[g.tur];
   const u = uyeler(d, g);
   if (!u.length) return;
-  g.susuzluk = Math.min(1, g.susuzluk + dtDk / (g.tur === 'fil' ? 520 : 680));
+  g.susuzluk = Math.min(1, g.susuzluk + (dtDk / (g.tur === 'fil' ? 520 : 680)) * suIhtiyaci(d, g, u)); // Aşama 18 (karar 104)
   if (t.yirtici) g.aclik = Math.min(1, g.aclik + dtDk / (ACLIK_SURESI[g.tur] || 3000));
   if (g.alarm > 0) {
     g.alarm -= dt;
@@ -1838,8 +1894,11 @@ function grupGuncelle(d, g, dt, dtDk) {
       g.y += Math.cos(a) * adim;
     } else if (g.plan === 'otla' && d.rng() < dt * 0.05) {
       g.hedef = yakinNokta(d, g, 10);
+    } else if (g.plan === 'su' && !g.icti && suBasiTehlikesi(d, g, u)) {
+      // Aşama 18 (karar 104): timsahlı ya da yakında avlanılmış su başında tedirgin beklerler, gerekirse başka suya giderler
     } else if (g.plan === 'su' && !g.icti) {
       g.icti = true;
+      g.suBekle = 0;
       // Gölette içtiyse suyun kalitesi kaydedilir (kirli su parazit getirir, karar 74)
       g.kirliSu = k.eko && GOLET.su && mesafe(g, GOLET) < GOLET.r + 8 ? E.suKalitesi(k.eko) : 1;
       g.planBitis = Math.min(g.planBitis, k.dk + arasi(d.rng, 12, 22));
@@ -2381,7 +2440,7 @@ export function yerGit(d, id) {
     olay(d, 'hata', 'Teknedesin. Nehir boyunca kürek çek ya da önce tekneden in.', 3);
     return;
   }
-  if (id === 'arac') hedef = { x: d.k.arac.x, y: d.k.arac.y, ad: 'Arazi aracı', yakin: 2.5 };
+  if (id === 'arac') hedef = { x: d.k.arac.x, y: d.k.arac.y, ad: aracAdi(d.k), yakin: 2.5 };
   else if (id === 'kamp' && d.k.kamp) hedef = { x: d.k.kamp.x, y: d.k.kamp.y, ad: 'Saha kampı', yakin: 3 };
   else if (id === 'ziyaretci') {
     // Aşama 10: nadir ziyaretçinin yanına
@@ -2499,6 +2558,9 @@ function oyuncuHareket(d, dx, dy) {
 }
 
 const TEKNE_HIZ = 2.6;
+// Aşama 18 (karar 24): garajdaki araçlardan seçili olanın özellikleri
+export const aracOzellik = (k) => ARACLAR[k && k.aracTuru] || ARACLAR.arazi;
+export const aracAdi = (k) => aracOzellik(k).ad;
 // ---------- Araç (karar 4, 24, 42: sınırsız yakıt, bakım yok) ----------
 export const aracYakinMi = (d) => !d.k.aracta && mesafe(d.oyuncu, d.k.arac) < 6.5;
 export function aracaBin(d) {
@@ -2511,7 +2573,7 @@ export function aracaBin(d) {
   d.aracHiz = 0;
   Object.assign(d.oyuncu, { x: d.k.arac.x, y: d.k.arac.y, yon: d.k.arac.yon });
   d.rota = null;
-  olay(d, 'arac', 'Araca bindin. Hayvanlar araçtaki insandan daha az ürker.', 3, { bindi: true });
+  olay(d, 'arac', `${aracAdi(d.k)}: bindin. ${aracOzellik(d.k).kacis < 0.5 ? 'Hayvanlar araçtaki insandan daha az ürker.' : 'Açık araçta hayvanlar seni yine de fark eder; yavaş sür.'}`, 3, { bindi: true });
 }
 export function aractanIn(d) {
   if (!d.k.aracta) return;
@@ -2583,7 +2645,8 @@ export function guncelle(d, dt, girdi = {}) {
     }
     Object.assign(k.tekne, { x: o.x, y: o.y, yon: o.yon });
   } else if (k.aracta) {
-    let hedefHiz = ileri * (ileri > 0 ? ARAC.hiz : ARAC.geri);
+    const AR = aracOzellik(k);
+    let hedefHiz = ileri * (ileri > 0 ? AR.hiz : AR.geri);
     let donus = don;
     if (oto) {
       const yn = yolNoktasi(d, oto);
@@ -2591,10 +2654,10 @@ export function guncelle(d, dt, girdi = {}) {
       const fark = aciNormal(aci - o.yon);
       donus = sinirla(fark * 2, -1, 1);
       const kalan = mesafe(o, oto);
-      hedefHiz = Math.min(ARAC.hiz, Math.max(2.5, kalan * 0.6)) * (Math.abs(fark) > 1.2 ? 0.3 : 1);
+      hedefHiz = Math.min(AR.hiz, Math.max(2.5, kalan * 0.6)) * (Math.abs(fark) > 1.2 ? 0.3 : 1);
     }
     d.aracHiz += sinirla(hedefHiz - d.aracHiz, -9 * dt, 6 * dt);
-    if (Math.abs(d.aracHiz) > 0.2) o.yon = aciNormal(o.yon + donus * ARAC.don * dt * Math.sign(d.aracHiz) * Math.min(1, Math.abs(d.aracHiz) / 3));
+    if (Math.abs(d.aracHiz) > 0.2) o.yon = aciNormal(o.yon + donus * AR.don * dt * Math.sign(d.aracHiz) * Math.min(1, Math.abs(d.aracHiz) / 3));
     else if (!oto) o.yon = aciNormal(o.yon + donus * 0.8 * dt);
     const v = d.aracHiz * dt;
     if (Math.abs(v) > 0.0001) {

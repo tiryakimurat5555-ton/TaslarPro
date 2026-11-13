@@ -369,6 +369,20 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   aletin adı söylenir (aletSec); açıklama (ALETLER ipucu) Alet menüsünde satıra uzun basınca okunur.
 - YAYIN YALNIZCA GITHUB'DAN (13 Kasım 2026, Murat "TaslarPro açık depo, bu oyunun güncellemelerini Expo üzerinden yapma"): açık depoda
   GitHub Actions dakikası ücretsiz; Expo workflow_run KULLANMA. Yayın: main'e push → expo-guncelleme.yml.
+- Aşama 18 araçlar, iletişim, su içme (13 Kasım gece, Murat "bu oyunu geliştirmeye devam et"; kararlar 24, 104, 108; sayılar ÖNERİ).
+  veri ARACLAR {arazi, atv, motosiklet, kamyon: hiz, geri, don, kacis/kacisHizli (araçta kaçış çarpanı), perde, duzey (motor sesi), lab};
+  ARAC = ARACLAR.arazi (eski adlar). mantik aracOzellik(k)/aracAdi(k) (k.aracTuru, asama8Alanlari 'arazi'; sahip değilse onarılır).
+  merkez EKIPMANLAR atv 4.000, motosiklet 3.500, kamyon 12.000 (arac: true). genisleme garajSatirlari/aracDegistir (istasyonda, araçtan inik,
+  araç garaja 26 m'den yakın; ARAC_YERI'ne konur). Kamyon: numune teslimi (laboratuvarGuncelle) ve dron şarjı (sarjDenetle) kamyonda/8 m'de.
+  efekt.motorDuzey(oran, perde, duzey). sahne araclarModeli (atv/motosiklet/kamyon modelleri; açık araçta sürücü selede görünür).
+  App Merkez > Garaj. Su (karar 104): suIhtiyaci (sıcak ×1,45, ≥29° ×1,15, yağmur ×0,7, kuru toprak ×1,15, yavrulu ×1,1, hasta ×1,1);
+  suBasiTehlikesi: otçul su başına varınca 20 m'de timsah ya da 1 gün içinde av yeri varsa 18-32 sn 'suBasindaTedirgin' bekler (g.suBekle,
+  oturum saati: oturumZamanlariniSifirla sıfırlar), sonra susuzluk < 0,85 ve timsah varsa bir kez öbür suya (g.suDegisti), yoksa 'tedirginIciyor'
+  kısa içer. `oyun/iletisim.js` (Il.guncelle 2 sn'de bir): ILETISIM kokuIsaretleme (6 tür, k.isaretler en çok 40, 2 gün; izAra isaretSatiri),
+  selamlasma (yaban köpekleri av başında g.avSelam), kukremeKorosu (aslan gece, 400 m'den duyulur, 3B ses), infrasesDinleme (fil gündüz),
+  bedenDiliUyari (impala/ceylan/zebra/gnu, 60 m'de avcı varken); olay 'iletisim' {ses, duyma} → App 3B tür sesi; tür sayfasında Il.turSatirlari.
+  Testler: bot 3 gün (Bozuk 0, 46 iletişim olayı), dayanıklılık 300/300, ekosistem 20 gün, menu-tara 246 sayfa iki kipte sorun 0
+  (/tmp/claude-0/zengin18.json), araç görüntüleri scratchpad arac/goruntu.cjs. Telefonda doğrulanmadı.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

@@ -53,6 +53,52 @@ function aracModeli() {
   parca(g, new THREE.BoxGeometry(0.3, 0.2, 0.05), '#fff6c8', 0.65, 1.0, -2.11);
   return g;
 }
+// Aşama 18 (karar 24): garajdaki öteki araçlar. Önü -z (arazi aracıyla aynı).
+const teker = (g, r, en, x, y, z) => parca(g, new THREE.CylinderGeometry(r, r, en, 10), '#222', x, y, z, 0, 0, Math.PI / 2);
+function atvModeli() {
+  const g = new THREE.Group();
+  parca(g, new THREE.BoxGeometry(1.0, 0.45, 1.9), '#8a3a2a', 0, 0.75, 0); // gövde
+  parca(g, new THREE.BoxGeometry(1.15, 0.12, 0.6), '#5a5a5a', 0, 1.02, -0.7); // ön raf
+  parca(g, new THREE.BoxGeometry(1.15, 0.12, 0.6), '#5a5a5a', 0, 1.02, 0.7); // arka raf
+  parca(g, new THREE.BoxGeometry(0.5, 0.18, 0.7), '#222', 0, 1.06, 0.05); // sele
+  parca(g, new THREE.BoxGeometry(0.8, 0.05, 0.05), '#333', 0, 1.3, -0.45); // gidon
+  parca(g, new THREE.BoxGeometry(0.45, 0.3, 0.4), '#4a5a3a', 0, 1.25, 0.75); // çanta
+  [-1, 1].forEach((sx) => [-1, 1].forEach((sz) => teker(g, 0.36, 0.3, sx * 0.62, 0.36, sz * 0.62)));
+  parca(g, new THREE.BoxGeometry(0.22, 0.14, 0.05), '#fff6c8', 0, 0.85, -0.97);
+  return g;
+}
+function motosikletModeli() {
+  const g = new THREE.Group();
+  teker(g, 0.36, 0.12, 0, 0.36, -0.75);
+  teker(g, 0.36, 0.14, 0, 0.36, 0.72);
+  parca(g, new THREE.BoxGeometry(0.28, 0.35, 1.2), '#c8a020', 0, 0.78, 0); // depo ve gövde
+  parca(g, new THREE.BoxGeometry(0.26, 0.12, 0.6), '#222', 0, 0.98, 0.25); // sele
+  parca(g, new THREE.CylinderGeometry(0.03, 0.03, 0.8, 5), '#888', 0, 0.75, -0.62, 0.45, 0, 0); // ön çatal
+  parca(g, new THREE.BoxGeometry(0.75, 0.04, 0.04), '#333', 0, 1.12, -0.48); // gidon
+  parca(g, new THREE.BoxGeometry(0.16, 0.12, 0.05), '#fff6c8', 0, 1.0, -0.62);
+  parca(g, new THREE.CylinderGeometry(0.05, 0.06, 0.6, 6), '#777', 0.16, 0.55, 0.45, Math.PI / 2, 0, 0); // egzoz
+  return g;
+}
+function kamyonModeli() {
+  const g = new THREE.Group();
+  parca(g, new THREE.BoxGeometry(2.3, 1.2, 1.9), '#d8cfae', 0, 1.25, -2.1); // kabin
+  parca(g, new THREE.BoxGeometry(2.0, 0.55, 0.05), '#3a4a5a', 0, 1.55, -3.06); // ön cam
+  parca(g, new THREE.BoxGeometry(2.5, 2.1, 3.9), '#e8e4d4', 0, 1.75, 0.95); // laboratuvar kasası
+  parca(g, new THREE.BoxGeometry(2.52, 0.18, 3.92), '#2f6a4a', 0, 1.3, 0.95); // yeşil şerit
+  parca(g, new THREE.BoxGeometry(0.9, 0.08, 1.4), '#2a3a5a', 0, 2.84, 1.2); // güneş paneli
+  parca(g, new THREE.CylinderGeometry(0.05, 0.05, 0.9, 5), '#888', 0.9, 3.2, 0.2); // anten
+  parca(g, new THREE.BoxGeometry(0.05, 1.1, 0.7), '#6a6a5a', 1.27, 1.6, 2.1); // yan kapı
+  [-1, 1].forEach((sx) => [-2.1, 0.3, 1.9].forEach((z) => teker(g, 0.5, 0.4, sx * 1.1, 0.5, z)));
+  parca(g, new THREE.BoxGeometry(0.3, 0.2, 0.05), '#fff6c8', -0.75, 1.0, -3.06);
+  parca(g, new THREE.BoxGeometry(0.3, 0.2, 0.05), '#fff6c8', 0.75, 1.0, -3.06);
+  return g;
+}
+function araclarModeli() {
+  const g = new THREE.Group();
+  g.userData.turler = { arazi: aracModeli(), atv: atvModeli(), motosiklet: motosikletModeli(), kamyon: kamyonModeli() };
+  Object.values(g.userData.turler).forEach((m) => g.add(m));
+  return g;
+}
 
 // ---- Aşama 8: tekne, dron, saha kampı ----
 function tekneModeli() {
@@ -516,7 +562,7 @@ export function sahneKur(gl, d, secenek = {}) {
   };
 
   // Araç ve araştırmacı
-  const arac = aracModeli();
+  const arac = araclarModeli();
   sahne.add(arac);
   const insan = insanModeli('#8a8058');
   sahne.add(insan);
@@ -777,8 +823,11 @@ export function sahneKur(gl, d, secenek = {}) {
       // Araç ve araştırmacı
       arac.position.set(k.arac.x, 0, R(k.arac.y));
       arac.rotation.y = -k.arac.yon;
-      insan.visible = !k.aracta;
-      insan.position.set(o.x, k.teknede ? -0.35 : 0, R(o.y));
+      const aracTuru = arac.userData.turler[k.aracTuru] ? k.aracTuru : 'arazi';
+      Object.keys(arac.userData.turler).forEach((t) => (arac.userData.turler[t].visible = t === aracTuru));
+      const acikArac = aracTuru === 'atv' || aracTuru === 'motosiklet'; // açık araçta sürücü görünür, selede oturur
+      insan.visible = !k.aracta || acikArac;
+      insan.position.set(o.x, k.teknede ? -0.35 : k.aracta && acikArac ? 0.55 : 0, R(o.y));
       insan.rotation.y = -o.yon;
       // Aşama 8: tekne (teknedeyken araştırmacı oturur), dron (uçarken 10 metrede), saha kampı
       tekne.visible = !!(k.ekipman && k.ekipman.tekne);

@@ -87,7 +87,7 @@ function isaretSozu(d) {
   const nx = o.x;
   ekle('nehir', { x: nx, y: nehirY(nx) }, 60);
   ekle('istasyon', ISTASYON, 90);
-  if (!k.aracta) ekle('arazi aracı', k.arac, 60);
+  if (!k.aracta) ekle(M.aracAdi(k).toLocaleLowerCase('tr-TR').replace(/^atv$/, 'ATV'), k.arac, 60);
   ekle('mağaranın ağzı', MAGARA);
   ekle('kayalık', KAYALIK, 70);
   ekle('termit tepeleri', TERMITLER, 70);

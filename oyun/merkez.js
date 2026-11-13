@@ -22,6 +22,10 @@ export const EKIPMANLAR = {
   tuzak: { ad: 'Kamera tuzağı', fiyat: 2500, adet: true, itibar: 20, arastirma: 'izlemeAgi', tarif: 'Kurduğun yerden geçen hayvanları gece gündüz kendiliğinden fotoğraflar.' },
   tasma: { ad: 'GPS tasması', fiyat: 4000, adet: true, itibar: 30, arastirma: 'hareketEkolojisi', tarif: 'Veterinerin tanımlı bir yetişkin hayvana takar; nerede olduğunu her an bilirsin.' },
   magaraTakimi: { ad: 'Mağara takımı', fiyat: 2500, itibar: 5, tarif: 'Kask, kafa lambası ve maske. Kayalığın kuzeyindeki mağaraya güvenle girersin.' },
+  // Aşama 18 (karar 24): garajdaki araçlar; Merkez > Garaj'dan seçilir
+  atv: { ad: 'ATV', fiyat: 4000, itibar: 8, arac: true, tarif: 'Dört tekerli arazi motosikleti: arazi aracından hızlı ve çevik. Açık olduğu için hayvanlar seni daha kolay fark eder. Garajdan seçersin.' },
+  motosiklet: { ad: 'Arazi motosikleti', fiyat: 3500, itibar: 12, arac: true, tarif: 'En hızlı araç; uzak yerlere çabucak gidersin. Gürültülü: ürkek hayvanlar onu uzaktan duyar. Garajdan seçersin.' },
+  kamyon: { ad: 'Araştırma kamyonu', fiyat: 12000, itibar: 35, arac: true, tarif: 'Yavaş ama arkasında mobil laboratuvar var: numuneleri kamyona teslim edersin, dronun kamyonda şarj olur, hayvanlar onu en az fark eder. Garajdan seçersin.' },
   // Aşama 8 (karar 24, 41)
   kampTakimi: { ad: 'Saha kampı takımı', fiyat: 3000, itibar: 10, tarif: 'Çadır, gözlem saklanağı ve güneş paneli. Uzak bir yere kamp kurarsın: kamptayken hayvanlar seni daha az fark eder, orada dinlenir ve dronunu şarj edersin.' },
   tekne: { ad: 'Araştırma teknesi', fiyat: 7000, itibar: 15, tarif: 'İskeleye bağlı küçük kürekli tekne. Nehir boyunca su aygırlarını, timsahları ve kıyı kuşlarını sessizce, yakından izlersin.' },
@@ -837,7 +841,8 @@ function numuneSonucu(d, n) {
 function laboratuvarGuncelle(d) {
   const k = d.k;
   // İstasyona dönünce numuneler teslim edilir
-  if (k.numuneKutusu.length && Math.hypot(d.oyuncu.x - ISTASYON.x, d.oyuncu.y - ISTASYON.y) < ISTASYON.r + 6) {
+  const kamyonda = M.aracOzellik(k).lab && !k.magara && (k.aracta || Math.hypot(d.oyuncu.x - k.arac.x, d.oyuncu.y - k.arac.y) < 8);
+  if (k.numuneKutusu.length && (kamyonda || Math.hypot(d.oyuncu.x - ISTASYON.x, d.oyuncu.y - ISTASYON.y) < ISTASYON.r + 6)) {
     const n = k.numuneKutusu.length;
     k.numuneKutusu.forEach((x) => {
       x.durum = 'sira';
@@ -845,7 +850,7 @@ function laboratuvarGuncelle(d) {
     });
     k.numuneKutusu = [];
     if (k.numuneler.length > 60) k.numuneler.length = 60;
-    M.olay(d, 'numuneTeslim', `${n} numune laboratuvara teslim edildi. Sırayla analiz edilecek.`, 3);
+    M.olay(d, 'numuneTeslim', `${n} numune ${kamyonda ? 'kamyondaki mobil laboratuvara' : 'laboratuvara'} teslim edildi. Sırayla analiz edilecek.`, 3);
   }
   // Biten analizler
   k.numuneler.forEach((n) => {

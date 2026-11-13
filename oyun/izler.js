@@ -4,6 +4,7 @@
 // M ve veri'yi kullanır; mantik bunu içe aktarmaz. Sayılar ÖNERİ.
 import { TURLER, DAVRANISLAR } from './veri.js';
 import * as M from './mantik.js';
+import * as Il from './iletisim.js';
 
 const kucuk = (s) => s.toLocaleLowerCase('tr-TR');
 const IZ_ARALIK = 8; // oyun dakikası
@@ -63,6 +64,8 @@ export function izAra(d) {
   }
   if (!bulunan.length) {
     d.sonIz = null;
+    const isaret = Il.isaretSatiri(d);
+    if (isaret) return 'Taze ayak izi yok.' + isaret.replace(' Ayrıca bir', ' Ama bir');
     return k.eko && k.eko.yagmurVar ? 'Yağmur izleri silmiş; yerde okunacak bir iz yok.' : 'Yakında taze bir iz yok. Hayvanların geçtiği yerlerde, su yolu ve otlak kenarlarında ara.';
   }
   bulunan.sort((a, b) => a.yas - b.yas);
@@ -75,6 +78,7 @@ export function izAra(d) {
   if (M.uyeler(d, en.g).length > 2) m += ' Birden çok hayvan birlikte geçmiş.';
   if (yon) m += ` İzler ${M.saatSozu(M.saatYonu(o, yon))} gidiyor.`;
   if (bulunan.length > 1) m += ` Yakında ${bulunan.length - 1} türün daha izi var.`;
+  m += Il.isaretSatiri(d);
   m += ' Menüden İzi takip et ile peşine düşebilirsin.';
   return m;
 }

@@ -6,7 +6,7 @@
 //  41 kamp sistemi                     → saha kampı (saklanak, dinlenme, şarj)
 //  84 canlı ekosistem haritası         → gözlem, GPS, kamera tuzağı ve dronla açılan bilgiler
 // mantik ve ekosistemi kullanır; mantik bunu içe aktarmaz. Sayılar ÖNERİ (Murat onaylamadı).
-import { TURLER, ISTASYON, GOLET, KAYALIK, TERMITLER, YARICAP, nehirY, BOLGE_ADLARI, DAVRANISLAR } from './veri.js';
+import { TURLER, ISTASYON, GOLET, KAYALIK, TERMITLER, YARICAP, nehirY, BOLGE_ADLARI, DAVRANISLAR, ARACLAR, ARAC_YERI } from './veri.js';
 import * as M from './mantik.js';
 import * as E from './ekosistem.js';
 import * as Iz from './izler.js';
@@ -421,9 +421,10 @@ function sarjDenetle(d) {
   if (!dronVar(k) || k.drone.sarj >= 3 || d.dron) return;
   const istasyonda = M.mesafe(d.oyuncu, ISTASYON) < ISTASYON.r + 8;
   const kampta = k.kamp && M.mesafe(d.oyuncu, k.kamp) < 10;
-  if (istasyonda || kampta) {
+  const kamyonda = M.aracOzellik(k).lab && !k.magara && (k.aracta || M.mesafe(d.oyuncu, k.arac) < 8);
+  if (istasyonda || kampta || kamyonda) {
     k.drone.sarj = 3;
-    M.olay(d, 'bilgi', `Dronun bataryası ${istasyonda ? 'istasyonda' : 'kamptaki güneş panelinden'} doldu: üç uçuş.`, 2);
+    M.olay(d, 'bilgi', `Dronun bataryası ${istasyonda ? 'istasyonda' : kampta ? 'kamptaki güneş panelinden' : 'araştırma kamyonunda'} doldu: üç uçuş.`, 2);
   }
 }
 
@@ -587,4 +588,32 @@ export function guncelle(d, dt) {
     }
     k.hakimiyet.gun = gun;
   }
+}
+
+
+// ---------- Aşama 18: garaj (karar 24) ----------
+// Sahada tek araç durur; istasyondayken garajdaki araçlardan biri seçilir. Yakıt sınırsız, bakım yok (karar 42).
+export const aracSahibiMi = (k, tur) => tur === 'arazi' || !!(k.ekipman && k.ekipman[tur]);
+export function garajSatirlari(d) {
+  const k = d.k;
+  return Object.keys(ARACLAR).map((tur) => {
+    const a = ARACLAR[tur];
+    const sahip = aracSahibiMi(k, tur);
+    const secili = (k.aracTuru || 'arazi') === tur;
+    return { tur, ad: a.ad, tarif: a.tarif, sahip, secili, metin: `${a.ad}${secili ? ': sahada' : sahip ? ': garajda' : ': yok, Merkez > Ekipman\'dan alınır'}` };
+  });
+}
+export function aracDegistir(d, tur) {
+  const k = d.k;
+  const a = ARACLAR[tur];
+  if (!a) return 'Böyle bir araç yok.';
+  if (!aracSahibiMi(k, tur)) return `${a.ad} sende yok. Merkez > Ekipman'dan alabilirsin.`;
+  if ((k.aracTuru || 'arazi') === tur) return `${a.ad} zaten sahada.`;
+  if (k.aracta) return 'Önce araçtan in.';
+  if (k.magara || k.teknede || M.mesafe(d.oyuncu, ISTASYON) > ISTASYON.r + 14) return 'Araç ancak istasyonun garajında değiştirilir. İstasyona dön.';
+  const eski = M.aracOzellik(k).ad;
+  if (M.mesafe(k.arac, ISTASYON) > ISTASYON.r + 14) return `${eski} istasyondan uzakta duruyor. Önce onu garaja getir.`;
+  k.aracTuru = tur;
+  Object.assign(k.arac, { ...ARAC_YERI });
+  return `${eski} garaja kondu; ${a.ad} garajın önünde seni bekliyor. ${a.tarif}`;
 }
