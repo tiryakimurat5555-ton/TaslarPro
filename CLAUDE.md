@@ -357,6 +357,10 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   kesilir, ot ve yaprağa toprak adımının 260 Hz alçak geçiren gövdesi (×0,7 / ×0,55), hepsi 80 ms tepe -14 dB; çıktı WAV (mp3/AAC
   dolgu gecikmesi yok; yap.sh .wav yükleyicisi eklendi; sözdizimi denetimine -e '*.wav'). ADIM_DUZEY 0,26-0,3. adim-bol.py/adim-esitle.py
   eskidi. Tarayıcı adim-dene.cjs: 15 sn'de 42 adım, 340-361 ms. Telefonda doğrulanmadı.
+- Orman adımı (13 Kasım akşam, Murat "orman adım ses efektini kontrol et" dedi): yaprak adımları >6 kHz baskın, kuyruk 0,3-0,4 sn -25 dB
+  (adım aralığı 0,36 sn → sürekli hışırtı). ElevenLabs'ten 3 yeni "orman tabanı adım" denemesi (adim_yaprak_a/b/c, ses-dal ham) daha da tiz
+  çıktı, kullanılmadı. adim-yap.py yaprak: 6,5 kHz alçak geçiren, 1-4 kHz bant +, vuruştan 30 ms sonra 90 ms üstel sönüm, en çok 0,3 sn, toprak
+  gövdesi ×0,85 → kuyruk 100-150 ms'de -34 dB, >6 kHz -12..-17 dB. Ot adımlarında benzer uzun kuyruk var (dokunulmadı). Telefonda doğrulanmadı.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

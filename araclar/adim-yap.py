@@ -78,10 +78,23 @@ for zemin in ['ot', 'toprak', 'camur', 'su', 'kaya', 'yaprak', 'magara']:
         q = pl[len(pl) % len(pl)]
         pl.append(np.interp(np.arange(0, len(q), 0.95), np.arange(len(q)), q))
     for i, p in enumerate(pl):
+        if zemin == 'yaprak':
+            # Orman tabanı (13 Kasım, Murat "orman adım sesini kontrol et"): kayıt neredeyse yalnız tiz hışırtıydı ve her adımın
+            # kuyruğu 0,3-0,4 sn sürüyordu; adım aralığı 0,36 sn olduğu için adımlar birbirine karışıp sürekli bir "şşş"e dönüyordu.
+            # 6 kHz üstü kısılır, 1-4 kHz yaprak çıtırtısı öne alınır, vuruştan sonra ~90 ms'lik sönümle kuyruk kısaltılır,
+            # en çok 0,3 sn; altına daha belirgin bir ayak basışı gövdesi eklenir.
+            p = sosfilt(butter(2, 6500, btype='low', fs=SR, output='sos'), p)
+            p = p + 0.6 * sosfilt(butter(2, [1000, 4000], btype='band', fs=SR, output='sos'), p)
+            p = p[: int(0.3 * SR)]
+            t = np.arange(len(p)) / SR
+            tepe = int(np.argmax(np.abs(p[: int(0.06 * SR)]))) / SR
+            p = p * np.where(t < tepe + 0.03, 1, np.exp(-(t - tepe - 0.03) / 0.09))
+            f = min(int(0.03 * SR), len(p) // 3)
+            p[-f:] *= np.linspace(1, 0, f) ** 2
         if zemin in ('ot', 'yaprak'):
             g = sosfilt(lp, toprak[i % len(toprak)])
             g = g[: len(p)] if len(g) >= len(p) else np.pad(g, (0, len(p) - len(g)))
-            g *= np.sqrt((p ** 2).mean()) / (np.sqrt((g ** 2).mean()) + 1e-9) * (0.7 if zemin == 'ot' else 0.55)
+            g *= np.sqrt((p ** 2).mean()) / (np.sqrt((g ** 2).mean()) + 1e-9) * (0.7 if zemin == 'ot' else 0.85)
             p = p + g
         p = p * 10 ** ((-14 - vurus(p)) / 20)
         p = np.clip(p, -0.98, 0.98)
