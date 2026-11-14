@@ -707,7 +707,10 @@ export function suNumunesi(d) {
   if (ayniGunVar(k, (n) => n.tip === 'su' && n.kaynak === su.ad)) return `Bugün ${su.ad} suyundan zaten numune aldın.`;
   const eko = k.eko;
   const kalite = su.ad === 'gölet' ? E.suKalitesi(eko) : su.ad === 'nehir' ? Math.min(1, 0.55 + eko.nehir * 0.4) : 0.7;
-  const veri = { kalite, alg: su.ad === 'gölet' ? eko.alg : 0.05, parazit: kalite < 0.55, sarbon: !!(eko.salgin && eko.salgin.hastalik === 'sarbon' && su.ad === 'gölet') };
+  const kaynak = E.kirlilikKaynagi(eko, d.oyuncu.x, d.oyuncu.y, 30);
+  const kp = kaynak && kaynak.v > 0.08 ? kaynak : null;
+  const kalite2 = Math.max(0, kalite - (kp ? 0.8 * kp.v : 0));
+  const veri = { kalite: kalite2, kirlilik: kp ? { tur: kp.tur, v: Math.round(kp.v * 100) / 100 } : null, alg: su.ad === 'gölet' ? eko.alg : 0.05, parazit: kalite2 < 0.55, sarbon: !!(eko.salgin && eko.salgin.hastalik === 'sarbon' && su.ad === 'gölet') };
   return numuneEkle(d, { tip: 'su', kaynak: su.ad, veri }, `${M.BuyukHarf(su.ad)} suyundan steril şişeye numune aldın.`);
 }
 export function diskiNumunesi(d) {
@@ -847,6 +850,10 @@ function numuneSonucu(d, n) {
   if (n.tip === 'su') {
     let m = `Su ${E.kaliteSozu(v.kalite)}.`;
     if (v.alg > 0.3) m += ' Mavi-yeşil alg (siyanobakteri) yoğun; bazı türleri hayvanlar için zehirli maddeler üretir.';
+    if (v.kirlilik && typeof v.kirlilik === 'object') {
+      const kr = { les: ' Koliform bakteri sayısı çok yüksek: suda çürüyen bir leş var.', diski: ' Organik madde ve amonyak yüksek, oksijen düşük: su aygırı dışkısı birikmiş.', kul: ' Kül ve çözünmüş tuzlar var, suyun asitliği değişmiş: yağmur yangın külünü taşımış.' }[v.kirlilik.tur];
+      if (kr) m += kr + (v.kirlilik.v > 0.6 ? ' Kirlilik yüksek.' : v.kirlilik.v > 0.3 ? ' Kirlilik orta düzeyde.' : ' Kirlilik az.');
+    }
     m += v.parazit ? ' Parazit yumurtaları bulundu; bu sudan içen hayvanlar parazit kapabilir.' : ' Parazit yumurtası bulunmadı.';
     if (v.sarbon) {
       m += ' Suda şarbon bakterisi sporları bulundu!';

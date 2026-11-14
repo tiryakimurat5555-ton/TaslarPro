@@ -203,6 +203,21 @@ export function suKalitesi(eko) {
   if (goletKurudu(eko)) return 0;
   return Math.max(0, Math.min(1, 1 - eko.alg * 0.8 - (eko.golet < 0.2 ? 0.25 : 0)));
 }
+// Aşama 26 (karar 74): kirlilik kaynakları eko.kirlilik [{id, tur les|diski|kul, x, y, v, golet}]; bir noktadaki en güçlü kaynak
+export function kirlilikKaynagi(eko, x, y, r = 40) {
+  if (!eko || !Array.isArray(eko.kirlilik)) return null;
+  let en = null;
+  for (const s of eko.kirlilik) {
+    if (!s || !Number.isFinite(s.v) || !Number.isFinite(s.x) || !Number.isFinite(s.y)) continue;
+    if (Math.hypot(s.x - x, s.y - y) > r) continue;
+    if (!en || s.v > en.v) en = s;
+  }
+  return en;
+}
+export const kirlilikAt = (eko, x, y, r) => {
+  const s = kirlilikKaynagi(eko, x, y, r);
+  return s ? Math.max(0, Math.min(1, s.v)) : 0;
+};
 export const kaliteSozu = (q) => (q > 0.75 ? 'temiz' : q > 0.5 ? 'biraz bulanık' : q > 0.3 ? 'bulanık, alg çoğalmış' : 'kirli ve yeşil, alg kaplamış');
 export const nehirSozu = (v) => (v > 0.8 ? 'kabarmış, hızlı ve çamurlu akıyor' : v > 0.45 ? 'normal akıyor' : v > 0.25 ? 'yavaş akıyor' : 'çok azalmış, yer yer durgun gölcüklere bölünmüş');
 

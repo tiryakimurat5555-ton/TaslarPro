@@ -22,6 +22,7 @@ import * as Ik from '../oyun/iklim.js';
 import * as Gc from '../oyun/gece.js';
 import * as Hd from '../oyun/hedefler.js';
 import * as Bg from '../oyun/baglar.js';
+import * as Kr from '../oyun/kirlilik.js';
 import { BITKI_SIRASI } from '../oyun/ekosistem.js';
 
 const deneme = +(process.argv[2] || 200);
@@ -50,6 +51,7 @@ function oynat(d, adim) {
     Ik.guncelle(d, 0.1);
     Hd.guncelle(d, 0.1);
     Bg.guncelle(d, 0.1);
+    Kr.guncelle(d, 0.1);
     for (const o of M.olaylariAl(d)) metinDenetle(o.metin, o.tur);
     if (i % 60 === 0) {
       metinDenetle(B.betimle(d, 'Dürbün'), 'betimleme');
@@ -175,6 +177,8 @@ function oynat(d, adim) {
       Hd.HEDEFLER.forEach((h) => { metinDenetle(Hd.hedefSatiri(d.k, h), 'hedef'); Hd.hedefDetay(d.k, h).forEach((m) => metinDenetle(m, 'hedef detay')); });
       Y.gocSatirlari(d).forEach((m) => metinDenetle(m, 'göç 2'));
       d.k.hayvanlar.slice(0, 40).forEach((b) => Bg.bireySatirlari(d, b).forEach((m) => metinDenetle(m, 'bağ')));
+      Kr.kirlilikSatirlari(d).forEach((x) => { metinDenetle(x.metin, 'kirlilik'); metinDenetle(x.tarif, 'kirlilik'); });
+      metinDenetle(Kr.kirlilikOzeti(d.k), 'kirlilik');
       // Aşama 25: toprak ve kıl numuneleri, analizleri hemen bitir
       metinDenetle(Mz.toprakNumunesi(d), 'toprak');
       metinDenetle(Mz.kilNumunesi(d), 'kıl');

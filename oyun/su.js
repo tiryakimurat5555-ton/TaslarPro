@@ -6,6 +6,7 @@ import * as E from './ekosistem.js';
 import * as K from './kesif.js';
 import { GOLET, nehirY, NEHIR_YARI, TURLER } from './veri.js';
 import { KUCUKLER } from './kucukler.js';
+import * as Kr from './kirlilik.js';
 
 // Ölçüm noktaları: nehrin farklı habitatları, gölet ve güneydeki sulak alan
 export const SU_NOKTALARI = [
@@ -84,8 +85,12 @@ export function olcumHesapla(k, n) {
     akis = n.akis * (0.25 + eko.nehir * 0.9);
     duzey = eko.nehir;
   }
+  // Aşama 26: kirlilik kaynağı bulanıklaştırır ve oksijeni düşürür (dışkı en çok)
+  const ks = E.kirlilikKaynagi(eko, n.x, noktaY(n), n.tip === 'golet' ? GOLET.r + 10 : 30);
+  const kv = ks ? ks.v : 0;
+  bulaniklik = Math.min(1, bulaniklik + kv * 0.3);
   // Oksijen sıcakla ve algle azalır, akışla artar (mg/l)
-  const oksijen = Math.max(1.5, Math.min(9.5, 9.2 - (sicaklik - 20) * 0.22 + akis * 1.2 - (n.tip === 'golet' ? eko.alg * 4 : 0) - (n.tip === 'sulak' ? 1.5 : 0)));
+  const oksijen = Math.max(1, Math.min(9.5, 9.2 - kv * (ks && ks.tur === 'diski' ? 5 : 2.5) - (sicaklik - 20) * 0.22 + akis * 1.2 - (n.tip === 'golet' ? eko.alg * 4 : 0) - (n.tip === 'sulak' ? 1.5 : 0)));
   return {
     dk: Math.round(k.dk),
     mevsim: tk.mevsim,
@@ -129,6 +134,14 @@ export function suOlc(d) {
     if (Math.abs(fark) >= 0.5) m += ` ${once.mevsim !== o.mevsim ? 'Öbür mevsime' : 'Önceki ölçüme'} göre ${fmt(Math.abs(Math.round(fark * 10) / 10))} derece ${fark > 0 ? 'daha sıcak' : 'daha serin'}.`;
   }
   if (ilk) m += ` ${n.tarif}`;
+  const kn = Kr.olcumNotu(k, n.x, noktaY(n), n.tip === 'golet' ? GOLET.r + 10 : 30);
+  if (kn) {
+    m += ` ${kn.metin}`;
+    if (!kn.s.goruldu) {
+      kn.s.goruldu = true;
+      M.itibarEkle(d, 3);
+    }
+  }
   M.arsivOlay(d, `Su ölçümü: ${n.ad}, ${fmt(o.sicaklik)} derece.`);
   M.olay(d, 'suOlcum', m, 2);
   return m;

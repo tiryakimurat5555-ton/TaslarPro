@@ -119,6 +119,8 @@ export const DAVRANISLAR = {
   teselliEdiliyor: { fiil: 'grup arkadaşının yanında sakinleşiyor', ad: 'Teselli görme' },
   arkadasCagiriyor: { fiil: 'sürüsünden ayrı düşmüş, uzun uzun çağırıyor', ad: 'Sürüyü çağırma' },
   dislaniyor: { fiil: 'sürünün kenarında tek başına; öbürleri onu aralarına almıyor', ad: 'Dışlanma', nadir: true },
+  sifaliBitkiYiyor: { fiil: 'çöl hurmasının acı meyvesini ve yaprağını yiyor; parazitli babunlar bunu ilaç gibi kullanıyor olabilir', ad: 'Şifalı bitki yeme', nadir: true },
+  kilYiyor: { fiil: 'hortumuyla yer kazıp kil yiyor; kil bağırsaktaki zehirleri ve parazitleri bağlayabilir', ad: 'Kil yeme', nadir: true },
   nobetTutuyor: { fiil: 'nöbet tutuyor; sürü dinlenirken başı dik, çevreyi kolluyor', ad: 'Nöbet tutma' },
   kurYapiyor: { fiil: 'kur yapıyor', ad: 'Kur ve eşleşme', nadir: true },
   yavruyuCagiriyor: { fiil: 'yavrusunu çağırıyor', ad: 'Yavruyu çağırma' },

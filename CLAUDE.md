@@ -456,6 +456,15 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   12 sn sürer. Ayar muzik kapali/dusuk (varsayılan, 0,12)/orta/yuksek (Ses ve konuşma). merkez toprakNumunesi (bölge başına günde bir;
   nem, kül, tuz, lantana) ve kilNumunesi (35 m'de tanınmış, 8 sn gözlenen birey; kortizol stresi, uyuz teşhisi, DNA). BITKILER + baldirikara,
   kayaInciri (bolge magara; mağarada Çevredeki bitkiler). Tarayıcı müzik denemesi scratchpad mz/dene.cjs. Telefonda doğrulanmadı.
+- Aşama 26 su kirliliği ve kendini tedavi (14 Kasım 2026, Murat "devam"; kararlar 29, 74; sayılar ÖNERİ). `oyun/kirlilik.js` (Kr.guncelle 3 sn'de bir):
+  k.eko.kirlilik [{id, tur les|diski|kul, x, y, v, golet, goruldu}] en çok 12; ekosistem kirlilikKaynagi/kirlilikAt okur. les: suda/kıyıda
+  (6 m) leş (büyük tür 0,65); diski: kurak mevsimde nehir < 0,4 iken nehirdeki su aygırı grubu (birikir); kul: yanık hücre ≤ 6 gün + yağmur,
+  nehre 40 m / gölete r+35. Temizlenme günlük nehir 0,45+1,2·debi, gölet 0,22. Balık ölümü: diski > 0,6, nehir < 0,32, yılda bir (olay/mesaj).
+  Etkiler: mantik g.kirliSu −0,8·kirlilik (parazit), su ölçümünde bulanıklık ve oksijen (dışkı ×5) + kaynak cümlesi (ilk kez itibar 3), su
+  numunesi koliform/amonyak/kül bulgusu. Kendini tedavi: parazitli babun 'sifaliBitkiYiyor' (çöl hurması, şiddet −0,12), fil 'kilYiyor' (−0,08),
+  günde bir. App: Su araştırması > Kirlilik kaynakları (rota), Ekosistem raporu, Yardım 2 satır, YENILIKLER. Testler: dayanıklılık 300/300,
+  menu-tara 271 sayfa iki kipte sorun 0 (/tmp/claude-0/zengin26.json kaynaklı kayıt), scratchpad /tmp/claude-0/kr/sim.js (30 günde 5 kaynak,
+  2 balık ölümü, 14 tedavi). Telefonda doğrulanmadı.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

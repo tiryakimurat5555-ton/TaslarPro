@@ -34,6 +34,7 @@ import * as Ik from './oyun/iklim.js';
 import * as Gc from './oyun/gece.js';
 import * as Hd from './oyun/hedefler.js';
 import * as Bg from './oyun/baglar.js';
+import * as Kr from './oyun/kirlilik.js';
 import { KUCUKLER, KUCUK_SIRASI, GRUPLAR, MAGARA_ODALARI, UZAK_ALANLAR, odaListesi, aktifOda, bolumAdi, KUCUK_SESLI, bulunabilirler } from './oyun/kucukler.js';
 import * as Efekt from './oyun/efekt.js';
 import { sahneKur } from './oyun/sahne.js';
@@ -295,6 +296,7 @@ const kucuk = (s) => s.toLocaleLowerCase('tr-TR');
 
 // ---------------- Yenilikler (en yeniler üstte): Murat denerken neyin nerede olduğunu bulsun diye ----------------
 const YENILIKLER = [
+  { baslik: 'Su kirliliği ve hayvanların kendini tedavi etmesi', metin: 'Su artık kirlenebiliyor. Suyun içinde ya da kıyısında çürüyen bir leş bakteri yükünü artırır. Kurak mevsimde nehir sığlaşınca su aygırlarının toplandığı yerde dışkı birikir, suyun oksijeni azalır; çok azalırsa balıklar ölebilir. Yangından sonraki ilk yağmur yanık alanın külünü suya taşır. Kirli sudan içen hayvanlar parazit kapabilir. Su ölçümü oksijenin düştüğünü ve kirliliğin kaynağını söyler, su numunesi bakteri, amonyak ya da kül bulgusu verir. Nehir akarak kendini temizler, gölet daha yavaş. Ayrıca hasta hayvanlar kendini tedavi ediyor: parazitli babunlar çöl hurmasının acı meyvesini, parazitli filler kil yiyor. Bu nadir davranışları gözlemleyebilirsin.', nerede: 'Doğa, Su araştırması, Kirlilik kaynakları; Doğa, Ekosistem raporu; sahada gözlem.' },
   { baslik: 'Dinamik müzik, toprak ve kıl numunesi, mağara bitkileri', metin: 'Oyunda artık arka plan müziği var: gündüz kalimba ve marimbalı sakin bir müzik, gece gizemli alçak bir müzik çalar. Yakında tehlikeli bir hayvan varsa, yakınlarda bir kovalamaca sürüyorsa ya da yangın yaklaşıyorsa müzik birkaç saniyede gerilimli davullara geçer, tehlike geçince yavaşça sakinleşir. Müzik hayvan seslerini bastırmasın diye düşük başlar; Ayarlar, Ses ve konuşma bölümünden kapatabilir ya da açabilirsin. Numune menüsünde iki yeni numune var: toprak numunesi bölgenin toprağını, nemini, külünü ve tuzunu gösterir; kıl ya da tüy numunesi hayvana dokunmadan DNA, son haftaların stres düzeyi ve uyuz gibi deri asalakları hakkında bilgi verir. Mağarada iki bitki var: su sızan duvarlarda baldıran kara eğreltisi ve tavandan kökleri sarkan kaya inciri.', nerede: 'Ayarlar, Ses ve konuşma, Müzik; Doğa, Numune ve veteriner; mağarada Doğa, Çevredeki bitkiler.' },
   { baslik: 'Sosyal bağlar, dışlanma, koalisyonlar ve kamera ayarları', metin: 'Sürü hayvanları artık birbirleriyle bağ kuruyor: birlikte tımarlaşan, oynayan, birbirini teselli eden ve akraba olan bireylerin bağı güçleniyor, görüşmeyenlerinki zayıflıyor. Stresli bir hayvanı önce en yakın bağı olan arkadaşı teselli ediyor. Yakın bağını kaybeden hayvan sarsılıyor. Hiç yakın bağı olmayan alt sıradaki bir birey bazen sürüden dışlanıyor; sürünün kenarında yalnız kalıyor, birkaç gün sonra ya yeniden kabul ediliyor ya da bağ kurana kadar zorlanıyor. Aslan erkekleri koalisyon kurup bölgeyi birlikte koruyor; meydan okuyan erkeğe karşı birbirlerini destekliyorlar. Birey sayfasında sosyal bağları yazıyor. Görünüm ayarlarında kamera uzaklığı ve açısı seçilebiliyor; fotoğraf çekince kamera iki saniye hayvana yaklaşıyor, araç hızlanınca kamera alçak bir takip açısına geçiyor.', nerede: 'Arşiv, birey sayfası; sahada dürbünle; Ayarlar, Görünüm ve grafik.' },
   { baslik: 'Değişen göç yolları, göç tehlikeleri, göz parıltısı ve büyük hedefler', metin: 'Göçmen sürüler artık her göçte yolunu yeniden seçer: geçitte timsahlar bekliyorsa, çevrede yangın varsa, nehir taşkındaysa ya da önceki göçte o geçitte kayıp verdilerse öbür geçide yönelirler. Nehri geçerken izdiham olabilir; bazı hayvanlar ezilip yaralanır, akıntı yüksekken yavrular sürüklenebilir. Göç dönüşünde kaç hayvanın neden dönmediği tahmin edilir: yolda avcılar, susuzluk, hastalık, açlık ve insan faaliyetleri. Gece Doğa menüsünden fenerle göz parıltısı tarayabilirsin: gözlerin rengi, yüksekliği ve kaç çift olduğu hayvanı tanıtır; timsahların gözü kırmızı parlar, babunlarınki hiç parlamaz. Merkezde altı büyük hedef var: Savan Atlası, Nesiller boyu, Koruma programı, Bilim insanı, Yaşam alanları haritası ve Uzun soluklu izleme. Hepsi bitince de araştırma sürer.', nerede: 'Merkez, Ekolojik yönetim, Göç takibi; Doğa menüsü (gece); Merkez, Büyük hedefler.' },
@@ -459,6 +461,8 @@ const YARDIM = [
       'Hayvan geçiş noktaları: nehrin iki sığ geçidinde Hayvan geçişlerini say seçilirse son bir günde karşıya geçen türler izlerden sayılır. Geçitlerdeki sayımlar ve balık türleri Hayvan geçiş noktaları araştırmasını doldurur.',
       'Hayvanların gündelik sesleri: yakındaki sürü su içiyor, otluyor ya da yavruları anneyi çağırıyorsa duyarsın; impala, ceylan, zebra ve gnu tehlikeyi görünce alarm verir. Nehir geçidine yaklaşınca su şırıltısı, istasyona yaklaşınca jeneratör, gece kampta ateş sesi yükselir; bunlar yön bulmana da yardım eder.',
       'Küçük canlıların sesleri: kuşlar, kurbağalar, böcekler ve küçük memeliler ara sıra uzaktan seslenir; ses geldiği yönden duyulur. Gece baykuşlar, çobanaldatanlar, galagolar ve kurbağalar; gündüz turnalar, boynuzgagalar, ağustos böcekleri öter. Sesini duyduktan hemen sonra Küçük canlı ara dersen onu bulman çok kolaylaşır. Ayarlar, Ses ve konuşma bölümünden kapatılabilir.',
+      'Su kirliliği: suda ya da kıyıda çürüyen leşler bakteri getirir; kurak mevsimde sığ nehirde toplanan su aygırlarının dışkısı oksijeni tüketir ve balık ölümüne yol açabilir; yangından sonraki ilk yağmur külü suya taşır. Kirli sudan içen hayvanlar parazit kapabilir. Su ölçümü ve su numunesi kirliliği gösterir. Doğa, Su araştırması, Kirlilik kaynakları listesinden kaynaklara gidebilirsin; nehir akarak, gölet daha yavaş temizlenir.',
+      'Kendini tedavi: parazitli babunlar çöl hurmasının acı meyvesini ve yaprağını, parazitli filler kil yer; hastalıkları biraz hafifler. Bu nadir davranışları görürsen kayda geçer.',
       'İstasyonun çevresi: istasyondayken ara sıra çevredeki küçük canlılar anlatılır: akasyada yuva ören dokumacı kuşlar, çatıda baş sallayan agama, gece lambanın çevresinde avlanan geckolar. İlk kez görülenler arşive yazılır.',
     ],
   },
@@ -1198,6 +1202,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
             Ik.guncelle(d, 0.1);
             Hd.guncelle(d, 0.1);
             Bg.guncelle(d, 0.1);
+            Kr.guncelle(d, 0.1);
             for (const o of M.olaylariAl(d)) if (G.dinlenmeOzetiSec(o) && r.ozet.length < 12 && !r.ozet.includes(o.metin)) r.ozet.push(o.metin);
           }
         } catch (e) {
@@ -1227,6 +1232,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
           Ik.guncelle(d, dt);
           Hd.guncelle(d, dt);
           Bg.guncelle(d, dt);
+          Kr.guncelle(d, dt);
         } catch (e) {
           if (hataKaydet(e, 'oyun döngüsü')) Ses.soyle('Oyunda beklenmedik bir hata oldu. Hata kaydedildi; Ayarlar, Hata kayıtları bölümünden bana okuyabilirsin. Oyun sürüyor.', 4);
         }
@@ -2036,6 +2042,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         if (n.tip === 'gecit') ogeler.push({ id: 'gecis', etiket: 'Hayvan geçişlerini say', ipucu: 'Son bir günde geçitten karşıya geçen türleri izlerden sayar.', sec: yap(() => S.gecisSay(d)) });
       } else ogeler.push(bilgi('uzak', 'Bir ölçüm noktasında değilsin. Aşağıdaki noktalardan birine git; kıyıya 16 metre yaklaşınca ölçüm yapılır, teknedeyken daha uzaktan.'));
       ogeler.push(bilgi('rapor', S.suRaporu(k)));
+      ogeler.push(altMenu('kirlilik', `Kirlilik kaynakları: ${Kr.kirlilikOzeti(k)}`, menu.ac));
       S.noktaSatirlari(d).forEach(({ n: p, konum, metin }) => {
         ogeler.push(bilgi('n' + p.id, `${metin}. ${M.BuyukHarf(yerTarifi(konum))}`, p.tarif));
         if (!k.teknede && !k.magara)
@@ -2051,6 +2058,25 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
           });
       });
       return liste(u, 'Su araştırması', ogeler, 'Nehrin farklı habitatları, gölet ve sulak alan. Dalış yok; ölçümler kıyıdan ya da tekneden yapılır.');
+    }
+    if (u === 'kirlilik') {
+      const l = Kr.kirlilikSatirlari(d);
+      const ogeler = [];
+      l.forEach(({ s, metin, tarif }, i) => {
+        ogeler.push(bilgi('k' + i, metin, tarif));
+        if (!k.teknede && !k.magara)
+          ogeler.push({
+            id: 'kgit' + i,
+            etiket: `Oraya ${k.aracta ? 'sür' : 'yürü'}`,
+            sec: kapatVe(() => {
+              d.rota = { x: s.x, y: s.golet ? s.y : s.y + 7, ad: 'kirlilik kaynağı', yakin: s.golet ? 16 : 6 };
+              d.yaklasId = null;
+              M.olay(d, 'rota', `Kirlilik kaynağına gidiyorsun. ${M.BuyukHarf(yerTarifi(s))}.`, 3);
+            }),
+          });
+      });
+      if (!l.length) ogeler.push(bilgi('yok', Kr.kirlilikOzeti(k)));
+      return liste(u, 'Kirlilik kaynakları', ogeler, 'Suda çürüyen leşler, kurak mevsimde su aygırı dışkısı ve yangın külü suyu kirletir. Su ölçümü ve su numunesi kaynağın etkisini gösterir; su zamanla kendini temizler.');
     }
     if (u === 'gizemler') {
       const l = H.gizemSatirlari(k);
@@ -2264,7 +2290,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         altMenu('iklimKaydi', 'İklim kaydı: yıllık yağış ve sıcaklık, uzun vadeli eğilim', menu.ac),
         bilgi('takvim', `${gun}. gün, ${tk.yil}. araştırma yılı. ${M.BuyukHarf(E.MEVSIM_ADI[tk.mevsim])}, ${tk.mevsimGunu}. gün. ${sonraki} ${tk.kalan + 1} gün sonra başlar.${tk.mevsim === 'yagisli' && e.yil && e.yil.gecikme && tk.mevsimGunu <= e.yil.gecikme ? ' Bu yıl yağmurlar gecikti.' : ''}`),
         bilgi('hava', `${e.yagmurVar ? (e.siddet > 0.8 ? 'Şu an sağanak yağıyor. ' : 'Şu an yağmur yağıyor. ') : ''}${E.havaTahmini(e, k.dk % 1440)} Bu mevsim toplam yağış yaklaşık ${Math.round(e.yagisMevsim)} milimetre.`),
-        bilgi('su', `Gölet ${E.goletSozu(e)}${E.goletKurudu(e) ? '' : `, suyu ${E.kaliteSozu(E.suKalitesi(e))}`}. Nehir ${E.nehirSozu(e.nehir)}.`),
+        bilgi('su', `Gölet ${E.goletSozu(e)}${E.goletKurudu(e) ? '' : `, suyu ${E.kaliteSozu(E.suKalitesi(e))}`}. Nehir ${E.nehirSozu(e.nehir)}. ${Kr.kirlilikOzeti(k)}`),
         bilgi(
           'ot',
           `Otlar ${e.yesil > 0.65 ? 'yemyeşil' : e.yesil > 0.4 ? 'yeşil ama solmaya başlamış' : e.yesil > 0.25 ? 'sararıyor' : 'kurumuş, sarı'}. Doğu otlaklarında ot ${E.otSozu(E.ortalamaOt(e, 92, 2, 42))}, batıda ${E.otSozu(E.ortalamaOt(e, -62, -8, 40))}, sulak alanda ${E.otSozu(E.ortalamaOt(e, -20, -140, 40))}, akasya ağaçlığında ağaç yaprağı ${E.otSozu(e.yaprak.reduce((a, b) => a + b, 0) / Math.max(1, e.yaprak.filter((x) => x > 0).length))}.`

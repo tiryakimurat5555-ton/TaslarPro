@@ -1999,7 +1999,7 @@ function grupGuncelle(d, g, dt, dtDk) {
       g.icti = true;
       g.suBekle = 0;
       // Gölette içtiyse suyun kalitesi kaydedilir (kirli su parazit getirir, karar 74)
-      g.kirliSu = k.eko && GOLET.su && mesafe(g, GOLET) < GOLET.r + 8 ? E.suKalitesi(k.eko) : 1;
+      g.kirliSu = (k.eko && GOLET.su && mesafe(g, GOLET) < GOLET.r + 8 ? E.suKalitesi(k.eko) : 1) - 0.8 * E.kirlilikAt(k.eko, g.x, g.y, 30);
       g.planBitis = Math.min(g.planBitis, k.dk + arasi(d.rng, 12, 22));
       g.susuzluk = 0;
     } else if (g.plan === 'gez' && g.yalak) {
