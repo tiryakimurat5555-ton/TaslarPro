@@ -469,7 +469,7 @@ export function kampKur(d) {
   if (Math.hypot(o.x, o.y) > YARICAP - 8) return 'Araştırma alanının sınırındasın; biraz içeri gel.';
   const tasindi = !!k.kamp;
   k.kamp = { x: o.x, y: o.y, bolge: M.bolgeAdi(o.x, o.y), gun: M.gunNo(k.dk) };
-  M.olay(d, 'kamp', `${tasindi ? 'Eski kampını söküp' : 'Çadırını, gözlem saklanağını ve güneş panelini kurdun:'} saha kampın artık ${k.kamp.bolge} bölgesinde. Kamptayken hayvanlar seni daha az fark eder; burada dinlenebilir, dronunu şarj edebilirsin.`, 3);
+  M.olay(d, 'kamp', `${tasindi ? 'Eski kampını söküp' : 'Çadırını, gözlem saklanağını ve güneş panelini kurdun:'} saha kampın artık ${k.kamp.bolge} bölgesinde. Kamptayken hayvanlar seni daha az fark eder; burada dronunu şarj edebilirsin.`, 3);
   return null;
 }
 export const dinlenebilirMi = (d) => {

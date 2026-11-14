@@ -141,7 +141,7 @@ function firtinaDenetle(d) {
       if (devrik.length) zararlar.push(`${devrik.length} kamera tuzağı devrildi (${[...new Set(devrik.map((t) => t.bolge))].join(', ')}); düzeltilene kadar fotoğraf çekemez`);
       if (k.kamp && Math.random() < 0.6) {
         k.kamp.hasarli = true;
-        zararlar.push('kamp çadırı yırtıldı; onarılana kadar kampta dinlenemezsin');
+        zararlar.push('kamp çadırı ve gözlem saklanağı yırtıldı; onarılana kadar kamp seni saklamaz');
       }
       k.butce -= FIRTINA_ONARIM;
       zararlar.push(`istasyonun çatısında hasar var, onarım ${Mz.liraSozu(FIRTINA_ONARIM)}`);

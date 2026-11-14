@@ -919,7 +919,7 @@ export function kacisMesafesi(d, b) {
   let m = t.kacis * KISILIKLER[b.kisilik].kacis * (1 - 0.6 * b.alisma);
   if (d.k.aracta) m *= d.aracHiz > 4 ? aracOzellik(d.k).kacisHizli : aracOzellik(d.k).kacis; // araç içindeki insanı daha az tehdit sayarlar (açık araçlarda daha çok)
   else if (d.k.teknede) m *= 0.55; // sessiz kürekli tekne
-  else if (d.k.kamp && mesafe(d.oyuncu, d.k.kamp) < 10) m *= 0.6; // kamptaki gözlem çadırı saklar
+  else if (d.k.kamp && !d.k.kamp.hasarli && mesafe(d.oyuncu, d.k.kamp) < 10) m *= 0.6; // kamptaki gözlem çadırı saklar
   if (geceMi(d.k.dk)) m *= 0.8;
   if (b.evre === 'yavru') m *= 1.2;
   m *= duyuCarpani(d, b);

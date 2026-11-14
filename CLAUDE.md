@@ -465,6 +465,10 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   günde bir. App: Su araştırması > Kirlilik kaynakları (rota), Ekosistem raporu, Yardım 2 satır, YENILIKLER. Testler: dayanıklılık 300/300,
   menu-tara 271 sayfa iki kipte sorun 0 (/tmp/claude-0/zengin26.json kaynaklı kayıt), scratchpad /tmp/claude-0/kr/sim.js (30 günde 5 kaynak,
   2 balık ölümü, 14 tedavi). Telefonda doğrulanmadı.
+- ZAMAN ATLAMA KALDIRILDI (14 Kasım 2026, Murat "kaldır"; brif karar 10 ve 7. bölüm "zaman sistemi nettir"): Dinlen menüsü (kamp/istasyon) ve
+  Deneme araçlarındaki zamanı ileri alma silindi. dinlenBaslat yalnız saha gezisi yolculuğunda kullanılıyor (yol 2-2,5 saat hızlı akar; Murat'a
+  söylendi). Kamp: saklanma (kaçış ×0,6, hasarlıyken yok) ve dron şarjı. G.dinlenebilirMi/dinlenmeHedefi kullanılmıyor. Saha gezisi ücreti
+  "alan izni ve konaklama" (karar 42 sınırsız yakıt). Zaman atlayan özellik EKLEME.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

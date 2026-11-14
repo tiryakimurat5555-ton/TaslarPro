@@ -296,6 +296,7 @@ const kucuk = (s) => s.toLocaleLowerCase('tr-TR');
 
 // ---------------- Yenilikler (en yeniler üstte): Murat denerken neyin nerede olduğunu bulsun diye ----------------
 const YENILIKLER = [
+  { baslik: 'Zaman artık atlanmıyor', metin: 'Tasarımdaki zaman kuralına uymak için Dinlen menüsü ve Deneme araçlarındaki zamanı ileri alma kaldırıldı. Zaman yalnız oyun açıkken, gerçek akışıyla geçer. Saha kampı hayvanlardan saklanman ve dronunu şarj etmen için duruyor; fırtınada yırtılırsa onarana kadar seni saklamaz. Saha gezilerinin ücreti artık yakıt değil alan izni ve konaklama; araç yakıtı sınırsız.', nerede: 'ana menü; Durum, ayarlar, yardım ve kayıt, Deneme araçları.' },
   { baslik: 'Su kirliliği ve hayvanların kendini tedavi etmesi', metin: 'Su artık kirlenebiliyor. Suyun içinde ya da kıyısında çürüyen bir leş bakteri yükünü artırır. Kurak mevsimde nehir sığlaşınca su aygırlarının toplandığı yerde dışkı birikir, suyun oksijeni azalır; çok azalırsa balıklar ölebilir. Yangından sonraki ilk yağmur yanık alanın külünü suya taşır. Kirli sudan içen hayvanlar parazit kapabilir. Su ölçümü oksijenin düştüğünü ve kirliliğin kaynağını söyler, su numunesi bakteri, amonyak ya da kül bulgusu verir. Nehir akarak kendini temizler, gölet daha yavaş. Ayrıca hasta hayvanlar kendini tedavi ediyor: parazitli babunlar çöl hurmasının acı meyvesini, parazitli filler kil yiyor. Bu nadir davranışları gözlemleyebilirsin.', nerede: 'Doğa, Su araştırması, Kirlilik kaynakları; Doğa, Ekosistem raporu; sahada gözlem.' },
   { baslik: 'Dinamik müzik, toprak ve kıl numunesi, mağara bitkileri', metin: 'Oyunda artık arka plan müziği var: gündüz kalimba ve marimbalı sakin bir müzik, gece gizemli alçak bir müzik çalar. Yakında tehlikeli bir hayvan varsa, yakınlarda bir kovalamaca sürüyorsa ya da yangın yaklaşıyorsa müzik birkaç saniyede gerilimli davullara geçer, tehlike geçince yavaşça sakinleşir. Müzik hayvan seslerini bastırmasın diye düşük başlar; Ayarlar, Ses ve konuşma bölümünden kapatabilir ya da açabilirsin. Numune menüsünde iki yeni numune var: toprak numunesi bölgenin toprağını, nemini, külünü ve tuzunu gösterir; kıl ya da tüy numunesi hayvana dokunmadan DNA, son haftaların stres düzeyi ve uyuz gibi deri asalakları hakkında bilgi verir. Mağarada iki bitki var: su sızan duvarlarda baldıran kara eğreltisi ve tavandan kökleri sarkan kaya inciri.', nerede: 'Ayarlar, Ses ve konuşma, Müzik; Doğa, Numune ve veteriner; mağarada Doğa, Çevredeki bitkiler.' },
   { baslik: 'Sosyal bağlar, dışlanma, koalisyonlar ve kamera ayarları', metin: 'Sürü hayvanları artık birbirleriyle bağ kuruyor: birlikte tımarlaşan, oynayan, birbirini teselli eden ve akraba olan bireylerin bağı güçleniyor, görüşmeyenlerinki zayıflıyor. Stresli bir hayvanı önce en yakın bağı olan arkadaşı teselli ediyor. Yakın bağını kaybeden hayvan sarsılıyor. Hiç yakın bağı olmayan alt sıradaki bir birey bazen sürüden dışlanıyor; sürünün kenarında yalnız kalıyor, birkaç gün sonra ya yeniden kabul ediliyor ya da bağ kurana kadar zorlanıyor. Aslan erkekleri koalisyon kurup bölgeyi birlikte koruyor; meydan okuyan erkeğe karşı birbirlerini destekliyorlar. Birey sayfasında sosyal bağları yazıyor. Görünüm ayarlarında kamera uzaklığı ve açısı seçilebiliyor; fotoğraf çekince kamera iki saniye hayvana yaklaşıyor, araç hızlanınca kamera alçak bir takip açısına geçiyor.', nerede: 'Arşiv, birey sayfası; sahada dürbünle; Ayarlar, Görünüm ve grafik.' },
@@ -329,7 +330,7 @@ const YENILIKLER = [
   { baslik: 'İstasyonun çevresindeki yaşam', metin: 'İstasyondayken ara sıra çevredeki küçük canlılar anlatılır.', nerede: 'istasyonda beklerken kendiliğinden.' },
   { baslik: 'Gizemler, insanlar, başarılar', metin: 'Adım adım çözülen gizemler, nadir gelen korucu, çoban ve araştırmacı, ödüllü bilimsel başarılar.', nerede: 'Merkez, Gizemler ve Bilimsel başarılar; ziyaretçi gelince Yerler ve ana menüde Konuş.' },
   { baslik: 'Araç sesleri', metin: 'Binerken ve inerken kapı sesi, sürerken hıza göre motor sesi.', nerede: 'araca binince; iki parmakla yukarı kaydır.' },
-  { baslik: 'Deneme araçları', metin: 'Zamanı ileri alma, bütçe, itibar ve bütün ekipman kısayolları.', nerede: 'ana menü, Durum, ayarlar, yardım ve kayıt, Deneme araçları.' },
+  { baslik: 'Deneme araçları', metin: 'Bütçe, itibar ve bütün ekipman kısayolları.', nerede: 'ana menü, Durum, ayarlar, yardım ve kayıt, Deneme araçları.' },
 ];
 
 // ---------------- Nasıl oynanır (Kayıp Okyanus Yardım gibi konu konu) ----------------
@@ -439,7 +440,7 @@ const YARDIM = [
       'Garaj: Merkez, Ekipman bölümünden ATV, arazi motosikleti ve araştırma kamyonu alınır; Merkez, Garaj bölümünde seçilir. Sahada tek araç durur, değiştirmek için istasyonda olmalısın. ATV ve motosiklet hızlıdır ama açıktır, hayvanlar seni daha kolay fark eder. Kamyon yavaştır; numuneleri ona teslim edersin, dron onda şarj olur.',
       'Stres ve görünüş: hayvanlar yalnızlık, kayıp, kavga ve tehlikeden stres yaşar, kişiliğine göre toparlanır, grup arkadaşları teselli eder. Görünüşleri (yele, çizgi, diş, ton) kalıtsaldır ve gözlem tarifinde söylenir; birey sayfasında Görünüş satırında kimden aldığı yazar.',
       'İletişim: hayvanlar kokuyla bölge işaretler, selamlaşır, gece kükrer, beden diliyle tehlikeyi bildirir. İzleri incele koku işaretlerini de bulur. Su başında timsah görenler tedirgin bekler.',
-      'Saha kampı: kamp takımıyla Doğa bölümünden kurulur. Kamptayken hayvanlar seni daha az fark eder. Kampta ya da istasyonda ana menüden Dinlen seçilince zaman hızla akar; uyanınca olanlar özetlenir.',
+      'Saha kampı: kamp takımıyla Doğa bölümünden kurulur. Kamptayken hayvanlar seni daha az fark eder. Kampta dronunun şarjı dolar. Zaman yalnız oynarken, gerçek akışıyla geçer; hızlandırma ya da atlama yoktur.',
     ],
   },
   {
@@ -486,7 +487,7 @@ const YARDIM = [
     id: 'uzak',
     baslik: 'Saha gezileri ve ekolojik yönetim',
     satirlar: [
-      'Saha gezileri: Araştırma merkezinde. Savandan uzakta üç özel alan var: Kızıl Tuz Gölü, Bulutlu Dağ Ormanı ve Papirüs Bataklığı. İtibarın arttıkça açılırlar. İstasyondayken Yola çık seçilir; yakıt ve izin ücreti ödenir, yolculuk iki üç saat sürer ve bu arada savanda zaman akar.',
+      'Saha gezileri: Araştırma merkezinde. Savandan uzakta üç özel alan var: Kızıl Tuz Gölü, Bulutlu Dağ Ormanı ve Papirüs Bataklığı. İtibarın arttıkça açılırlar. İstasyondayken Yola çık seçilir; alan izni ve konaklama ücreti ödenir, yolculuk iki üç saat sürer ve bu arada savanda zaman akar.',
       'Alanda: her alanın beş noktası var. Tek parmakla yukarı kaydırınca sonraki, aşağı kaydırınca önceki noktaya geçersin; dokununca nokta anlatılır; dürbünle çift dokununca canlı ararsın. Bulduğun canlıların fotoğrafını çekebilirsin. Dönmek için menüde İstasyona dön.',
       'Her alanın canlıları yalnızca orada yaşar: flamingolar, dağ bongosu, kolobus maymunu, pabuç gagalı leylek ve daha fazlası. Her alanın merkezde bir araştırması var: beş noktayı gez, dört canlı bul.',
       'Ekolojik yönetim: merkezde. Lantana adlı istilacı çalı bazı otlakları boğuyor; yanına gidip İstilacı bitki temizliği seçince ot yeniden gürleşir. Kurak mevsimin ilk beş gününde kontrollü yakma o yılın büyük yangın olasılığını düşürür. Gölet restorasyonu göletin daha geç kurumasını sağlar.',
@@ -1669,7 +1670,6 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       else if (G.tekneYakin(d)) ogeler.push({ id: 'tekneBin', etiket: 'Tekneye bin', sec: kapatVe(() => G.tekneyeBin(d)) });
       const zk = H.konusulabilir(d);
       if (zk) ogeler.push({ id: 'konus', etiket: `Konuş: ${H.KISILER[zk.kim].ad}`, ipucu: H.KISILER[zk.kim].unvan, sec: yap(() => H.konus(d)) });
-      if (G.dinlenebilirMi(d)) ogeler.push(altMenu('dinlen', `Dinlen: ${k.kamp && M.mesafe(d.oyuncu, k.kamp) < 10 ? 'saha kampında' : 'istasyonda'}`, menu.ac));
       if (Eg.egitimSuruyor(k)) ogeler.push({ id: 'egitim', etiket: Eg.adimMetni(k, kip), ipucu: 'Eğitimin sıradaki adımı.' });
       const ok = Mz.okunmamis(k);
       ogeler.push(
@@ -1707,18 +1707,6 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
           }),
         });
       return liste(u, BOLGE_ADLARI[id], ogeler);
-    }
-    if (u === 'dinlen') {
-      const sec = (tur, ad) => ({
-        id: tur,
-        etiket: ad,
-        sec: () => {
-          menu.kapat();
-          dinlenBaslat(G.dinlenmeHedefi(k, tur));
-          return 'sessiz';
-        },
-      });
-      return liste(u, 'Dinlen', [sec('iki', 'İki saat dinlen'), sec('aksam', 'Akşama kadar dinlen, saat 17:30'), sec('sabah', 'Sabaha kadar uyu, saat 05:30')], 'Dinlenirken zaman hızla akar; savanda olanlar uyanınca özetlenir. Ekrana dokunursan dinlenmeyi bırakırsın.');
     }
     if (u === 'hedefler') {
       return liste(u, 'Büyük hedefler', Hd.HEDEFLER.map((h) => altMenu('hedef-' + h.id, Hd.hedefSatiri(k, h), menu.ac, h.tarif)));
@@ -1893,7 +1881,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         altMenu('ayarlar', 'Ayarlar', menu.ac),
         altMenu('yardim', 'Nasıl oynanır', menu.ac),
         altMenu('yenilikler', 'Yenilikler: son eklenenler ve nerede bulunur', menu.ac),
-        altMenu('deneme', 'Deneme araçları', menu.ac, 'Yeni özellikleri hızlıca denemek için zaman, bütçe ve itibar kısayolları.'),
+        altMenu('deneme', 'Deneme araçları', menu.ac, 'Yeni özellikleri hızlıca denemek için bütçe, itibar ve ekipman kısayolları.'),
         {
           id: 'cik',
           etiket: 'Kaydet ve ana menüye dön',
@@ -1914,22 +1902,10 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       );
     }
     if (u === 'deneme') {
-      const ileri = (dk, ad) => ({
-        id: 'z' + dk,
-        etiket: ad,
-        sec: () => {
-          menu.kapat();
-          dinlenBaslat(k.dk + dk);
-          return 'sessiz';
-        },
-      });
       return liste(
         u,
         'Deneme araçları',
         [
-          ileri(60, 'Zamanı bir saat ileri al'),
-          ileri(6 * 60, 'Zamanı altı saat ileri al'),
-          ileri(24 * 60, 'Zamanı bir gün ileri al'),
           { id: 'para', etiket: 'Bütçeye 20.000 lira ekle', sec: yap(() => ((k.butce += 20000), (k.denemeKullanildi = true), `Bütçe ${Mz.liraSozu(k.butce)}.`)) },
           { id: 'itibar', etiket: 'İtibarı 120 yap: bütün saha gezileri açılır', sec: yap(() => ((k.itibar = Math.max(k.itibar, 120)), (k.denemeKullanildi = true), `Bilimsel itibar ${k.itibar}. Bütün saha gezileri ve ekipmanların çoğu açıldı.`)) },
           {
@@ -1945,7 +1921,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
             }),
           },
         ],
-        'Bu kısayollar yalnızca yeni özellikleri hızlı denemek içindir; zaman ileri alınırken savan normal biçimde yaşar.'
+        'Bu kısayollar yalnızca yeni özellikleri hızlı denemek içindir. Zaman ileri alınamaz; savan yalnız oynarken yaşar.'
       );
     }
     if (u === 'cevre') {
@@ -2450,7 +2426,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
                 return 'sessiz';
               }
               menu.kapat();
-              dinlenBaslat(k.dk + a.yol, { metin: `${a.ad} alanına yola çıktın. Yakıt ve izin için ${Mz.liraSozu(a.ucret)} ödendi.`, bitince: () => K.uzagaVar(d, id) });
+              dinlenBaslat(k.dk + a.yol, { metin: `${a.ad} alanına yola çıktın. Alan izni ve konaklama için ${Mz.liraSozu(a.ucret)} ödendi.`, bitince: () => K.uzagaVar(d, id) });
               return 'sessiz';
             },
           });

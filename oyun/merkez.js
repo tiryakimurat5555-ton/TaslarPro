@@ -27,7 +27,7 @@ export const EKIPMANLAR = {
   motosiklet: { ad: 'Arazi motosikleti', fiyat: 3500, itibar: 12, arac: true, tarif: 'En hızlı araç; uzak yerlere çabucak gidersin. Gürültülü: ürkek hayvanlar onu uzaktan duyar. Garajdan seçersin.' },
   kamyon: { ad: 'Araştırma kamyonu', fiyat: 12000, itibar: 35, arac: true, tarif: 'Yavaş ama arkasında mobil laboratuvar var: numuneleri kamyona teslim edersin, dronun kamyonda şarj olur, hayvanlar onu en az fark eder. Garajdan seçersin.' },
   // Aşama 8 (karar 24, 41)
-  kampTakimi: { ad: 'Saha kampı takımı', fiyat: 3000, itibar: 10, tarif: 'Çadır, gözlem saklanağı ve güneş paneli. Uzak bir yere kamp kurarsın: kamptayken hayvanlar seni daha az fark eder, orada dinlenir ve dronunu şarj edersin.' },
+  kampTakimi: { ad: 'Saha kampı takımı', fiyat: 3000, itibar: 10, tarif: 'Çadır, gözlem saklanağı ve güneş paneli. Uzak bir yere kamp kurarsın: kamptayken hayvanlar seni daha az fark eder, orada dronunu şarj edersin.' },
   tekne: { ad: 'Araştırma teknesi', fiyat: 7000, itibar: 15, tarif: 'İskeleye bağlı küçük kürekli tekne. Nehir boyunca su aygırlarını, timsahları ve kıyı kuşlarını sessizce, yakından izlersin.' },
   drone: { ad: 'Araştırma dronu', fiyat: 9000, itibar: 25, tarif: 'Baktığın yönde 110 metre öteye uçar, oradaki sürüleri sayar, leşleri ve tel tuzakları görür, hepsini ekosistem haritasına işler. Bataryası üç uçuşluk; istasyonda ya da kampta dolar. Alçaktan geçerken ürkek hayvanları ürkütebilir.' },
 };
@@ -1004,7 +1004,7 @@ export function lesiYak(d) {
   if (!l) return 'Yakında leş yok.';
   if (!(l.teshis === 'sarbon' || (k.eko.salgin && k.eko.salgin.bilinen))) return 'Leşin şarbonlu olduğu bilinmiyor. Doğal leşler sırtlanların ve akbabaların besinidir; önce leşten numune al.';
   if (l.hastalik !== 'sarbon') return 'Veteriner hızlı testle baktı: bu leş şarbonlu değil. Doğal leşlere dokunulmaz.';
-  if (k.butce < 300) return 'Yakıt ve kireç için 300 lira gerekli; bütçe yetmiyor.';
+  if (k.butce < 300) return 'Leşi yakmak için odun, gazyağı ve kireç 300 lira tutuyor; bütçe yetmiyor.';
   k.butce -= 300;
   k.lesler = k.lesler.filter((x) => x !== l);
   M.itibarEkle(d, 4);

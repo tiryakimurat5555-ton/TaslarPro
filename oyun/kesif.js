@@ -167,14 +167,14 @@ export function uzakDurumu(k, alan) {
   if (k.itibar < a.itibar) return { acik: false, neden: 'Bu alana izin için bilimsel itibarın henüz yetmiyor.' };
   return { acik: true, neden: '' };
 }
-// Yola çıkmadan önceki denetim ve yakıt ücreti; hata metni ya da null
+// Yola çıkmadan önceki denetim ve izin/konaklama ücreti (yakıt sınırsız, karar 42); hata metni ya da null
 export function uzakHazirla(d, alan) {
   const k = d.k;
   const a = UZAK_ALANLAR[alan];
   const dur = uzakDurumu(k, alan);
   if (!dur.acik) return dur.neden;
   if (!istasyondaMi(d)) return 'Saha gezilerine istasyondan çıkılır. Önce istasyona dön.';
-  if (k.butce < a.ucret) return `Yakıt ve izin için ${a.ucret.toLocaleString('tr-TR')} lira gerekli; bütçe yetmiyor.`;
+  if (k.butce < a.ucret) return `Alan izni ve konaklama için ${a.ucret.toLocaleString('tr-TR')} lira gerekli; bütçe yetmiyor.`;
   k.butce -= a.ucret;
   d.rota = null;
   d.yaklasId = null;
@@ -230,7 +230,7 @@ export function uzakSatirlari(k) {
     const z = (k.arsiv.uzak && k.arsiv.uzak[id]) || [];
     const c = alanCanlilari(id);
     const bulunan = c.filter((x) => k.arsiv.kucukler[x]).length;
-    return { id, a, dur, metin: `${a.ad}: ${dur.acik ? `yol ${String(Math.round((a.yol / 60) * 10) / 10).replace('.', ',')} saat, yakıt ve izin ${a.ucret.toLocaleString('tr-TR')} lira` : 'kilitli'}. Gezilen nokta ${z.length} / ${a.noktalar.length}, bulunan canlı ${bulunan} / ${c.length}.` };
+    return { id, a, dur, metin: `${a.ad}: ${dur.acik ? `yol ${String(Math.round((a.yol / 60) * 10) / 10).replace('.', ',')} saat, izin ve konaklama ${a.ucret.toLocaleString('tr-TR')} lira` : 'kilitli'}. Gezilen nokta ${z.length} / ${a.noktalar.length}, bulunan canlı ${bulunan} / ${c.length}.` };
   });
 }
 export const uzakIlerleme = (k, alan) => {
