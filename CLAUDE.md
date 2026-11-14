@@ -404,6 +404,18 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   App: Doğa > Tohum ve fideler (80 m, rota), Koloniyi incele (yakınken), Böcek kolonileri (rota); bitki sayfasında Bo.bitkiSatirlari.
   Testler: dayanıklılık 300/300 (koloni/tohum metinleri), bot 2 gün, menu-tara 248 sayfa iki kipte sorun 0, scratchpad /tmp/claude-0/bo/sim.js
   (40 günde kurakta tohum birikir, yağmurla fide). Telefonda doğrulanmadı.
+- Aşama 21 üreme ve yayınlar (14 Kasım 2026, Murat "devam"; kararlar 12, 20, 49, 61, 62, 87; sayılar ÖNERİ). mantik gunlukDogumlar: doğum
+  şansı artık gebelik başlatır (anne.gebe {baba, bas, dogum}, GEBE_GUN tür başına 2-7 oyun günü, g.kur {disi, erkek, dk} günün 1-12. saati);
+  doğum günü gelen gebe dogumYap (baba gebe.baba), kondisyon < 0,2 gebelik biter. gebeSozu gözlem tarifinde (ikinci yarıda karın belirgin).
+  `oyun/ureme.js` (Ur.guncelle 2 sn'de bir): KUR 16 tür, g.kur zamanı gelince ikisine b.ozel 'kurYapiyor' (DAVRANISLAR nadir) + olay 'ureme'
+  (App 'iletisim' gibi 3B tür sesi); anne uzaklaşan yavruyu çağırır 'yavruyuCagiriyor'; SES_TURLERI + kur, anne (sesTuruBul b.ozel'den);
+  bireySatirlari (gebelik, yavrular) birey sayfasında; gebelikOnar. `oyun/yayin.js` (Ya.guncelle 3 sn'de bir; k.yayin {makaleler, isbirlik,
+  sonGun}): tamamlanan araştırma → makale, DERGILER yerel (itibar 0, kabul 0,72) / savan (40, 0,52) / dunya (100, 0,34) + biyolog 0,1 +
+  veri (foto+ses+video)/200 en çok 0,15; hakem 1-2,5 gün; ret değilse %65 düzeltme (yeni saha verisi gerekir, +0,3), ret → başka dergi;
+  yayımlanınca itibar/fon, günlük atıf (5 atıfta itibar 1). ISBIRLIKLERI 4 (üniversite 15 ses, genetik 3 DNA, herbaryum 4 bitki analizi, müze
+  25 foto; bir kez, fon + itibar). App: Merkez > Yayınlar ve iş birlikleri (yaz-<araştırma> dergi seçimi, isbirlikleri). Hata düzeltmesi:
+  bozuk b.alt davranışı etrafiTara'yı çökertiyordu (DAVRANISLAR yoksa dinleniyor). Testler: dayanıklılık 300/300, bot 3 gün, ekosistem
+  30 gün iki kez dengede (birinde yağmur gecikti, göçmenler dönmedi; eski kodda da olur), menu-tara 262 sayfa iki kipte sorun 0. Telefonda doğrulanmadı.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

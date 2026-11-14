@@ -1304,6 +1304,28 @@ function kalitim(d, y, anne, baba) {
   if (f >= 0.125) y.kondisyon = Math.max(0.3, y.kondisyon - 0.15); // akrabalı yetişme zayıf doğurur
 }
 
+// Doğum: gebeliğin sonunda (Aşama 21)
+export const GEBE_GUN = { aslan: 3, leopar: 3, sirtlan: 3, cita: 3, yabanKopegi: 2, fil: 7, zurafa: 5, zebra: 4, gnu: 3, impala: 3, ceylan: 2, domuz: 2, suAygiri: 4, gergedan: 6, manda: 4, babun: 3 };
+function dogumYap(d, g, anne, baba) {
+  const k = d.k;
+  const y = bireyOlustur(k, d.rng, g.tur, g, 'yavru', d.rng() < 0.5 ? 'erkek' : 'disi', anne.x + 0.8, anne.y + 0.8, anne.id);
+  y.dogumDk = k.dk;
+  y.yas = 0;
+  y.kondisyon = 0.7;
+  kalitim(d, y, anne, baba);
+  y.ofs = { x: anne.ofs.x + 0.8, y: anne.ofs.y + 0.6 };
+  gecmisEkle(k, anne, 'Yavruladı');
+  k.hayvanlar.push(y);
+  d.hayvanMap.set(y.id, y);
+  anne.alt = 'dogum';
+  anne.altBitis = k.dk + 240;
+  if (mesafe(d.oyuncu, anne) <= durbunMenzili(k.dk, k)) {
+    olay(d, 'tanik', `Bir doğuma tanık oldun! ${taninmisMi(anne) ? bireyAdi(anne) : 'Bir ' + kucuk(SOZ[g.tur])} yavruladı, ${yerTarifi(d.oyuncu, anne)}.`, 4, { id: anne.id });
+    arsivOlay(d, `${taninmisMi(anne) ? bireyAdi(anne) : 'Bir ' + kucuk(SOZ[g.tur])} yavruladı.`);
+    itibarEkle(d, 6);
+  }
+  return y;
+}
 function gunlukDogumlar(d) {
   const k = d.k;
   gunlukEkosistem(d);
@@ -1332,34 +1354,36 @@ function gunlukDogumlar(d) {
       continue;
     }
     if (!u.length) continue;
-    const anneler = u.filter((b) => b.cinsiyet === 'disi' && b.evre === 'yetiskin' && b.kondisyon > 0.35 && !b.hastalik && !u.some((y) => y.anne === b.id && y.evre === 'yavru'));
+    // Aşama 21 (karar 20): gebelik. Doğum günü gelen gebe dişiler doğurur; çok zayıf düşen yavrusunu kaybeder.
+    const bugun = gunNo(k.dk);
+    for (const anne of u) {
+      if (!anne.gebe) continue;
+      if (anne.kondisyon < 0.2) {
+        delete anne.gebe;
+        gecmisEkle(k, anne, 'Gebeliği açlık yüzünden sona erdi');
+        continue;
+      }
+      if (anne.gebe.dogum > bugun) continue;
+      const baba = (anne.gebe.baba && birey(d, anne.gebe.baba)) || babaSec(d, g, u, anne);
+      delete anne.gebe;
+      dogumYap(d, g, anne, baba);
+    }
+    const anneler = u.filter((b) => b.cinsiyet === 'disi' && b.evre === 'yetiskin' && b.kondisyon > 0.35 && !b.hastalik && !b.gebe && !u.some((y) => y.anne === b.id && y.evre === 'yavru'));
     if (!anneler.length || u.length >= t.grup[1] + 3) continue;
     const kucukGrup = u.length < t.grup[1];
-    // Otçullar çoğunlukla yağışlı mevsimde, otlar gürken doğurur (karar 43)
+    // Otçullar çoğunlukla yağışlı mevsimde, otlar gürken gebe kalır ve doğurur (karar 43)
     const yagisli = E.takvim(gunNo(k.dk)).mevsim === 'yagisli';
     let sans = t.yirtici ? 0.1 : ['fil', 'gergedan', 'zurafa'].includes(g.tur) ? 0.06 : ['piton', 'timsah', 'kartal'].includes(g.tur) ? 0 : kucukGrup ? 0.5 : 0.3;
     if (!t.yirtici && !yagisli) sans *= 0.15;
-    // Büyük otçul sürülerinde yağmurlarla birden çok dişi aynı günlerde doğurur (gnu, zebra, impala...)
+    // Büyük otçul sürülerinde yağmurlarla birden çok dişi aynı günlerde gebe kalır (gnu, zebra, impala...)
     const kalabalik = !t.yirtici && t.grup[1] >= 8 && yagisli;
-    const dogumSayisi = kalabalik ? anneler.filter(() => d.rng() < (kucukGrup ? 0.16 : 0.09)).length : d.rng() < sans ? 1 : 0;
-    const anneSirasi = anneler.slice().sort(() => d.rng() - 0.5).slice(0, dogumSayisi);
+    const gebeSayisi = kalabalik ? anneler.filter(() => d.rng() < (kucukGrup ? 0.16 : 0.09)).length : d.rng() < sans ? 1 : 0;
+    const anneSirasi = anneler.slice().sort(() => d.rng() - 0.5).slice(0, gebeSayisi);
     for (const anne of anneSirasi) {
-    const y = bireyOlustur(k, d.rng, g.tur, g, 'yavru', d.rng() < 0.5 ? 'erkek' : 'disi', anne.x + 0.8, anne.y + 0.8, anne.id);
-    y.dogumDk = k.dk;
-    y.yas = 0;
-    y.kondisyon = 0.7;
-    kalitim(d, y, anne, babaSec(d, g, u, anne));
-    y.ofs = { x: anne.ofs.x + 0.8, y: anne.ofs.y + 0.6 };
-    gecmisEkle(k, anne, 'Yavruladı');
-    k.hayvanlar.push(y);
-    d.hayvanMap.set(y.id, y);
-    anne.alt = 'dogum';
-    anne.altBitis = k.dk + 240;
-    if (mesafe(d.oyuncu, anne) <= durbunMenzili(k.dk, k)) {
-      olay(d, 'tanik', `Bir doğuma tanık oldun! ${taninmisMi(anne) ? bireyAdi(anne) : 'Bir ' + kucuk(SOZ[g.tur])} yavruladı, ${yerTarifi(d.oyuncu, anne)}.`, 4, { id: anne.id });
-      arsivOlay(d, `${taninmisMi(anne) ? bireyAdi(anne) : 'Bir ' + kucuk(SOZ[g.tur])} yavruladı.`);
-      itibarEkle(d, 6);
-    }
+      const baba = babaSec(d, g, u, anne);
+      anne.gebe = { baba: baba ? baba.id : null, bas: bugun, dogum: bugun + (GEBE_GUN[g.tur] || 3) };
+      // Kur davranışı günün bir saatinde görünür (ureme.js)
+      g.kur = { disi: anne.id, erkek: baba ? baba.id : null, dk: k.dk + Math.floor(60 + d.rng() * 660) };
     }
   }
   // Korku zamanla söner (karar 109: psikolojik iyileşme); kişiliğe göre hızı değişir
@@ -1943,7 +1967,7 @@ function davranisBelirle(d, b, g, hareketli) {
   if (b.tehdit > 0) return 'uyariyor';
   if (b.ozel && b.ozel.bitis > d.zaman) return b.ozel.davranis; // Aşama 8: meydan okuma, rekabet
   if (g.alarm > 0 && g.alarmGecikme <= 0 && !t.yirtici) return 'kaciyor';
-  if (b.alt && k.dk < b.altBitis) return b.alt;
+  if (b.alt && DAVRANISLAR[b.alt] && k.dk < b.altBitis) return b.alt;
   if (g.goc) return nehirdeMi(b.x, b.y) ? 'nehirGeciyor' : hareketli ? 'gocEdiyor' : 'otluyor';
   // Çok hasta hayvan yatar
   if (b.hastalik && b.hastalik.siddet > 0.65 && g.alarm <= 0) return 'dinleniyor';
@@ -2112,6 +2136,8 @@ function sesTuruBul(b, g) {
   const t = TURLER[b.tur];
   if (b.tehdit > 0 || b.davranis === 'uyariyor') return 'tehdit';
   if (g.alarm > 0 && !t.yirtici) return 'alarm';
+  if (b.ozel && b.ozel.davranis === 'kurYapiyor') return 'kur';
+  if (b.ozel && b.ozel.davranis === 'yavruyuCagiriyor') return 'anne';
   if (b.evre === 'yavru') return 'yavru';
   return t.sesTuru || 'iletisim';
 }
@@ -2206,7 +2232,7 @@ export function gozlemTarifi(d, b) {
   const dv = DAVRANISLAR[b.davranis] || DAVRANISLAR.dinleniyor;
   const oz = b.ozellik && OZEL_BIREYLER[b.ozellik];
   const gr = !oz && gorunusSozu(b);
-  return `${BuyukHarf(bireyAdi(b))}${oz ? `, ${oz.gorunus},` : gr ? `, ${gr},` : ''} ${dv.fiil}${saglikGorunusu(b)}, ${yerTarifi(d.oyuncu, b)}`;
+  return `${BuyukHarf(bireyAdi(b))}${oz ? `, ${oz.gorunus},` : gr ? `, ${gr},` : ''} ${dv.fiil}${saglikGorunusu(b)}${gebeSozu(d, b)}, ${yerTarifi(d.oyuncu, b)}`;
 }
 // Aşama 19 (karar 113): kalıtsal görünüş. ton -1 (açık) .. +1 (koyu); belirgin olanlar dürbünde söylenir ve bireyi tanımayı kolaylaştırır.
 export const GORUNUS = {
@@ -2243,6 +2269,14 @@ export function gorunusSatiri(d, b) {
   return m;
 }
 // Dürbünle görülen sağlık belirtisi (karar 28)
+// Gebelik ilk yarısında görünmez; ikinci yarısında karın belirginleşir (Aşama 21)
+export function gebeSozu(d, b) {
+  const gb = b.gebe;
+  if (!gb || !sayiMi(gb.bas) || !sayiMi(gb.dogum)) return '';
+  const gun = gunNo(d.k.dk);
+  if (gun - gb.bas < (gb.dogum - gb.bas) / 2) return '';
+  return gb.dogum - gun <= 1 ? ', karnı çok iri, doğumu yakın görünüyor' : ', karnı belirgin, gebe görünüyor';
+}
 export function saglikGorunusu(b) {
   if (b.hastalik && E.belirtiGorunur(b.hastalik)) return `, ${E.HASTALIKLAR[b.hastalik.id].belirti}`;
   if (b.kondisyon < 0.3) return ', çok zayıf görünüyor';
@@ -2325,7 +2359,7 @@ function gozlemGuncelle(d, dt) {
   } else g.davranisSn += dt;
   if (g.davranisSn > 1.2 && g.duyurulan !== b.davranis) {
     g.duyurulan = b.davranis;
-    olay(d, 'davranis', `${BuyukHarf(bireyAdi(b))} artık ${DAVRANISLAR[b.davranis].fiil}.`, 1, { id: b.id });
+    olay(d, 'davranis', `${BuyukHarf(bireyAdi(b))} artık ${(DAVRANISLAR[b.davranis] || DAVRANISLAR.dinleniyor).fiil}.`, 1, { id: b.id });
   }
   if (g.davranisSn > 3 && !tk.davranislar.includes(b.davranis)) {
     tk.davranislar.push(b.davranis);
@@ -2872,9 +2906,9 @@ export function etrafiTara(d) {
       const b = l[0].b;
       if (l.length >= 3) {
         const yavru = l.filter((x) => x.b.evre === 'yavru').length;
-        parcalar.push(`${SOZ[b.tur]} sürüsü, ${l.length} birey${yavru ? `, ${yavru} yavru` : ''}, ${DAVRANISLAR[b.davranis].fiil}, en yakını ${yerTarifi(d.oyuncu, b)}`);
+        parcalar.push(`${SOZ[b.tur]} sürüsü, ${l.length} birey${yavru ? `, ${yavru} yavru` : ''}, ${(DAVRANISLAR[b.davranis] || DAVRANISLAR.dinleniyor).fiil}, en yakını ${yerTarifi(d.oyuncu, b)}`);
       } else {
-        l.forEach((x) => parcalar.push(`${BuyukHarf(bireyAdi(x.b))}, ${DAVRANISLAR[x.b.davranis].fiil}, ${yerTarifi(d.oyuncu, x.b)}`));
+        l.forEach((x) => parcalar.push(`${BuyukHarf(bireyAdi(x.b))}, ${(DAVRANISLAR[x.b.davranis] || DAVRANISLAR.dinleniyor).fiil}, ${yerTarifi(d.oyuncu, x.b)}`));
       }
     });
   return parcalar.join('. ') + '.';

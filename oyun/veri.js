@@ -118,6 +118,8 @@ export const DAVRANISLAR = {
   teselliEdiyor: { fiil: 'stresli bir grup arkadaşını teselli ediyor', ad: 'Teselli etme', nadir: true },
   teselliEdiliyor: { fiil: 'grup arkadaşının yanında sakinleşiyor', ad: 'Teselli görme' },
   arkadasCagiriyor: { fiil: 'sürüsünden ayrı düşmüş, uzun uzun çağırıyor', ad: 'Sürüyü çağırma' },
+  kurYapiyor: { fiil: 'kur yapıyor', ad: 'Kur ve eşleşme', nadir: true },
+  yavruyuCagiriyor: { fiil: 'yavrusunu çağırıyor', ad: 'Yavruyu çağırma' },
   bedenDiliUyari: { fiil: 'kuyruğunu dikip başını kaldırarak sürüye tehlikeyi bildiriyor', ad: 'Beden diliyle uyarı' },
 };
 
@@ -128,6 +130,8 @@ export const SES_TURLERI = {
   bolge: 'bölge çağrısı',
   yavru: 'yavru çağrısı',
   tehdit: 'tehdit sesi',
+  kur: 'kur ve eşleşme çağrısı',
+  anne: 'annenin yavrusunu çağırması',
 };
 
 // Türler. kisa: kimlik öneki. ses: 3B ses dosyası (yoksa sessiz). aktif: gunduz | gece | karma.

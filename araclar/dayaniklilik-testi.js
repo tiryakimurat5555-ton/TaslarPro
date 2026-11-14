@@ -16,6 +16,8 @@ import * as Sy from '../oyun/sosyal.js';
 import * as Il from '../oyun/iletisim.js';
 import * as Ps from '../oyun/psikoloji.js';
 import * as Bo from '../oyun/botanik.js';
+import * as Ur from '../oyun/ureme.js';
+import * as Ya from '../oyun/yayin.js';
 import { BITKI_SIRASI } from '../oyun/ekosistem.js';
 
 const deneme = +(process.argv[2] || 200);
@@ -39,6 +41,8 @@ function oynat(d, adim) {
     Il.guncelle(d, 0.1);
     Ps.guncelle(d, 0.1);
     Bo.guncelle(d, 0.1);
+    Ur.guncelle(d, 0.1);
+    Ya.guncelle(d, 0.1);
     for (const o of M.olaylariAl(d)) metinDenetle(o.metin, o.tur);
     if (i % 60 === 0) {
       metinDenetle(B.betimle(d, 'Dürbün'), 'betimleme');
@@ -139,6 +143,18 @@ function oynat(d, adim) {
         BITKI_SIRASI.forEach((id) => Bo.bitkiSatirlari(d.k, id).forEach((m) => metinDenetle(m, 'bitki botanik')));
         Object.assign(d.oyuncu, ek);
       }
+      // Aşama 21: üreme ve yayınlar
+      d.k.hayvanlar.slice(0, 40).forEach((b) => {
+        Ur.bireySatirlari(d, b).forEach((m) => metinDenetle(m, 'üreme'));
+        metinDenetle(M.gozlemTarifi(d, b), 'gözlem tarifi');
+      });
+      Ya.yazilabilirler(d.k).slice(0, 2).forEach((a) => metinDenetle(Ya.gonder(d, a.id, 'yerel'), 'makale'));
+      Ya.yayinAlani(d.k).makaleler.forEach((m) => {
+        metinDenetle(Ya.makaleSatiri(m), 'makale satırı');
+        metinDenetle(Ya.duzeltmeGonder(d, m.konu), 'düzeltme');
+      });
+      Ya.ISBIRLIGI_SIRASI.forEach((id) => metinDenetle(Ya.isbirligiYap(d, id), 'iş birliği'));
+      metinDenetle(Ya.ozet(d.k), 'yayın özeti');
       S.kameraSatirlari(d.k).forEach((m) => metinDenetle(m, 'kamera'));
       d.k.hayvanlar.filter((b) => b.ozellik).forEach((b) => metinDenetle(M.gozlemTarifi(d, b), 'özel birey'));
       ['aslan', 'cita', 'manda', 'babun'].forEach((t) => Sy.turSatirlari(d, t).forEach((m) => metinDenetle(m, 'sosyal tür')));

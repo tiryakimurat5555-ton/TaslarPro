@@ -28,6 +28,8 @@ import * as Sy from './oyun/sosyal.js';
 import * as Il from './oyun/iletisim.js';
 import * as Ps from './oyun/psikoloji.js';
 import * as Bo from './oyun/botanik.js';
+import * as Ur from './oyun/ureme.js';
+import * as Ya from './oyun/yayin.js';
 import { KUCUKLER, KUCUK_SIRASI, GRUPLAR, MAGARA_ODALARI, UZAK_ALANLAR, odaListesi, aktifOda, bolumAdi, KUCUK_SESLI, bulunabilirler } from './oyun/kucukler.js';
 import * as Efekt from './oyun/efekt.js';
 import { sahneKur } from './oyun/sahne.js';
@@ -275,6 +277,7 @@ const kucuk = (s) => s.toLocaleLowerCase('tr-TR');
 
 // ---------------- Yenilikler (en yeniler üstte): Murat denerken neyin nerede olduğunu bulsun diye ----------------
 const YENILIKLER = [
+  { baslik: 'Gebelik, kur davranışı ve bilimsel yayınlar', metin: 'Hayvanlar artık önce eşleşir, sonra gebe kalır ve birkaç gün sonra doğurur. Eşleşme günü kur davranışını dürbünle görebilirsin: aslanlar, filler, zebralar, impalalar ve öteki türler kendi biçimlerinde kur yapar. Gebeliğin ikinci yarısında dişinin karnı belirginleşir; gözlemde söylenir, birey sayfasında doğumun yaklaşık ne zaman olacağı yazar. Anneler uzaklaşan yavrularını çağırır. Ses kaydı artık kur çağrısını ve annenin yavrusunu çağırmasını da ayırt eder. Merkezde Yayınlar bölümü var: tamamlanan her araştırmadan makale yazıp üç dergiden birine gönderirsin; hakemler kabul eder, düzeltme ister ya da reddeder. Yayımlanan makaleler itibar, fon ve zamanla atıf getirir. Dört bilimsel kuruluş belli verileri bir kez paylaşmanı ister; karşılığında destek verir.', nerede: 'sahada dürbünle; Arşiv, birey sayfası; Merkez, Yayınlar ve iş birlikleri.' },
   { baslik: 'Tozlaşma, tohum yayılımı ve böcek kolonileri', metin: 'Bitkiler artık canlı bir döngü yaşıyor. Çiçek açan bitkilerin yanındayken arıların, güneş kuşlarının ya da rüzgârın onları tozlaştırdığını duyarsın. Filler, zürafalar, impalalar ve babunlar akasya ve çöl hurması meyvelerini yer, tohumları dışkılarıyla uzağa taşır; bok böcekleri dışkıyı gömer, yağmurlar gelince tohumlar filizlenir, fideler fidana, fidanlar genç ağaca döner. Bunları bulup inceleyebilirsin. Dört böcek kolonisi var: termit tepeleri, yabani bal arısı kovanı, ordu karıncaları ve galeri ormanındaki dokumacı karıncalar. Koloniler saate, mevsime ve yağmura göre farklı şeyler yapar: termitlerin çiftleşme uçuşu, arıların oğul vermesi, karınca akınları.', nerede: 'Doğa bölümünde Tohum ve fideler ile Böcek kolonileri; Arşiv, bitki sayfası.' },
   { baslik: 'Stres, travma ve teselli', metin: 'Hayvanların artık bir stres düzeyi var. Sürüsünden ayrı düşmek, annesini kaybetmek, sıralama kavgasını kaybetmek, avcıdan kıl payı kurtulmak ya da tel tuzağa düşmek stres verir; stresli hayvan daha tetiktedir, daha uzaktan kaçar ve uzun sürerse zayıflar. Her birey kişiliğine göre toparlanır: cesurlar çabuk, ürkekler yavaş. Filler, babunlar, aslanlar, zebralar ve yaban köpekleri stresli grup arkadaşlarını teselli eder; bunu dürbünle görebilirsin. Sürüsünden ayrı kalan hayvan durup uzun uzun çağırır.', nerede: 'sahada dürbünle; Arşiv, birey sayfasında sağlık dosyası.' },
   { baslik: 'Kalıtsal görünüş', metin: 'Her hayvanın kalıtsal bir görünüşü var: kara ya da açık yeleli aslanlar, kalın ya da ince çizgili zebralar, uzun dişli filler, koyu ve iri lekeli zürafalar. Yavrular bu özelliği anne ve babasından alır, mizaçları da çoğunlukla anneye benzer. Belirgin olanlar dürbünle gözlerken söylenir; bireyleri ayırt etmeyi kolaylaştırır. Ekranda da hayvanların rengi biraz farklıdır.', nerede: 'gözlem tarifinde; Arşiv, birey sayfasında Görünüş satırı.' },
@@ -383,6 +386,8 @@ const YARDIM = [
       'Hayvanlar yaşlanır, yavrular büyür, genç erkekler sürüden ayrılır. Hastalanan ya da yaralanan hayvanlar dürbünde belirti gösterir: topallama, zayıflık, tüy dökülmesi.',
       'Menüde Doğa bölümündeki Numune ve veteriner satırından su, dışkı ve leş numunesi alırsın; Çevredeki bitkiler bölümünden bitki inceler, yaprak ve tohum numunesi alırsın. Numuneler istasyona dönünce laboratuvarda analiz edilir.',
       'Tozlaşma ve tohumlar: çiçek açan bitkilerin yanında arıları, güneş kuşlarını ya da rüzgârla tozlaşmayı duyarsın. Filler, zürafalar, impalalar ve babunlar akasya ve çöl hurması tohumlarını dışkılarıyla taşır; Doğa bölümünde Tohum ve fideler satırı yakındakileri gösterir, oraya götürür ve inceletir. Tohumlar yağışlı mevsimde filizlenir.',
+      'Üreme: hayvanlar eşleşir, gebe kalır, birkaç gün sonra doğurur. Eşleşme günü kur davranışı görülür. Gebeliğin ikinci yarısında dişinin karnı belirginleşir; birey sayfasında doğumun yaklaşık zamanı yazar. Doğuma tanık olmak için gebe bir dişiyi izle.',
+      'Yayınlar: Merkez, Yayınlar ve iş birlikleri. Tamamlanan araştırmadan makale yazıp dergi seçersin. Hakemler birkaç gün içinde karar verir; düzeltme isterlerse sahadan yeni bir fotoğraf, ses ya da video getirip düzeltmeyi gönderirsin. Yayımlanan makale itibar, fon ve atıf getirir. Kuruluşlarla veri alışverişi her biriyle bir kez yapılır.',
       'Böcek kolonileri: Doğa bölümünde. Termit tepeleri, yabani bal arısı kovanı, ordu karıncaları ve dokumacı karıncalar var. Yanına gidince Koloniyi incele satırı çıkar. Her koloni saate, mevsime ve yağmura göre farklı şeyler yapar; farklı durumları gözledikçe kayda geçer.',
       'Veterinerin yaralı ve hasta hayvanları tedavi eder, şarbonlu leşleri yakar. Rehabilitasyon alanı kurulunca ağır yaralı ve yetim hayvanlar bakılıp doğaya geri bırakılır. Sağlıklı hayvana dokunulmaz, vahşi hayvan beslenmez.',
     ],
@@ -884,6 +889,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         if (b) Efekt.yonlu(TURLER[b.tur].ses, d.oyuncu, b, 0.95, 70);
         return;
       case 'iletisim':
+      case 'ureme':
         if (b && o.ses) Efekt.yonlu(TURLER[b.tur].ses, d.oyuncu, b, 1, o.duyma || 120);
         return;
       case 'grupSavunma':
@@ -1141,6 +1147,8 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
             Il.guncelle(d, 0.1);
             Ps.guncelle(d, 0.1);
             Bo.guncelle(d, 0.1);
+            Ur.guncelle(d, 0.1);
+            Ya.guncelle(d, 0.1);
             for (const o of M.olaylariAl(d)) if (G.dinlenmeOzetiSec(o) && r.ozet.length < 12 && !r.ozet.includes(o.metin)) r.ozet.push(o.metin);
           }
         } catch (e) {
@@ -1165,6 +1173,8 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
           Il.guncelle(d, dt);
           Ps.guncelle(d, dt);
           Bo.guncelle(d, dt);
+          Ur.guncelle(d, dt);
+          Ya.guncelle(d, dt);
         } catch (e) {
           if (hataKaydet(e, 'oyun döngüsü')) Ses.soyle('Oyunda beklenmedik bir hata oldu. Hata kaydedildi; Ayarlar, Hata kayıtları bölümünden bana okuyabilirsin. Oyun sürüyor.', 4);
         }
@@ -1650,6 +1660,46 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       });
       return liste(u, 'Dinlen', [sec('iki', 'İki saat dinlen'), sec('aksam', 'Akşama kadar dinlen, saat 17:30'), sec('sabah', 'Sabaha kadar uyu, saat 05:30')], 'Dinlenirken zaman hızla akar; savanda olanlar uyanınca özetlenir. Ekrana dokunursan dinlenmeyi bırakırsın.');
     }
+    if (u === 'yayinlar') {
+      const y = Ya.yayinAlani(k);
+      const ogeler = [];
+      y.makaleler.filter((m) => m.durum === 'duzeltme').forEach((m) =>
+        ogeler.push({ id: 'dz' + m.konu, etiket: `Düzeltmeyi gönder: ${Ya.makaleBasligi(m)}`, ipucu: 'Hakemler yeni saha verisi istiyor; gönderilen makaleden sonra en az bir yeni fotoğraf, ses ya da video gerekir.', sec: yap(() => Ya.duzeltmeGonder(d, m.konu)) }),
+      );
+      Ya.yazilabilirler(k).forEach((a) => ogeler.push(altMenu('yaz-' + a.id, `Makale yaz: ${a.ad}`, menu.ac)));
+      y.makaleler.forEach((m, i) => ogeler.push(bilgi('m' + i, Ya.makaleSatiri(m))));
+      if (!y.makaleler.length && !Ya.yazilabilirler(k).length) ogeler.push(bilgi('yok', 'Henüz makale yazılacak tamamlanmış bir araştırma yok. Merkez, Araştırmalar bölümünde bir araştırmanın koşullarını tamamlayıp analizini bitirince makalesini yazabilirsin.'));
+      ogeler.push(altMenu('isbirlikleri', 'Bilimsel kuruluşlarla veri alışverişi', menu.ac));
+      return liste(u, 'Yayınlar ve iş birlikleri', ogeler, `Bilimsel itibar ${k.itibar}. ${Ya.ozet(k)}.`);
+    }
+    if (u.startsWith('yaz-')) {
+      const konu = u.slice(4);
+      const ogeler = Ya.DERGI_SIRASI.map((id) => {
+        const dg = Ya.DERGILER[id];
+        if (!Ya.dergiAcikMi(k, id)) return bilgi('k' + id, `${dg.ad}: bilimsel itibarın ${dg.itibar} olunca gönderebilirsin.`);
+        const p = Math.round(Ya.kabulOlasiligi(k, id) * 10);
+        const sans = p >= 7 ? 'kabul şansı yüksek' : p >= 5 ? 'kabul şansı orta' : 'kabul şansı düşük';
+        return { id: 'd' + id, etiket: `${dg.ad} dergisine gönder: ${sans}, yayımlanırsa ${Mz.liraSozu(dg.odul.fon)} destek`, sec: () => {
+            Ses.hemen(Ya.gonder(d, konu, id));
+            kaydet();
+            menu.geri();
+            return 'sessiz';
+          },
+        };
+      });
+      ogeler.push(bilgi('not', 'Biyolog personelin varsa ve arşivinde çok fotoğraf, ses ve video varsa kabul şansı artar. Prestijli dergiler daha çok itibar ve atıf getirir ama daha seçicidir.'));
+      return liste(u, 'Dergi seç', ogeler);
+    }
+    if (u === 'isbirlikleri') {
+      const ogeler = Ya.ISBIRLIGI_SIRASI.map((id) => {
+        const ib = Ya.ISBIRLIKLERI[id];
+        const du = Ya.isbirligiDurumu(d, id);
+        if (du.yapildi) return bilgi('y' + id, `${ib.ad}: veri alışverişi yapıldı.`);
+        if (du.hazir) return { id: 'i' + id, etiket: `${ib.ad}: ${ib.istek} paylaş, ${Mz.liraSozu(ib.odul.fon)} destek`, sec: yap(() => Ya.isbirligiYap(d, id)) };
+        return bilgi('b' + id, `${ib.ad} senden ${ib.istek} istiyor: ${du.n} / ${du.hedef}.`);
+      });
+      return liste(u, 'Veri alışverişi', ogeler, 'Her kuruluşla bir kez veri alışverişi yapılır.');
+    }
     if (u === 'tohumlar') {
       const ogeler = [];
       Bo.yakinTohumlar(d).forEach((t) => {
@@ -1879,6 +1929,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         altMenu('mesajlar', `Mesajlar: ${Mz.okunmamis(k)} okunmamış, toplam ${k.mesajlar.length}`, menu.ac),
         altMenu('gorevler', `Görevler: ${k.teklifler.filter((t) => t.durum === 'kabul').length} süren, ${k.teklifler.filter((t) => t.durum === 'teklif').length} teklif`, menu.ac),
         altMenu('arastirmalar', `Araştırmalar: ${hazir} analize hazır, ${suren} analizde`, menu.ac),
+        altMenu('yayinlar', `Yayınlar ve iş birlikleri: ${Ya.ozet(k)}`, menu.ac, 'Tamamlanan araştırmalardan makale yazıp dergilere gönderirsin; üniversite ve enstitülerle veri paylaşırsın.'),
         altMenu('ekipman', 'Ekipman', menu.ac),
         altMenu('garaj', `Garaj: sahada ${M.aracAdi(k)}`, menu.ac),
         altMenu('tesisler', `Tesisler: ${k.tesisler.length} / ${Object.keys(Mz.TESISLER).length} kurulu`, menu.ac),
@@ -2076,6 +2127,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       ];
       ogeler.push(bilgi('gorunus', M.gorunusSatiri(d, b)));
       Sy.bireySatirlari(d, b).forEach((m, i) => ogeler.push(bilgi('sy' + i, m)));
+      Ur.bireySatirlari(d, b).forEach((m, i) => ogeler.push(bilgi('ur' + i, m)));
       const rm = !b.olu && M.rutinMetni(d, k.gruplar.find((g) => g.id === b.grup));
       if (rm) ogeler.push(bilgi('rutin', rm));
       if (b.ozellik && OZEL_BIREYLER[b.ozellik] && M.taninmisMi(b)) ogeler.push(bilgi('ozel', `Özel birey: ${OZEL_BIREYLER[b.ozellik].ad}. ${OZEL_BIREYLER[b.ozellik].tarif}`));
