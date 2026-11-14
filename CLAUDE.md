@@ -394,6 +394,16 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   gorunusSozu (|ton| ≥ 0,45, yavru değil) gözlem tarifinde, gorunusSatiri birey sayfasında; sahne hayvanModeli rengi offsetHSL(-ton·0,07),
   aslan yelesi ×0,12. Testler: bot 3 gün, dayanıklılık 300/300, menu-tara 246 sayfa iki kipte sorun 0, scratchpad gol/ps.js (2 saatte 3
   teselli; 112 bireyin 35'inde belirgin görünüş). Telefonda doğrulanmadı.
+- Aşama 20 bitki ve böcek ekolojisi (14 Kasım 2026, Murat "devam"; kararlar 95, 96; sayılar ÖNERİ). `oyun/botanik.js` (Bo.guncelle 2 sn'de
+  bir, gün dönünce gunluk; k.botanik {tozlasma, yayilim, koloniler, tohumlar, yetisen, sayac}, botanikAlani onarır). TOZLASMA 8 bitki (çiçek
+  evresi i, arılar/güneş kuşu/rüzgâr): oyuncunun bölgesinde gündüz olay 'bitki' (180 sn bekleme), ilki itibar 3. Tohum yayılımı: YAYANLAR
+  (akasyalar, çöl hurması → fil, zürafa, impala, babun) günlük grup başına %45/%25 tohumlu dışkı 25-70 m uzağa (en çok 24), bok böcekleri gömer,
+  yağışlı mevsim + nem > 0,45 → fide → 14 gün fidan → 22 gün genç ağaç (b.yetisen, mesaj). tohumIncele 12 m (ilk bitki:taşıyan itibar 4,
+  yeni evre 2). KOLONILER 4 (termit, ari (22,132), ordu (-48,-32), agac galeri (148,-86)); durumlar saat/mevsim/yağmur/nem/çiçeklenmeye göre
+  (termit çiftleşme uçuşu, oğul, bal kılavuzu kuşu, karınca akını, canlı köprü, yaprak örme); koloniIncele 15 m (ilk 5, yeni durum 2).
+  App: Doğa > Tohum ve fideler (80 m, rota), Koloniyi incele (yakınken), Böcek kolonileri (rota); bitki sayfasında Bo.bitkiSatirlari.
+  Testler: dayanıklılık 300/300 (koloni/tohum metinleri), bot 2 gün, menu-tara 248 sayfa iki kipte sorun 0, scratchpad /tmp/claude-0/bo/sim.js
+  (40 günde kurakta tohum birikir, yağmurla fide). Telefonda doğrulanmadı.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

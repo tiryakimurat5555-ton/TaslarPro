@@ -15,6 +15,8 @@ import * as Y from '../oyun/yonetim.js';
 import * as Sy from '../oyun/sosyal.js';
 import * as Il from '../oyun/iletisim.js';
 import * as Ps from '../oyun/psikoloji.js';
+import * as Bo from '../oyun/botanik.js';
+import { BITKI_SIRASI } from '../oyun/ekosistem.js';
 
 const deneme = +(process.argv[2] || 200);
 const KOTU = /undefined|NaN|\[object|null\b|  |\.\.(?!\.)| ,|^ /;
@@ -36,6 +38,7 @@ function oynat(d, adim) {
     Sy.guncelle(d, 0.1);
     Il.guncelle(d, 0.1);
     Ps.guncelle(d, 0.1);
+    Bo.guncelle(d, 0.1);
     for (const o of M.olaylariAl(d)) metinDenetle(o.metin, o.tur);
     if (i % 60 === 0) {
       metinDenetle(B.betimle(d, 'Dürbün'), 'betimleme');
@@ -116,6 +119,26 @@ function oynat(d, adim) {
       d.k.hayvanlar.slice(0, 30).forEach((b) => Sy.saglikDosyasi(d, b).forEach((m) => metinDenetle(m, 'sağlık')));
       Y.gocSatirlari(d).forEach((m) => metinDenetle(m, 'göç'));
       d.k.gruplar.forEach((g) => metinDenetle(M.rutinMetni(d, g), 'rutin'));
+      // Aşama 20: koloniler, tohumlar, bitki satırları
+      {
+        const ek = { x: d.oyuncu.x, y: d.oyuncu.y };
+        Bo.KOLONI_SIRASI.forEach((id) => {
+          d.oyuncu.x = Bo.KOLONILER[id].x + 3;
+          d.oyuncu.y = Bo.KOLONILER[id].y;
+          metinDenetle(Bo.koloniIncele(d, id), 'koloni');
+          metinDenetle(Bo.koloniSatiri(d, id), 'koloni satırı');
+        });
+        const b = Bo.botanikAlani(d.k);
+        b.tohumlar.slice(0, 4).forEach((t) => {
+          d.oyuncu.x = t.x;
+          d.oyuncu.y = t.y;
+          metinDenetle(Bo.tohumIncele(d, t), 'tohum');
+          metinDenetle(Bo.tohumAdi(t), 'tohum adı');
+        });
+        Bo.yayilimSatirlari(d.k).forEach((m) => metinDenetle(m, 'yayılım'));
+        BITKI_SIRASI.forEach((id) => Bo.bitkiSatirlari(d.k, id).forEach((m) => metinDenetle(m, 'bitki botanik')));
+        Object.assign(d.oyuncu, ek);
+      }
       S.kameraSatirlari(d.k).forEach((m) => metinDenetle(m, 'kamera'));
       d.k.hayvanlar.filter((b) => b.ozellik).forEach((b) => metinDenetle(M.gozlemTarifi(d, b), 'özel birey'));
       ['aslan', 'cita', 'manda', 'babun'].forEach((t) => Sy.turSatirlari(d, t).forEach((m) => metinDenetle(m, 'sosyal tür')));

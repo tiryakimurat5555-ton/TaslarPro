@@ -10,6 +10,7 @@ import * as Y from '../oyun/yonetim.js';
 import * as Sy from '../oyun/sosyal.js';
 import * as Il from '../oyun/iletisim.js';
 import * as Ps from '../oyun/psikoloji.js';
+import * as Bo from '../oyun/botanik.js';
 import { TURLER, YERLER } from '../oyun/veri.js';
 import * as K from '../oyun/kesif.js';
 
@@ -45,6 +46,7 @@ for (let t = 0; t < toplam; t += adim) {
     Sy.guncelle(d, 0.1);
     Il.guncelle(d, 0.1);
     Ps.guncelle(d, 0.1);
+    Bo.guncelle(d, 0.1);
   const gecen = performance.now() - t0;
   sureTop += gecen;
   sureSayi++;

@@ -27,6 +27,7 @@ import * as Y from './oyun/yonetim.js';
 import * as Sy from './oyun/sosyal.js';
 import * as Il from './oyun/iletisim.js';
 import * as Ps from './oyun/psikoloji.js';
+import * as Bo from './oyun/botanik.js';
 import { KUCUKLER, KUCUK_SIRASI, GRUPLAR, MAGARA_ODALARI, UZAK_ALANLAR, odaListesi, aktifOda, bolumAdi, KUCUK_SESLI, bulunabilirler } from './oyun/kucukler.js';
 import * as Efekt from './oyun/efekt.js';
 import { sahneKur } from './oyun/sahne.js';
@@ -274,6 +275,7 @@ const kucuk = (s) => s.toLocaleLowerCase('tr-TR');
 
 // ---------------- Yenilikler (en yeniler üstte): Murat denerken neyin nerede olduğunu bulsun diye ----------------
 const YENILIKLER = [
+  { baslik: 'Tozlaşma, tohum yayılımı ve böcek kolonileri', metin: 'Bitkiler artık canlı bir döngü yaşıyor. Çiçek açan bitkilerin yanındayken arıların, güneş kuşlarının ya da rüzgârın onları tozlaştırdığını duyarsın. Filler, zürafalar, impalalar ve babunlar akasya ve çöl hurması meyvelerini yer, tohumları dışkılarıyla uzağa taşır; bok böcekleri dışkıyı gömer, yağmurlar gelince tohumlar filizlenir, fideler fidana, fidanlar genç ağaca döner. Bunları bulup inceleyebilirsin. Dört böcek kolonisi var: termit tepeleri, yabani bal arısı kovanı, ordu karıncaları ve galeri ormanındaki dokumacı karıncalar. Koloniler saate, mevsime ve yağmura göre farklı şeyler yapar: termitlerin çiftleşme uçuşu, arıların oğul vermesi, karınca akınları.', nerede: 'Doğa bölümünde Tohum ve fideler ile Böcek kolonileri; Arşiv, bitki sayfası.' },
   { baslik: 'Stres, travma ve teselli', metin: 'Hayvanların artık bir stres düzeyi var. Sürüsünden ayrı düşmek, annesini kaybetmek, sıralama kavgasını kaybetmek, avcıdan kıl payı kurtulmak ya da tel tuzağa düşmek stres verir; stresli hayvan daha tetiktedir, daha uzaktan kaçar ve uzun sürerse zayıflar. Her birey kişiliğine göre toparlanır: cesurlar çabuk, ürkekler yavaş. Filler, babunlar, aslanlar, zebralar ve yaban köpekleri stresli grup arkadaşlarını teselli eder; bunu dürbünle görebilirsin. Sürüsünden ayrı kalan hayvan durup uzun uzun çağırır.', nerede: 'sahada dürbünle; Arşiv, birey sayfasında sağlık dosyası.' },
   { baslik: 'Kalıtsal görünüş', metin: 'Her hayvanın kalıtsal bir görünüşü var: kara ya da açık yeleli aslanlar, kalın ya da ince çizgili zebralar, uzun dişli filler, koyu ve iri lekeli zürafalar. Yavrular bu özelliği anne ve babasından alır, mizaçları da çoğunlukla anneye benzer. Belirgin olanlar dürbünle gözlerken söylenir; bireyleri ayırt etmeyi kolaylaştırır. Ekranda da hayvanların rengi biraz farklıdır.', nerede: 'gözlem tarifinde; Arşiv, birey sayfasında Görünüş satırı.' },
   { baslik: 'Garaj: ATV, arazi motosikleti ve araştırma kamyonu', metin: 'Merkezden üç yeni araç alınabilir. ATV arazi aracından hızlı ve çeviktir; arazi motosikleti en hızlısıdır ama gürültülüdür. İkisi de açık olduğu için hayvanlar seni daha kolay fark eder, sürücü selede görünür. Araştırma kamyonu yavaştır ama arkasında mobil laboratuvar vardır: numunelerini istasyona dönmeden kamyona teslim edersin, dronun kamyonda şarj olur ve hayvanlar onu en az fark eder. Her aracın motor sesi farklı perdededir. Sahada tek araç durur; istasyondayken garajdan değiştirirsin.', nerede: 'Merkez, Ekipman bölümünde satın al; Merkez, Garaj bölümünde seç.' },
@@ -380,6 +382,8 @@ const YARDIM = [
       'Yağmurda ve sağanakta dürbünle görüş kısalır. Gün başında hava tahmini okunur.',
       'Hayvanlar yaşlanır, yavrular büyür, genç erkekler sürüden ayrılır. Hastalanan ya da yaralanan hayvanlar dürbünde belirti gösterir: topallama, zayıflık, tüy dökülmesi.',
       'Menüde Doğa bölümündeki Numune ve veteriner satırından su, dışkı ve leş numunesi alırsın; Çevredeki bitkiler bölümünden bitki inceler, yaprak ve tohum numunesi alırsın. Numuneler istasyona dönünce laboratuvarda analiz edilir.',
+      'Tozlaşma ve tohumlar: çiçek açan bitkilerin yanında arıları, güneş kuşlarını ya da rüzgârla tozlaşmayı duyarsın. Filler, zürafalar, impalalar ve babunlar akasya ve çöl hurması tohumlarını dışkılarıyla taşır; Doğa bölümünde Tohum ve fideler satırı yakındakileri gösterir, oraya götürür ve inceletir. Tohumlar yağışlı mevsimde filizlenir.',
+      'Böcek kolonileri: Doğa bölümünde. Termit tepeleri, yabani bal arısı kovanı, ordu karıncaları ve dokumacı karıncalar var. Yanına gidince Koloniyi incele satırı çıkar. Her koloni saate, mevsime ve yağmura göre farklı şeyler yapar; farklı durumları gözledikçe kayda geçer.',
       'Veterinerin yaralı ve hasta hayvanları tedavi eder, şarbonlu leşleri yakar. Rehabilitasyon alanı kurulunca ağır yaralı ve yetim hayvanlar bakılıp doğaya geri bırakılır. Sağlıklı hayvana dokunulmaz, vahşi hayvan beslenmez.',
     ],
   },
@@ -1136,6 +1140,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
             Sy.guncelle(d, 0.1);
             Il.guncelle(d, 0.1);
             Ps.guncelle(d, 0.1);
+            Bo.guncelle(d, 0.1);
             for (const o of M.olaylariAl(d)) if (G.dinlenmeOzetiSec(o) && r.ozet.length < 12 && !r.ozet.includes(o.metin)) r.ozet.push(o.metin);
           }
         } catch (e) {
@@ -1159,6 +1164,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
           Sy.guncelle(d, dt);
           Il.guncelle(d, dt);
           Ps.guncelle(d, dt);
+          Bo.guncelle(d, dt);
         } catch (e) {
           if (hataKaydet(e, 'oyun döngüsü')) Ses.soyle('Oyunda beklenmedik bir hata oldu. Hata kaydedildi; Ayarlar, Hata kayıtları bölümünden bana okuyabilirsin. Oyun sürüyor.', 4);
         }
@@ -1644,6 +1650,48 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       });
       return liste(u, 'Dinlen', [sec('iki', 'İki saat dinlen'), sec('aksam', 'Akşama kadar dinlen, saat 17:30'), sec('sabah', 'Sabaha kadar uyu, saat 05:30')], 'Dinlenirken zaman hızla akar; savanda olanlar uyanınca özetlenir. Ekrana dokunursan dinlenmeyi bırakırsın.');
     }
+    if (u === 'tohumlar') {
+      const ogeler = [];
+      Bo.yakinTohumlar(d).forEach((t) => {
+        const m = Math.hypot(t.x - d.oyuncu.x, t.y - d.oyuncu.y);
+        if (m <= 12) ogeler.push({ id: 'i' + t.no, etiket: `İncele: ${Bo.tohumAdi(t)}, yanındasın`, sec: yap(() => Bo.tohumIncele(d, t)) });
+        else if (!k.teknede && !k.magara)
+          ogeler.push({
+            id: 'g' + t.no,
+            etiket: `${M.BuyukHarf(Bo.tohumAdi(t))}, ${yerTarifi(t)}: oraya ${k.aracta ? 'sür' : 'yürü'}`,
+            sec: kapatVe(() => {
+              d.rota = { x: t.x, y: t.y, ad: Bo.tohumAdi(t), yakin: 6 };
+              d.yaklasId = null;
+              M.olay(d, 'rota', `${M.BuyukHarf(Bo.tohumAdi(t))} yönüne gidiyorsun. ${M.BuyukHarf(yerTarifi(t))}. Varınca menüden incele.`, 3);
+            }),
+          });
+      });
+      if (!ogeler.length) ogeler.push(bilgi('yok', '80 metre içinde tohum taşıyan dışkı ya da fide yok. Filler, zürafalar, impalalar ve babunlar akasya ve çöl hurması meyvelerini yer, tohumları dışkılarıyla uzağa taşır. Baklalar ve meyveler olgunken bu hayvanların gezdiği yerlere bak; tohumlar yağışlı mevsimde filizlenir.'));
+      Bo.yayilimSatirlari(k).forEach((m, i) => ogeler.push(bilgi('k' + i, m)));
+      if (Bo.botanikAlani(k).yetisen) ogeler.push(bilgi('yetisen', `Hayvanların taşıdığı tohumlardan yetişen genç ağaç: ${Bo.botanikAlani(k).yetisen}.`));
+      return liste(u, 'Tohum ve fideler', ogeler);
+    }
+    if (u === 'koloniler') {
+      const ogeler = [];
+      Bo.KOLONI_SIRASI.forEach((id) => {
+        const kol = Bo.KOLONILER[id];
+        const yakin = M.mesafe(d.oyuncu, kol) <= 15;
+        if (yakin) ogeler.push({ id: 'i' + id, etiket: `İncele: ${Bo.koloniSatiri(d, id)}`, sec: yap(() => Bo.koloniIncele(d, id)) });
+        else
+          ogeler.push({
+            id: 'g' + id,
+            etiket: `${Bo.koloniSatiri(d, id)}. Oraya ${k.aracta ? 'sür' : 'yürü'}`,
+            ipucu: kol.tarif,
+            sec: kapatVe(() => {
+              d.rota = { x: kol.x, y: kol.y, ad: kol.ad, yakin: 8 };
+              d.yaklasId = null;
+              M.olay(d, 'rota', `${kol.ad} yönüne gidiyorsun. ${M.BuyukHarf(yerTarifi(kol))}. Varınca menüden Koloniyi incele seç.`, 3);
+            }),
+          });
+      });
+      ogeler.push(bilgi('not', 'Koloniler saate, mevsime ve yağmura göre farklı şeyler yapar: gece, yağmurdan sonra ve farklı mevsimlerde yeniden gelip incele.'));
+      return liste(u, 'Böcek kolonileri', ogeler);
+    }
     if (u === 'yuvalar') {
       const l = Iz.yuvaSatirlari(d);
       const ogeler = [];
@@ -1682,6 +1730,9 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         altMenu('su', `Su araştırması${S.yakinNokta(d) ? `: ${S.yakinNokta(d).ad}` : ''}`, menu.ac),
         altMenu('yuvalar', `Bilinen inler ve yuvalar: ${Iz.bilinenYuvalar(k).length} / ${(k.yuvalar || []).length}`, menu.ac),
         altMenu('bitkiler', `Çevredeki bitkiler: ${Mz.cevredekiBitkiler(d).length}`, menu.ac),
+        altMenu('tohumlar', `Tohum ve fideler${Bo.yakinTohumlar(d).length ? `: yakında ${Bo.yakinTohumlar(d).length}` : ''}`, menu.ac, 'Hayvanların dışkısıyla taşınan tohumlar, filizlenen fideler ve fidanlar.'),
+        ...(Bo.yakinKoloni(d) && !k.magara ? [{ id: 'koloniIncele', etiket: `Koloniyi incele: ${Bo.KOLONILER[Bo.yakinKoloni(d)].ad}`, sec: yap(() => Bo.koloniIncele(d, Bo.yakinKoloni(d))) }] : []),
+        altMenu('koloniler', 'Böcek kolonileri: termitler, arılar, karıncalar', menu.ac),
         altMenu('numune', `Numune ve veteriner${k.numuneKutusu.length ? `: kutuda ${k.numuneKutusu.length} numune` : ''}`, menu.ac),
       ];
       if (G.kampVar(k))
@@ -2167,6 +2218,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         bilgi('ev', `Gözlenen evreler: ${a.evreler.map((e) => `${evAdi[e]}: ${b.evre[['yE', 'yG', 'kE', 'kG'].indexOf(e)]}`).join('; ') || 'yok'}.`),
         bilgi('an', a.analiz ? `Laboratuvar: ${b.analiz}` : 'Henüz laboratuvarda incelenmedi; yaprak ya da tohum numunesi al.'),
       ];
+      Bo.bitkiSatirlari(k, id).forEach((m, i) => ogeler.push(bilgi('bo' + i, m)));
       return liste(u, b.ad, ogeler);
     }
     // ----- Mağara, küçük canlılar, koruma (Aşama 6) -----
