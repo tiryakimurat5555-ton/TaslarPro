@@ -498,6 +498,9 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   (kutupta kış/ilkbahar: buza çık → buz ölç → sakallı fok bul; kesif 3. adımda sakalliFok ağırlığı ×6). KUCUK_SESLI + 9 kutup canlısı
   (k_sakalliFok, karBaykusu, kutupSumrusu, ucParmakliMarti, kucukAlk, kralEider, karKirazkusu, kuzgun, lemming; ElevenLabs akış R1AN6H1CX2wNrRrpqPLB).
   Kuzey ışıkları daha alçak ve büyük (190×44, 30 m yükseklik, 80 m kuzeyde). Test /tmp/claude-0/kr/kutup2.js. Telefonda doğrulanmadı.
+- EAS UPDATE VARLIK SINIRI (14 Kasım 2026): bir güncellemede en çok 1000 varlık (asset). Kutup küçük canlı sesleriyle 1045 olunca yayın düştü.
+  Vahşi Topraklar'ın kullanılmayan 65 sesi (akrep, ayi, kurt, tilki, dustu 3B; silah, iksir, ıska vb.) arsiv/vahsi-topraklar/assets/efekt'e taşındı
+  → 980. Yeni ses eklerken sayıyı denetle (`ls assets/efekt | wc -l` + diğer varlıklar < 1000); 3B ses 10 dosya tutar.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)
