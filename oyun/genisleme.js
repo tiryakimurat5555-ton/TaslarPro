@@ -300,7 +300,9 @@ function meydanGuncelle(d) {
       const lider = M.birey(d, m.liderId);
       const rakip = M.birey(d, m.rakipId);
       if (!lider || !rakip) continue;
-      const guc = (b) => b.kondisyon * 0.6 + yasPuani(b) * 0.5 + d.rng() * 0.35;
+      // Aşama 24: koalisyondaki lider erkeği müttefikleri destekler
+      const destek = (b) => (b === lider && g.koalisyon ? 0.15 : 0);
+      const guc = (b) => b.kondisyon * 0.6 + yasPuani(b) * 0.5 + d.rng() * 0.35 + destek(b);
       const kazanan = guc(rakip) > guc(lider) ? rakip : lider;
       const kaybeden = kazanan === rakip ? lider : rakip;
       g.lider = kazanan.id;

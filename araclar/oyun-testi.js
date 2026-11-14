@@ -16,6 +16,7 @@ import * as Ya from '../oyun/yayin.js';
 import * as Ik from '../oyun/iklim.js';
 import * as Gc from '../oyun/gece.js';
 import * as Hd from '../oyun/hedefler.js';
+import * as Bg from '../oyun/baglar.js';
 import { TURLER, YERLER } from '../oyun/veri.js';
 import * as K from '../oyun/kesif.js';
 
@@ -56,6 +57,7 @@ for (let t = 0; t < toplam; t += adim) {
     Ya.guncelle(d, 0.1);
     Ik.guncelle(d, 0.1);
     Hd.guncelle(d, 0.1);
+    Bg.guncelle(d, 0.1);
   const gecen = performance.now() - t0;
   sureTop += gecen;
   sureSayi++;

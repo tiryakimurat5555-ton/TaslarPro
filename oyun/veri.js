@@ -118,6 +118,7 @@ export const DAVRANISLAR = {
   teselliEdiyor: { fiil: 'stresli bir grup arkadaşını teselli ediyor', ad: 'Teselli etme', nadir: true },
   teselliEdiliyor: { fiil: 'grup arkadaşının yanında sakinleşiyor', ad: 'Teselli görme' },
   arkadasCagiriyor: { fiil: 'sürüsünden ayrı düşmüş, uzun uzun çağırıyor', ad: 'Sürüyü çağırma' },
+  dislaniyor: { fiil: 'sürünün kenarında tek başına; öbürleri onu aralarına almıyor', ad: 'Dışlanma', nadir: true },
   nobetTutuyor: { fiil: 'nöbet tutuyor; sürü dinlenirken başı dik, çevreyi kolluyor', ad: 'Nöbet tutma' },
   kurYapiyor: { fiil: 'kur yapıyor', ad: 'Kur ve eşleşme', nadir: true },
   yavruyuCagiriyor: { fiil: 'yavrusunu çağırıyor', ad: 'Yavruyu çağırma' },

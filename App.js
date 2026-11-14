@@ -33,6 +33,7 @@ import * as Ya from './oyun/yayin.js';
 import * as Ik from './oyun/iklim.js';
 import * as Gc from './oyun/gece.js';
 import * as Hd from './oyun/hedefler.js';
+import * as Bg from './oyun/baglar.js';
 import { KUCUKLER, KUCUK_SIRASI, GRUPLAR, MAGARA_ODALARI, UZAK_ALANLAR, odaListesi, aktifOda, bolumAdi, KUCUK_SESLI, bulunabilirler } from './oyun/kucukler.js';
 import * as Efekt from './oyun/efekt.js';
 import { sahneKur } from './oyun/sahne.js';
@@ -51,9 +52,11 @@ const VARSAYILAN_AYAR = {
   kip: null, hiz: 1.0, titresim: true, rehber: true, efekt: true, efektKis: true, ortam: true,
   // Aşama 7: kontrol özelleştirme ve erişilebilirlik (karar 31, 32)
   grafik: 'yuksek', hassasiyet: 'orta', surekliYuru: false, buyukDugme: false, solEl: false, kontrast: false, buyukYazi: false,
-  sesAltyazi: false, ortamDuzey: 'orta', otoBetimle: true, donusTiki: true, kesifAnlari: true,
+  sesAltyazi: false, ortamDuzey: 'orta', otoBetimle: true, donusTiki: true, kesifAnlari: true, kameraUzak: 'normal', kameraAci: 'arka', fotoAcisi: true,
 };
 const ORTAM_DUZEY = { dusuk: 0.2, orta: 0.35, yuksek: 0.5 };
+const KAMERA_UZAK = { yakin: 'yakın', normal: 'normal', uzak: 'uzak' };
+const KAMERA_ACI = { arka: 'arkadan', yuksek: 'yukarıdan', sag: 'sağdan', sol: 'soldan', on: 'önden' };
 // Hayvan koşu sesleri (3B, uzaklıkla kısılır)
 const KUCUK_DUZEY = 0.5; // küçük canlıların uzaktan çağrıları
 const KOSU_DUZEY = { kosu_toynak: 0.8, kosu_hafif: 0.7, kosu_agir: 0.95, kosu_pati: 0.65 };
@@ -280,6 +283,7 @@ const kucuk = (s) => s.toLocaleLowerCase('tr-TR');
 
 // ---------------- Yenilikler (en yeniler üstte): Murat denerken neyin nerede olduğunu bulsun diye ----------------
 const YENILIKLER = [
+  { baslik: 'Sosyal bağlar, dışlanma, koalisyonlar ve kamera ayarları', metin: 'Sürü hayvanları artık birbirleriyle bağ kuruyor: birlikte tımarlaşan, oynayan, birbirini teselli eden ve akraba olan bireylerin bağı güçleniyor, görüşmeyenlerinki zayıflıyor. Stresli bir hayvanı önce en yakın bağı olan arkadaşı teselli ediyor. Yakın bağını kaybeden hayvan sarsılıyor. Hiç yakın bağı olmayan alt sıradaki bir birey bazen sürüden dışlanıyor; sürünün kenarında yalnız kalıyor, birkaç gün sonra ya yeniden kabul ediliyor ya da bağ kurana kadar zorlanıyor. Aslan erkekleri koalisyon kurup bölgeyi birlikte koruyor; meydan okuyan erkeğe karşı birbirlerini destekliyorlar. Birey sayfasında sosyal bağları yazıyor. Görünüm ayarlarında kamera uzaklığı ve açısı seçilebiliyor; fotoğraf çekince kamera iki saniye hayvana yaklaşıyor, araç hızlanınca kamera alçak bir takip açısına geçiyor.', nerede: 'Arşiv, birey sayfası; sahada dürbünle; Ayarlar, Görünüm ve grafik.' },
   { baslik: 'Değişen göç yolları, göç tehlikeleri, göz parıltısı ve büyük hedefler', metin: 'Göçmen sürüler artık her göçte yolunu yeniden seçer: geçitte timsahlar bekliyorsa, çevrede yangın varsa, nehir taşkındaysa ya da önceki göçte o geçitte kayıp verdilerse öbür geçide yönelirler. Nehri geçerken izdiham olabilir; bazı hayvanlar ezilip yaralanır, akıntı yüksekken yavrular sürüklenebilir. Göç dönüşünde kaç hayvanın neden dönmediği tahmin edilir: yolda avcılar, susuzluk, hastalık, açlık ve insan faaliyetleri. Gece Doğa menüsünden fenerle göz parıltısı tarayabilirsin: gözlerin rengi, yüksekliği ve kaç çift olduğu hayvanı tanıtır; timsahların gözü kırmızı parlar, babunlarınki hiç parlamaz. Merkezde altı büyük hedef var: Savan Atlası, Nesiller boyu, Koruma programı, Bilim insanı, Yaşam alanları haritası ve Uzun soluklu izleme. Hepsi bitince de araştırma sürer.', nerede: 'Merkez, Ekolojik yönetim, Göç takibi; Doğa menüsü (gece); Merkez, Büyük hedefler.' },
   { baslik: 'Fırtınalar, sıcak dalgaları, iklim kaydı ve araştırma fırsatları', metin: 'Bazı sağanaklar sert rüzgârlı fırtınaya döner. Fırtınadan yaklaşık iki saat önce uyarı gelir; Doğa menüsünden ekipmanı sabitlersen zarar görmezsin. Sabitlemezsen kamera tuzakları devrilebilir, kamp çadırı yırtılabilir, istasyonun çatısı hasar görür; devrilen tuzakları ve çadırı yerinde düzeltirsin. Kurak mevsimde ara sıra olağan dışı sıcak dalgası gelir: gölet hızla çekilir, yavrular ve yaşlı hayvanlar zorlanır. Ekosistem raporunda yıllık yağış ve sıcaklığı tutan bir iklim kaydı var; yıllar geçtikçe uzun vadeli eğilimi gösterir. Salgın, göç, yangın, kaçak avcı tuzağı, kuraklık, sıcak dalgası ve doğum gibi olaylar artık kurumlardan yeni araştırma fırsatları getirir. Sürüler dinlenirken birinin nöbet tuttuğunu görebilirsin; tür sayfasında türün nasıl uyuduğu yazar.', nerede: 'Doğa menüsü; Doğa, Ekosistem, İklim kaydı; Merkez, Görevler; Arşiv, tür sayfası.' },
   { baslik: 'Gebelik, kur davranışı ve bilimsel yayınlar', metin: 'Hayvanlar artık önce eşleşir, sonra gebe kalır ve birkaç gün sonra doğurur. Eşleşme günü kur davranışını dürbünle görebilirsin: aslanlar, filler, zebralar, impalalar ve öteki türler kendi biçimlerinde kur yapar. Gebeliğin ikinci yarısında dişinin karnı belirginleşir; gözlemde söylenir, birey sayfasında doğumun yaklaşık ne zaman olacağı yazar. Anneler uzaklaşan yavrularını çağırır. Ses kaydı artık kur çağrısını ve annenin yavrusunu çağırmasını da ayırt eder. Merkezde Yayınlar bölümü var: tamamlanan her araştırmadan makale yazıp üç dergiden birine gönderirsin; hakemler kabul eder, düzeltme ister ya da reddeder. Yayımlanan makaleler itibar, fon ve zamanla atıf getirir. Dört bilimsel kuruluş belli verileri bir kez paylaşmanı ister; karşılığında destek verir.', nerede: 'sahada dürbünle; Arşiv, birey sayfası; Merkez, Yayınlar ve iş birlikleri.' },
@@ -397,6 +401,7 @@ const YARDIM = [
       'Araştırma fırsatları: salgın, göç, yangın, kaçak avcı tuzağı, kuraklık, sıcak dalgası ya da doğum gibi bir olay olunca bir kurum araştırma fırsatı önerir. Merkez, Görevler bölümünden kabul edersin.',
       'Göz parıltısı: gece Doğa menüsünde Fenerle göz parıltısı tara. Kırk beş metre içindeki hayvanların göz rengini, yüksekliğini ve kaç çift olduğunu söyler; kaydettiğin türleri büyük olasılıkla tanır.',
       'Büyük hedefler: Merkez, Büyük hedefler. Altı uzun soluklu hedefin adımlarını ve ilerlemeni gösterir; her biri bitince büyük ödül gelir.',
+      'Sosyal bağlar: tımarlaşan, oynayan ve akraba olan hayvanlar arasında bağ kurulur. Birey sayfasında en yakın bağları yazar. Bağsız alt sıradaki bireyler bazen dışlanır; aslan erkekleri koalisyon kurar.',
       'Böcek kolonileri: Doğa bölümünde. Termit tepeleri, yabani bal arısı kovanı, ordu karıncaları ve dokumacı karıncalar var. Yanına gidince Koloniyi incele satırı çıkar. Her koloni saate, mevsime ve yağmura göre farklı şeyler yapar; farklı durumları gözledikçe kayda geçer.',
       'Veterinerin yaralı ve hasta hayvanları tedavi eder, şarbonlu leşleri yakar. Rehabilitasyon alanı kurulunca ağır yaralı ve yetim hayvanlar bakılıp doğaya geri bırakılır. Sağlıklı hayvana dokunulmaz, vahşi hayvan beslenmez.',
     ],
@@ -612,6 +617,9 @@ function ayarSayfasi(menu, ayar, degistir, k, yenile) {
       baslik: 'Görünüm ve grafik',
       ogeler: [
         { id: 'grafik', etiket: `Grafik: ${gAdi[ayar.grafik]}. Değiştir`, ipucu: 'Düşük grafik yavaş telefonlarda akıcılığı artırır. Kapalıyken üç boyutlu görüntü hiç çizilmez; pil çok daha az harcanır, oyun tamamen sesle oynanır. Oyuna yeniden girince geçerli olur.', sec: () => dongu('grafik', 'Grafik', ['yuksek', 'dusuk', 'kapali'], gAdi) },
+        { id: 'kamUzak', etiket: `Kamera uzaklığı: ${KAMERA_UZAK[ayar.kameraUzak] || 'normal'}. Değiştir`, ipucu: 'Karakterin arkasındaki kameranın ne kadar yakında duracağı.', sec: () => dongu('kameraUzak', 'Kamera uzaklığı', ['yakin', 'normal', 'uzak'], KAMERA_UZAK) },
+        { id: 'kamAci', etiket: `Kamera açısı: ${KAMERA_ACI[ayar.kameraAci] || 'arkadan'}. Değiştir`, ipucu: 'Kamerayı karakterin arkasına, yanlarına, önüne ya da yukarısına alır. Hareket yönü değişmez.', sec: () => dongu('kameraAci', 'Kamera açısı', ['arka', 'yuksek', 'sag', 'sol', 'on'], KAMERA_ACI) },
+        { id: 'fotoAci', etiket: `Fotoğraf çekerken yakın çekim: ${durum('fotoAcisi')}. Değiştir`, ipucu: 'Fotoğraf çekince kamera iki saniye hayvana yaklaşır.', sec: () => ac('fotoAcisi', 'Fotoğrafta yakın çekim') },
         { id: 'kontrast', etiket: `Yüksek kontrast: ${durum('kontrast')}. Değiştir`, ipucu: 'Siyah zemin, beyaz yazı ve sarı odak.', sec: () => ac('kontrast', 'Yüksek kontrast', (y) => (GORUNUM.kontrast = y)) },
         { id: 'yazi', etiket: `Büyük yazı: ${durum('buyukYazi')}. Değiştir`, sec: () => ac('buyukYazi', 'Büyük yazı', (y) => (GORUNUM.buyukYazi = y)) },
         { id: 'altyazi', etiket: `Hayvan seslerini yazıyla göster: ${durum('sesAltyazi')}. Değiştir`, ipucu: 'İşitme engelliler için: duyulan her hayvan sesi türü ve yönüyle altyazıda yazılır.', sec: () => ac('sesAltyazi', 'Ses altyazıları') },
@@ -914,6 +922,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         if (b) Efekt.yonlu('sonar', d.oyuncu, b, 0.6, 200);
         return;
       case 'foto':
+        if (o.cekildi && o.id && ayarRef.current.fotoAcisi !== false && !(d.sinematik && d.zaman < d.sinematik.bitis)) d.sinematik = { id: o.id, bitis: d.zaman + 2 };
         if (o.cekildi) Efekt.cal('deklansor', 0.9, true);
         else Efekt.cal('hata', 0.9);
         return;
@@ -1160,6 +1169,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
             Ya.guncelle(d, 0.1);
             Ik.guncelle(d, 0.1);
             Hd.guncelle(d, 0.1);
+            Bg.guncelle(d, 0.1);
             for (const o of M.olaylariAl(d)) if (G.dinlenmeOzetiSec(o) && r.ozet.length < 12 && !r.ozet.includes(o.metin)) r.ozet.push(o.metin);
           }
         } catch (e) {
@@ -1188,6 +1198,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
           Ya.guncelle(d, dt);
           Ik.guncelle(d, dt);
           Hd.guncelle(d, dt);
+          Bg.guncelle(d, dt);
         } catch (e) {
           if (hataKaydet(e, 'oyun döngüsü')) Ses.soyle('Oyunda beklenmedik bir hata oldu. Hata kaydedildi; Ayarlar, Hata kayıtları bölümünden bana okuyabilirsin. Oyun sürüyor.', 4);
         }
@@ -1391,6 +1402,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         }
       }
       if (sahneRef.current && !menuRef.current) {
+        d.kameraAyar = { uzak: ayarRef.current.kameraUzak, aci: ayarRef.current.kameraAci };
         kareSira++;
         kareBirikim += dt;
         if (ayarRef.current.grafik !== 'dusuk' || kareSira % 2 === 0) {
@@ -2170,6 +2182,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       ogeler.push(bilgi('gorunus', M.gorunusSatiri(d, b)));
       Sy.bireySatirlari(d, b).forEach((m, i) => ogeler.push(bilgi('sy' + i, m)));
       Ur.bireySatirlari(d, b).forEach((m, i) => ogeler.push(bilgi('ur' + i, m)));
+      Bg.bireySatirlari(d, b).forEach((m, i) => ogeler.push(bilgi('bg' + i, m)));
       const rm = !b.olu && M.rutinMetni(d, k.gruplar.find((g) => g.id === b.grup));
       if (rm) ogeler.push(bilgi('rutin', rm));
       if (b.ozellik && OZEL_BIREYLER[b.ozellik] && M.taninmisMi(b)) ogeler.push(bilgi('ozel', `Özel birey: ${OZEL_BIREYLER[b.ozellik].ad}. ${OZEL_BIREYLER[b.ozellik].tarif}`));

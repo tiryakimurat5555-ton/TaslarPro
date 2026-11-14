@@ -440,6 +440,15 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   4 koloni, 7 su noktası), zaman (3 iklim yılı, tür kaybı yok)); ödül itibar 20-30 + 8-15 bin; hepsi bitince araştırma sürer mesajı. App: Doğa
   (gece) göz tarama, Merkez > Büyük hedefler (hedef-<id>). Testler: dayanıklılık 300/300, bot 2 gün, ekosistem 30 gün dengede (göçler döndü,
   kayıp nedenleri yazıldı), menu-tara 270 sayfa iki kipte sorun 0. Telefonda doğrulanmadı.
+- Aşama 24 sosyal bağlar ve kamera (14 Kasım 2026, Murat "devam"; kararlar 13, 67, 68; sayılar ÖNERİ). `oyun/baglar.js` (Bg.guncelle
+  2 sn'de bir, gün dönünce gunluk): b.baglar {id: 0-1} en çok 4 (BAG_TURLERI 10); tımarlaşma/oyun/teselli sırasında 4 m'deki en yakına +0,01;
+  günlük akraba (%60) ya da yaşıtla +0,08/+0,05 (%50), ×0,97 sönüm, <0,05 silinir; ölen yakın bağ (>0,35) stres +0,25·güç + geçmiş. Aslan
+  koalisyonu g.koalisyon (iki yetişkin erkek bağ >0,45; mesaj) → genisleme meydanında lidere +0,15. Dışlanma (DISLAYAN 6 tür, ≥4 üye): bağ
+  toplamı <0,12 lider olmayan yetişkin günde %8 b.dislanmis (3 gün ya da bağ >0,5 olunca biter; günlük stres +0,1), anlık 'dislaniyor'
+  (DAVRANISLAR nadir) + ilk görülüşte olay 'sosyal'. psikoloji teselli en yakın bağı olanı seçer. bireySatirlari birey sayfasında.
+  Kamera (karar 13): ayar kameraUzak (yakin 0,6/normal/uzak 1,55), kameraAci (arka/yuksek/sag/sol/on), fotoAcisi (foto olayında d.sinematik
+  2 sn); App her karede d.kameraAyar; sahne araç hızlıyken (>3) alçak uzun takip. Testler: dayanıklılık 300/300, bot 2 gün, menu-tara 270
+  sayfa iki kipte sorun 0, jest-dene hatasız, scratchpad x/bag.js (8 günde 111 bireyin 78'inde bağ, 1 koalisyon). Telefonda doğrulanmadı.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

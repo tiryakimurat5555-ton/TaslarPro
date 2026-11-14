@@ -941,9 +941,18 @@ export function sahneKur(gl, d, secenek = {}) {
       }
       // Kamera
       const dikey = kamera.aspect < 1 ? 1.35 : 1; // dikey ekranda kamera biraz daha geride ve yüksekte
-      const geri = (k.aracta ? 12 : 8) * dikey;
-      kamKonum.set(o.x - Math.sin(o.yon) * geri, (k.aracta ? 6 : 4.4) * dikey, R(o.y - Math.cos(o.yon) * geri));
-      kamHedef.set(o.x + Math.sin(o.yon) * 1.5, 1.5, R(o.y + Math.cos(o.yon) * 1.5));
+      // Aşama 24 (karar 13): kamera uzaklığı ve açısı ayarlardan; araç sürerken alçak, uzun bir takip açısı
+      const ka = d.kameraAyar || {};
+      const uzK = { yakin: 0.6, normal: 1, uzak: 1.55 }[ka.uzak] || 1;
+      const aciK = { arka: 0, sag: Math.PI / 2, sol: -Math.PI / 2, on: Math.PI, yuksek: 0 }[ka.aci] || 0;
+      const yuksek = ka.aci === 'yuksek';
+      const aracHizli = k.aracta && Math.abs(d.aracHiz || 0) > 3;
+      const geri = (k.aracta ? (aracHizli ? 14 : 12) : 8) * dikey * uzK * (yuksek ? 0.55 : 1);
+      const ay = o.yon + aciK;
+      const boy = (k.aracta ? (aracHizli ? 4.2 : 6) : 4.4) * dikey * Math.sqrt(uzK) * (yuksek ? 3.2 : 1);
+      kamKonum.set(o.x - Math.sin(ay) * geri, boy, R(o.y - Math.cos(ay) * geri));
+      if (aciK) kamHedef.set(o.x, 1.2, R(o.y));
+      else kamHedef.set(o.x + Math.sin(o.yon) * 1.5, 1.5, R(o.y + Math.cos(o.yon) * 1.5));
       // Keşif anı (Aşama 9, karar 85): kamera birkaç saniye hayvana yaklaşır, sonra geri döner
       const sn = d.sinematik;
       let hiz = 5;

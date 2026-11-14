@@ -42,7 +42,10 @@ function anlik(d) {
     if (!TESELLI_EDEN.includes(g.tur) || g.alarm > 0 || Math.random() > 0.01) continue;
     const u = M.uyeler(d, g);
     const stresli = u.find((b) => (b.stres || 0) > 0.3 && !(b.ozel && b.ozel.bitis > d.zaman));
-    const yardimci = stresli && u.find((b) => b !== stresli && b.evre !== 'yavru' && (b.stres || 0) < 0.25 && !(b.ozel && b.ozel.bitis > d.zaman));
+    // Aşama 24: önce stresli bireyle yakın bağı olan teselli eder
+    const adaylar = stresli ? u.filter((b) => b !== stresli && b.evre !== 'yavru' && (b.stres || 0) < 0.25 && !(b.ozel && b.ozel.bitis > d.zaman)) : [];
+    const bag = (b) => (stresli.baglar && Number.isFinite(stresli.baglar[b.id]) ? stresli.baglar[b.id] : 0);
+    const yardimci = adaylar.sort((a, b) => bag(b) - bag(a))[0];
     if (!yardimci) continue;
     yardimci.ozel = { davranis: 'teselliEdiyor', bitis: d.zaman + 14 };
     stresli.ozel = { davranis: 'teselliEdiliyor', bitis: d.zaman + 14 };
