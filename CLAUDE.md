@@ -416,6 +416,19 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   25 foto; bir kez, fon + itibar). App: Merkez > Yayınlar ve iş birlikleri (yaz-<araştırma> dergi seçimi, isbirlikleri). Hata düzeltmesi:
   bozuk b.alt davranışı etrafiTara'yı çökertiyordu (DAVRANISLAR yoksa dinleniyor). Testler: dayanıklılık 300/300, bot 3 gün, ekosistem
   30 gün iki kez dengede (birinde yağmur gecikti, göçmenler dönmedi; eski kodda da olur), menu-tara 262 sayfa iki kipte sorun 0. Telefonda doğrulanmadı.
+- Aşama 22 iklim, fırtına, fırsatlar, uyku (14 Kasım 2026, Murat "devam"; kararlar 23, 75, 90, 110; sayılar ÖNERİ). ekosistem.js
+  yilOzellikleri: eko.iklimEgilim (yıllık ±, hafif ısınma eğilimli, -1..2,5 derece sıcaklığa eklenir), yil.sicakDalga (yılda %25, kurak yılda
+  %50; kurak mevsimin 4-9. gününden 3 gün, 40 derece, yağmur yok, hava.dalga); havaUret sağanakların %30'u hava.firtina {bas, bit} (rüzgâr 3,2).
+  `oyun/iklim.js` (Ik.guncelle 2 sn'de bir; k.iklim {yillar (son 12), bu, firsatSon, sabitGun, ...}): yağış birikimi (yağarken şiddet × dk / 1,2
+  mm; yıl ~500 mm), yıl kapanınca iklim kaydı mesajı, iklimSatirlari (Ekosistem > İklim kaydı; 3 yıldan sonra eğilim). Sıcak dalgası günü:
+  gölet -0,04, kondisyon -0,015 (yavru/yaşlı -0,035), mesaj. Fırtına: 2 saat önce uyarı; sabitle (300 lira) korur; yoksa tuzakların %45'i
+  t.devrik (fotoğraf çekmez, tuzakDuzelt 8 m), kamp %60 hasarli (dinlenebilirMi false, kampOnar 10 m), istasyon onarımı 600. Fırsatlar (karar 90):
+  FIRSATLAR salgın (numune 3), göç (video, olay metni "göçe başladı|göçten dönüyor"), yangın (yeni yanık hücre → kucuk 3), kaçak (kacak.bulunan
+  artınca → gece foto 3), kuraklık, sıcak dalgası (suOlcum), doğum ('tanik' → foto) → k.teklifler'e firsat: true teklif (tür başına 3 gün ara,
+  aynı metin bekliyorsa yok, en çok 4 bekleyen); merkez olcum + video, suOlcum, kucuk. Uyku: NOBET_TUTAN 8 sürü türü dinlenirken bir üye
+  'nobetTutuyor'; UYKU_NOTU tür sayfasında. App: Doğa menüsünde Fırtına geliyor sabitle / devrik tuzak düzelt-git / kamp onar. Testler:
+  dayanıklılık 300/300 (bozuk teklif ve iklim alanları onarılır), bot 2 gün, menu-tara 263 sayfa iki kipte sorun 0, scratchpad /tmp/claude-0/ik/sim.js
+  (50 günde 1 fırtına, 4 fırsat, yıl 1 ~530 mm, 30,6 derece). Telefonda doğrulanmadı.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

@@ -124,6 +124,9 @@ function secAgirlik(rng, l) {
 function yilOzellikleri(eko, yil, rng) {
   if (eko.yil && eko.yil.no === yil) return eko.yil;
   eko.yil = { no: yil, gecikme: yil > 1 && rng() < 0.25 ? 2 + Math.floor(rng() * 3) : 0, kuraklik: yil > 1 && rng() < 0.2 };
+  // Aşama 22 (karar 75): uzun vadeli iklim eğilimi (hafif ısınma eğilimli rastgele yürüyüş) ve olağan dışı sıcak dalgası
+  if (yil > 1) eko.iklimEgilim = Math.max(-1, Math.min(2.5, (Number.isFinite(eko.iklimEgilim) ? eko.iklimEgilim : 0) + (rng() - 0.4) * 0.6));
+  eko.yil.sicakDalga = yil > 1 && rng() < (eko.yil.kuraklik ? 0.5 : 0.25) ? 4 + Math.floor(rng() * 6) : 0; // kurak mevsimin kaçıncı günü başlar
   return eko.yil;
 }
 export function havaUret(eko, gun, rng) {
@@ -153,11 +156,19 @@ export function havaUret(eko, gun, rng) {
       yagmur.push({ bas: g, bit: g + saat(1, 2.5), siddet: 0.4 });
     }
   }
-  const sicaklik = tur === 'sicak' ? 36 : tk.mevsim === 'kurak' ? 31 : tur === 'saganak' || tur === 'yagmurlu' ? 25 : 28;
+  const dalga = tk.mevsim === 'kurak' && yil.sicakDalga && tk.mevsimGunu >= yil.sicakDalga && tk.mevsimGunu < yil.sicakDalga + 3;
+  if (dalga) {
+    tur = 'sicak';
+    yagmur.length = 0;
+  }
+  const egilim = Number.isFinite(eko.iklimEgilim) ? Math.round(eko.iklimEgilim) : 0;
+  const sicaklik = (dalga ? 40 : tur === 'sicak' ? 36 : tk.mevsim === 'kurak' ? 31 : tur === 'saganak' || tur === 'yagmurlu' ? 25 : 28) + egilim;
+  // Aşama 22 (karar 23): sağanakların bir kısmı fırtınaya döner (sert rüzgâr, ekipman ve kampa zarar)
+  const firtina = tur === 'saganak' && yagmur.length && rng() < 0.3 ? { bas: yagmur[0].bas - 20, bit: yagmur[0].bit } : null;
   // Rüzgâr: kurak mevsimde çoğunlukla doğudan (alize), yağışlıda değişken
   const ruzgarYon = tk.mevsim === 'kurak' ? Math.PI / 2 + (rng() - 0.5) * 1.2 : rng() * Math.PI * 2;
-  const ruzgarHiz = tur === 'saganak' ? 2 : tur === 'sicak' || tk.mevsim === 'kurak' ? 1.4 : 1;
-  eko.hava = { gun, tur, yagmur, sicaklik, ruzgarYon, ruzgarHiz };
+  const ruzgarHiz = firtina ? 3.2 : tur === 'saganak' ? 2 : tur === 'sicak' || tk.mevsim === 'kurak' ? 1.4 : 1;
+  eko.hava = { gun, tur, yagmur, sicaklik, ruzgarYon, ruzgarHiz, ...(dalga ? { dalga: true } : {}), ...(firtina ? { firtina } : {}) };
   return eko.hava;
 }
 // Şu anki yağış şiddeti (0-1)

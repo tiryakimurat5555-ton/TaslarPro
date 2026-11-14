@@ -473,7 +473,7 @@ export function kampKur(d) {
 export const dinlenebilirMi = (d) => {
   const k = d.k;
   if (k.magara || k.aracta || k.teknede) return false;
-  return M.mesafe(d.oyuncu, ISTASYON) < ISTASYON.r + 8 || (k.kamp && M.mesafe(d.oyuncu, k.kamp) < 10);
+  return M.mesafe(d.oyuncu, ISTASYON) < ISTASYON.r + 8 || (k.kamp && !k.kamp.hasarli && M.mesafe(d.oyuncu, k.kamp) < 10);
 };
 // Dinlenme hedefi: oyun dakikası
 export function dinlenmeHedefi(k, tur) {

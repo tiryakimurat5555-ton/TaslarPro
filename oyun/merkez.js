@@ -420,6 +420,13 @@ function olcum(k, t) {
       return k.numuneler.filter((n) => n.durum === 'tamam').length;
     case 'bitki':
       return Object.keys(k.arsiv.bitkiler || {}).length;
+    // Aşama 22: olaylardan doğan fırsatlar
+    case 'video':
+      return (k.arsiv.videolar || []).filter((v) => !t.tur || v.tur === t.tur).length;
+    case 'suOlcum':
+      return Object.values((k.su && k.su.olcumler) || {}).reduce((s, l) => s + (Array.isArray(l) ? l.length : 0), 0);
+    case 'kucuk':
+      return Object.keys(k.arsiv.kucukler || {}).length;
     default:
       return 0;
   }
@@ -575,7 +582,7 @@ export function guncelle(d) {
   }
   // Kamera tuzakları: 20 oyun dakikasında bir yakından geçenleri fotoğraflar (gece kızılötesi)
   k.tuzaklar.forEach((t) => {
-    if (k.dk - t.sonKontrol < 20) return;
+    if (t.devrik || k.dk - t.sonKontrol < 20) return;
     t.sonKontrol = k.dk;
     const gun = M.gunNo(k.dk);
     k.hayvanlar.forEach((b) => {

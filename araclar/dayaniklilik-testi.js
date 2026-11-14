@@ -18,6 +18,7 @@ import * as Ps from '../oyun/psikoloji.js';
 import * as Bo from '../oyun/botanik.js';
 import * as Ur from '../oyun/ureme.js';
 import * as Ya from '../oyun/yayin.js';
+import * as Ik from '../oyun/iklim.js';
 import { BITKI_SIRASI } from '../oyun/ekosistem.js';
 
 const deneme = +(process.argv[2] || 200);
@@ -43,6 +44,7 @@ function oynat(d, adim) {
     Bo.guncelle(d, 0.1);
     Ur.guncelle(d, 0.1);
     Ya.guncelle(d, 0.1);
+    Ik.guncelle(d, 0.1);
     for (const o of M.olaylariAl(d)) metinDenetle(o.metin, o.tur);
     if (i % 60 === 0) {
       metinDenetle(B.betimle(d, 'Dürbün'), 'betimleme');
@@ -155,6 +157,13 @@ function oynat(d, adim) {
       });
       Ya.ISBIRLIGI_SIRASI.forEach((id) => metinDenetle(Ya.isbirligiYap(d, id), 'iş birliği'));
       metinDenetle(Ya.ozet(d.k), 'yayın özeti');
+      // Aşama 22: iklim, fırtına, fırsatlar
+      Ik.iklimSatirlari(d.k).forEach((m) => metinDenetle(m, 'iklim'));
+      metinDenetle(Ik.sabitle(d), 'sabitle');
+      d.k.tuzaklar.forEach((t) => (t.devrik = true));
+      Ik.devrikTuzaklar(d.k).forEach((t) => metinDenetle(Ik.tuzakDuzelt(d, t), 'tuzak düzelt'));
+      metinDenetle(Ik.kampOnar(d), 'kamp onar');
+      d.k.teklifler.forEach((t) => metinDenetle(Mz.teklifMetni(d.k, t), 'teklif'));
       S.kameraSatirlari(d.k).forEach((m) => metinDenetle(m, 'kamera'));
       d.k.hayvanlar.filter((b) => b.ozellik).forEach((b) => metinDenetle(M.gozlemTarifi(d, b), 'özel birey'));
       ['aslan', 'cita', 'manda', 'babun'].forEach((t) => Sy.turSatirlari(d, t).forEach((m) => metinDenetle(m, 'sosyal tür')));

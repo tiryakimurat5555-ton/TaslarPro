@@ -13,6 +13,7 @@ import * as Ps from '../oyun/psikoloji.js';
 import * as Bo from '../oyun/botanik.js';
 import * as Ur from '../oyun/ureme.js';
 import * as Ya from '../oyun/yayin.js';
+import * as Ik from '../oyun/iklim.js';
 import { TURLER, YERLER } from '../oyun/veri.js';
 import * as K from '../oyun/kesif.js';
 
@@ -51,6 +52,7 @@ for (let t = 0; t < toplam; t += adim) {
     Bo.guncelle(d, 0.1);
     Ur.guncelle(d, 0.1);
     Ya.guncelle(d, 0.1);
+    Ik.guncelle(d, 0.1);
   const gecen = performance.now() - t0;
   sureTop += gecen;
   sureSayi++;
