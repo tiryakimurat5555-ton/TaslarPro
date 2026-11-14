@@ -217,8 +217,15 @@ export function gocSatirlari(d) {
     const yeni = kendi.filter((g) => g.olay === 'donus').reduce((a, g) => a + (Number.isFinite(g.yeni) ? g.yeni : 0), 0);
     const durum = gocte ? 'şu an göç yolunda, nehre doğru' : disarida ? 'göçte, bölgenin dışında' : 'bölgede';
     let m = `${M.BuyukHarf(M.SOZ[tur])}: ${durum}.`;
-    if (cikis) m += ` Son çıkış ${cikis.gun}. gün, ${cikis.sayi} birey.`;
-    if (donus) m += ` Son dönüş ${donus.gun}. gün, ${donus.sayi} birey.`;
+    const gAdi = (x) => (x === -60 ? ', batı geçidinden' : x === 70 ? ', doğu geçidinden' : '');
+    if (cikis) m += ` Son çıkış ${cikis.gun}. gün, ${cikis.sayi} birey${gAdi(cikis.gecit)}.`;
+    if (donus) m += ` Son dönüş ${donus.gun}. gün, ${donus.sayi} birey${gAdi(donus.gecit)}.`;
+    const yollar = [...new Set(kendi.filter((g) => Number.isFinite(g.gecit)).map((g) => g.gecit))];
+    if (yollar.length > 1) m += ' Bu tür farklı göçlerde iki geçidi de kullandı; göç yolu koşullara göre değişiyor.';
+    const NA = { avci: 'avcılar', susuzluk: 'susuzluk', hastalik: 'hastalık', zayiflik: 'açlık', insan: 'insan faaliyetleri' };
+    const top = {};
+    kendi.filter((g) => g.olay === 'donus' && g.nedenler && typeof g.nedenler === 'object').forEach((g) => Object.keys(g.nedenler).forEach((a) => NA[a] && Number.isFinite(g.nedenler[a]) && (top[a] = (top[a] || 0) + g.nedenler[a])));
+    if (Object.keys(top).length) m += ` Göç kayıplarının tahmini nedenleri: ${Object.keys(top).map((a) => `${NA[a]} ${top[a]}`).join(', ')}.`;
     if (kayip || yeni) m += ` Göçlerde toplam ${kayip} kayıp, ${yeni} yeni doğan.`;
     if (!cikis && !donus) m += ' Henüz göç kaydı yok; kurak mevsimde bölgeden ayrılırlar.';
     l.push(m);

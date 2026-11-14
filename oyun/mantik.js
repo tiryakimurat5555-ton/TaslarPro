@@ -1548,17 +1548,41 @@ function disariEkle(k, b, neden) {
 const gocAdi = (g) => `${SOZ[g.tur].toLocaleLowerCase('tr-TR')} sürüsü`;
 
 // Göç: sürü geçide, nehrin karşı yakasına ve haritanın dışına yürür; dönüşte tersini (karar 43, 111)
+// Aşama 23 (karar 43, 111): göç yolu her seferinde seçilir. Sürü geçitleri uzaklığa, geçitte bekleyen timsahlara, çevredeki yangına
+// ve önceki göçlerde o geçitte yaşadığı kayıplara (g.gocHafiza) göre değerlendirir; taşkındaki geçidi seçmez.
+const GOC_CIKIS = { 70: { x: 124, y: -150, yon: 'güneydoğu' }, '-60': { x: -126, y: -148, yon: 'güneybatı' } };
+export function gocGecitSec(d, g, donus = false) {
+  const k = d.k;
+  const gc = E.GOCMENLER[g.tur];
+  const hafiza = g.gocHafiza && typeof g.gocHafiza === 'object' ? g.gocHafiza : {};
+  let en = null;
+  for (const gt of GECITLER) {
+    const nokta = { x: gt.x, y: nehirY(gt.x) };
+    const uzak = mesafe(g, nokta) / 120;
+    const timsah = k.gruplar.filter((x) => x.tur === 'timsah' && mesafe(x, nokta) < 40).reduce((s, x) => s + uyeler(d, x).length, 0) * 0.12;
+    const yangin = k.eko ? E.yananHucreler(k.eko).filter((h) => mesafe(E.hucreMerkezi(h), nokta) < 60).length * 0.5 : 0;
+    const hafizaRisk = (Number.isFinite(hafiza[gt.x]) ? hafiza[gt.x] : 0) * 4;
+    const alisma = gt.x === gc.gecit ? -0.4 : 0; // atalarının yolu
+    const sel = k.eko && k.eko.taskin ? 3 : 0;
+    const puan = uzak + timsah + yangin + hafizaRisk + alisma + sel + d.rng() * 0.3;
+    if (!en || puan < en.puan) en = { gecit: gt.x, puan, timsah: timsah > 0.3, hafiza: hafizaRisk > 0.3 };
+  }
+  return en;
+}
 function gocBaslat(d, g, u) {
   const k = d.k;
   const gc = E.GOCMENLER[g.tur];
-  const x = gc.gecit;
-  g.goc = { durum: 'gidiyor', yol: [{ x, y: nehirY(x) + 12 }, { x, y: nehirY(x) - 12 }, { ...gc.cikis }], i: 0, basDk: k.dk, sayi: u.length };
+  const sec = gocGecitSec(d, g);
+  const x = sec.gecit;
+  const cikis = GOC_CIKIS[x] || { ...gc.cikis, yon: gc.yon };
+  g.goc = { durum: 'gidiyor', yol: [{ x, y: nehirY(x) + 12 }, { x, y: nehirY(x) - 12 }, { x: cikis.x, y: cikis.y }], i: 0, basDk: k.dk, sayi: u.length, gecit: x, cikis: { x: cikis.x, y: cikis.y } };
   g.plan = 'goc';
   g.av = null;
-  k.eko.gocler.unshift({ gun: gunNo(k.dk), tur: g.tur, olay: 'cikis', sayi: u.length });
+  k.eko.gocler.unshift({ gun: gunNo(k.dk), tur: g.tur, olay: 'cikis', sayi: u.length, gecit: x });
   if (k.eko.gocler.length > 20) k.eko.gocler.length = 20;
   const gecit = GECITLER.find((x2) => x2.x === x);
-  const m = `${BuyukHarf(gocAdi(g))}, ${u.length} birey, otlar azaldığı için ${gc.yon} yönüne göçe başladı. Nehri ${gecit ? gecit.ad.toLocaleLowerCase('tr-TR') + 'nden' : 'geçitten'} geçecekler.`;
+  const neden = x !== gc.gecit ? (sec.hafiza ? ' Alışık oldukları geçitte önceki göçte kayıp verdikleri için bu kez başka yolu seçtiler.' : sec.timsah ? ' Alışık oldukları geçitte timsahlar beklediği için başka yolu seçtiler.' : ' Bu kez alışılmış yoldan farklı bir yol seçtiler.') : '';
+  const m = `${BuyukHarf(gocAdi(g))}, ${u.length} birey, otlar azaldığı için ${cikis.yon} yönüne göçe başladı. Nehri ${gecit ? gecit.ad.toLocaleLowerCase('tr-TR') + 'nden' : 'geçitten'} geçecekler.${neden}`;
   mesajEkle(k, `Saha raporu: ${m}`, 'ekosistem');
   arsivOlay(d, m);
   olay(d, 'goc', m, 3, { tur: g.tur });
@@ -1578,6 +1602,7 @@ function gocGuncelle(d, g, u, dt) {
     const geride = u.filter((b) => mesafe(b, g) > 9).length;
     if (geride > u.length * 0.25 && (g.goc.bekle = (g.goc.bekle || 0) + dt) < 25) return;
     g.goc.bekle = 0;
+    if (g.goc.i === 1) gecisTehlikesi(d, g, u);
     g.goc.i += 1;
     if (g.goc.i >= g.goc.yol.length) {
       if (g.goc.durum === 'gidiyor') gocCikis(d, g, u);
@@ -1591,10 +1616,31 @@ function gocGuncelle(d, g, u, dt) {
   }
   // Timsahlar geçidin başında bekler
   const yaklasan = k.gruplar.find((x) => x.goc && x.goc.i <= 1);
-  k.eko.gecitPusu = yaklasan ? E.GOCMENLER[yaklasan.tur].gecit : null;
+  k.eko.gecitPusu = yaklasan ? (Number.isFinite(yaklasan.goc.gecit) ? yaklasan.goc.gecit : E.GOCMENLER[yaklasan.tur].gecit) : null;
+}
+// Nehir geçişinde izdiham: bazıları ezilip yaralanır, akıntı yüksekken yavrular sürüklenebilir (karar 111)
+function gecisTehlikesi(d, g, u) {
+  const k = d.k;
+  const yuksek = k.eko && Number.isFinite(k.eko.nehir) && k.eko.nehir > 0.8;
+  let yarali = 0;
+  let bogulan = 0;
+  for (const b of u) {
+    if (b.olu) continue;
+    if (yuksek && b.evre === 'yavru' && d.rng() < 0.08) {
+      hayvanOldu(d, b, 'göçte nehir geçerken akıntıya kapıldı');
+      bogulan++;
+    } else if (d.rng() < 0.05 && yaraVer(d, b, 'Göçte nehir geçerken izdihamda ezildi')) yarali++;
+  }
+  g.goc.gecisKayip = (g.goc.gecisKayip || 0) + bogulan;
+  if ((yarali || bogulan) && mesafe(d.oyuncu, g) < 160)
+    olay(d, 'goc', `${BuyukHarf(gocAdi(g))} nehri geçerken izdiham oldu: ${[yarali ? `${yarali} hayvan ezilip yaralandı` : '', bogulan ? `${bogulan} yavru akıntıya kapıldı` : ''].filter(Boolean).join(', ')}. ${BuyukHarf(yerTarifi(d.oyuncu, g))}.`, 3, { tur: g.tur });
 }
 function gocCikis(d, g, u) {
   const k = d.k;
+  if (Number.isFinite(g.goc.gecit) && g.goc.sayi > 0) {
+    if (!g.gocHafiza || typeof g.gocHafiza !== 'object') g.gocHafiza = {};
+    g.gocHafiza[g.goc.gecit] = Math.round(Math.max(0, (g.goc.sayi - u.length) / g.goc.sayi) * 100) / 100;
+  }
   u.forEach((b) => disariEkle(k, b, 'goc'));
   haritadanCikar(d, u);
   k.gruplar = k.gruplar.filter((x) => x !== g);
@@ -1611,10 +1657,23 @@ function gocDonus(d, g) {
   let kayip = 0;
   let yeni = 0;
   const donenler = [];
+  // Göç tehlikeleri (karar 111): yolda avcılar, susuzluk (kurak yılda), hastalık, zayıflık ve insan faaliyetleri
+  const kurakYil = !!(k.eko && k.eko.yil && k.eko.yil.kuraklik);
+  const nedenler = {};
   uyeler2.forEach((b) => {
-    const risk = (b.evre === 'yavru' ? 0.18 : b.evre === 'yasli' ? 0.15 : 0.06) + (b.hastalik ? 0.2 : 0);
+    const parca = {
+      avci: b.evre === 'yavru' ? 0.1 : b.evre === 'yasli' ? 0.07 : 0.03,
+      susuzluk: (kurakYil ? 0.06 : 0.015) * (b.evre === 'yavru' || b.evre === 'yasli' ? 1.5 : 1),
+      hastalik: b.hastalik ? 0.2 : 0,
+      zayiflik: Number.isFinite(b.kondisyon) && b.kondisyon < 0.35 ? 0.08 : 0,
+      insan: 0.012,
+    };
+    const risk = Object.values(parca).reduce((s2, x) => s2 + x, 0);
     k.disari.hayvanlar = k.disari.hayvanlar.filter((x) => x !== b);
     if (d.rng() < risk) {
+      let z = d.rng() * risk;
+      const neden = Object.keys(parca).find((a) => (z -= parca[a]) <= 0) || 'avci';
+      nedenler[neden] = (nedenler[neden] || 0) + 1;
       kayip++;
       b.olu = true;
       b.olumNedeni = 'göç sırasında öldü';
@@ -1640,7 +1699,9 @@ function gocDonus(d, g) {
         yeni++;
       }
     });
-  const p = { x: gc.cikis.x, y: gc.cikis.y };
+  const sec = gocGecitSec(d, Object.assign({}, g, { x: gc.cikis.x, y: gc.cikis.y }), true);
+  const cikis = GOC_CIKIS[sec.gecit] || gc.cikis;
+  const p = { x: cikis.x, y: cikis.y };
   donenler.forEach((b) => {
     b.x = p.x + b.ofs.x;
     b.y = p.y + b.ofs.y;
@@ -1648,14 +1709,17 @@ function gocDonus(d, g) {
   });
   d.hayvanMap = new Map(k.hayvanlar.map((b) => [b.id, b]));
   k.disari.gruplar = k.disari.gruplar.filter((x) => x !== g);
-  const x = gc.gecit;
+  const x = sec.gecit;
   const h = TURLER[g.tur].habitat;
   Object.assign(g, { x: p.x, y: p.y, plan: 'goc', alarm: 0, av: null, susuzluk: 0.5 });
-  g.goc = { durum: 'donuyor', yol: [{ x, y: nehirY(x) - 12 }, { x, y: nehirY(x) + 12 }, { x: h.x, y: h.y }], i: 0 };
+  g.goc = { durum: 'donuyor', yol: [{ x, y: nehirY(x) - 12 }, { x, y: nehirY(x) + 12 }, { x: h.x, y: h.y }], i: 0, gecit: x };
   k.gruplar.push(g);
   const sag = donenler.filter((b) => !b.olu).length;
-  k.eko.gocler.unshift({ gun: gunNo(k.dk), tur: g.tur, olay: 'donus', sayi: sag, kayip, yeni });
-  const m = `${BuyukHarf(gocAdi(g))} göçten dönüyor: ${sag} birey${yeni ? `, aralarında göçte doğmuş ${yeni} yavru` : ''}. ${kayip ? `Gidenlerden ${kayip} birey dönmedi.` : 'Gidenlerin hepsi dönüyor.'} Nehri yeniden geçecekler.`;
+  k.eko.gocler.unshift({ gun: gunNo(k.dk), tur: g.tur, olay: 'donus', sayi: sag, kayip, yeni, nedenler, gecit: x });
+  const NEDEN_ADI = { avci: 'yolda avcılara', susuzluk: 'susuzluğa', hastalik: 'hastalığa', zayiflik: 'açlık ve zayıflığa', insan: 'insan faaliyetlerine (çit, yol, kaçak avcılık)' };
+  const nedenMetni = kayip ? ` Tahmini kayıp nedenleri: ${Object.keys(nedenler).map((a) => `${nedenler[a]} birey ${NEDEN_ADI[a]}`).join(', ')}.` : '';
+  const gecitAdi = (GECITLER.find((x2) => x2.x === x) || { ad: 'geçit' }).ad.toLocaleLowerCase('tr-TR');
+  const m = `${BuyukHarf(gocAdi(g))} göçten dönüyor: ${sag} birey${yeni ? `, aralarında göçte doğmuş ${yeni} yavru` : ''}. ${kayip ? `Gidenlerden ${kayip} birey dönmedi.` : 'Gidenlerin hepsi dönüyor.'}${nedenMetni} Nehri ${gecitAdi}nden geçecekler.`;
   mesajEkle(k, `Saha raporu: ${m}`, 'ekosistem');
   arsivOlay(d, m);
   olay(d, 'goc', m, 3, { tur: g.tur });

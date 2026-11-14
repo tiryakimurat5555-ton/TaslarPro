@@ -429,6 +429,17 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   'nobetTutuyor'; UYKU_NOTU tür sayfasında. App: Doğa menüsünde Fırtına geliyor sabitle / devrik tuzak düzelt-git / kamp onar. Testler:
   dayanıklılık 300/300 (bozuk teklif ve iklim alanları onarılır), bot 2 gün, menu-tara 263 sayfa iki kipte sorun 0, scratchpad /tmp/claude-0/ik/sim.js
   (50 günde 1 fırtına, 4 fırsat, yıl 1 ~530 mm, 30,6 derece). Telefonda doğrulanmadı.
+- Aşama 23 göç yolları, gece, büyük hedefler (14 Kasım 2026, Murat "devam"; kararlar 43, 51, 88, 111; 80 zaten vardı; sayılar ÖNERİ).
+  mantik gocGecitSec(d, g): her geçit için uzaklık/120 + geçitte timsah ×0,12 + 60 m'de yanan hücre ×0,5 + g.gocHafiza[geçit] (önceki göçte
+  o geçide kadar kayıp oranı) ×4 + atalarının yolu -0,4 + taşkın 3 + rastgele 0,3; en düşük seçilir (gidiş ve dönüş ayrı); GOC_CIKIS geçide
+  göre; g.goc.gecit, gecitPusu onu kullanır; mesajda yol değişikliğinin nedeni. gecisTehlikesi (karşı kıyıya varınca): %5 izdiham yarası,
+  nehir > 0,8 iken yavrular %8 boğulur. gocDonus riski parçalı (avcı, susuzluk (kurak yılda fazla), hastalık, zayıflık, insan 0,012); nedenler
+  dönüş mesajında ve eko.gocler'de; yonetim.gocSatirlari geçit ve neden toplamları. `oyun/gece.js`: gozTara (akşam/gece, 45 m, en yakın 5 grup;
+  GOZ tablosu renk/yükseklik; tanınan türü tahmin eder, k.gece.goz katalog, 10 türde itibar 5; babunda parlama yok). `oyun/hedefler.js`
+  (Hd.guncelle 5 sn'de bir; k.hedefler {id: dk}): HEDEFLER 6 (atlas, nesil (3 kuşak tanımlı), koruma, bilim (6 yayın, 40 atıf), harita (yuvalar,
+  4 koloni, 7 su noktası), zaman (3 iklim yılı, tür kaybı yok)); ödül itibar 20-30 + 8-15 bin; hepsi bitince araştırma sürer mesajı. App: Doğa
+  (gece) göz tarama, Merkez > Büyük hedefler (hedef-<id>). Testler: dayanıklılık 300/300, bot 2 gün, ekosistem 30 gün dengede (göçler döndü,
+  kayıp nedenleri yazıldı), menu-tara 270 sayfa iki kipte sorun 0. Telefonda doğrulanmadı.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

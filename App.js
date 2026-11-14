@@ -31,6 +31,8 @@ import * as Bo from './oyun/botanik.js';
 import * as Ur from './oyun/ureme.js';
 import * as Ya from './oyun/yayin.js';
 import * as Ik from './oyun/iklim.js';
+import * as Gc from './oyun/gece.js';
+import * as Hd from './oyun/hedefler.js';
 import { KUCUKLER, KUCUK_SIRASI, GRUPLAR, MAGARA_ODALARI, UZAK_ALANLAR, odaListesi, aktifOda, bolumAdi, KUCUK_SESLI, bulunabilirler } from './oyun/kucukler.js';
 import * as Efekt from './oyun/efekt.js';
 import { sahneKur } from './oyun/sahne.js';
@@ -278,6 +280,7 @@ const kucuk = (s) => s.toLocaleLowerCase('tr-TR');
 
 // ---------------- Yenilikler (en yeniler üstte): Murat denerken neyin nerede olduğunu bulsun diye ----------------
 const YENILIKLER = [
+  { baslik: 'Değişen göç yolları, göç tehlikeleri, göz parıltısı ve büyük hedefler', metin: 'Göçmen sürüler artık her göçte yolunu yeniden seçer: geçitte timsahlar bekliyorsa, çevrede yangın varsa, nehir taşkındaysa ya da önceki göçte o geçitte kayıp verdilerse öbür geçide yönelirler. Nehri geçerken izdiham olabilir; bazı hayvanlar ezilip yaralanır, akıntı yüksekken yavrular sürüklenebilir. Göç dönüşünde kaç hayvanın neden dönmediği tahmin edilir: yolda avcılar, susuzluk, hastalık, açlık ve insan faaliyetleri. Gece Doğa menüsünden fenerle göz parıltısı tarayabilirsin: gözlerin rengi, yüksekliği ve kaç çift olduğu hayvanı tanıtır; timsahların gözü kırmızı parlar, babunlarınki hiç parlamaz. Merkezde altı büyük hedef var: Savan Atlası, Nesiller boyu, Koruma programı, Bilim insanı, Yaşam alanları haritası ve Uzun soluklu izleme. Hepsi bitince de araştırma sürer.', nerede: 'Merkez, Ekolojik yönetim, Göç takibi; Doğa menüsü (gece); Merkez, Büyük hedefler.' },
   { baslik: 'Fırtınalar, sıcak dalgaları, iklim kaydı ve araştırma fırsatları', metin: 'Bazı sağanaklar sert rüzgârlı fırtınaya döner. Fırtınadan yaklaşık iki saat önce uyarı gelir; Doğa menüsünden ekipmanı sabitlersen zarar görmezsin. Sabitlemezsen kamera tuzakları devrilebilir, kamp çadırı yırtılabilir, istasyonun çatısı hasar görür; devrilen tuzakları ve çadırı yerinde düzeltirsin. Kurak mevsimde ara sıra olağan dışı sıcak dalgası gelir: gölet hızla çekilir, yavrular ve yaşlı hayvanlar zorlanır. Ekosistem raporunda yıllık yağış ve sıcaklığı tutan bir iklim kaydı var; yıllar geçtikçe uzun vadeli eğilimi gösterir. Salgın, göç, yangın, kaçak avcı tuzağı, kuraklık, sıcak dalgası ve doğum gibi olaylar artık kurumlardan yeni araştırma fırsatları getirir. Sürüler dinlenirken birinin nöbet tuttuğunu görebilirsin; tür sayfasında türün nasıl uyuduğu yazar.', nerede: 'Doğa menüsü; Doğa, Ekosistem, İklim kaydı; Merkez, Görevler; Arşiv, tür sayfası.' },
   { baslik: 'Gebelik, kur davranışı ve bilimsel yayınlar', metin: 'Hayvanlar artık önce eşleşir, sonra gebe kalır ve birkaç gün sonra doğurur. Eşleşme günü kur davranışını dürbünle görebilirsin: aslanlar, filler, zebralar, impalalar ve öteki türler kendi biçimlerinde kur yapar. Gebeliğin ikinci yarısında dişinin karnı belirginleşir; gözlemde söylenir, birey sayfasında doğumun yaklaşık ne zaman olacağı yazar. Anneler uzaklaşan yavrularını çağırır. Ses kaydı artık kur çağrısını ve annenin yavrusunu çağırmasını da ayırt eder. Merkezde Yayınlar bölümü var: tamamlanan her araştırmadan makale yazıp üç dergiden birine gönderirsin; hakemler kabul eder, düzeltme ister ya da reddeder. Yayımlanan makaleler itibar, fon ve zamanla atıf getirir. Dört bilimsel kuruluş belli verileri bir kez paylaşmanı ister; karşılığında destek verir.', nerede: 'sahada dürbünle; Arşiv, birey sayfası; Merkez, Yayınlar ve iş birlikleri.' },
   { baslik: 'Tozlaşma, tohum yayılımı ve böcek kolonileri', metin: 'Bitkiler artık canlı bir döngü yaşıyor. Çiçek açan bitkilerin yanındayken arıların, güneş kuşlarının ya da rüzgârın onları tozlaştırdığını duyarsın. Filler, zürafalar, impalalar ve babunlar akasya ve çöl hurması meyvelerini yer, tohumları dışkılarıyla uzağa taşır; bok böcekleri dışkıyı gömer, yağmurlar gelince tohumlar filizlenir, fideler fidana, fidanlar genç ağaca döner. Bunları bulup inceleyebilirsin. Dört böcek kolonisi var: termit tepeleri, yabani bal arısı kovanı, ordu karıncaları ve galeri ormanındaki dokumacı karıncalar. Koloniler saate, mevsime ve yağmura göre farklı şeyler yapar: termitlerin çiftleşme uçuşu, arıların oğul vermesi, karınca akınları.', nerede: 'Doğa bölümünde Tohum ve fideler ile Böcek kolonileri; Arşiv, bitki sayfası.' },
@@ -392,6 +395,8 @@ const YARDIM = [
       'Yayınlar: Merkez, Yayınlar ve iş birlikleri. Tamamlanan araştırmadan makale yazıp dergi seçersin. Hakemler birkaç gün içinde karar verir; düzeltme isterlerse sahadan yeni bir fotoğraf, ses ya da video getirip düzeltmeyi gönderirsin. Yayımlanan makale itibar, fon ve atıf getirir. Kuruluşlarla veri alışverişi her biriyle bir kez yapılır.',
       'Fırtına ve sıcak dalgası: fırtınadan iki saat önce uyarı gelir; Doğa menüsünde Fırtına geliyor satırıyla ekipmanı sabitle. Devrilen kamera tuzakları ve yırtılan kamp çadırı da Doğa menüsünden düzeltilir. Ekosistem raporundaki İklim kaydı her yılın yağışını ve sıcaklığını tutar.',
       'Araştırma fırsatları: salgın, göç, yangın, kaçak avcı tuzağı, kuraklık, sıcak dalgası ya da doğum gibi bir olay olunca bir kurum araştırma fırsatı önerir. Merkez, Görevler bölümünden kabul edersin.',
+      'Göz parıltısı: gece Doğa menüsünde Fenerle göz parıltısı tara. Kırk beş metre içindeki hayvanların göz rengini, yüksekliğini ve kaç çift olduğunu söyler; kaydettiğin türleri büyük olasılıkla tanır.',
+      'Büyük hedefler: Merkez, Büyük hedefler. Altı uzun soluklu hedefin adımlarını ve ilerlemeni gösterir; her biri bitince büyük ödül gelir.',
       'Böcek kolonileri: Doğa bölümünde. Termit tepeleri, yabani bal arısı kovanı, ordu karıncaları ve dokumacı karıncalar var. Yanına gidince Koloniyi incele satırı çıkar. Her koloni saate, mevsime ve yağmura göre farklı şeyler yapar; farklı durumları gözledikçe kayda geçer.',
       'Veterinerin yaralı ve hasta hayvanları tedavi eder, şarbonlu leşleri yakar. Rehabilitasyon alanı kurulunca ağır yaralı ve yetim hayvanlar bakılıp doğaya geri bırakılır. Sağlıklı hayvana dokunulmaz, vahşi hayvan beslenmez.',
     ],
@@ -1154,6 +1159,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
             Ur.guncelle(d, 0.1);
             Ya.guncelle(d, 0.1);
             Ik.guncelle(d, 0.1);
+            Hd.guncelle(d, 0.1);
             for (const o of M.olaylariAl(d)) if (G.dinlenmeOzetiSec(o) && r.ozet.length < 12 && !r.ozet.includes(o.metin)) r.ozet.push(o.metin);
           }
         } catch (e) {
@@ -1181,6 +1187,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
           Ur.guncelle(d, dt);
           Ya.guncelle(d, dt);
           Ik.guncelle(d, dt);
+          Hd.guncelle(d, dt);
         } catch (e) {
           if (hataKaydet(e, 'oyun döngüsü')) Ses.soyle('Oyunda beklenmedik bir hata oldu. Hata kaydedildi; Ayarlar, Hata kayıtları bölümünden bana okuyabilirsin. Oyun sürüyor.', 4);
         }
@@ -1666,6 +1673,14 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       });
       return liste(u, 'Dinlen', [sec('iki', 'İki saat dinlen'), sec('aksam', 'Akşama kadar dinlen, saat 17:30'), sec('sabah', 'Sabaha kadar uyu, saat 05:30')], 'Dinlenirken zaman hızla akar; savanda olanlar uyanınca özetlenir. Ekrana dokunursan dinlenmeyi bırakırsın.');
     }
+    if (u === 'hedefler') {
+      return liste(u, 'Büyük hedefler', Hd.HEDEFLER.map((h) => altMenu('hedef-' + h.id, Hd.hedefSatiri(k, h), menu.ac, h.tarif)));
+    }
+    if (u.startsWith('hedef-')) {
+      const h = Hd.HEDEFLER.find((x) => x.id === u.slice(6));
+      if (!h) return liste(u, 'Hedef', [bilgi('yok', 'Hedef bulunamadı.')]);
+      return liste(u, h.ad, Hd.hedefDetay(k, h).map((m, i) => bilgi('h' + i, m)));
+    }
     if (u === 'iklimKaydi') {
       return liste(u, 'İklim kaydı', Ik.iklimSatirlari(k).map((m, i) => bilgi('ik' + i, m)));
     }
@@ -1804,6 +1819,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
               },
         ),
         ...(k.kamp && k.kamp.hasarli ? [{ id: 'kampOnar', etiket: `Kamp çadırını onar${M.mesafe(d.oyuncu, k.kamp) > 10 ? `: kamp ${yerTarifi(k.kamp)}` : ''}`, sec: yap(() => Ik.kampOnar(d)) }] : []),
+        ...(['gece', 'aksam'].includes(M.gunEvresi(k.dk)) && !k.magara ? [{ id: 'gozTara', etiket: `Fenerle göz parıltısı tara${Gc.gozKatalogu(k).length ? `: katalogda ${Gc.gozKatalogu(k).length} tür` : ''}`, ipucu: 'Gece fenerin ışığında parlayan gözlerin rengi, yüksekliği ve sayısından hayvanları tanırsın.', sec: yap(() => Gc.gozTara(d)) }] : []),
         altMenu('tohumlar', `Tohum ve fideler${Bo.yakinTohumlar(d).length ? `: yakında ${Bo.yakinTohumlar(d).length}` : ''}`, menu.ac, 'Hayvanların dışkısıyla taşınan tohumlar, filizlenen fideler ve fidanlar.'),
         ...(Bo.yakinKoloni(d) && !k.magara ? [{ id: 'koloniIncele', etiket: `Koloniyi incele: ${Bo.KOLONILER[Bo.yakinKoloni(d)].ad}`, sec: yap(() => Bo.koloniIncele(d, Bo.yakinKoloni(d))) }] : []),
         altMenu('koloniler', 'Böcek kolonileri: termitler, arılar, karıncalar', menu.ac),
@@ -1965,6 +1981,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       ogeler.push(altMenu('yonetim', `Ekolojik yönetim: ${Object.keys((k.eko && k.eko.istilaci) || {}).length} lantanalı alan`, menu.ac));
       ogeler.push(altMenu('geziler', `Saha gezileri: ${K.uzakSatirlari(k).filter((x) => x.dur.acik).length} / ${K.uzakSatirlari(k).length} alan açık`, menu.ac));
       ogeler.push(altMenu('gizemler', `Gizemler: ${H.acikGizemSayisi(k)} çözülmemiş`, menu.ac));
+      ogeler.push(altMenu('hedefler', `Büyük hedefler: ${Hd.HEDEFLER.filter((h) => Hd.hedefDurumu(k, h).bitti).length} / ${Hd.HEDEFLER.length} tamamlandı`, menu.ac, 'Uzun soluklu bilimsel ve koruma hedefleri.'));
       ogeler.push(altMenu('basarilar', `Bilimsel başarılar: ${Object.keys(H.hikayeAlani(k).basarilar).length} / ${H.BASARILAR.length}`, menu.ac));
       ogeler.push(altMenu('koruma', `Koruma projeleri: ${Object.values(k.koruma.projeler).filter((p) => p.durum === 'surer').length} süren, ${Object.values(k.koruma.projeler).filter((p) => p.durum === 'tamam').length} tamamlanan`, menu.ac));
       return liste(u, 'Araştırma merkezi', ogeler);

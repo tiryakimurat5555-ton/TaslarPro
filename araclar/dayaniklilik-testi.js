@@ -19,6 +19,8 @@ import * as Bo from '../oyun/botanik.js';
 import * as Ur from '../oyun/ureme.js';
 import * as Ya from '../oyun/yayin.js';
 import * as Ik from '../oyun/iklim.js';
+import * as Gc from '../oyun/gece.js';
+import * as Hd from '../oyun/hedefler.js';
 import { BITKI_SIRASI } from '../oyun/ekosistem.js';
 
 const deneme = +(process.argv[2] || 200);
@@ -45,6 +47,7 @@ function oynat(d, adim) {
     Ur.guncelle(d, 0.1);
     Ya.guncelle(d, 0.1);
     Ik.guncelle(d, 0.1);
+    Hd.guncelle(d, 0.1);
     for (const o of M.olaylariAl(d)) metinDenetle(o.metin, o.tur);
     if (i % 60 === 0) {
       metinDenetle(B.betimle(d, 'Dürbün'), 'betimleme');
@@ -164,6 +167,11 @@ function oynat(d, adim) {
       Ik.devrikTuzaklar(d.k).forEach((t) => metinDenetle(Ik.tuzakDuzelt(d, t), 'tuzak düzelt'));
       metinDenetle(Ik.kampOnar(d), 'kamp onar');
       d.k.teklifler.forEach((t) => metinDenetle(Mz.teklifMetni(d.k, t), 'teklif'));
+      // Aşama 23
+      metinDenetle(Gc.gozTara(d), 'göz');
+      d.k.dk += 840; metinDenetle(Gc.gozTara(d), 'göz gece'); d.k.dk -= 840;
+      Hd.HEDEFLER.forEach((h) => { metinDenetle(Hd.hedefSatiri(d.k, h), 'hedef'); Hd.hedefDetay(d.k, h).forEach((m) => metinDenetle(m, 'hedef detay')); });
+      Y.gocSatirlari(d).forEach((m) => metinDenetle(m, 'göç 2'));
       S.kameraSatirlari(d.k).forEach((m) => metinDenetle(m, 'kamera'));
       d.k.hayvanlar.filter((b) => b.ozellik).forEach((b) => metinDenetle(M.gozlemTarifi(d, b), 'özel birey'));
       ['aslan', 'cita', 'manda', 'babun'].forEach((t) => Sy.turSatirlari(d, t).forEach((m) => metinDenetle(m, 'sosyal tür')));
