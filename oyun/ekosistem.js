@@ -374,6 +374,21 @@ export const BITKILER = {
     tohum: [false, false, true, true],
     analiz: 'Meyveleri tatlı ve besleyici. Filler meyveyi bütün yutuyor; tohumlar dışkıyla uzaklara taşınıp orada çimleniyor. Fil ile ağaç birbirine bağlı yaşıyor.',
   },
+  // Aşama 25 (karar 98): mağaranın bitkileri
+  baldirikara: {
+    ad: 'Baldıran kara eğreltisi', bilimsel: 'Adiantum capillus-veneris', bicim: 'eğrelti', bolge: ['magara'], ozellik: 'şifalı', tohumAdi: 'spor',
+    tarif: 'Mağaranın ağzında, kayadan su sızan nemli duvarlara tutunmuş, ince kara saplı, yelpaze yapraklı narin bir eğrelti. Işığın yettiği son yerde biter.',
+    evre: ['taze yeşil yaprakları kayayı örtmüş', 'yaprak altlarında spor keseleri olgunlaşıyor', 'sporlarını saçıyor', 'sızıntı azaldığı için yaprak uçları kahverengileşmiş'],
+    tohum: [false, true, true, false],
+    analiz: 'Yapraklarında öksürüğe karşı geleneksel olarak kullanılan maddeler bulundu. Yalnızca sürekli su sızan, gölgeli kayalarda yaşayabiliyor; mağara ağzındaki su sızıntısının yıl boyu sürdüğünü gösteren bir işaret bitkisi.',
+  },
+  kayaInciri: {
+    ad: 'Kaya inciri', bilimsel: 'Ficus abutilifolia', bicim: 'ağaç', bolge: ['magara'], ozellik: 'besin',
+    tarif: 'Mağaranın üstündeki kayalara tutunmuş bir incir ağacı. Kökleri çatlaklardan aşağı inip mağara tavanından perde gibi sarkar, yerde su arar.',
+    evre: ['tavandan sarkan kökleri ıslak ve parlak', 'yukarıda küçük yeşil incirler oluşmuş', 'olgun kırmızı incirleri meyve yarasalarını çekiyor; yerde çekirdekli dışkılar var', 'kökler kurumuş, birkaç yaprak dökülmüş'],
+    tohum: [false, false, true, true],
+    analiz: 'Meyveleri şekerce zengin. Tohumların çoğunu meyve yarasaları ve kuşlar taşıyor; kökleri kayayı yavaş yavaş çatlatarak mağaraya su ve besin taşıyor. Mağaradaki böcekler sarkan köklerle besleniyor.',
+  },
 };
 export const BITKI_SIRASI = Object.keys(BITKILER);
 export const OZELLIK_ADI = { besin: 'önemli bir besin bitkisi', su: 'suyu temizleyen bir bitki', zehirli: 'zehirli', 'şifalı': 'şifalı' };

@@ -449,6 +449,13 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   Kamera (karar 13): ayar kameraUzak (yakin 0,6/normal/uzak 1,55), kameraAci (arka/yuksek/sag/sol/on), fotoAcisi (foto olayında d.sinematik
   2 sn); App her karede d.kameraAyar; sahne araç hızlıyken (>3) alçak uzun takip. Testler: dayanıklılık 300/300, bot 2 gün, menu-tara 270
   sayfa iki kipte sorun 0, jest-dene hatasız, scratchpad x/bag.js (8 günde 111 bireyin 78'inde bağ, 1 koalisyon). Telefonda doğrulanmadı.
+- Aşama 25 müzik, toprak/kıl numunesi, mağara bitkileri (14 Kasım 2026, Murat "devam"; kararlar 30, 57, 98; sayılar ÖNERİ). Dinamik müzik
+  (ElevenLabs 30 sn loop, ortam-dongu.py, -22 LUFS): muzik_gunduz, muzik_gece, muzik_gerilim. efekt.js ayrı müzik kanalı muzikAyarla(hedef,
+  düzey) (100 ms'de ±0,006 geçiş, 20 sn susan bırakılır, globalThis.__muzikDurumu). App muzikHedefi: mağara/akşam/gece → gece, yoksa gündüz;
+  mantik gerilimVar (yayaya uyaran ya da 12 m'deki tehlikeli hayvan, 80 m'de kovalayan avcı, 70 m'de yangın) → gerilim 1 + temel 0,2,
+  12 sn sürer. Ayar muzik kapali/dusuk (varsayılan, 0,12)/orta/yuksek (Ses ve konuşma). merkez toprakNumunesi (bölge başına günde bir;
+  nem, kül, tuz, lantana) ve kilNumunesi (35 m'de tanınmış, 8 sn gözlenen birey; kortizol stresi, uyuz teşhisi, DNA). BITKILER + baldirikara,
+  kayaInciri (bolge magara; mağarada Çevredeki bitkiler). Tarayıcı müzik denemesi scratchpad mz/dene.cjs. Telefonda doğrulanmadı.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

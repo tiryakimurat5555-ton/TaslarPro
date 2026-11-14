@@ -3269,6 +3269,17 @@ export function kosanlar(d, menzil = 55) {
 }
 
 // ---------- Aşama 8 için dışa açılanlar (oyun/genisleme.js kullanır) ----------
+// Aşama 25: müziğin gerilime geçmesi için: yayaya yakın tehlikeli hayvan, yakında süren kovalamaca ya da yakın yangın
+export function gerilimVar(d) {
+  const k = d.k;
+  if (k.magara || d.dinleniyor) return false;
+  const o = d.oyuncu;
+  // Yalnızca seni uyaran ya da çok yakındaki tehlikeli hayvan (suda dinlenen timsahlar sürekli gerilim yaratmasın)
+  if (!k.aracta && !k.teknede && k.hayvanlar.some((b) => !b.olu && TURLER[b.tur] && TURLER[b.tur].tehlikeli && Math.abs(b.x - o.x) < 26 && Math.abs(b.y - o.y) < 26 && (b.tehdit > 0 || b.davranis === 'uyariyor' || mesafe(b, o) < 12))) return true;
+  if (k.gruplar.some((g) => g.av && g.av.evre === 'kovala' && mesafe(g, o) < 80)) return true;
+  const y = yanginYakin(d);
+  return !!(y && y.m < 70);
+}
 export { grupAlarm, uyeler, disariEkle, yerTarifi, hastalikVer, kucuk as kucukHarf };
 // Başka bir popülasyondan getirilen (translokasyon) ya da çevreden gelen yetişkinler: genetik çeşitliliği yüksek
 export function gocmenEkle(d, g, n, cinsiyetler) {

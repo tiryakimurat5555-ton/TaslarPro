@@ -52,9 +52,21 @@ const VARSAYILAN_AYAR = {
   kip: null, hiz: 1.0, titresim: true, rehber: true, efekt: true, efektKis: true, ortam: true,
   // Aşama 7: kontrol özelleştirme ve erişilebilirlik (karar 31, 32)
   grafik: 'yuksek', hassasiyet: 'orta', surekliYuru: false, buyukDugme: false, solEl: false, kontrast: false, buyukYazi: false,
-  sesAltyazi: false, ortamDuzey: 'orta', otoBetimle: true, donusTiki: true, kesifAnlari: true, kameraUzak: 'normal', kameraAci: 'arka', fotoAcisi: true,
+  sesAltyazi: false, ortamDuzey: 'orta', otoBetimle: true, donusTiki: true, kesifAnlari: true, kameraUzak: 'normal', kameraAci: 'arka', fotoAcisi: true, muzik: 'dusuk',
 };
 const ORTAM_DUZEY = { dusuk: 0.2, orta: 0.35, yuksek: 0.5 };
+// Aşama 25 (karar 30): dinamik müzik düzeyleri; gündüz, gece ve gerilim parçaları duruma göre birbirine geçer
+const MUZIK_DUZEY = { kapali: 0, dusuk: 0.12, orta: 0.2, yuksek: 0.3 };
+const MUZIK_ADI = { kapali: 'kapalı', dusuk: 'düşük', orta: 'orta', yuksek: 'yüksek' };
+let gerilimSon = -1e9;
+function muzikHedefi(d) {
+  const k = d.k;
+  const ev = M.gunEvresi(k.dk);
+  const temel = (k.magara && !k.magara.alan) || ev === 'gece' || ev === 'aksam' ? 'muzik_gece' : 'muzik_gunduz';
+  if (M.gerilimVar(d)) gerilimSon = d.zaman;
+  const gerilim = d.zaman - gerilimSon < 12;
+  return gerilim ? { muzik_gerilim: 1, [temel]: 0.2 } : { [temel]: 1 };
+}
 const KAMERA_UZAK = { yakin: 'yakın', normal: 'normal', uzak: 'uzak' };
 const KAMERA_ACI = { arka: 'arkadan', yuksek: 'yukarıdan', sag: 'sağdan', sol: 'soldan', on: 'önden' };
 // Hayvan koşu sesleri (3B, uzaklıkla kısılır)
@@ -283,6 +295,7 @@ const kucuk = (s) => s.toLocaleLowerCase('tr-TR');
 
 // ---------------- Yenilikler (en yeniler üstte): Murat denerken neyin nerede olduğunu bulsun diye ----------------
 const YENILIKLER = [
+  { baslik: 'Dinamik müzik, toprak ve kıl numunesi, mağara bitkileri', metin: 'Oyunda artık arka plan müziği var: gündüz kalimba ve marimbalı sakin bir müzik, gece gizemli alçak bir müzik çalar. Yakında tehlikeli bir hayvan varsa, yakınlarda bir kovalamaca sürüyorsa ya da yangın yaklaşıyorsa müzik birkaç saniyede gerilimli davullara geçer, tehlike geçince yavaşça sakinleşir. Müzik hayvan seslerini bastırmasın diye düşük başlar; Ayarlar, Ses ve konuşma bölümünden kapatabilir ya da açabilirsin. Numune menüsünde iki yeni numune var: toprak numunesi bölgenin toprağını, nemini, külünü ve tuzunu gösterir; kıl ya da tüy numunesi hayvana dokunmadan DNA, son haftaların stres düzeyi ve uyuz gibi deri asalakları hakkında bilgi verir. Mağarada iki bitki var: su sızan duvarlarda baldıran kara eğreltisi ve tavandan kökleri sarkan kaya inciri.', nerede: 'Ayarlar, Ses ve konuşma, Müzik; Doğa, Numune ve veteriner; mağarada Doğa, Çevredeki bitkiler.' },
   { baslik: 'Sosyal bağlar, dışlanma, koalisyonlar ve kamera ayarları', metin: 'Sürü hayvanları artık birbirleriyle bağ kuruyor: birlikte tımarlaşan, oynayan, birbirini teselli eden ve akraba olan bireylerin bağı güçleniyor, görüşmeyenlerinki zayıflıyor. Stresli bir hayvanı önce en yakın bağı olan arkadaşı teselli ediyor. Yakın bağını kaybeden hayvan sarsılıyor. Hiç yakın bağı olmayan alt sıradaki bir birey bazen sürüden dışlanıyor; sürünün kenarında yalnız kalıyor, birkaç gün sonra ya yeniden kabul ediliyor ya da bağ kurana kadar zorlanıyor. Aslan erkekleri koalisyon kurup bölgeyi birlikte koruyor; meydan okuyan erkeğe karşı birbirlerini destekliyorlar. Birey sayfasında sosyal bağları yazıyor. Görünüm ayarlarında kamera uzaklığı ve açısı seçilebiliyor; fotoğraf çekince kamera iki saniye hayvana yaklaşıyor, araç hızlanınca kamera alçak bir takip açısına geçiyor.', nerede: 'Arşiv, birey sayfası; sahada dürbünle; Ayarlar, Görünüm ve grafik.' },
   { baslik: 'Değişen göç yolları, göç tehlikeleri, göz parıltısı ve büyük hedefler', metin: 'Göçmen sürüler artık her göçte yolunu yeniden seçer: geçitte timsahlar bekliyorsa, çevrede yangın varsa, nehir taşkındaysa ya da önceki göçte o geçitte kayıp verdilerse öbür geçide yönelirler. Nehri geçerken izdiham olabilir; bazı hayvanlar ezilip yaralanır, akıntı yüksekken yavrular sürüklenebilir. Göç dönüşünde kaç hayvanın neden dönmediği tahmin edilir: yolda avcılar, susuzluk, hastalık, açlık ve insan faaliyetleri. Gece Doğa menüsünden fenerle göz parıltısı tarayabilirsin: gözlerin rengi, yüksekliği ve kaç çift olduğu hayvanı tanıtır; timsahların gözü kırmızı parlar, babunlarınki hiç parlamaz. Merkezde altı büyük hedef var: Savan Atlası, Nesiller boyu, Koruma programı, Bilim insanı, Yaşam alanları haritası ve Uzun soluklu izleme. Hepsi bitince de araştırma sürer.', nerede: 'Merkez, Ekolojik yönetim, Göç takibi; Doğa menüsü (gece); Merkez, Büyük hedefler.' },
   { baslik: 'Fırtınalar, sıcak dalgaları, iklim kaydı ve araştırma fırsatları', metin: 'Bazı sağanaklar sert rüzgârlı fırtınaya döner. Fırtınadan yaklaşık iki saat önce uyarı gelir; Doğa menüsünden ekipmanı sabitlersen zarar görmezsin. Sabitlemezsen kamera tuzakları devrilebilir, kamp çadırı yırtılabilir, istasyonun çatısı hasar görür; devrilen tuzakları ve çadırı yerinde düzeltirsin. Kurak mevsimde ara sıra olağan dışı sıcak dalgası gelir: gölet hızla çekilir, yavrular ve yaşlı hayvanlar zorlanır. Ekosistem raporunda yıllık yağış ve sıcaklığı tutan bir iklim kaydı var; yıllar geçtikçe uzun vadeli eğilimi gösterir. Salgın, göç, yangın, kaçak avcı tuzağı, kuraklık, sıcak dalgası ve doğum gibi olaylar artık kurumlardan yeni araştırma fırsatları getirir. Sürüler dinlenirken birinin nöbet tuttuğunu görebilirsin; tür sayfasında türün nasıl uyuduğu yazar.', nerede: 'Doğa menüsü; Doğa, Ekosistem, İklim kaydı; Merkez, Görevler; Arşiv, tür sayfası.' },
@@ -402,6 +415,8 @@ const YARDIM = [
       'Göz parıltısı: gece Doğa menüsünde Fenerle göz parıltısı tara. Kırk beş metre içindeki hayvanların göz rengini, yüksekliğini ve kaç çift olduğunu söyler; kaydettiğin türleri büyük olasılıkla tanır.',
       'Büyük hedefler: Merkez, Büyük hedefler. Altı uzun soluklu hedefin adımlarını ve ilerlemeni gösterir; her biri bitince büyük ödül gelir.',
       'Sosyal bağlar: tımarlaşan, oynayan ve akraba olan hayvanlar arasında bağ kurulur. Birey sayfasında en yakın bağları yazar. Bağsız alt sıradaki bireyler bazen dışlanır; aslan erkekleri koalisyon kurar.',
+      'Müzik: Ayarlar, Ses ve konuşma, Müzik satırı. Gündüz ve gece farklı, tehlike yakınken gerilimli çalar. Kapalı, düşük, orta, yüksek arasında değiştirilir.',
+      'Toprak ve kıl numunesi: Doğa, Numune ve veteriner. Toprak her bölgeden günde bir alınır. Kıl ya da tüy numunesi için tanımlı bir hayvanı birkaç saniye gözle, otuz beş metre içinde ol.',
       'Böcek kolonileri: Doğa bölümünde. Termit tepeleri, yabani bal arısı kovanı, ordu karıncaları ve dokumacı karıncalar var. Yanına gidince Koloniyi incele satırı çıkar. Her koloni saate, mevsime ve yağmura göre farklı şeyler yapar; farklı durumları gözledikçe kayda geçer.',
       'Veterinerin yaralı ve hasta hayvanları tedavi eder, şarbonlu leşleri yakar. Rehabilitasyon alanı kurulunca ağır yaralı ve yetim hayvanlar bakılıp doğaya geri bırakılır. Sağlıklı hayvana dokunulmaz, vahşi hayvan beslenmez.',
     ],
@@ -720,6 +735,19 @@ function ayarOgeleri(ayar, degistir) {
         degistir({ ortamDuzey: y });
         Efekt.efektAyarla({ ortam: ayar.ortam !== false ? ORTAM_DUZEY[y] : 0 });
         Ses.hemen(`Ortam sesi düzeyi ${{ dusuk: 'düşük', orta: 'orta', yuksek: 'yüksek' }[y]}`);
+        return 'sessiz';
+      },
+    },
+    {
+      id: 'muzik',
+      etiket: `Müzik: ${MUZIK_ADI[ayar.muzik] || 'düşük'}. Değiştir`,
+      ipucu: 'Duruma göre değişen arka plan müziği: gündüz sakin, gece gizemli; yakında tehlikeli bir hayvan, kovalamaca ya da yangın olunca gerilimli. Hayvan seslerini bastırmasın diye düşük başlar.',
+      sec: () => {
+        const l = ['kapali', 'dusuk', 'orta', 'yuksek'];
+        const y = l[(l.indexOf(ayar.muzik || 'dusuk') + 1) % l.length];
+        degistir({ muzik: y });
+        Efekt.muzikAyarla({}, MUZIK_DUZEY[y]);
+        Ses.hemen(`Müzik ${MUZIK_ADI[y]}`);
         return 'sessiz';
       },
     },
@@ -1299,6 +1327,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         if (dongulerSayac <= 0) {
           dongulerSayac = 0.25;
           if (a.ortam !== false) Efekt.ortamKatmanlar(ortamHedefleri(d));
+          Efekt.muzikAyarla(muzikHedefi(d), MUZIK_DUZEY[a.muzik] ?? MUZIK_DUZEY.dusuk);
           const dz = konumluDonguler(d);
           for (const ad of KONUMLU_DONGULER) Efekt.dongu(ad, a.efekt === false ? 0 : dz[ad] || 0);
         }
@@ -2264,7 +2293,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         ogeler.push({ id: 'i' + id, etiket: Mz.bitkiSatiri(d, id), ipucu: 'Seçince bitkiyi inceler, şu anki evresini kaydedersin.', sec: yap(() => Mz.bitkiIncele(d, id)) });
         if (k.arsiv.bitkiler && k.arsiv.bitkiler[id]) {
           const ev = E.bitkiEvresi(id, M.gunNo(k.dk), k.eko);
-          ogeler.push({ id: 'n' + id, etiket: `${E.BITKILER[id].ad}: ${ev.tohum ? 'tohum' : 'yaprak'} numunesi al`, sec: yap(() => Mz.bitkiNumunesi(d, id)) });
+          ogeler.push({ id: 'n' + id, etiket: `${E.BITKILER[id].ad}: ${ev.tohum ? E.BITKILER[id].tohumAdi || 'tohum' : 'yaprak'} numunesi al`, sec: yap(() => Mz.bitkiNumunesi(d, id)) });
         }
       });
       if (!ogeler.length) ogeler.push(bilgi('bos', 'Burada incelenecek belirgin bir bitki yok.'));
@@ -2277,6 +2306,8 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         bilgi('kutu', `Numune kutusu: ${k.numuneKutusu.length} / ${Mz.NUMUNE_KUTUSU}. ${k.numuneKutusu.length ? 'İstasyona dönünce laboratuvara teslim edilir.' : ''}`),
         { id: 'su', etiket: su ? `Su numunesi al: ${su.ad}` : 'Su numunesi al: yakında su yok', sec: yap(() => Mz.suNumunesi(d)) },
         { id: 'diski', etiket: `Dışkı numunesi al${gb ? `: ${M.bireyAdi(gb)}` : ''}`, ipucu: 'Gözlediğin tanımlı hayvanın bıraktığı dışkıdan; hayvana dokunulmaz.', sec: yap(() => Mz.diskiNumunesi(d)) },
+        { id: 'kil', etiket: `Kıl ya da tüy numunesi al${gb ? `: ${M.bireyAdi(gb)}` : ''}`, ipucu: 'Gözlediğin tanımlı hayvanın sürtündüğü ağaçtan, tüneğinden ya da güneşlendiği yerden; DNA, stres hormonu ve deri asalakları için.', sec: yap(() => Mz.kilNumunesi(d)) },
+        { id: 'toprak', etiket: 'Toprak numunesi al', ipucu: 'Bulunduğun bölgenin toprağı: nem, besin, kül, tuz. Her bölgeden günde bir.', sec: yap(() => Mz.toprakNumunesi(d)) },
         { id: 'les', etiket: les ? `Leşten numune al: ölü ${kucuk(M.SOZ[les.tur])}, ${yerTarifi(les)}` : 'Leşten numune al: yakında leş yok', sec: yap(() => Mz.lesNumunesi(d)) },
         { id: 'vet', etiket: `Veteriner müdahalesi${gb ? `: ${M.bireyAdi(gb)}${M.saglikGorunusu(gb)}` : ''}`, ipucu: 'Yaralı ya da hasta görünen gözlediğin hayvanı veteriner tedavi eder.', sec: yap(() => Mz.veterinerMudahale(d)) },
       ];

@@ -2,7 +2,7 @@
 // Saf mantık: bütçe ve dengeli ekonomi (karar 22, 62, 91), ekipman (89, 88), tesisler (21, 79, 80), personel (54, 81),
 // basit araştırma ekranı ve analizler (45), hibe teklifleri ve dinamik görevler (61, 62, 90), mesajlar (82),
 // kamera tuzakları (41, 93) ve GPS tasmaları (11, 84). Sayılar öneridir; Murat onaylamadı.
-import { TURLER, TUR_SIRASI, DAVRANISLAR, ISTASYON, YARICAP, GOLET, nehirY, NEHIR_YARI } from './veri.js';
+import { TURLER, TUR_SIRASI, DAVRANISLAR, ISTASYON, YARICAP, GOLET, nehirY, NEHIR_YARI, TUZ_YALAGI } from './veri.js';
 import * as M from './mantik.js';
 import * as E from './ekosistem.js';
 import * as K from './kesif.js';
@@ -678,6 +678,7 @@ export const NUMUNE_DK = 3 * 60;
 const gunu = (k) => M.gunNo(k.dk);
 const kucuk2 = (s) => s.toLocaleLowerCase('tr-TR');
 
+const BOLGE_TOPRAK = { otlak: 'otlak', agaclik: 'akasyalık', golet: 'gölet kıyısı', nehir: 'nehir kıyısı', sulak: 'sulak alan', kayalik: 'kayalık', galeri: 'galeri ormanı', termit: 'termit tepesi' };
 function numuneEkle(d, numune, metin) {
   const k = d.k;
   if (k.numuneKutusu.length >= NUMUNE_KUTUSU) return `Numune kutun dolu (${NUMUNE_KUTUSU} numune). Önce istasyona dönüp laboratuvara teslim et.`;
@@ -720,6 +721,40 @@ export function diskiNumunesi(d) {
   const veri = { bireyId: b.id, kod: M.kod(b), tur: b.tur, hastalik: b.hastalik && ['parazit', 'sarbon'].includes(b.hastalik.id) ? b.hastalik.id : null, kondisyon: b.kondisyon };
   return numuneEkle(d, { tip: 'diski', veri }, `${M.BuyukHarf(M.bireyAdi(b))} uzaklaşınca bıraktığı dışkıdan eldivenle numune aldın. Hayvana dokunmadan sağlığı hakkında bilgi verir.`);
 }
+// Aşama 25 (karar 57): toprak numunesi ve kıl/tüy/deri pulu numunesi
+export function toprakNumunesi(d) {
+  const k = d.k;
+  const o = d.oyuncu;
+  if (k.magara) return 'Mağara tabanından numune alınmaz; mağara canlılarını rahatsız etme.';
+  const bolge = M.bolgeBul(o.x, o.y);
+  if (bolge === 'istasyon') return 'İstasyonun toprağı sıkıştırılmış; doğal bir yere git.';
+  if (M.nehirdeMi(o.x, o.y)) return 'Suyun içindesin; kıyıya çık.';
+  const bolgeAdi = M.bolgeAdi(o.x, o.y);
+  if (ayniGunVar(k, (n) => n.tip === 'toprak' && n.veri.bolge === bolge)) return `Bugün ${bolgeAdi} bölgesinden zaten toprak numunesi aldın.`;
+  const h = E.hucre(o.x, o.y);
+  const eko = k.eko || {};
+  const veri = {
+    bolge,
+    nem: Number.isFinite(eko.islaklik) ? eko.islaklik : 0.3,
+    yanik: !!(eko.yanik && eko.yanik[h] !== undefined),
+    istilaci: !!(eko.istilaci && eko.istilaci[h]),
+    tuz: Math.hypot(o.x - TUZ_YALAGI.x, o.y - TUZ_YALAGI.y) < TUZ_YALAGI.r + 6,
+  };
+  return numuneEkle(d, { tip: 'toprak', veri }, `${M.BuyukHarf(bolgeAdi)} bölgesinden küçük bir kürekle toprak numunesi aldın.`);
+}
+const kilAdi = (tur) => (TURLER[tur] && TURLER[tur].kus ? 'tüyü' : ['timsah', 'piton'].includes(tur) ? 'deri pulu' : 'kılı');
+export function kilNumunesi(d) {
+  const k = d.k;
+  const b = M.gozlenen(d);
+  if (!b) return 'Önce numunesini alacağın hayvanı dürbünle gözlemle.';
+  if (!M.taninmisMi(b)) return 'Kıl numunesi tanımlanmış bir bireyden alınır; biraz daha izle.';
+  if (M.mesafe(d.oyuncu, b) > 35) return `Hayvanın dinlendiği ya da sürtündüğü yere yakın olmalısın; ${M.bireyAdi(b)} ${M.metreSozu(M.mesafe(d.oyuncu, b))} uzakta.`;
+  if (d.gozlem && d.gozlem.sn < 8) return 'Nerede dinlendiğini ya da hangi ağaca sürtündüğünü görmek için hayvanı biraz daha izle.';
+  if (ayniGunVar(k, (n) => n.tip === 'kil' && n.veri.bireyId === b.id)) return `Bugün ${M.bireyAdi(b)} için zaten kıl numunesi aldın.`;
+  const veri = { bireyId: b.id, kod: M.kod(b), tur: b.tur, uyuz: !!(b.hastalik && b.hastalik.id === 'uyuz'), stres: Number.isFinite(b.stres) ? b.stres : 0 };
+  const yer = TURLER[b.tur].kus ? 'tüneğinin altına düşmüş bir tüyü' : ['timsah', 'piton'].includes(b.tur) ? 'güneşlendiği yerde dökülmüş bir deri pulunu' : 'sürtündüğü ağacın kabuğuna takılan kılları';
+  return numuneEkle(d, { tip: 'kil', veri }, `${M.BuyukHarf(M.bireyAdi(b))} uzaklaşınca ${yer} topladın. Hayvana dokunmadan DNA, stres hormonu ve deri asalakları hakkında bilgi verir.`);
+}
 export function yakinLes(d, r = 10) {
   return d.k.lesler.filter((l) => l.kalan > 0.05 && M.mesafe(d.oyuncu, l) < r).sort((a, b) => M.mesafe(d.oyuncu, a) - M.mesafe(d.oyuncu, b))[0] || null;
 }
@@ -736,6 +771,7 @@ export function lesNumunesi(d) {
 
 // ---------- Botanik ----------
 export function cevredekiBitkiler(d) {
+  if (d.k.magara) return d.k.magara.alan ? [] : E.bolgedekiBitkiler('magara');
   return E.bolgedekiBitkiler(M.bolgeBul(d.oyuncu.x, d.oyuncu.y));
 }
 export function bitkiSatiri(d, id) {
@@ -776,14 +812,14 @@ export function bitkiNumunesi(d, id) {
   const ev = E.bitkiEvresi(id, gunu(k), k.eko);
   if ([...k.numuneKutusu, ...k.numuneler].some((n) => n.tip === 'bitki' && n.veri.bitki === id && n.veri.anahtar === ev.anahtar && n.veri.yil === E.takvim(gunu(k)).yil))
     return 'Bu bitkiden bu evrede zaten numune aldın.';
-  const parca = ev.tohum ? 'tohum' : 'yaprak';
+  const parca = ev.tohum ? E.BITKILER[id].tohumAdi || 'tohum' : 'yaprak';
   return numuneEkle(d, { tip: 'bitki', veri: { bitki: id, parca, anahtar: ev.anahtar, yil: E.takvim(gunu(k)).yil } }, `${E.BITKILER[id].ad} bitkisinden ${parca} numunesi aldın; bitkiye zarar vermeden küçük bir parça.`);
 }
 
 // ---------- Laboratuvar ----------
 export const numuneKapasitesi = (k) => (tesisVar(k, 'gelismisLab') ? 2 : 1);
 export const numuneAdi = (n) =>
-  n.tip === 'su' ? `${n.kaynak} suyu` : n.tip === 'diski' ? `${n.veri.kod || kucuk2(M.SOZ[n.veri.tur])} dışkısı` : n.tip === 'les' ? `${kucuk2(M.SOZ[n.veri.tur])} leşi dokusu` : `${kucuk2(E.BITKILER[n.veri.bitki].ad)} ${n.veri.parca}`;
+  n.tip === 'toprak' ? `${(BOLGE_TOPRAK[n.veri.bolge] || 'savan')} toprağı` : n.tip === 'kil' ? `${n.veri.kod || kucuk2(M.SOZ[n.veri.tur])} ${kilAdi(n.veri.tur)}` : n.tip === 'su' ? `${n.kaynak} suyu` : n.tip === 'diski' ? `${n.veri.kod || kucuk2(M.SOZ[n.veri.tur])} dışkısı` : n.tip === 'les' ? `${kucuk2(M.SOZ[n.veri.tur])} leşi dokusu` : `${kucuk2(E.BITKILER[n.veri.bitki].ad)} ${n.veri.parca}`;
 export function numuneMetni(k, n) {
   const ad = `${M.BuyukHarf(numuneAdi(n))}, ${n.gun}. gün, ${n.bolge}`;
   if (n.durum === 'kutuda') return `${ad}: numune kutunda, istasyona götür`;
@@ -839,6 +875,35 @@ function numuneSonucu(d, n) {
     }
     const neden = v.neden.startsWith('avlandı') || v.neden.includes('timsah') ? 'bir yırtıcı tarafından avlanmış' : v.neden.includes('yaşlılık') ? 'yaşlılık; dişleri aşınmış, hastalık bulunmadı' : v.neden.includes('açlık') ? 'açlık; yağ dokusu tükenmiş' : v.neden || 'belirlenemedi';
     return `Ölü ${tur}: ölüm nedeni ${neden}.`;
+  }
+  if (n.tip === 'toprak') {
+    const TARIF = {
+      otlak: 'Kumlu tın; organik madde orta, yağmur suyunu çabuk emiyor.',
+      agaclik: 'Ağaç köklerinin altında daha koyu, yaprak çürüntüsüyle zenginleşmiş toprak; azot yüksek.',
+      golet: 'Kil oranı yüksek, suyu tutan, sıkı bir toprak; çamur banyosu yapan hayvanların sevdiği türden.',
+      nehir: 'Nehrin taşıdığı alüvyon; ince kum ve mil, besin bakımından zengin.',
+      sulak: 'Organik madde çok yüksek, oksijeni az, koyu bataklık toprağı.',
+      kayalik: 'Sığ ve taşlı, kayadan ufalanmış kaba kum; besin az.',
+      galeri: 'Nemli, koyu orman toprağı; mantar iplikleri ve solucan izleri çok.',
+      termit: 'Termitlerin taşıdığı kil ve besince zengin kızıl toprak; çevresine göre bitkiler burada daha gür biter.',
+    };
+    let m = `${TARIF[v.bolge] || 'Savan toprağı.'} Nem ${v.nem > 0.7 ? 'çok yüksek' : v.nem > 0.4 ? 'orta' : v.nem > 0.15 ? 'düşük' : 'neredeyse yok; toprak kuru ve çatlak'}.`;
+    if (v.yanik) m += ' Kül tabakası var: potasyum ve fosfor yükselmiş, yanık alanda otlar bu yüzden hızlı yeşeriyor.';
+    if (v.tuz) m += ' Sodyum ve mineraller çok yüksek; tuz yalağına gelen hayvanlar bunu yalıyor.';
+    if (v.istilaci) m += ' Lantana yapraklarının bıraktığı maddeler başka bitkilerin çimlenmesini baskılıyor; istilacı çalı yerli otları böyle de geriletiyor.';
+    return m;
+  }
+  if (n.tip === 'kil') {
+    const b = M.kayitliBirey(d, v.bireyId);
+    const ad = b ? M.BuyukHarf(M.bireyAdi(b)) : 'Hayvan';
+    let m = `${ad}: ${kilAdi(v.tur)} kökünden DNA alındı.`;
+    m += ` Kıldaki stres hormonu (kortizol) son haftaların stres düzeyini gösterir: ${v.stres > 0.5 ? 'yüksek; uzun süredir baskı altında' : v.stres > 0.2 ? 'orta' : 'düşük; sakin bir dönem geçirmiş'}.`;
+    if (v.uyuz) {
+      if (b && b.hastalik && b.hastalik.id === 'uyuz') b.teshis = 'uyuz';
+      teshisKaydet(d, 'uyuz', v.tur, 'kıl');
+      m += ' Kıl diplerinde uyuz akarı bulundu. Veteriner tedavi edebilir.';
+    } else m += ' Deri asalağı bulunmadı.';
+    return m + G.dnaAnalizi(d, b);
   }
   const b = E.BITKILER[v.bitki];
   const a = k.arsiv.bitkiler[v.bitki];

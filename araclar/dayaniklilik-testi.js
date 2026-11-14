@@ -175,6 +175,10 @@ function oynat(d, adim) {
       Hd.HEDEFLER.forEach((h) => { metinDenetle(Hd.hedefSatiri(d.k, h), 'hedef'); Hd.hedefDetay(d.k, h).forEach((m) => metinDenetle(m, 'hedef detay')); });
       Y.gocSatirlari(d).forEach((m) => metinDenetle(m, 'göç 2'));
       d.k.hayvanlar.slice(0, 40).forEach((b) => Bg.bireySatirlari(d, b).forEach((m) => metinDenetle(m, 'bağ')));
+      // Aşama 25: toprak ve kıl numuneleri, analizleri hemen bitir
+      metinDenetle(Mz.toprakNumunesi(d), 'toprak');
+      metinDenetle(Mz.kilNumunesi(d), 'kıl');
+      d.k.numuneKutusu.forEach((n) => (n.durum = 'kutuda'));
       S.kameraSatirlari(d.k).forEach((m) => metinDenetle(m, 'kamera'));
       d.k.hayvanlar.filter((b) => b.ozellik).forEach((b) => metinDenetle(M.gozlemTarifi(d, b), 'özel birey'));
       ['aslan', 'cita', 'manda', 'babun'].forEach((t) => Sy.turSatirlari(d, t).forEach((m) => metinDenetle(m, 'sosyal tür')));

@@ -378,8 +378,68 @@ export function yonluDonguDurdur(ad) {
   if (yonluDonguler[ad]) yonluDongu(ad, 0);
 }
 
+// Aşama 25 (karar 30): dinamik müzik. Ortam ve efektlerden ayrı kanal; parçalar yavaşça (yaklaşık 5 sn) birbirine geçer.
+// hedef: { muzik_gunduz: 1, muzik_gerilim: 0.3 } (0-1), duzey: genel müzik düzeyi (0 kapalı).
+const muzikler = {};
+let muzikHedef = {};
+let muzikDuzey = 0;
+let muzikSayac = null;
+function muzikAdim() {
+  const simdi = Date.now();
+  let devam = false;
+  for (const [ad, x] of Object.entries(muzikler)) {
+    const hedef = Math.max(0, Math.min(1, muzikHedef[ad] || 0)) * muzikDuzey;
+    const yeni = x.ses + Math.max(-0.006, Math.min(0.006, hedef - x.ses));
+    if (Math.abs(yeni - x.ses) > 1e-4) {
+      x.ses = yeni;
+      try {
+        x.p.volume = yeni;
+      } catch (e) {}
+    }
+    if (Math.abs(x.ses - hedef) > 1e-4) devam = true;
+    if (x.ses <= 0.001 && hedef === 0) {
+      x.sifir = x.sifir || simdi;
+      if (simdi - x.sifir > 20000) {
+        try {
+          x.p.pause();
+          x.p.release();
+        } catch (e) {}
+        delete muzikler[ad];
+      } else devam = true;
+    } else x.sifir = 0;
+  }
+  if (!devam) {
+    clearInterval(muzikSayac);
+    muzikSayac = null;
+  }
+}
+export function muzikAyarla(hedef, duzey) {
+  muzikHedef = hedef || {};
+  muzikDuzey = Math.max(0, Math.min(1, duzey || 0));
+  for (const [ad, v] of Object.entries(muzikHedef)) {
+    if (!(v > 0) || muzikler[ad] || !muzikDuzey) continue;
+    const k = SESLER[ad];
+    if (!k) continue;
+    try {
+      const p = createAudioPlayer(k, { keepAudioSessionActive: true });
+      p.loop = true;
+      p.volume = 0;
+      p.play();
+      muzikler[ad] = { p, ses: 0, sifir: 0 };
+    } catch (e) {}
+  }
+  if (!muzikSayac) muzikSayac = setInterval(muzikAdim, 100);
+}
+export const muzikDurumu = () => Object.fromEntries(Object.entries(muzikler).map(([a, x]) => [a, Math.round(x.ses * 1000) / 1000]));
 export function birak() {
   ortamDurdur();
+  muzikAyarla({}, 0);
+  Object.keys(muzikler).forEach((a) => {
+    try {
+      muzikler[a].p.release();
+    } catch (e) {}
+    delete muzikler[a];
+  });
   Object.keys(yonluDonguler).forEach((a) => yonluDonguDurdur(a));
   Object.keys(donguler).forEach((a) => {
     try {
@@ -403,5 +463,6 @@ export function birak() {
 // Tarayıcı denemeleri için (telefonda etkisiz)
 try {
   globalThis.__ortamDurumu = ortamDurumu;
+  globalThis.__muzikDurumu = () => muzikDurumu();
   globalThis.__yonluDurum = () => Object.fromEntries(Object.entries(yonluDonguler).map(([a, x]) => [a, { sol: Math.round(x.sol.volume * 100) / 100, sag: Math.round(x.sag.volume * 100) / 100, hiz: x.hiz }]));
 } catch (e) {}
