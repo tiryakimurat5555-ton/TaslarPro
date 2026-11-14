@@ -80,7 +80,10 @@ export function kucukAra(d) {
     const c = KUCUKLER[id];
     // Az önce sesini duyduğun canlıyı aramak onu bulmayı kolaylaştırır (Aşama 17)
     const duyulan = d.sonDuyulan && d.sonDuyulan.id === id && d.zaman - d.sonDuyulan.zaman < 60 ? 5 : 1;
-    return c.sik * (yagmur && c.yagmur ? 3 : 1) * (k.arsiv.kucukler[id] ? 1 : 1.6) * duyulan;
+    // Açık gizemin aradığı canlı (buzun altındaki şarkı: sakallı fok) daha kolay bulunur
+    const gz = k.hikaye && k.hikaye.gizemler && k.hikaye.gizemler.kutupSes;
+    const gizem = id === 'sakalliFok' && gz && !gz.bitti && gz.adim >= 2 ? 6 : 1;
+    return c.sik * (yagmur && c.yagmur ? 3 : 1) * (k.arsiv.kucukler[id] ? 1 : 1.6) * duyulan * gizem;
   });
   let r = d.rng() * agirlik.reduce((a, b) => a + b, 0);
   let id = liste[0];
@@ -283,6 +286,45 @@ export function kutuptanDon(d) {
   const m = 'Kutup gezisinden savandaki istasyona döndün. Kutupta topladığın numuneler laboratuvara teslim edilebilir.';
   M.olay(d, 'kutup', m, 3, { cikis: true });
   return m;
+}
+// Deniz buzu kalınlığı ölçümü: buzun üstündeyken matkapla delik açılır; günde bir, yerde 30 m'den uzak noktalar ayrı sayılır
+export function buzOlc(d) {
+  const k = d.k;
+  const o = d.oyuncu;
+  if (!M.oyuncuKutupta(k)) return 'Deniz buzu ölçümü kutupta yapılır.';
+  if (Kt.yuzey(o.x, o.y, k.dk) !== 'buz') return 'Deniz buzunun üstünde değilsin. Kıyıdan kuzeye, donmuş denize yürü.';
+  if (!k.kutup.buz || !Array.isArray(k.kutup.buz)) k.kutup.buz = [];
+  const gun = M.gunNo(k.dk);
+  const l = Kt.yerel(o);
+  if (k.kutup.buz.some((b) => b.gun === gun && Math.hypot(b.lx - l.x, b.ly - l.y) < 30)) return 'Bugün bu noktanın buzunu zaten ölçtün. En az 30 metre uzakta başka bir yerde ya da başka bir gün ölç.';
+  const isinma = Math.max(0, (k.eko && Number.isFinite(k.eko.iklimEgilim) ? k.eko.iklimEgilim : 0));
+  const cm = Kt.buzKalinligi(o.x, o.y, k.dk, isinma);
+  const mevsim = M.kutupMevsimi(k);
+  const yeniMevsim = !k.kutup.buz.some((b) => b.mevsim === mevsim);
+  const ilk = !k.kutup.buz.length;
+  k.kutup.buz.push({ gun, dk: k.dk, mevsim, cm, lx: Math.round(l.x), ly: Math.round(l.y) });
+  if (k.kutup.buz.length > 30) k.kutup.buz.shift();
+  M.efekt(d, 'numune_sise', 0.6);
+  if (ilk) M.itibarEkle(d, 3);
+  else if (yeniMevsim) M.itibarEkle(d, 2);
+  M.arsivOlay(d, `Deniz buzu ölçüldü: ${cm} santimetre (${Kt.MEVSIM_ADI[mevsim]}).`);
+  const onceki = k.kutup.buz.slice(0, -1).filter((b) => b.mevsim !== mevsim).slice(-1)[0];
+  const kiyas = onceki ? ` ${M.BuyukHarf(Kt.MEVSIM_ADI[onceki.mevsim])} ölçümünde ${onceki.cm} santimetreydi.` : '';
+  const m = `Buz matkabıyla delik açtın: deniz buzu ${cm} santimetre, ${Kt.buzSozu(cm)}.${kiyas}${cm < 10 ? ' Hemen kıyıya doğru geri çekil.' : ''} Bugüne kadar ${k.kutup.buz.length} ölçüm.`;
+  M.olay(d, 'buzOlcum', m, 3);
+  return m;
+}
+export const buzOlcumGunleri = (k) => new Set(((k.kutup && k.kutup.buz) || []).map((b) => b.gun)).size;
+export const buzOlcumMevsimleri = (k) => new Set(((k.kutup && k.kutup.buz) || []).map((b) => b.mevsim)).size;
+export function buzSatirlari(k) {
+  const l = (k.kutup && k.kutup.buz) || [];
+  if (!l.length) return ['Henüz deniz buzu ölçmedin. Buzun üstündeyken Doğa menüsünde Deniz buzunu ölç.'];
+  const mev = {};
+  l.forEach((b) => (mev[b.mevsim] = mev[b.mevsim] || []).push(b.cm));
+  return [
+    `${l.length} ölçüm, ${buzOlcumGunleri(k)} farklı günde.`,
+    ...Object.entries(mev).map(([m, a]) => `${M.BuyukHarf(Kt.MEVSIM_ADI[m])}: ortalama ${Math.round(a.reduce((t, v) => t + v, 0) / a.length)} santimetre, ${a.length} ölçüm (en ince ${Math.min(...a)}, en kalın ${Math.max(...a)}).`),
+  ];
 }
 export function kutupSatiri(k) {
   const dur = kutupDurumu(k);

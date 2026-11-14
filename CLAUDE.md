@@ -491,6 +491,13 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   (ortam-dongu.py), adim_kar/adim_buz (adim-yap.py artık zemin argümanı alır); App kutupOrtami katmanları. Testler: dayanıklılık 300/300,
   bot 2 gün, ekosistem 20 gün, menu-tara kutupta iki kipte (/tmp/claude-0/kutup-kayit.json) ve savanda sorun 0, /tmp/claude-0/kr/kutup1.js
   (GUN=24: doğumlar, ayının nefes deliği avı, kurt avı, savunma halkası; nüfus dengede), scratchpad kutup-goruntu.cjs. Telefonda doğrulanmadı.
+- Kutup derinleştirme (14 Kasım 2026 gece, Murat "devam"): kutup.js buzKalinligi (donma f 10,5'ten kalınlaşır, ilkbaharda incelir, yazın çok
+  yıllık buz, kıyı ×1,15, polinya kenarı ince, iklimEgilim −9 cm/derece), buzSozu; kesif buzOlc (buz yüzeyinde, günde ve 30 m'de bir; k.kutup.buz
+  son 30; ilk itibar 3, yeni mevsim 2), buzOlcumGunleri/Mevsimleri, buzSatirlari (Kutup raporu). merkez ARASTIRMALAR + kutupFaunasi, denizBuzu,
+  kutupAvcilari (nefesDeligiPusu, savunmaHalkasi, ayiyiTakipEdiyor, ulumaKorosu), tundraYazi. hikaye GIZEMLER kutupSes "Buzun altındaki şarkı"
+  (kutupta kış/ilkbahar: buza çık → buz ölç → sakallı fok bul; kesif 3. adımda sakalliFok ağırlığı ×6). KUCUK_SESLI + 9 kutup canlısı
+  (k_sakalliFok, karBaykusu, kutupSumrusu, ucParmakliMarti, kucukAlk, kralEider, karKirazkusu, kuzgun, lemming; ElevenLabs akış R1AN6H1CX2wNrRrpqPLB).
+  Kuzey ışıkları daha alçak ve büyük (190×44, 30 m yükseklik, 80 m kuzeyde). Test /tmp/claude-0/kr/kutup2.js. Telefonda doğrulanmadı.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

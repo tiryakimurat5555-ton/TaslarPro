@@ -293,4 +293,4 @@ export const KUTUP_KUCUKLERI = Object.keys(KUTUP_CANLILARI);
 export const alanCanlilari = (alan) => KUCUK_SIRASI.filter((id) => KUCUKLER[id].alan === alan);
 
 // Aşama 17: gerçek sesi olan küçük canlılar (assets/efekt/k_<id>_0..4, 3B). App uzaktan duyulan çağrılarda ve bulununca çalar.
-export const KUCUK_SESLI = ['devekusu', 'tacliTurna', 'yerBoynuzgagasi', 'goAway', 'becTavugu', 'alacaYalicapkini', 'misirKazi', 'maviTurako', 'vervet', 'agustosBocegi', 'kayaHyraksi', 'cuceFiravunfaresi', 'puhu', 'cobanaldatan', 'galago', 'agacDamani', 'bogaKurbagasi', 'kamisKurbagasi', 'karaSirtliCakal', 'pabucGaga', 'turako', 'kolobus', 'papirusGonolegi', 'sykesMaymunu'];
+export const KUCUK_SESLI = ['devekusu', 'tacliTurna', 'yerBoynuzgagasi', 'goAway', 'becTavugu', 'alacaYalicapkini', 'misirKazi', 'maviTurako', 'vervet', 'agustosBocegi', 'kayaHyraksi', 'cuceFiravunfaresi', 'puhu', 'cobanaldatan', 'galago', 'agacDamani', 'bogaKurbagasi', 'kamisKurbagasi', 'karaSirtliCakal', 'pabucGaga', 'turako', 'kolobus', 'papirusGonolegi', 'sykesMaymunu', 'sakalliFok', 'karBaykusu', 'kutupSumrusu', 'ucParmakliMarti', 'kucukAlk', 'kralEider', 'karKirazkusu', 'kuzgun', 'lemming'];

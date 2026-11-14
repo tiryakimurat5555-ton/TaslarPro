@@ -2,14 +2,14 @@
 // Saf mantık: bütçe ve dengeli ekonomi (karar 22, 62, 91), ekipman (89, 88), tesisler (21, 79, 80), personel (54, 81),
 // basit araştırma ekranı ve analizler (45), hibe teklifleri ve dinamik görevler (61, 62, 90), mesajlar (82),
 // kamera tuzakları (41, 93) ve GPS tasmaları (11, 84). Sayılar öneridir; Murat onaylamadı.
-import { TURLER, TUR_SIRASI, DAVRANISLAR, ISTASYON, YARICAP, GOLET, nehirY, NEHIR_YARI, TUZ_YALAGI } from './veri.js';
+import { TURLER, TUR_SIRASI, DAVRANISLAR, ISTASYON, YARICAP, GOLET, nehirY, NEHIR_YARI, TUZ_YALAGI, KUTUP_SIRASI } from './veri.js';
 import * as M from './mantik.js';
 import * as Kt from './kutup.js';
 import * as E from './ekosistem.js';
 import * as K from './kesif.js';
 import * as G from './genisleme.js';
 import * as S from './su.js';
-import { KUCUKLER } from './kucukler.js';
+import { KUCUKLER, KUTUP_KUCUKLERI } from './kucukler.js';
 
 const lira = (n) => `${Math.round(n).toLocaleString('tr-TR')} lira`;
 export const liraSozu = lira;
@@ -245,6 +245,39 @@ export const ARASTIRMALAR = [
     ilerleme: (k) => [K.uzakIlerleme(k, 'bataklik'), 9],
     odul: { itibar: 18, fon: 8000 },
     sonuc: 'Papirüs bataklığının suyu süzen dev bir arıtma sistemi olduğu ve pabuç gagalı leylek gibi yalnızca burada yaşayan türlerin akciğerli balığa bağlı olduğu gösterildi.',
+  },
+  // Kuzey Kutbu araştırmaları
+  {
+    id: 'kutupFaunasi',
+    ad: 'Grönland kıyısının memelileri',
+    kosulMetni: 'Kuzey Kutbu\'nda 9 büyük türü kaydet ve kutup türlerinden 6 bireyi tanımla',
+    ilerleme: (k) => [Math.min(9, KUTUP_SIRASI.filter((t) => k.arsiv.turler[t]).length) + Math.min(6, k.hayvanlar.filter((b) => b.no > 0 && TURLER[b.tur] && TURLER[b.tur].kutup).length), 15],
+    odul: { itibar: 15, fon: 6000 },
+    sonuc: 'Kıyının memeli topluluğu belgelendi: deniz buzuna bağlı türler (kutup ayısı, halkalı fok, mors) ile tundra türleri (ren geyiği, misk öküzü, kurt, tilki, tavşan) birbirine besin zinciriyle bağlı. Fok azalırsa ayılar karaya, kuş yuvalarına yöneliyor.',
+  },
+  {
+    id: 'denizBuzu',
+    ad: 'Deniz buzunun yıllık döngüsü',
+    kosulMetni: 'Deniz buzunun kalınlığını 6 farklı günde ve 3 farklı mevsimde ölç (kutupta, buzun üstünde Doğa menüsü)',
+    ilerleme: (k) => [Math.min(6, K.buzOlcumGunleri(k)) + Math.min(3, K.buzOlcumMevsimleri(k)), 9],
+    odul: { itibar: 18, fon: 8000 },
+    sonuc: 'Ölçümler deniz buzunun sonbaharın sonunda donduğunu, kış boyunca kalınlaştığını ve ilkbaharda hızla inceldiğini gösterdi. Isınan yıllarda buz daha ince ve daha kısa ömürlü; fokların doğum yaptığı ve ayıların avlandığı mevsim kısalıyor.',
+  },
+  {
+    id: 'kutupAvcilari',
+    ad: 'Buzun ve tundranın avcıları',
+    kosulMetni: 'Dört davranışı gözle: ayının nefes deliği pusuşu, misk öküzlerinin savunma halkası, tilkinin ayıyı izlemesi, kurtların uluma korosu',
+    ilerleme: (k) => [[['kutupAyisi', 'nefesDeligiPusu'], ['miskOkuzu', 'savunmaHalkasi'], ['kutupTilkisi', 'ayiyiTakipEdiyor'], ['kutupKurdu', 'ulumaKorosu']].filter(([t, dv]) => davranisVar(k, t, dv)).length, 4],
+    odul: { itibar: 16, fon: 5000 },
+    sonuc: 'Kutup ayısının saatlerce bir nefes deliğinin başında beklediği, misk öküzlerinin kurtlara karşı yavruları ortaya alıp boynuzlarını dışa çeviren bir duvar ördüğü belgelendi. Kutup tilkileri ayıların artıklarıyla kışı atlatıyor.',
+  },
+  {
+    id: 'tundraYazi',
+    ad: 'Kısa tundra yazı',
+    kosulMetni: '6 kutup bitkisini incele ve 10 kutup küçük canlısını bul',
+    ilerleme: (k) => [Math.min(6, E.BITKI_SIRASI.filter((id) => E.BITKILER[id].kutup && (k.arsiv.bitkiler || {})[id]).length) + Math.min(10, KUTUP_KUCUKLERI.filter((id) => (k.arsiv.kucukler || {})[id]).length), 16],
+    odul: { itibar: 14, fon: 5000 },
+    sonuc: 'Tundranın bütün yaşamının birkaç haftalık yaza sıkıştığı gösterildi: bitkiler kar kalkar kalkmaz çiçek açıyor, kuşlar gece yarısı güneşinde yavrularını büyütüyor, lemmingler kar altında kışı geçiriyor.',
   },
   // Aşama 11: nehir ve gölet araştırmaları (karar 94, 99)
   {

@@ -2,6 +2,7 @@
 // Saf mantık: d (dünya) ve d.k (kalıcı kayıt) üzerinde çalışır; App ve testler guncelle(d, dt)'yi her karede çağırır.
 // Bütün sayılar ÖNERİDİR (Murat onaylamadı).
 import * as M from './mantik.js';
+import * as Kt from './kutup.js';
 import { TURLER, TUR_SIRASI, YERLER, GOLET, GALERI, ISTASYON } from './veri.js';
 import { KUCUKLER } from './kucukler.js';
 
@@ -191,6 +192,18 @@ export const GIZEMLER = {
     ],
     cozum: 'Dişi ölmemiş: inde iki yavrusuyla saklanıyor. Leopar anneler doğumdan sonraki haftalarda yavrularını gizler, avlanmaya kısa çıkar ve yuvayı sık değiştirir. Bu yüzden görülmüyordu.',
     odul: { itibar: 10, fon: 2500 },
+  },
+  kutupSes: {
+    ad: 'Buzun altındaki şarkı',
+    giris: 'Kulübedeki su altı mikrofonu geceleri buzun altından gelen, inen sarmal ıslıklar kaydediyor. Saatlerce süren, hiç duyulmamış bir şarkı gibi. Bir balina mı, buzun kendi sesi mi?',
+    baslat: (k) => M.oyuncuKutupta(k) && ['kis', 'ilkbahar'].includes(M.kutupMevsimi(k)),
+    adimlar: [
+      { metin: 'Donmuş denize, deniz buzunun üstüne çık. Yerler menüsünde Deniz buzu var.', tamam: (d) => M.oyuncuKutupta(d.k) && Kt.yuzey(d.oyuncu.x, d.oyuncu.y, d.k.dk) === 'buz', sonra: 'Buzun üstünde, ayaklarının altından gelen titrek ıslığı neredeyse hissediyorsun. Ses buzdaki açıklıklara yakın yerde daha güçlü.' },
+      { metin: 'Buzun kalınlığını ölç; ses buzun inceldiği yerlerden yükseliyor (Doğa menüsü, Deniz buzunu ölç).', tamam: (d, g) => ((d.k.kutup && d.k.kutup.buz) || []).some((b) => b.dk >= g.bas), sonra: 'Buz kalınlığı sesin geçmesine izin veriyor; şarkı buzun kenarındaki açık suya, polinyaya doğru güçleniyor.' },
+      { metin: 'Buz kenarında ya da polinyada şarkının sahibini ara (Doğa menüsü, Küçük canlı ara).', tamam: (d) => !!(d.k.arsiv.kucukler || {}).sakalliFok },
+    ],
+    cozum: 'Şarkının sahibi sakallı fok. Erkekler ilkbaharın çiftleşme döneminde buzun altında, bölgelerini ve kendilerini ilan etmek için kilometrelerce duyulan, aşağı inen sarmal ıslıklar söyler. Her erkeğin şarkısı biraz farklıdır; araştırmacılar bireyleri seslerinden tanıyabilir.',
+    odul: { itibar: 12, fon: 3000 },
   },
   kacak: {
     ad: 'Tel tuzaklarının izi',

@@ -952,7 +952,7 @@ export function sahneKur(gl, d, secenek = {}) {
   const auroraMat = new THREE.MeshBasicMaterial({ color: '#59f2a0', transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false, fog: false });
   const auroralar = [];
   for (let i = 0; i < 5; i++) {
-    const m = new THREE.Mesh(new THREE.PlaneGeometry(160, 26, 16, 1), auroraMat);
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(190, 44, 16, 1), auroraMat);
     m.userData.taban = m.geometry.attributes.position.array.slice();
     kutupGrup.add(m);
     auroralar.push(m);
@@ -1028,13 +1028,13 @@ export function sahneKur(gl, d, secenek = {}) {
     }
     // Kuzey ışıkları: karanlıkta ve açık havada görünür
     const l = Kt.isik(dk);
-    const aurora = l < 0.2 && h && (h.tur === 'acik' || h.tur === 'bulutlu') ? (0.2 - l) / 0.2 * (h.tur === 'acik' ? 0.55 : 0.2) : 0;
+    const aurora = l < 0.2 && h && (h.tur === 'acik' || h.tur === 'bulutlu') ? Math.min(1, ((0.2 - l) / 0.12)) * (h.tur === 'acik' ? 0.6 : 0.25) : 0;
     auroraMat.opacity = aurora;
     auroralar.forEach((m, i) => {
       m.visible = aurora > 0.01;
       if (!m.visible) return;
-      m.position.set(o.x - 120 + i * 60, 24 + i * 3, R(o.y + 105 + (i % 2) * 20));
-      m.rotation.set(-0.15, (i - 2) * 0.12, 0);
+      m.position.set(o.x - 110 + i * 55, 30 + (i % 3) * 4, R(o.y + 80 + (i % 2) * 15));
+      m.rotation.set(0.05, (i - 2) * 0.15, 0);
       const p = m.geometry.attributes.position.array;
       const t0 = m.userData.taban;
       for (let j = 0; j < p.length; j += 3) p[j + 2] = t0[j + 2] + Math.sin(t0[j] * 0.05 + saat * 0.4 + i) * 9;

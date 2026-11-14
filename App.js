@@ -335,6 +335,7 @@ const kucuk = (s) => s.toLocaleLowerCase('tr-TR');
 
 // ---------------- Yenilikler (en yeniler üstte): Murat denerken neyin nerede olduğunu bulsun diye ----------------
 const YENILIKLER = [
+  { baslik: 'Kutup araştırmaları, deniz buzu ölçümü ve kutup sesleri', metin: 'Merkezde dört kutup araştırması var. Deniz buzunun üstündeyken buzun kalınlığını ölçebilirsin. Kutup kuşlarının, lemmingin ve sakallı fokun sesleri artık çevrede duyuluyor. Kışın ya da ilkbaharda kutuptayken yeni bir gizem başlayabilir: Buzun altındaki şarkı. Kuzey ışıkları gökyüzünde daha belirgin.', nerede: 'Kutupta Doğa menüsü: Deniz buzunu ölç ve Kutup raporu. Merkez, Araştırmalar. Merkez, Gizemler.' },
   { baslik: 'Yeni bölge: Kuzey Kutbu', metin: 'Kuzeydoğu Grönland kıyısında, savandan ayrı, serbestçe dolaşılan büyük bir harita. Kutup ayısı, halkalı fok, mors, beluga, ren geyiği, misk öküzü, kutup kurdu, kutup tilkisi ve kutup tavşanı yaşıyor; her birinin kendi sesi var. Yazın güneş batmaz, kışın hiç doğmaz; deniz mevsime göre donup çözülür, tipi çıkar, kış gecelerinde kuzey ışıkları görünür. 21 kutup küçük canlısı ve 6 kutup bitkisi, karda ve buzda adım sesleri, rüzgâr, buz, deniz ve kuş yarı ortam sesleri eklendi. İtibarın 50 olunca açılır.', nerede: 'Araştırma merkezi, Saha gezileri: Kuzey Kutbu, yola çık. Yardım, Kuzey Kutbu.' },
   { baslik: 'Zaman artık atlanmıyor', metin: 'Tasarımdaki zaman kuralına uymak için Dinlen menüsü ve Deneme araçlarındaki zamanı ileri alma kaldırıldı. Zaman yalnız oyun açıkken, gerçek akışıyla geçer. Saha kampı hayvanlardan saklanman ve dronunu şarj etmen için duruyor; fırtınada yırtılırsa onarana kadar seni saklamaz. Saha gezilerinin ücreti artık yakıt değil alan izni ve konaklama; araç yakıtı sınırsız.', nerede: 'ana menü; Durum, ayarlar, yardım ve kayıt, Deneme araçları.' },
   { baslik: 'Su kirliliği ve hayvanların kendini tedavi etmesi', metin: 'Su artık kirlenebiliyor. Suyun içinde ya da kıyısında çürüyen bir leş bakteri yükünü artırır. Kurak mevsimde nehir sığlaşınca su aygırlarının toplandığı yerde dışkı birikir, suyun oksijeni azalır; çok azalırsa balıklar ölebilir. Yangından sonraki ilk yağmur yanık alanın külünü suya taşır. Kirli sudan içen hayvanlar parazit kapabilir. Su ölçümü oksijenin düştüğünü ve kirliliğin kaynağını söyler, su numunesi bakteri, amonyak ya da kül bulgusu verir. Nehir akarak kendini temizler, gölet daha yavaş. Ayrıca hasta hayvanlar kendini tedavi ediyor: parazitli babunlar çöl hurmasının acı meyvesini, parazitli filler kil yiyor. Bu nadir davranışları gözlemleyebilirsin.', nerede: 'Doğa, Su araştırması, Kirlilik kaynakları; Doğa, Ekosistem raporu; sahada gözlem.' },
@@ -545,6 +546,8 @@ const YARDIM = [
       'Hayvanlar: kutup ayısı, halkalı fok, mors, beluga, ren geyiği, misk öküzü, kutup kurdu, kutup tilkisi ve kutup tavşanı. Kutup ayısı buzda fokların nefes deliklerinin başında pusuya yatar; kutup tilkisi ayının peşinden artıklarını toplar; misk öküzleri kurtlara karşı yavrularını ortaya alıp halka olur. Kutup ayısı, mors ve misk öküzü tehlikelidir; uzak dur.',
       'Küçük canlılar, kutup bitkileri, su ve toprak numuneleri de kutupta toplanır. Numuneleri savandaki istasyonun laboratuvarına götürürsün.',
       'Dönüş: ana menüde ve Yerler listesinde Savana dön satırı var. Uçak kulübenin yanından kalkar; kulübeden uzaksan önce oraya yürürsün.',
+      'Deniz buzunu ölç: buzun üstündeyken Doğa menüsünde. Buz matkabıyla buzun kalınlığını ölçersin; buz sonbaharın sonunda donar, kışın kalınlaşır, ilkbaharda incelir, polinyanın kenarında çok incedir. Ölçümler Kutup raporunda.',
+      'Kutup araştırmaları merkezde: Grönland kıyısının memelileri, Deniz buzunun yıllık döngüsü, Buzun ve tundranın avcıları, Kısa tundra yazı. Kutup kuşlarının, lemmingin ve sakallı fokun sesleri çevrede duyulur; sesini duyduğun canlıyı aramak onu bulmayı kolaylaştırır.',
     ],
   },
   {
@@ -1908,6 +1911,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     if (u === 'doga' && M.oyuncuKutupta(k)) {
       const ogeler = [
         altMenu('kutupEko', `Kutup raporu: ${Kt.MEVSIM_ADI[M.kutupMevsimi(k)]}, ${Kt.havaSozu(M.kutupHavasi(k), k.dk).split(',')[0].toLocaleLowerCase('tr-TR')}`, menu.ac),
+        ...(Kt.yuzey(d.oyuncu.x, d.oyuncu.y, k.dk) === 'buz' ? [{ id: 'buzOlc', etiket: 'Deniz buzunu ölç', ipucu: 'Buz matkabıyla delik açıp buzun kalınlığını ölçersin. Farklı günlerde ve mevsimlerde ölçmek merkezdeki deniz buzu araştırmasını ilerletir.', sec: yap(() => K.buzOlc(d)) }] : []),
         { id: 'ara', etiket: 'Küçük canlı ara', ipucu: 'Kuş, böcek, balık ve küçük memelileri arar.', sec: kapatVe(() => K.kucukAra(d)) },
         { id: 'izAra', etiket: 'İzleri incele', ipucu: 'Karda ve çamurda yakındaki ayak izlerini okur.', sec: yap(() => Iz.izAra(d)) },
         ...(d.sonIz ? [{ id: 'izTakip', etiket: 'İzi takip et', sec: kapatVe(() => Ses.hemen(Iz.izTakip(d))) }] : []),
@@ -1930,6 +1934,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         bilgi('takvim', 'Kutup yılı: 8 gün yaz (güneş batmaz), 4 gün sonbahar, 8 gün kış (güneş doğmaz), 4 gün ilkbahar. Deniz buzu sonbaharda donar, ilkbaharın sonunda kırılır.'),
       ];
       if (sayilar.length) ogeler.push(bilgi('nufus', `Kaydedilen türlerin bölgedeki sayıları: ${sayilar.join(', ')}.`));
+      K.buzSatirlari(k).forEach((m, i) => ogeler.push(bilgi('buz' + i, m)));
       return liste(u, 'Kutup raporu', ogeler);
     }
     if (u === 'doga') {

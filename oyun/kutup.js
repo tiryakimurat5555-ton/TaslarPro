@@ -33,7 +33,7 @@ export function kutupTakvim(gun) {
   return { mevsim: 'ilkbahar', mevsimGunu: yg - 20, uzunluk: 4, yilGunu: yg };
 }
 // Yıl içindeki sürekli konum (0..24) dakikadan
-const yilKonumu = (dk) => {
+export const yilKonumu = (dk) => {
   const g = dk / 1440; // 0 = 1. günün başı
   return ((g % YIL_GUN) + YIL_GUN) % YIL_GUN;
 };
@@ -198,3 +198,24 @@ export function tundraBesin(dk, h) {
   const taban = { yaz: 0.9, sonbahar: 0.6, kis: 0.3, ilkbahar: 0.38 }[t];
   return taban * (tipideMi(h, dk) ? 0.5 : 1);
 }
+
+// ---------- Deniz buzu kalınlığı (araştırma ölçümü) ----------
+// Deniz sonbaharın sonunda donar (yıl konumu ~10,5), kış boyunca kalınlaşır (en çok ~170 cm), ilkbaharda incelir.
+// Kıyıya yapışık buz (kıyıdan 25 m) daha kalın, polinya kenarı çok ince; yazın açıkta kalan çok yıllık buz kalın ve eski.
+// Isınan iklim (derece) buzu inceltir.
+export function buzKalinligi(x, y, dk, isinma = 0) {
+  const lx = x - KUTUP.x;
+  const ly = y - KUTUP.y;
+  const f = yilKonumu(dk);
+  let cm;
+  if (f >= 10.5 && f < 20) cm = 15 + (f - 10.5) * 16.5; // donma ve kalınlaşma
+  else if (f >= 20) cm = 172 - (f - 20) * 28; // ilkbahar erimesi
+  else if (f < 8) cm = 260 - f * 4; // yaz: açıkta kalan çok yıllık buz
+  else cm = 230;
+  if (ly - kiyiY(lx) < 25) cm *= 1.15;
+  const mp = Math.hypot(lx - POLINYA.lx, ly - POLINYA.ly) - POLINYA.r;
+  if (mp < 25) cm *= 0.35 + 0.65 * Math.max(0, mp) / 25;
+  cm -= isinma * 9;
+  return Math.max(5, Math.round(cm));
+}
+export const buzSozu = (cm) => (cm < 10 ? 'çok ince, üstünde yürümek tehlikeli' : cm < 30 ? 'ince ve esnek' : cm < 80 ? 'orta kalınlıkta' : cm < 150 ? 'kalın' : 'çok kalın, eski buz');
