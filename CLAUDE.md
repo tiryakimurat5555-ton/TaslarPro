@@ -469,6 +469,28 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   Deneme araçlarındaki zamanı ileri alma silindi. dinlenBaslat yalnız saha gezisi yolculuğunda kullanılıyor (yol 2-2,5 saat hızlı akar; Murat'a
   söylendi). Kamp: saklanma (kaçış ×0,6, hasarlıyken yok) ve dron şarjı. G.dinlenebilirMi/dinlenmeHedefi kullanılmıyor. Saha gezisi ücreti
   "alan izni ve konaklama" (karar 42 sınırsız yakıt). Zaman atlayan özellik EKLEME.
+- KUZEY KUTBU (14 Kasım 2026, Murat "Kutup bölgesini yap"; Arktik seçildi, penguenler/Antarktika ayrı iş olabilir; sayılar ÖNERİ).
+  Aynı dünya koordinatlarında uzak bir harita: veri KUTUP {x 0, y 6000, r 230}; `oyun/kutup.js` (saf): yerel koordinat lx/ly, kuzey deniz,
+  güney tundra, kiyiY(lx) ~40, ISTASYON_K kulübe (0,-150), BUZUL (lx -230..-150), KUS_YARI (168,22), MORS_KIYISI, POLINYA (70,150) r 15.
+  Kutup takvimi aynı 24 günlük yılda: 1-8 yaz (güneş batmaz), 9-12 sonbahar, 13-20 kış (kutup gecesi), 21-24 ilkbahar; isik(dk), evre(dk),
+  buzKenari(dk) (yerel y; yazın açılır, kışın kıyıya dayanır), yuzey kara|buz|su, bolge (kutupIstasyon, tundra, kiyi, kusYari, buzul, buz,
+  acikSu, polinya), KUTUP_YERLER (k_*), havaUret (acik/bulutlu/sis/kar/tipi; k.kutup.hava), tundraBesin. TURLER + 9 tür (kutup: true):
+  kutupAyisi, halkaliFok, mors, beluga, renGeyigi, miskOkuzu, kutupKurdu, kutupTilkisi, kutupTavsani; TUR_SIRASI yalnız savan, KUTUP_SIRASI;
+  M.turListesi kutba gidilince (k.kutup.ziyaret) kutup türlerini ekler. mantik: oyuncuKutupta, evreSimdi, kutupHavasi, kucukMevsimi/
+  kucukYagmur, kutupPlanSec/kutupGrupAdim (fok buzda/dalış + nefes deliği, ayı nefes deliğinde pusu, tilki ayıyı izler, mors yığılır/dipte,
+  beluga yüzer, kurt uluma, misk savunma halkası GRUP_SAVUNMA), bireyYuru kutup kayması, açık suya oyuncu giremez, araç binilmez.
+  ekosistem YASAM, yonetim IUCN, gece GOZ kutup türleri; kucukler KUTUP_CANLILARI 21 (kmevsim kutup mevsimleri); BITKILER + 6 kutup
+  bitkisi (kutup: true, evre [yaz, sonbahar, kış, ilkbahar], KUTUP_EVRE_ADI). merkez: kutup deniz suyu ve toprak numunesi.
+  kesif: KUTUP_GEZI (itibar 50, 2.500 lira, yol 300 dk), kutupHazirla/kutbaVar (KULUBE_KAPI kulübenin 18 m kuzeyi; kamera kulübeye girmesin),
+  kulubedeMi, kutuptanHazirla/kutuptanDon (savandaki istasyona). App: Merkez > Saha gezileri'nde Kuzey Kutbu (dinlenBaslat yolculuğu),
+  ana menüde ve Yerler'de Savana dön (kutupDonSatiri), kutupta Yerler/Doğa (Kutup raporu) ayrı, harita ve araç satırı yok; dron ve kamp
+  savanda; ziyaretçi kutupta ya da uzak alandayken gelmez. betimleme kutup dalı. Sahne: kutupGrup (deniz, kayan deniz buzu, kıyı şekilli kara
+  mevsime göre kar/tundra rengi, polinya, tundra lekeleri, taşlar, dağlar, buzul duvarı, kuş yarları, kulübe, buzdağları, kuzey ışıkları,
+  kar/tipi parçacıkları; tipide sis 2-28 m), ışık Kt.isik; modeller ayi/fok/mors/balina/geyik/misk/kurt/tavsan; suda kutup hayvanları batık.
+  Sesler (ElevenLabs akış R1AN6H1CX2wNrRrpqPLB): 9 tür 3B (UC_B), ortam_kutup, ortam_kutup_buz, ortam_kutup_deniz, ortam_kusyari, ortam_tipi
+  (ortam-dongu.py), adim_kar/adim_buz (adim-yap.py artık zemin argümanı alır); App kutupOrtami katmanları. Testler: dayanıklılık 300/300,
+  bot 2 gün, ekosistem 20 gün, menu-tara kutupta iki kipte (/tmp/claude-0/kutup-kayit.json) ve savanda sorun 0, /tmp/claude-0/kr/kutup1.js
+  (GUN=24: doğumlar, ayının nefes deliği avı, kurt avı, savunma halkası; nüfus dengede), scratchpad kutup-goruntu.cjs. Telefonda doğrulanmadı.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

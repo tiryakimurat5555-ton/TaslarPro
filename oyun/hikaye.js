@@ -302,6 +302,7 @@ function ziyaretPlanla(d) {
   if (h.zarGun === g || saat < 8 || saat > 15) return;
   h.zarGun = g;
   if (g < 2 || h.ziyaretci || Math.random() > ZIYARET_SANSI) return;
+  if (M.oyuncuKutupta(k) || (k.magara && k.magara.alan)) return; // sen savanda yokken ziyaretçi gelmez
   const adaylar = ['korucu', 'coban', 'arastirmaci'];
   if (tuzaklar(k).some((t) => !t.bulundu)) adaylar.push('korucu');
   const kim = adaylar[Math.floor(Math.random() * adaylar.length)];

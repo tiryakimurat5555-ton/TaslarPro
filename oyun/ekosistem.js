@@ -404,10 +404,64 @@ export const BITKILER = {
     tohum: [false, false, true, true],
     analiz: 'Meyveleri şekerce zengin. Tohumların çoğunu meyve yarasaları ve kuşlar taşıyor; kökleri kayayı yavaş yavaş çatlatarak mağaraya su ve besin taşıyor. Mağaradaki böcekler sarkan köklerle besleniyor.',
   },
+  // ---------- Kuzey Kutbu (Grönland) ----------
+  // kutup: true olanlarda evre sırası [kutup yazı, sonbahar, kutup kışı, ilkbahar]
+  kutupSogudu: {
+    ad: 'Kutup söğüdü', bilimsel: 'Salix arctica', bicim: 'cüce çalı', bolge: ['tundra', 'kutupIstasyon', 'kiyi'], ozellik: 'besin', kutup: true,
+    tarif: 'Yerde sürünen, boyu bir karışı geçmeyen bir söğüt. Gövdesi taşların arasından yayılır; yüz yaşındaki bir kutup söğüdü ancak bilek kalınlığındadır.',
+    evre: ['tüylü kedicik çiçekleri pamuk gibi açılmış, yaprakları parlak yeşil', 'yaprakları sararmış, tüylü tohumlarını rüzgâra bırakıyor', 'karın altında; misk öküzleri ve ren geyikleri karı eşeleyip dallarını kemiriyor', 'tomurcukları kar kalkar kalkmaz kabarmış, kutup tavşanları kemiriyor'],
+    tohum: [false, true, false, false], tohumAdi: 'tüylü tohum',
+    analiz: 'Yaprak ve tomurcuklarında yüksek protein bulundu. Kutup tavşanının, misk öküzünün ve ren geyiğinin en önemli besini. Halkalarına göre bu bitki yaklaşık 80 yaşında; yazlar ısındıkça yıllık büyümesi artıyor.',
+  },
+  dagAveni: {
+    ad: 'Dağ aveni', bilimsel: 'Dryas integrifolia', bicim: 'cüce çalı', bolge: ['tundra', 'buzul'], ozellik: 'besin', kutup: true,
+    tarif: 'Taşlık tundrada halı gibi yayılan, beyaz sekiz yapraklı çiçekli bir bitki. Çiçekleri güneşi izler; çanak biçimiyle içini ısıtıp böcekleri çeker.',
+    evre: ['beyaz çiçekleri güneşe dönmüş, içinde böcekler ısınıyor', 'çiçekleri tüylü, kıvrık tohum başlarına dönüşmüş', 'karın altında, yaprakları kahverengi ama yeşil kalıyor', 'kar kenarlarında ilk yeşil yapraklar görünüyor'],
+    tohum: [false, true, false, false], tohumAdi: 'tüylü tohum başı',
+    analiz: 'Kökleri azot bağlayan bakterilerle ortak yaşıyor; buzulun çekildiği çıplak toprağı ilk o yerleşip besler. Çiçeğinin içi dışarıdan birkaç derece sıcak ölçüldü.',
+  },
+  kutupGelincigi: {
+    ad: 'Kutup gelinciği', bilimsel: 'Papaver radicatum', bicim: 'ot', bolge: ['tundra', 'buzul', 'kusYari'], ozellik: 'besin', kutup: true,
+    tarif: 'Taşların arasında tek tek açan sarı bir gelincik. İnce sapı rüzgârda eğilir ama kırılmaz; çiçek güneşi gün boyu izler.',
+    evre: ['sarı çiçekleri güneşi izliyor', 'kapsülleri kurumuş, rüzgârda sallandıkça tohum serpiyor', 'karın altında, yalnızca kuru kapsüller görünüyor', 'yaprak rozeti kar kalkınca yeşermiş'],
+    tohum: [false, true, false, false],
+    analiz: 'Dünyanın en kuzeyde açan çiçeklerinden biri. Çanak biçimi güneş ışığını içeriye yoğunlaştırıyor; tohumlar ancak bu ısıyla olgunlaşıyor.',
+  },
+  pamukOtu: {
+    ad: 'Pamuk otu', bilimsel: 'Eriophorum scheuchzeri', bicim: 'ot', bolge: ['kiyi', 'tundra'], ozellik: 'besin', kutup: true,
+    tarif: 'Islak tundrada ve kıyı bataklıklarında yetişen, tepesinde beyaz pamuk topu taşıyan bir saz.',
+    evre: ['beyaz pamuk topları rüzgârda dalgalanıyor', 'pamuklar dağılıyor, tohumlar uçuşuyor', 'donmuş bataklıkta kuru sapları görünüyor', 'taze sürgünleri kar suyunda yeşermiş'],
+    tohum: [false, true, false, false], tohumAdi: 'pamuklu tohum',
+    analiz: 'Islak tundranın turba tabakasını oluşturan başlıca bitki. Kökleri donmuş toprağın üst yüzünde yayılıyor; çözülen buzlu toprakta karbon salınımını izlemek için iyi bir gösterge.',
+  },
+  morTaskiran: {
+    ad: 'Mor taşkıran', bilimsel: 'Saxifraga oppositifolia', bicim: 'yastık bitkisi', bolge: ['tundra', 'kusYari', 'buzul', 'kiyi'], ozellik: 'besin', kutup: true,
+    tarif: 'Kayaların üstünde mor çiçekli küçük yastıklar oluşturan bir bitki. Baharda çiçek açan ilk bitkidir; karın hemen kenarında açar.',
+    evre: ['mor çiçekleri solmuş, küçük kapsüller oluşmuş', 'yastıkları koyu yeşil, kışa hazırlanıyor', 'karın altında, yastığın içinde tomurcuklar bekliyor', 'kar daha erimeden mor çiçeklerle kaplanmış; ilk bombus arıları geliyor'],
+    tohum: [true, false, false, false],
+    analiz: 'Grönland\'ın en kuzey kıyılarında bile yetişiyor. Yastık biçimi içini dışarıdan birkaç derece sıcak tutuyor. Çiçeklerinin şekeri baharda uyanan bombus arılarının ilk besini.',
+  },
+  denizYosunu: {
+    ad: 'Buz algi', bilimsel: 'Melosira arctica', bicim: 'alg', bolge: ['buz', 'polinya'], ozellik: 'besin', kutup: true,
+    tarif: 'Deniz buzunun alt yüzünde metrelerce sarkan yeşil-kahverengi alg perdeleri. Buzun içinden süzülen ışıkla büyür.',
+    evre: ['buz eriyip kopan alg perdeleri dibe çöküyor', 'yeni buz oluşurken ilk hücreler buzun içine kapanıyor', 'karanlıkta buzun içinde uyuyor', 'güneş dönünce buzun altında perdeler hızla uzuyor'],
+    tohum: [false, false, false, false],
+    analiz: 'Kutup denizindeki yıllık üretimin önemli bir kısmı buzun altındaki bu alglerden geliyor. Kopepodlar ve arktik morinalar onlarla, foklar ve belugalar onlarla beslenir. Buz azaldıkça bu üretim de azalıyor.',
+  },
 };
 export const BITKI_SIRASI = Object.keys(BITKILER);
+// Kutup bitkilerinin evresi kutup takvimine göre (yıl 24 gün: 1-8 yaz, 9-12 sonbahar, 13-20 kış, 21-24 ilkbahar)
+const kutupEvreNo = (gun) => {
+  const yg = ((((gun - 1) % YIL_GUN) + YIL_GUN) % YIL_GUN) + 1;
+  return yg <= 8 ? 0 : yg <= 12 ? 1 : yg <= 20 ? 2 : 3;
+};
+export const KUTUP_EVRE_ADI = { yE: 'kutup yazı', yG: 'sonbahar', kE: 'kutup kışı', kG: 'ilkbahar' };
 export const OZELLIK_ADI = { besin: 'önemli bir besin bitkisi', su: 'suyu temizleyen bir bitki', zehirli: 'zehirli', 'şifalı': 'şifalı' };
 export function bitkiEvresi(id, gun, eko) {
+  if (BITKILER[id].kutup) {
+    const i = kutupEvreNo(gun);
+    return { anahtar: ['yE', 'yG', 'kE', 'kG'][i], mevsim: ['yaz', 'sonbahar', 'kis', 'ilkbahar'][i], metin: BITKILER[id].evre[i], tohum: BITKILER[id].tohum[i] };
+  }
   const tk = takvim(gun);
   const i = (tk.mevsim === 'yagisli' ? 0 : 2) + (tk.erken ? 0 : 1);
   let metin = BITKILER[id].evre[i];
@@ -468,6 +522,15 @@ export const YASAM = {
   impala: { yavru: 0.7, genc: 2, yasli: 10, omur: 13 },
   yabanKopegi: { yavru: 1, genc: 2, yasli: 8, omur: 11 },
   babun: { yavru: 1.5, genc: 6, yasli: 20, omur: 28 },
+  kutupAyisi: { yavru: 2.5, genc: 5, yasli: 20, omur: 28 },
+  halkaliFok: { yavru: 1, genc: 5, yasli: 25, omur: 32 },
+  mors: { yavru: 2, genc: 8, yasli: 30, omur: 40 },
+  beluga: { yavru: 2, genc: 6, yasli: 30, omur: 40 },
+  renGeyigi: { yavru: 1, genc: 3, yasli: 12, omur: 16 },
+  miskOkuzu: { yavru: 1, genc: 3, yasli: 15, omur: 22 },
+  kutupKurdu: { yavru: 1, genc: 2, yasli: 9, omur: 13 },
+  kutupTilkisi: { yavru: 0.5, genc: 1, yasli: 4, omur: 6 },
+  kutupTavsani: { yavru: 0.4, genc: 1, yasli: 4, omur: 5 },
 };
 export const yilGun = (yil) => yil * YIL_GUN;
 export function evreBul(tur, yasGun) {

@@ -3,8 +3,9 @@
 // hayvanlar (düşük poligonlu, sanatsal), gün ve gece ışığı. Mantık koordinatı (x doğu, y kuzey) three'de (x, 0, -y);
 // yön (0 = kuzey) three'de rotation.y = -yon. Kamera araştırmacının arkasından ve üstünden bakar (üçüncü şahıs).
 import * as THREE from 'three';
-import { TURLER, YARICAP, GOLET, NEHIR_YARI, nehirY, GECITLER, MAGARA, OZEL_BIREYLER, TUZ_YALAGI } from './veri.js';
-import { isikDuzeyi } from './mantik.js';
+import { TURLER, YARICAP, GOLET, NEHIR_YARI, nehirY, GECITLER, MAGARA, OZEL_BIREYLER, TUZ_YALAGI, KUTUP } from './veri.js';
+import { isikDuzeyi, kutupHavasi } from './mantik.js';
+import * as Kt from './kutup.js';
 
 const R = (y) => -y;
 const malzemeler = new Map();
@@ -279,6 +280,108 @@ function hayvanModeli(b) {
       g.add(govde);
       break;
     }
+    // ---------- Kuzey Kutbu ----------
+    case 'ayi':
+      parca(g, new THREE.BoxGeometry(0.85 * s, 0.85 * s, 1.75 * s), r, 0, 0.95 * s, 0);
+      parca(g, new THREE.BoxGeometry(0.75 * s, 0.75 * s, 0.6 * s), r, 0, 1.05 * s, 0.55 * s); // iri arka
+      parca(g, new THREE.BoxGeometry(0.42 * s, 0.4 * s, 0.6 * s), r, 0, 1.05 * s, -1.05 * s, 0.25); // uzun boyun
+      parca(g, new THREE.BoxGeometry(0.36 * s, 0.32 * s, 0.45 * s), r, 0, 1.0 * s, -1.42 * s);
+      parca(g, new THREE.BoxGeometry(0.16 * s, 0.14 * s, 0.14 * s), '#1a1a1a', 0, 0.98 * s, -1.68 * s); // burun
+      parca(g, new THREE.SphereGeometry(0.07 * s, 5, 4), r, -0.14 * s, 1.2 * s, -1.32 * s);
+      parca(g, new THREE.SphereGeometry(0.07 * s, 5, 4), r, 0.14 * s, 1.2 * s, -1.32 * s);
+      gozler(g, s, 0.1, 1.08, -1.6);
+      dortAyak(g, s, r, 0.6, 0.3, 0.62, 0.2);
+      break;
+    case 'fok': {
+      // Yerde yatan iğ biçimli gövde, ön yüzgeçler, arkada yüzgeç kuyruk
+      const fg = parca(g, new THREE.SphereGeometry(0.5 * s, 8, 6), r, 0, 0.32 * s, 0);
+      fg.scale.set(0.75, 0.62, 1.9);
+      for (let i = 0; i < 6; i++) parca(g, new THREE.TorusGeometry(0.06 * s, 0.015 * s, 3, 6), '#c8c0b0', ((i % 2) - 0.5) * 0.3 * s, 0.6 * s, (-0.4 + i * 0.16) * s, Math.PI / 2, 0, 0); // halkalar
+      parca(g, new THREE.SphereGeometry(0.24 * s, 7, 5), r, 0, 0.42 * s, -0.95 * s);
+      parca(g, new THREE.BoxGeometry(0.1 * s, 0.04 * s, 0.3 * s), r, -0.36 * s, 0.12 * s, -0.4 * s, 0, 0.4, 0);
+      parca(g, new THREE.BoxGeometry(0.1 * s, 0.04 * s, 0.3 * s), r, 0.36 * s, 0.12 * s, -0.4 * s, 0, -0.4, 0);
+      parca(g, new THREE.BoxGeometry(0.45 * s, 0.04 * s, 0.25 * s), r, 0, 0.2 * s, 1.05 * s);
+      gozler(g, s, 0.1, 0.5, -1.15);
+      break;
+    }
+    case 'mors': {
+      const mg = parca(g, new THREE.SphereGeometry(0.7 * s, 8, 6), r, 0, 0.6 * s, 0.1 * s);
+      mg.scale.set(0.95, 0.75, 1.6);
+      parca(g, new THREE.SphereGeometry(0.42 * s, 7, 5), r, 0, 0.85 * s, -0.95 * s);
+      parca(g, new THREE.BoxGeometry(0.4 * s, 0.22 * s, 0.2 * s), '#b89a80', 0, 0.72 * s, -1.28 * s); // bıyıklı ağız
+      if (b.evre !== 'yavru') {
+        parca(g, new THREE.ConeGeometry(0.04 * s, 0.6 * s, 5), '#f0ead8', -0.1 * s, 0.4 * s, -1.32 * s, Math.PI);
+        parca(g, new THREE.ConeGeometry(0.04 * s, 0.6 * s, 5), '#f0ead8', 0.1 * s, 0.4 * s, -1.32 * s, Math.PI);
+      }
+      parca(g, new THREE.BoxGeometry(0.15 * s, 0.05 * s, 0.4 * s), r, -0.55 * s, 0.1 * s, -0.5 * s, 0, 0.5, 0);
+      parca(g, new THREE.BoxGeometry(0.15 * s, 0.05 * s, 0.4 * s), r, 0.55 * s, 0.1 * s, -0.5 * s, 0, -0.5, 0);
+      parca(g, new THREE.BoxGeometry(0.6 * s, 0.05 * s, 0.35 * s), r, 0, 0.18 * s, 1.15 * s);
+      gozler(g, s, 0.16, 1.0, -1.18);
+      break;
+    }
+    case 'balina': {
+      const bg = parca(g, new THREE.SphereGeometry(0.6 * s, 9, 7), r, 0, 0.4 * s, 0);
+      bg.scale.set(0.9, 0.8, 2.6);
+      parca(g, new THREE.SphereGeometry(0.33 * s, 7, 5), r, 0, 0.62 * s, -1.25 * s); // kavun biçimli alın
+      parca(g, new THREE.BoxGeometry(0.2 * s, 0.05 * s, 0.4 * s), r, -0.5 * s, 0.25 * s, -0.6 * s, 0, 0.5, 0.3);
+      parca(g, new THREE.BoxGeometry(0.2 * s, 0.05 * s, 0.4 * s), r, 0.5 * s, 0.25 * s, -0.6 * s, 0, -0.5, -0.3);
+      const kuyruk = parca(g, new THREE.BoxGeometry(0.9 * s, 0.05 * s, 0.35 * s), r, 0, 0.4 * s, 1.65 * s);
+      kuyruk.userData.kuyruk = true;
+      gozler(g, s, 0.25, 0.5, -1.3);
+      break;
+    }
+    case 'geyik':
+      parca(g, new THREE.BoxGeometry(0.5 * s, 0.55 * s, 1.3 * s), r, 0, 1.15 * s, 0);
+      parca(g, new THREE.BoxGeometry(0.52 * s, 0.4 * s, 0.4 * s), '#e8e2d4', 0, 1.15 * s, -0.55 * s); // açık renk boyun yelesi
+      parca(g, new THREE.BoxGeometry(0.22 * s, 0.55 * s, 0.25 * s), r, 0, 1.55 * s, -0.7 * s, -0.4);
+      parca(g, new THREE.BoxGeometry(0.24 * s, 0.26 * s, 0.5 * s), r, 0, 1.82 * s, -0.98 * s);
+      if (b.evre !== 'yavru')
+        for (const yan of [-1, 1]) {
+          parca(g, new THREE.CylinderGeometry(0.025 * s, 0.035 * s, 0.7 * s, 4), '#d8c8a8', yan * 0.12 * s, 2.25 * s, -0.85 * s, 0.4, 0, yan * 0.3);
+          parca(g, new THREE.CylinderGeometry(0.02 * s, 0.025 * s, 0.35 * s, 4), '#d8c8a8', yan * 0.24 * s, 2.45 * s, -1.0 * s, -0.6, 0, yan * 0.4);
+          parca(g, new THREE.CylinderGeometry(0.02 * s, 0.025 * s, 0.3 * s, 4), '#d8c8a8', yan * 0.2 * s, 2.55 * s, -0.7 * s, 0.2, 0, yan * 0.6);
+        }
+      gozler(g, s, 0.1, 1.88, -1.18);
+      dortAyak(g, s, r, 0.85, 0.17, 0.48, 0.1);
+      break;
+    case 'misk':
+      // Yere kadar sarkan uzun tüyler: gövdenin altına uzanan geniş bir etek
+      parca(g, new THREE.BoxGeometry(0.95 * s, 0.85 * s, 1.5 * s), r, 0, 1.0 * s, 0);
+      parca(g, new THREE.BoxGeometry(1.05 * s, 0.55 * s, 1.55 * s), '#2e241c', 0, 0.5 * s, 0); // tüy eteği
+      parca(g, new THREE.BoxGeometry(0.6 * s, 0.4 * s, 0.45 * s), '#9a8a70', 0, 1.42 * s, -0.35 * s); // açık renk sırt eyeri
+      parca(g, new THREE.BoxGeometry(0.45 * s, 0.45 * s, 0.5 * s), r, 0, 0.95 * s, -0.95 * s);
+      if (b.evre !== 'yavru') {
+        parca(g, new THREE.TorusGeometry(0.22 * s, 0.07 * s, 4, 8, Math.PI), '#d8ccb0', -0.22 * s, 1.1 * s, -0.95 * s, 0, Math.PI / 2, 0);
+        parca(g, new THREE.TorusGeometry(0.22 * s, 0.07 * s, 4, 8, Math.PI), '#d8ccb0', 0.22 * s, 1.1 * s, -0.95 * s, 0, -Math.PI / 2, 0);
+      }
+      gozler(g, s, 0.17, 1.02, -1.21);
+      dortAyak(g, s, '#2e241c', 0.3, 0.3, 0.55, 0.16);
+      break;
+    case 'kurt':
+      parca(g, new THREE.BoxGeometry(0.4 * s, 0.45 * s, 1.15 * s), r, 0, 0.9 * s, 0);
+      parca(g, new THREE.BoxGeometry(0.42 * s, 0.48 * s, 0.4 * s), r, 0, 0.98 * s, -0.5 * s); // kalın boyun tüyü
+      parca(g, new THREE.BoxGeometry(0.32 * s, 0.3 * s, 0.38 * s), r, 0, 1.1 * s, -0.82 * s);
+      parca(g, new THREE.BoxGeometry(0.16 * s, 0.15 * s, 0.25 * s), r, 0, 1.03 * s, -1.08 * s);
+      parca(g, new THREE.BoxGeometry(0.06 * s, 0.06 * s, 0.06 * s), '#1a1a1a', 0, 1.06 * s, -1.21 * s);
+      parca(g, new THREE.ConeGeometry(0.07 * s, 0.16 * s, 4), r, -0.1 * s, 1.3 * s, -0.78 * s);
+      parca(g, new THREE.ConeGeometry(0.07 * s, 0.16 * s, 4), r, 0.1 * s, 1.3 * s, -0.78 * s);
+      {
+        const kuyruk = parca(g, new THREE.CylinderGeometry(0.07 * s, 0.1 * s, 0.6 * s, 5), r, 0, 0.8 * s, 0.75 * s, 1.0);
+        kuyruk.userData.kuyruk = true;
+      }
+      gozler(g, s, 0.08, 1.15, -1.0, '#c8a040');
+      dortAyak(g, s, r, 0.68, 0.14, 0.42, 0.09);
+      break;
+    case 'tavsan':
+      parca(g, new THREE.BoxGeometry(0.4 * s, 0.45 * s, 0.75 * s), r, 0, 0.5 * s, 0.05 * s);
+      parca(g, new THREE.BoxGeometry(0.3 * s, 0.3 * s, 0.35 * s), r, 0, 0.72 * s, -0.42 * s);
+      parca(g, new THREE.BoxGeometry(0.07 * s, 0.5 * s, 0.12 * s), r, -0.08 * s, 1.08 * s, -0.36 * s, 0.25);
+      parca(g, new THREE.BoxGeometry(0.07 * s, 0.5 * s, 0.12 * s), r, 0.08 * s, 1.08 * s, -0.36 * s, 0.25);
+      parca(g, new THREE.BoxGeometry(0.05 * s, 0.1 * s, 0.05 * s), '#1a1a1a', -0.08 * s, 1.34 * s, -0.4 * s); // kulak uçları siyah
+      parca(g, new THREE.BoxGeometry(0.05 * s, 0.1 * s, 0.05 * s), '#1a1a1a', 0.08 * s, 1.34 * s, -0.4 * s);
+      gozler(g, s, 0.12, 0.8, -0.6);
+      dortAyak(g, s, r, 0.3, 0.13, 0.3, 0.07);
+      break;
     default:
       // Sırtlan: önü yüksek, arkası alçak
       parca(g, new THREE.BoxGeometry(0.5 * s, 0.55 * s, 1.2 * s), r, 0, 0.8 * s, 0, 0.12);
@@ -733,6 +836,213 @@ export function sahneKur(gl, d, secenek = {}) {
     }
     g.add(sap, pus);
   });
+  // ---- Kuzey Kutbu (kuzeydoğu Grönland): savandan 6 km kuzeyde ayrı bir harita; kuzeyi deniz, güneyi tundra ----
+  const kutupGrup = new THREE.Group();
+  kutupGrup.visible = false;
+  sahne.add(kutupGrup);
+  const KX = KUTUP.x;
+  const KY = KUTUP.y;
+  const kp = (lx, ly) => [KX + lx, R(KY + ly)];
+  // Deniz (en altta), deniz buzu (mevsime göre kayar), kara (kıyı çizgisine kadar), polinya
+  const deniz = new THREE.Mesh(new THREE.PlaneGeometry(700, 700), new THREE.MeshLambertMaterial({ color: '#1f3f55' }));
+  deniz.rotation.x = -Math.PI / 2;
+  deniz.position.set(KX, -0.25, R(KY + 120));
+  kutupGrup.add(deniz);
+  const denizBuzu = new THREE.Mesh(new THREE.PlaneGeometry(700, 400), mat('#e6eef3'));
+  denizBuzu.rotation.x = -Math.PI / 2;
+  kutupGrup.add(denizBuzu);
+  const karaSekli = new THREE.Shape();
+  karaSekli.moveTo(-360, -360);
+  for (let lx = -360; lx <= 360; lx += 6) karaSekli.lineTo(lx, Kt.kiyiY(lx));
+  karaSekli.lineTo(360, -360);
+  karaSekli.lineTo(-360, -360);
+  const kara = new THREE.Mesh(new THREE.ShapeGeometry(karaSekli), new THREE.MeshLambertMaterial({ color: '#8a8460' }));
+  kara.rotation.x = -Math.PI / 2; // şekil düzleminde y = kuzey; döndürünce -z'ye düşer
+  kara.position.set(KX, 0.04, R(KY));
+  kutupGrup.add(kara);
+  const kiyiSeridi = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), mat('#6e6a5c'));
+  kiyiSeridi.visible = false;
+  const polinya = new THREE.Mesh(new THREE.CircleGeometry(Kt.POLINYA.r, 24), new THREE.MeshLambertMaterial({ color: '#173548' }));
+  polinya.rotation.x = -Math.PI / 2;
+  polinya.position.set(...(() => { const [x, z] = kp(Kt.POLINYA.lx, Kt.POLINYA.ly); return [x, 0.07, z]; })());
+  kutupGrup.add(polinya);
+  // Tundra lekeleri: yazın yeşil-kahve yosun ve söğüt yamaları (kışın karla örtülür)
+  const LEKE = 220;
+  const lekeIm = new THREE.InstancedMesh(new THREE.CircleGeometry(4, 8), new THREE.MeshLambertMaterial({ color: '#ffffff' }), LEKE);
+  const lekeRenk = [new THREE.Color('#566a34'), new THREE.Color('#6f5a38'), new THREE.Color('#8a8a5a'), new THREE.Color('#9a6a3a')];
+  for (let i = 0; i < LEKE; i++) {
+    lekeIm.setColorAt(i, lekeRenk[i % 4]);
+    const lx = (rs(i + 700) - 0.5) * 420;
+    const ly = -230 + rs(i + 701) * (Kt.kiyiY(lx) + 200);
+    q.setFromEuler(new THREE.Euler(-Math.PI / 2, 0, 0));
+    olcek.set(1 + rs(i + 702) * 2, 1 + rs(i + 703), 1);
+    const [x, z] = kp(lx, ly);
+    yer.set(x, 0.06, z);
+    m4.compose(yer, q, olcek);
+    lekeIm.setMatrixAt(i, m4);
+  }
+  kutupGrup.add(lekeIm);
+  // Taşlar ve kayalar
+  const tasIm = new THREE.InstancedMesh(new THREE.DodecahedronGeometry(0.7, 0), mat('#5d5a54'), 120);
+  for (let i = 0; i < 120; i++) {
+    const lx = (rs(i + 800) - 0.5) * 440;
+    const ly = -230 + rs(i + 801) * (Kt.kiyiY(lx) + 225);
+    if (Math.hypot(lx - Kt.ISTASYON_K.lx, ly - Kt.ISTASYON_K.ly) < 14) continue;
+    q.identity();
+    olcek.setScalar(0.5 + rs(i + 802) * 2);
+    const [x, z] = kp(lx, ly);
+    yer.set(x, 0.2, z);
+    m4.compose(yer, q, olcek);
+    tasIm.setMatrixAt(i, m4);
+  }
+  kutupGrup.add(tasIm);
+  // Güneyde ve batıda karlı dağlar (haritanın sınırı)
+  const dagIm = new THREE.InstancedMesh(new THREE.ConeGeometry(30, 45, 6), mat('#7c7f84'), 26);
+  const zirveIm = new THREE.InstancedMesh(new THREE.ConeGeometry(12, 18, 6), mat('#f4f6f8'), 26);
+  for (let i = 0; i < 26; i++) {
+    const a = Math.PI * 0.55 + (i / 25) * Math.PI * 1.0; // güney yarım çember
+    const r = KUTUP.r + 40 + rs(i + 900) * 30;
+    const s2 = 0.8 + rs(i + 901) * 0.9;
+    const [x, z] = kp(Math.sin(a) * r, Math.cos(a) * r);
+    q.identity();
+    olcek.setScalar(s2);
+    yer.set(x, 22 * s2, z);
+    m4.compose(yer, q, olcek);
+    dagIm.setMatrixAt(i, m4);
+    yer.set(x, 22 * s2 + 14.5 * s2, z);
+    m4.compose(yer, q, olcek);
+    zirveIm.setMatrixAt(i, m4);
+  }
+  kutupGrup.add(dagIm, zirveIm);
+  // Buzul dili: batıda denize dökülen buz duvarı
+  {
+    const g2 = parca(kutupGrup, new THREE.BoxGeometry(Kt.BUZUL.lx1 - Kt.BUZUL.lx0 + 80, 16, 70), '#cfe3ee', ...(() => { const [x, z] = kp((Kt.BUZUL.lx0 + Kt.BUZUL.lx1) / 2 - 40, 15); return [x, 8, z]; })());
+    g2.material = new THREE.MeshLambertMaterial({ color: '#cfe3ee' });
+    for (let i = 0; i < 6; i++) parca(kutupGrup, new THREE.BoxGeometry(2, 15, 70), '#8ab4cc', ...(() => { const [x, z] = kp(Kt.BUZUL.lx1 + 0.8, 15 + (i - 2.5) * 0.1); return [x - i * 14, 8.2, z]; })()); // mavi çatlaklar
+  }
+  // Kuş yarları: doğuda koyu kaya duvarı, üstünde kuş lekeleri
+  for (let i = 0; i < 7; i++) {
+    const lx = Kt.KUS_YARI.lx - 24 + i * 8;
+    const [x, z] = kp(lx, Kt.KUS_YARI.ly + 6 + rs(i + 950) * 6);
+    parca(kutupGrup, new THREE.BoxGeometry(9, 18 + rs(i + 951) * 10, 10), '#3e3a36', x, 10, z);
+  }
+  const kusIm = new THREE.InstancedMesh(new THREE.BoxGeometry(0.25, 0.25, 0.25), mat('#f2f2ee'), 160);
+  for (let i = 0; i < 160; i++) {
+    const [x, z] = kp(Kt.KUS_YARI.lx - 26 + rs(i + 960) * 56, Kt.KUS_YARI.ly + 0.5);
+    m4.makeTranslation(x, 3 + rs(i + 961) * 22, z);
+    kusIm.setMatrixAt(i, m4);
+  }
+  kutupGrup.add(kusIm);
+  // Araştırma kulübesi: ahşap kulübe, telsiz direği, yakıt varilleri
+  {
+    const [x, z] = kp(Kt.ISTASYON_K.lx, Kt.ISTASYON_K.ly);
+    parca(kutupGrup, new THREE.BoxGeometry(6, 3, 4.5), '#8a3a2a', x, 1.5, z);
+    parca(kutupGrup, new THREE.ConeGeometry(4.6, 1.8, 4), '#3a3632', x, 3.9, z, 0, Math.PI / 4, 0);
+    parca(kutupGrup, new THREE.BoxGeometry(1, 1.8, 0.1), '#4a2a1a', x, 0.9, z - 2.3);
+    parca(kutupGrup, new THREE.BoxGeometry(0.9, 0.7, 0.1), '#e8d890', x + 1.8, 1.8, z - 2.3);
+    parca(kutupGrup, new THREE.CylinderGeometry(0.06, 0.06, 9, 4), '#bdbdbd', x + 4, 4.5, z + 1);
+    for (let i = 0; i < 4; i++) parca(kutupGrup, new THREE.CylinderGeometry(0.3, 0.3, 0.9, 8), i % 2 ? '#b03a2a' : '#2a5a8a', x - 4 - (i % 2) * 0.7, 0.45, z + 1 - Math.floor(i / 2) * 0.7);
+  }
+  // Buzdağları ve yüzen buz parçaları
+  const buzdagIm = new THREE.InstancedMesh(new THREE.DodecahedronGeometry(1, 0), new THREE.MeshLambertMaterial({ color: '#dceef6' }), 30);
+  const buzdagLy = [];
+  for (let i = 0; i < 30; i++) buzdagLy.push({ lx: (rs(i + 980) - 0.5) * 420, ly: 70 + rs(i + 981) * 170, s: i < 5 ? 6 + rs(i + 982) * 8 : 0.8 + rs(i + 983) * 2.2 });
+  kutupGrup.add(buzdagIm);
+  // Kuzey ışıkları (kutup gecesinde): kuzey gökyüzünde dalgalanan yeşil perdeler
+  const auroraMat = new THREE.MeshBasicMaterial({ color: '#59f2a0', transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false, fog: false });
+  const auroralar = [];
+  for (let i = 0; i < 5; i++) {
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(160, 26, 16, 1), auroraMat);
+    m.userData.taban = m.geometry.attributes.position.array.slice();
+    kutupGrup.add(m);
+    auroralar.push(m);
+  }
+  // Kar taneleri (kar yağarken ve tipide)
+  const KAR = 900;
+  const karGeo = new THREE.BufferGeometry();
+  const karKonum = new Float32Array(KAR * 3);
+  const karOfs = new Float32Array(KAR * 3);
+  for (let i = 0; i < KAR; i++) {
+    karOfs[i * 3] = (Math.random() - 0.5) * 40;
+    karOfs[i * 3 + 1] = Math.random() * 14;
+    karOfs[i * 3 + 2] = (Math.random() - 0.5) * 40;
+  }
+  karGeo.setAttribute('position', new THREE.BufferAttribute(karKonum, 3));
+  const karlar = new THREE.Points(karGeo, new THREE.PointsMaterial({ color: '#ffffff', size: 0.12, transparent: true, opacity: 0.85 }));
+  karlar.frustumCulled = false;
+  karlar.visible = false;
+  sahne.add(karlar);
+  const karTundra = new THREE.Color('#e9eef2');
+  const yazTundra = new THREE.Color('#7f7a56');
+  const guzTundra = new THREE.Color('#8c6a44');
+  const kutupGunduzGok = new THREE.Color('#a9c8e4');
+  const kutupGeceGok = new THREE.Color('#060b18');
+  const geceYarisiGunesi = new THREE.Color('#f0b080');
+  const tipiGok = new THREE.Color('#dfe6ec');
+  let kutupSon = -1;
+  const kutupGuncelle = (k, o, dt) => {
+    const dk = k.dk;
+    const tk = Kt.kutupTakvim(Math.floor(dk / 1440) + 1);
+    // Mevsime göre kara rengi: yazın kahve-yeşil tundra, sonbaharda kızıl-kahve, kışın ve ilkbaharda kar
+    const tKar = tk.mevsim === 'kis' || tk.mevsim === 'ilkbahar' ? 1 : tk.mevsim === 'sonbahar' ? Math.min(1, Math.max(0, (tk.mevsimGunu - 1.5) / 2)) : tk.mevsimGunu < 2 ? 1 - tk.mevsimGunu / 2 : 0;
+    kara.material.color.copy(tk.mevsim === 'sonbahar' ? guzTundra : yazTundra).lerp(karTundra, tKar);
+    lekeIm.visible = tKar < 0.6;
+    // Deniz buzu: güney kenarı buzKenari'nde
+    const bk = Kt.buzKenari(dk);
+    denizBuzu.visible = bk < KUTUP.r + 60;
+    denizBuzu.position.set(KX, 0.02, R(KY + bk + 200));
+    // Buzdağları: büyükler hep, küçük parçalar açık suda yüzer
+    if (Math.abs(dk - kutupSon) > 5) {
+      kutupSon = dk;
+      buzdagLy.forEach((b, i) => {
+        const [x, z] = kp(b.lx, b.ly);
+        q.identity();
+        olcek.set(b.s, b.s * (i < 5 ? 1.2 : 0.35), b.s * 0.9);
+        yer.set(x, i < 5 ? b.s * 0.5 : 0.1, z);
+        m4.compose(yer, q, olcek);
+        buzdagIm.setMatrixAt(i, m4);
+      });
+      buzdagIm.instanceMatrix.needsUpdate = true;
+    }
+    // Kar yağışı ve tipi
+    const h = kutupHavasi(k);
+    const tipi = Kt.tipideMi(h, dk);
+    karlar.visible = tipi || (h && h.tur === 'kar');
+    if (karlar.visible) {
+      const ruz = tipi ? 9 : 1.2;
+      const ry = (h && h.ruzgarYon) || 0;
+      for (let i = 0; i < KAR; i++) {
+        karOfs[i * 3 + 1] -= dt * (tipi ? 3 : 1.4);
+        karOfs[i * 3] += Math.sin(ry) * ruz * dt;
+        karOfs[i * 3 + 2] -= Math.cos(ry) * ruz * dt;
+        if (karOfs[i * 3 + 1] < 0) karOfs[i * 3 + 1] += 14;
+        if (karOfs[i * 3] > 20) karOfs[i * 3] -= 40;
+        if (karOfs[i * 3] < -20) karOfs[i * 3] += 40;
+        if (karOfs[i * 3 + 2] > 20) karOfs[i * 3 + 2] -= 40;
+        if (karOfs[i * 3 + 2] < -20) karOfs[i * 3 + 2] += 40;
+        karKonum[i * 3] = o.x + karOfs[i * 3];
+        karKonum[i * 3 + 1] = karOfs[i * 3 + 1];
+        karKonum[i * 3 + 2] = R(o.y) + karOfs[i * 3 + 2];
+      }
+      karGeo.attributes.position.needsUpdate = true;
+    }
+    // Kuzey ışıkları: karanlıkta ve açık havada görünür
+    const l = Kt.isik(dk);
+    const aurora = l < 0.2 && h && (h.tur === 'acik' || h.tur === 'bulutlu') ? (0.2 - l) / 0.2 * (h.tur === 'acik' ? 0.55 : 0.2) : 0;
+    auroraMat.opacity = aurora;
+    auroralar.forEach((m, i) => {
+      m.visible = aurora > 0.01;
+      if (!m.visible) return;
+      m.position.set(o.x - 120 + i * 60, 24 + i * 3, R(o.y + 105 + (i % 2) * 20));
+      m.rotation.set(-0.15, (i - 2) * 0.12, 0);
+      const p = m.geometry.attributes.position.array;
+      const t0 = m.userData.taban;
+      for (let j = 0; j < p.length; j += 3) p[j + 2] = t0[j + 2] + Math.sin(t0[j] * 0.05 + saat * 0.4 + i) * 9;
+      m.geometry.attributes.position.needsUpdate = true;
+    });
+    auroraMat.color.setHSL(0.42 + Math.sin(saat * 0.1) * 0.04, 0.85, 0.6);
+    return { l, tipi, h };
+  };
   const fener = new THREE.PointLight('#fff1d0', 0, 22, 1.6);
   sahne.add(fener);
   // ---- Yangın: alev konileri ve dumanlar; yanmış alanlar koyu yamalar ----
@@ -779,17 +1089,32 @@ export function sahneKur(gl, d, secenek = {}) {
       saat += dt;
       const o = d.oyuncu;
       const k = d.k;
-      // Gün ışığı
-      const l = isikDuzeyi(k.dk);
+      // Gün ışığı (kutupta kutup takvimine göre: yazın güneş batmaz, kışın doğmaz)
+      const kutupta = Kt.kutupNoktaMi(o) && !k.magara;
+      kutupGrup.visible = kutupta;
+      const ku = kutupta ? kutupGuncelle(k, o, dt) : null;
+      if (!kutupta) karlar.visible = false;
+      const l = kutupta ? ku.l : isikDuzeyi(k.dk);
       const alaca = Math.max(0, 1 - Math.abs(l - 0.45) * 3) * (l < 1 ? 1 : 0);
-      gokRenk.copy(geceGok).lerp(gunduzGok, l).lerp(alacaGok, alaca * 0.5);
+      if (kutupta) {
+        // Gece yarısı güneşi alçaktayken turuncu, kutup gecesinde lacivert-siyah
+        gokRenk.copy(kutupGeceGok).lerp(kutupGunduzGok, Math.min(1, l * 1.15)).lerp(geceYarisiGunesi, l > 0.55 && l < 0.7 ? 0.35 : alaca * 0.4);
+      } else gokRenk.copy(geceGok).lerp(gunduzGok, l).lerp(alacaGok, alaca * 0.5);
       const eko = k.eko;
-      const bulut = eko ? (eko.yagmurVar ? (eko.siddet > 0.8 ? 0.75 : 0.5) : eko.hava && eko.hava.tur === 'bulutlu' ? 0.35 : 0) : 0;
-      if (bulut) gokRenk.lerp(bulutGok.clone().multiplyScalar(0.25 + l * 0.75), bulut);
+      const kh = ku && ku.h;
+      const bulut = kutupta ? (ku.tipi ? 0.9 : kh && kh.tur === 'sis' ? 0.7 : kh && kh.tur === 'kar' ? 0.55 : kh && kh.tur === 'bulutlu' ? 0.35 : 0) : eko ? (eko.yagmurVar ? (eko.siddet > 0.8 ? 0.75 : 0.5) : eko.hava && eko.hava.tur === 'bulutlu' ? 0.35 : 0) : 0;
+      if (bulut) gokRenk.lerp((kutupta ? tipiGok : bulutGok).clone().multiplyScalar(0.25 + l * 0.75), bulut);
       sahne.background.copy(gokRenk);
       sahne.fog.color.copy(gokRenk);
       sahne.fog.near = (20 + l * 50) * (1 - bulut * 0.5);
       sahne.fog.far = (80 + l * 100) * (1 - bulut * 0.45) * (DUSUK ? 0.6 : 1);
+      if (kutupta && ku.tipi) {
+        sahne.fog.near = 2;
+        sahne.fog.far = 28;
+      } else if (kutupta && kh && kh.tur === 'sis') {
+        sahne.fog.near = 6;
+        sahne.fog.far = 60;
+      }
       // Zemin yağmurla yeşerir, kurakta sararır; gölet çekilir
       if (eko) {
         zemin.material.color.copy(kuruZemin).lerp(yesilZemin, Math.min(1, Math.max(0, (eko.yesil - 0.15) / 0.8)));
@@ -799,7 +1124,7 @@ export function sahneKur(gl, d, secenek = {}) {
         goletKiyi.material.color.copy(goletKiyiRenk).lerp(kuruCamur, 1 - Math.min(1, eko.golet * 1.5));
       }
       // Yağmur damlaları
-      damlalar.visible = !!(eko && eko.yagmurVar);
+      damlalar.visible = !kutupta && !!(eko && eko.yagmurVar);
       if (damlalar.visible) {
         const n = eko.siddet > 0.8 ? DAMLA : Math.floor(DAMLA * 0.45);
         const hiz = 18 * dt;
@@ -894,7 +1219,7 @@ export function sahneKur(gl, d, secenek = {}) {
         if (gl.endFrameEXP) gl.endFrameEXP();
         return;
       }
-      arac.visible = true;
+      arac.visible = !kutupta;
       // Alevler, duman, yanık alanlar ve taşkın
       if (eko && eko.yanan) {
         const yanan = Object.keys(eko.yanan).map(Number);
@@ -994,6 +1319,11 @@ export function sahneKur(gl, d, secenek = {}) {
         const hareket = Math.hypot(dx, dz) / Math.max(dt, 0.001);
         let yuk = 0;
         if (t.suCanlisi && Math.abs(b.y - nehirY(b.x)) < NEHIR_YARI) yuk = -0.55 * t.boy * m.userData.olcek; // suyun içinde
+        if (t.kutup && t.suCanlisi && kutupta && Kt.sudaMi(b.x, b.y, k.dk)) {
+          // Kutup denizinde: belugalar yüzeyde sırtı görünür, dalan fok ve mors su altında kaybolur
+          const dalgin = b.davranis === 'dalisYapiyor' || b.davranis === 'dipteBesleniyor';
+          yuk = (dalgin ? -1.6 : b.tur === 'beluga' ? -0.42 + Math.sin(saat * 0.9 + b.id) * 0.12 : -0.35) * t.boy * m.userData.olcek;
+        }
         if (t.kus) yuk = b.davranis === 'suzuluyor' ? 14 + Math.sin(saat * 0.5 + b.id) : b.davranis === 'balikAvliyor' ? 1.5 + Math.abs(Math.sin(saat * 0.8)) * 8 : 4.6;
         m.position.set(b.x, yuk, R(b.y));
         m.rotation.y = -b.yon;

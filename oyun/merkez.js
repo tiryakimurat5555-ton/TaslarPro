@@ -4,6 +4,7 @@
 // kamera tuzakları (41, 93) ve GPS tasmaları (11, 84). Sayılar öneridir; Murat onaylamadı.
 import { TURLER, TUR_SIRASI, DAVRANISLAR, ISTASYON, YARICAP, GOLET, nehirY, NEHIR_YARI, TUZ_YALAGI } from './veri.js';
 import * as M from './mantik.js';
+import * as Kt from './kutup.js';
 import * as E from './ekosistem.js';
 import * as K from './kesif.js';
 import * as G from './genisleme.js';
@@ -692,6 +693,10 @@ const ayniGunVar = (k, f) => [...k.numuneKutusu, ...k.numuneler].some((n) => n.g
 // Yakındaki su kaynağı
 export function yakinSu(d) {
   const o = d.oyuncu;
+  if (Kt.kutupNoktaMi(o)) {
+    const s = Kt.enYakinSu(o.x, o.y, d.k.dk);
+    return s && Math.hypot(s.x - o.x, s.y - o.y) < 14 ? { ad: Kt.polinyadaMi(Kt.yerel(s).x, Kt.yerel(s).y, 3) ? 'polinya' : 'deniz', kutup: true } : null;
+  }
   const mg = Math.hypot(o.x - GOLET.x, o.y - GOLET.y);
   if (E.goletKurudu(d.k.eko) && mg < GOLET.r + 5) return { ad: 'gölet', kurudu: true };
   if (!E.goletKurudu(d.k.eko) && mg < GOLET.su + 12) return { ad: 'gölet' };
@@ -702,15 +707,15 @@ export function yakinSu(d) {
 export function suNumunesi(d) {
   const k = d.k;
   const su = yakinSu(d);
-  if (!su) return 'Yakında su yok. Gölete, nehre ya da sulak alana git.';
+  if (!su) return Kt.kutupNoktaMi(d.oyuncu) ? 'Yakında açık su yok. Buzun kenarına, kıyıya ya da polinyaya git.' : 'Yakında su yok. Gölete, nehre ya da sulak alana git.';
   if (su.kurudu) return 'Gölet kurumuş; numune alacak su kalmadı.';
   if (ayniGunVar(k, (n) => n.tip === 'su' && n.kaynak === su.ad)) return `Bugün ${su.ad} suyundan zaten numune aldın.`;
   const eko = k.eko;
-  const kalite = su.ad === 'gölet' ? E.suKalitesi(eko) : su.ad === 'nehir' ? Math.min(1, 0.55 + eko.nehir * 0.4) : 0.7;
-  const kaynak = E.kirlilikKaynagi(eko, d.oyuncu.x, d.oyuncu.y, 30);
+  const kalite = su.kutup ? 0.95 : su.ad === 'gölet' ? E.suKalitesi(eko) : su.ad === 'nehir' ? Math.min(1, 0.55 + eko.nehir * 0.4) : 0.7;
+  const kaynak = su.kutup ? null : E.kirlilikKaynagi(eko, d.oyuncu.x, d.oyuncu.y, 30);
   const kp = kaynak && kaynak.v > 0.08 ? kaynak : null;
   const kalite2 = Math.max(0, kalite - (kp ? 0.8 * kp.v : 0));
-  const veri = { kalite: kalite2, kirlilik: kp ? { tur: kp.tur, v: Math.round(kp.v * 100) / 100 } : null, alg: su.ad === 'gölet' ? eko.alg : 0.05, parazit: kalite2 < 0.55, sarbon: !!(eko.salgin && eko.salgin.hastalik === 'sarbon' && su.ad === 'gölet') };
+  const veri = { kalite: kalite2, kirlilik: kp ? { tur: kp.tur, v: Math.round(kp.v * 100) / 100 } : null, alg: su.ad === 'gölet' ? eko.alg : 0.05, parazit: !su.kutup && kalite2 < 0.55, kutup: !!su.kutup, sarbon: !!(eko.salgin && eko.salgin.hastalik === 'sarbon' && su.ad === 'gölet') };
   return numuneEkle(d, { tip: 'su', kaynak: su.ad, veri }, `${M.BuyukHarf(su.ad)} suyundan steril şişeye numune aldın.`);
 }
 export function diskiNumunesi(d) {
@@ -731,6 +736,14 @@ export function toprakNumunesi(d) {
   if (k.magara) return 'Mağara tabanından numune alınmaz; mağara canlılarını rahatsız etme.';
   const bolge = M.bolgeBul(o.x, o.y);
   if (bolge === 'istasyon') return 'İstasyonun toprağı sıkıştırılmış; doğal bir yere git.';
+  if (Kt.kutupNoktaMi(o)) {
+    if (bolge === 'kutupIstasyon') return 'Kulübenin çevresi çiğnenmiş; biraz uzaklaş.';
+    if (['buz', 'acikSu', 'polinya'].includes(bolge)) return 'Buzun ya da suyun üstündesin; toprak numunesi için karaya çık.';
+    const ad = M.bolgeAdi(o.x, o.y);
+    if (ayniGunVar(k, (n) => n.tip === 'toprak' && n.veri.bolge === bolge)) return `Bugün ${ad} bölgesinden zaten toprak numunesi aldın.`;
+    const mev = M.kutupMevsimi(k);
+    return numuneEkle(d, { tip: 'toprak', veri: { bolge, nem: 0.6, kutup: true, donmus: mev === 'kis' || mev === 'ilkbahar' } }, `${M.BuyukHarf(ad)} bölgesinden ${mev === 'kis' || mev === 'ilkbahar' ? 'donmuş toprağı keserek' : 'küçük bir kürekle'} toprak numunesi aldın.`);
+  }
   if (M.nehirdeMi(o.x, o.y)) return 'Suyun içindesin; kıyıya çık.';
   const bolgeAdi = M.bolgeAdi(o.x, o.y);
   if (ayniGunVar(k, (n) => n.tip === 'toprak' && n.veri.bolge === bolge)) return `Bugün ${bolgeAdi} bölgesinden zaten toprak numunesi aldın.`;
@@ -822,7 +835,7 @@ export function bitkiNumunesi(d, id) {
 // ---------- Laboratuvar ----------
 export const numuneKapasitesi = (k) => (tesisVar(k, 'gelismisLab') ? 2 : 1);
 export const numuneAdi = (n) =>
-  n.tip === 'toprak' ? `${(BOLGE_TOPRAK[n.veri.bolge] || 'savan')} toprağı` : n.tip === 'kil' ? `${n.veri.kod || kucuk2(M.SOZ[n.veri.tur])} ${kilAdi(n.veri.tur)}` : n.tip === 'su' ? `${n.kaynak} suyu` : n.tip === 'diski' ? `${n.veri.kod || kucuk2(M.SOZ[n.veri.tur])} dışkısı` : n.tip === 'les' ? `${kucuk2(M.SOZ[n.veri.tur])} leşi dokusu` : `${kucuk2(E.BITKILER[n.veri.bitki].ad)} ${n.veri.parca}`;
+  n.tip === 'toprak' ? `${n.veri.kutup ? M.kucukHarf(Kt.BOLGE_ADLARI_K[n.veri.bolge] || 'kutup') : BOLGE_TOPRAK[n.veri.bolge] || 'savan'} toprağı` : n.tip === 'kil' ? `${n.veri.kod || kucuk2(M.SOZ[n.veri.tur])} ${kilAdi(n.veri.tur)}` : n.tip === 'su' ? `${n.kaynak} suyu` : n.tip === 'diski' ? `${n.veri.kod || kucuk2(M.SOZ[n.veri.tur])} dışkısı` : n.tip === 'les' ? `${kucuk2(M.SOZ[n.veri.tur])} leşi dokusu` : `${kucuk2(E.BITKILER[n.veri.bitki].ad)} ${n.veri.parca}`;
 export function numuneMetni(k, n) {
   const ad = `${M.BuyukHarf(numuneAdi(n))}, ${n.gun}. gün, ${n.bolge}`;
   if (n.durum === 'kutuda') return `${ad}: numune kutunda, istasyona götür`;
@@ -847,6 +860,9 @@ function teshisKaydet(d, hastalik, tur, kaynak) {
 function numuneSonucu(d, n) {
   const k = d.k;
   const v = n.veri;
+  if (n.tip === 'su' && v.kutup) {
+    return `Kutup deniz suyu: tuzluluk binde 31, sıcaklık eksi 1,8 derece, yani donma noktasında. Oksijen çok yüksek; soğuk su oksijeni iyi çözer. Kalanus kopepodları ve buz algleri bol. ${n.kaynak === 'polinya' ? 'Polinyada derinden yükselen su besin tuzlarınca zengin; bu yüzden kışın deniz kuşları ve foklar burada toplanıyor.' : 'Örnekte mikroplastik parçacıkları da bulundu; okyanus akıntıları onları buraya kadar taşıyor.'}`;
+  }
   if (n.tip === 'su') {
     let m = `Su ${E.kaliteSozu(v.kalite)}.`;
     if (v.alg > 0.3) m += ' Mavi-yeşil alg (siyanobakteri) yoğun; bazı türleri hayvanlar için zehirli maddeler üretir.';
@@ -882,6 +898,15 @@ function numuneSonucu(d, n) {
     }
     const neden = v.neden.startsWith('avlandı') || v.neden.includes('timsah') ? 'bir yırtıcı tarafından avlanmış' : v.neden.includes('yaşlılık') ? 'yaşlılık; dişleri aşınmış, hastalık bulunmadı' : v.neden.includes('açlık') ? 'açlık; yağ dokusu tükenmiş' : v.neden || 'belirlenemedi';
     return `Ölü ${tur}: ölüm nedeni ${neden}.`;
+  }
+  if (n.tip === 'toprak' && v.kutup) {
+    const KT = {
+      tundra: 'İnce bir turba tabakasının altında taşlı mil; organik madde yavaş çürüdüğü için binlerce yıllık bitki artığı birikmiş.',
+      kiyi: 'Denizden gelen tuzla karışmış çakıllı kum; kuş dışkısıyla azotu yüksek.',
+      kusYari: 'Deniz kuşlarının dışkısıyla gübrelenmiş koyu toprak; azot ve fosfor çok yüksek, bu yüzden yarın dibi yemyeşil.',
+      buzul: 'Buzulun öğüttüğü taş unu; neredeyse hiç organik madde yok. Bitkiler buraya yeni yerleşiyor.',
+    };
+    return `${KT[v.bolge] || 'Kutup toprağı.'} ${v.donmus ? 'Örnek donmuş geldi.' : 'Yarım metre altında toprak sürekli donmuş (permafrost).'} Çözülen permafrosttaki eski bitki artıkları ayrışınca karbon salıyor; ısınan iklimde bu süreç hızlanıyor.`;
   }
   if (n.tip === 'toprak') {
     const TARIF = {
@@ -1092,7 +1117,9 @@ function botanikGunluk(d) {
   const p = k.personel.find((x) => x.rol === 'botanikUzmani');
   if (!p) return;
   const ev = (id) => E.bitkiEvresi(id, gunu(k), k.eko);
-  const aday = E.BITKI_SIRASI.find((id) => k.arsiv.bitkiler[id] && !k.arsiv.bitkiler[id].evreler.includes(ev(id).anahtar)) || E.BITKI_SIRASI.find((id) => !k.arsiv.bitkiler[id]);
+  // Botanik uzmanı savandaki istasyonda çalışır; kutup bitkilerine dokunmaz
+  const savan = E.BITKI_SIRASI.filter((id) => !E.BITKILER[id].kutup);
+  const aday = savan.find((id) => k.arsiv.bitkiler[id] && !k.arsiv.bitkiler[id].evreler.includes(ev(id).anahtar)) || savan.find((id) => !k.arsiv.bitkiler[id]);
   if (!aday) return;
   const b = E.BITKILER[aday];
   if (!k.arsiv.bitkiler[aday]) k.arsiv.bitkiler[aday] = { ilkDk: k.dk, ilkBolge: 'botanik uzmanının kaydı', evreler: [], analiz: false };

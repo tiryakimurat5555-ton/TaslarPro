@@ -21,6 +21,8 @@ export const GECITLER = [
   { ad: 'Doğu geçidi', x: 70, yari: 6 },
 ];
 export const KAYALIK = { x: -115, y: 45, r: 32 };
+// Kuzey Kutbu haritası (Kuzeydoğu Grönland kıyısı): savandan çok uzakta, kendi coğrafyası ve mevsimi olan ikinci ana harita (kutup.js)
+export const KUTUP = { x: 0, y: 6000, r: 230 };
 export const MAGARA = { x: -128, y: 64 };
 
 // Gidilebilecek yerler (Yerler paneli). y değeri işlev olabilir (nehir boyu).
@@ -66,6 +68,15 @@ export const BOLGE_ADLARI = {
   galeri: 'Galeri ormanı',
   termit: 'Termit tepeleri',
   magara: 'Mağara',
+  // Kuzey Kutbu
+  kutupIstasyon: 'Araştırma kulübesi',
+  tundra: 'Tundra',
+  kiyi: 'Kıyı',
+  buz: 'Deniz buzu',
+  acikSu: 'Açık su',
+  buzul: 'Buzul',
+  kusYari: 'Kuş yarları',
+  polinya: 'Polinya',
 };
 
 // Davranışlar: fiil (konuşmada "Zebra 4 otluyor"), ad (arşivde), nadir (bilimsel değeri yüksek)
@@ -124,6 +135,18 @@ export const DAVRANISLAR = {
   nobetTutuyor: { fiil: 'nöbet tutuyor; sürü dinlenirken başı dik, çevreyi kolluyor', ad: 'Nöbet tutma' },
   kurYapiyor: { fiil: 'kur yapıyor', ad: 'Kur ve eşleşme', nadir: true },
   yavruyuCagiriyor: { fiil: 'yavrusunu çağırıyor', ad: 'Yavruyu çağırma' },
+  // Kuzey Kutbu davranışları
+  buzdaDinleniyor: { fiil: 'buzun üstünde, nefes deliğinin yanında güneşleniyor', ad: 'Buzda dinlenme' },
+  dalisYapiyor: { fiil: 'suya dalıp çıkıyor, besleniyor', ad: 'Dalış ve beslenme' },
+  nefesDeligiPusu: { fiil: 'bir fok nefes deliğinin başında kıpırdamadan bekliyor', ad: 'Nefes deliği pususu', nadir: true },
+  yigilmis: { fiil: 'kıyıda sürüyle sırt sırta yatmış', ad: 'Kıyıda yığılma' },
+  dipteBesleniyor: { fiil: 'dibe dalıp bıyıklarıyla midye arıyor', ad: 'Dipte beslenme' },
+  yuzuyor: { fiil: 'yüzeyde yüzüyor, arada bir soluk alıyor', ad: 'Yüzme' },
+  karEseliyor: { fiil: 'toynaklarıyla karı eşeleyip altındaki likeni arıyor', ad: 'Kar eşeleme' },
+  savunmaHalkasi: { fiil: 'sürüyle yavruları ortaya alıp boynuzları dışa dönük bir halka kurmuş', ad: 'Savunma halkası', nadir: true },
+  ayiyiTakipEdiyor: { fiil: 'kutup ayısını uzaktan izliyor, artıklarını bekliyor', ad: 'Ayıyı takip etme', nadir: true },
+  karaDaliyor: { fiil: 'kulaklarını dikip dinliyor, sonra havaya sıçrayıp burnuyla kara dalıyor', ad: 'Kara dalarak avlanma', nadir: true },
+  ulumaKorosu: { fiil: 'sürüsüyle birlikte uluyor', ad: 'Uluma korosu', nadir: true },
   bedenDiliUyari: { fiil: 'kuyruğunu dikip başını kaldırarak sürüye tehlikeyi bildiriyor', ad: 'Beden diliyle uyarı' },
 };
 
@@ -259,7 +282,66 @@ export const TURLER = {
   },
 };
 
-export const TUR_SIRASI = Object.keys(TURLER);
+// ---------- Kuzey Kutbu türleri (kutup: true; habitatlar KUTUP merkezine göre) ----------
+const KY = 6000;
+Object.assign(TURLER, {
+  kutupAyisi: {
+    ad: 'Kutup Ayısı', bilimsel: 'Ursus maritimus', kisa: 'KAY', sinif: 'Memeli', ses: 'kutupayisi', sekil: 'ayi', boy: 1.3, renk: '#ece6d6', kutup: true,
+    hiz: 8, aktif: 'karma', kacis: 30, tehlikeli: true, yirtici: true, lesci: true, yuzer: true, avlar: ['halkaliFok'], sesSik: 150, sesTuru: 'tehdit',
+    habitat: { x: 10, y: KY + 120, r: 90 }, grup: [1, 3], erkekOran: 0.35,
+    tarif: 'Karadaki en büyük yırtıcı. Neredeyse bütün hayatını deniz buzunun üstünde geçirir ve halkalı fokları avlar: fokun nefes deliğinin başında saatlerce kıpırdamadan bekler. Buz eriyince karada aç kalır; iklim ısındıkça buzsuz mevsim uzuyor.',
+  },
+  halkaliFok: {
+    ad: 'Halkalı Fok', bilimsel: 'Pusa hispida', kisa: 'HFK', sinif: 'Memeli', ses: 'fok', sekil: 'fok', boy: 0.7, renk: '#6e6a60', kutup: true,
+    hiz: 5, aktif: 'karma', kacis: 34, suCanlisi: true, sesSik: 110, sesTuru: 'iletisim',
+    habitat: { x: -30, y: KY + 135, r: 60 }, grup: [3, 5], erkekOran: 0.4,
+    tarif: 'Arktiğin en yaygın foku. Ön yüzgeçlerindeki pençelerle buzda nefes delikleri açar ve kış boyu açık tutar. Yavrularını buzun üstündeki kar mağaralarında doğurur. Çok ürkektir: kutup ayısı yüzünden en küçük tıkırtıda deliğine dalar.',
+  },
+  mors: {
+    ad: 'Atlantik Morsu', bilimsel: 'Odobenus rosmarus', kisa: 'MRS', sinif: 'Memeli', ses: 'mors', sekil: 'mors', boy: 1.35, renk: '#9a7860', kutup: true,
+    hiz: 3, aktif: 'karma', kacis: 22, tehlikeli: true, suCanlisi: true, sesSik: 45, sesTuru: 'iletisim',
+    habitat: { x: 120, y: KY + 55, r: 32 }, grup: [6, 9], erkekOran: 0.45,
+    tarif: 'Uzun dişleri ve bıyıklarıyla deniz dibinde midye arayan iri bir yüzgeçayaklı. Kıyıya ya da buza kalabalık sürüler hâlinde çıkıp sırt sırta yatar. Dişlerini buza saplayarak sudan çıkar; erkekler dişleriyle sıralama kavgası yapar.',
+  },
+  beluga: {
+    ad: 'Beyaz Balina (Beluga)', bilimsel: 'Delphinapterus leucas', kisa: 'BLG', sinif: 'Memeli', ses: 'beluga', sekil: 'balina', boy: 1.5, renk: '#e4eaea', kutup: true,
+    hiz: 5, aktif: 'karma', kacis: 18, suCanlisi: true, deniz: true, sesSik: 28, sesTuru: 'iletisim',
+    habitat: { x: -40, y: KY + 95, r: 60 }, grup: [4, 6], erkekOran: 0.4,
+    tarif: 'Bembeyaz, sırt yüzgeci olmayan bir balina. Islığa, cıvıltıya ve tıkırtıya benzeyen sesleri yüzünden "deniz kanaryası" denir. Yazın kıyı sularına ve fiyortlara gelir, kışı buzların arasındaki açık su göllerinde geçirir.',
+  },
+  renGeyigi: {
+    ad: 'Ren Geyiği', bilimsel: 'Rangifer tarandus', kisa: 'RNG', sinif: 'Memeli', ses: 'rengeyigi', sekil: 'geyik', boy: 0.95, renk: '#8a7a64', kutup: true,
+    hiz: 9, aktif: 'karma', kacis: 34, sesSik: 90, sesTuru: 'iletisim',
+    habitat: { x: -80, y: KY - 85, r: 60 }, grup: [5, 8], erkekOran: 0.3,
+    tarif: 'Hem erkeği hem dişisi boynuzlu tek geyik. Kışın toynaklarıyla karı eşeleyip altındaki likenleri bulur. Yürürken dizlerinden gelen tıkırtı sürünün birbirini bulmasına yardım eder. Gözleri kışın maviye döner, karanlıkta daha iyi görür.',
+  },
+  miskOkuzu: {
+    ad: 'Misk Öküzü', bilimsel: 'Ovibos moschatus', kisa: 'MSK', sinif: 'Memeli', ses: 'miskokuzu', sekil: 'misk', boy: 1.0, renk: '#3a2e24', kutup: true,
+    hiz: 7, aktif: 'karma', kacis: 38, tehlikeli: true, sesSik: 100, sesTuru: 'iletisim',
+    habitat: { x: 60, y: KY - 110, r: 55 }, grup: [6, 10], erkekOran: 0.3,
+    tarif: 'Buzul çağından kalma, uzun tüylü iri bir otçul. Altındaki yünü, kiviut, koyun yününden sekiz kat sıcaktır. Kurtlar saldırınca yetişkinler yavruları ortaya alıp boynuzları dışa dönük bir halka kurar.',
+  },
+  kutupKurdu: {
+    ad: 'Kutup Kurdu', bilimsel: 'Canis lupus arctos', kisa: 'KKR', sinif: 'Memeli', ses: 'kutupkurdu', sekil: 'kurt', boy: 0.85, renk: '#e8e4d8', kutup: true,
+    hiz: 11, aktif: 'karma', kacis: 45, yirtici: true, avlar: ['renGeyigi', 'miskOkuzu', 'kutupTavsani'], sesSik: 70, sesTuru: 'bolge',
+    habitat: { x: -20, y: KY - 60, r: 100 }, grup: [4, 6], erkekOran: 0.5,
+    tarif: 'Bembeyaz bir kurt alt türü. İnsanla çok az karşılaştığı için korkusuzdur, araştırmacıları merakla izleyebilir. Sürü uzun mesafeler boyunca ren geyiklerini ve misk öküzlerini takip eder; uluyarak birbirini bulur.',
+  },
+  kutupTilkisi: {
+    ad: 'Kutup Tilkisi', bilimsel: 'Vulpes lagopus', kisa: 'KTL', sinif: 'Memeli', ses: 'kutuptilkisi', sekil: 'kurt', boy: 0.45, renk: '#f2efe6', kutup: true,
+    hiz: 9, aktif: 'karma', kacis: 18, yirtici: true, lesci: true, avlar: ['kutupTavsani'], sesSik: 80, sesTuru: 'iletisim',
+    habitat: { x: 20, y: KY - 10, r: 80 }, grup: [1, 2], erkekOran: 0.5,
+    tarif: 'Kışın bembeyaz, yazın kahverengi kürklü küçük bir tilki. Karın altındaki lemmingleri sesinden bulup kara dalarak yakalar. Kışın kutup ayılarını takip edip artıklarıyla beslenir; eksi 50 derecede bile üşümez.',
+  },
+  kutupTavsani: {
+    ad: 'Kutup Tavşanı', bilimsel: 'Lepus arcticus', kisa: 'KTV', sinif: 'Memeli', ses: 'kutuptavsani', sekil: 'tavsan', boy: 0.42, renk: '#f4f4f0', kutup: true,
+    hiz: 12, aktif: 'karma', kacis: 26, sesSik: 220, sesTuru: 'alarm',
+    habitat: { x: -125, y: KY - 40, r: 45 }, grup: [4, 8], erkekOran: 0.5,
+    tarif: 'Kısa kulaklı, kalın kürklü iri bir tavşan. Bazen yüzlerce bir arada dolaşır; tehlikede arka ayakları üstünde dikilip kanguru gibi zıplayarak kaçar.',
+  },
+});
+export const TUR_SIRASI = Object.keys(TURLER).filter((t) => !TURLER[t].kutup);
+export const KUTUP_SIRASI = Object.keys(TURLER).filter((t) => TURLER[t].kutup);
 
 export const KISILIKLER = {
   cesur: { ad: 'cesur', kacis: 0.7, alisma: 1.2 },

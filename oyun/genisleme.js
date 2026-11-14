@@ -338,6 +338,7 @@ export function dronBaslat(d) {
   const k = d.k;
   if (!dronVar(k)) return 'Dronun yok. Araştırma merkezinden alabilirsin.';
   if (k.magara) return k.magara.alan ? 'Dron istasyonda kaldı.' : 'Mağarada dron uçurulmaz.';
+  if (M.oyuncuKutupta(k)) return 'Dron savandaki istasyonda kaldı; kutup gezisine yalnızca hafif ekipman getirdin.';
   if (d.dron) return 'Dron zaten havada.';
   if (k.drone.sarj <= 0) return 'Dronun bataryası bitti. İstasyonda ya da saha kampında kendiliğinden dolar.';
   if (k.eko && k.eko.yagmurVar && k.eko.siddet > 0.8) return 'Sağanakta dron uçurulmaz.';
@@ -464,6 +465,7 @@ export function kampKur(d) {
   const o = d.oyuncu;
   if (!kampVar(k)) return 'Saha kampı takımın yok. Araştırma merkezinden alabilirsin.';
   if (k.magara || k.aracta || k.teknede) return 'Kampı ancak yayayken ve açık arazide kurabilirsin.';
+  if (M.oyuncuKutupta(k)) return 'Kutupta kalacağın yer araştırma kulübesi; saha kampı savanda kaldı.';
   if (M.mesafe(o, ISTASYON) < 40) return 'İstasyona çok yakınsın; kamp uzak bir araştırma noktası olmalı (en az 40 metre).';
   if (M.nehirdeMi(o.x, o.y) || (GOLET.su > 0 && Math.hypot(o.x - GOLET.x, o.y - GOLET.y) < GOLET.su + 6)) return 'Suya bu kadar yakın kamp kurulmaz; hayvanların su yolunu kesersin.';
   if (Math.hypot(o.x, o.y) > YARICAP - 8) return 'Araştırma alanının sınırındasın; biraz içeri gel.';

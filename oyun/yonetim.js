@@ -12,6 +12,7 @@ const gunu = (k) => M.gunNo(k.dk);
 export const IUCN = {
   aslan: 'VU', leopar: 'VU', sirtlan: 'LC', fil: 'EN', zurafa: 'VU', zebra: 'NT', ceylan: 'NT', domuz: 'LC', suAygiri: 'VU', timsah: 'LC',
   gergedan: 'CR', kartal: 'LC', piton: 'LC', manda: 'NT', gnu: 'LC', cita: 'VU', impala: 'LC', yabanKopegi: 'EN', babun: 'LC',
+  kutupAyisi: 'VU', halkaliFok: 'LC', mors: 'VU', beluga: 'LC', renGeyigi: 'VU', miskOkuzu: 'LC', kutupKurdu: 'LC', kutupTilkisi: 'LC', kutupTavsani: 'LC',
 };
 export const IUCN_ADI = { LC: 'düşük riskli', NT: 'tehdide yakın', VU: 'hassas', EN: 'tehlikede', CR: 'kritik tehlikede' };
 export const TEHDITLI = TUR_SIRASI.filter((t) => ['VU', 'EN', 'CR'].includes(IUCN[t]));

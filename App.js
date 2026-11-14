@@ -38,7 +38,8 @@ import * as Kr from './oyun/kirlilik.js';
 import { KUCUKLER, KUCUK_SIRASI, GRUPLAR, MAGARA_ODALARI, UZAK_ALANLAR, odaListesi, aktifOda, bolumAdi, KUCUK_SESLI, bulunabilirler } from './oyun/kucukler.js';
 import * as Efekt from './oyun/efekt.js';
 import { sahneKur } from './oyun/sahne.js';
-import { TURLER, TUR_SIRASI, YERLER, DAVRANISLAR, EVRELER, BOLGE_ADLARI, ARAC, OZEL_BIREYLER, GECITLER, ISTASYON, nehirY, GOLET, GALERI, KAYALIK, NEHIR_YARI } from './oyun/veri.js';
+import { TURLER, TUR_SIRASI, YERLER, DAVRANISLAR, EVRELER, BOLGE_ADLARI, ARAC, OZEL_BIREYLER, GECITLER, ISTASYON, nehirY, GOLET, GALERI, KAYALIK, NEHIR_YARI, KUTUP, KUTUP_SIRASI } from './oyun/veri.js';
+import * as Kt from './oyun/kutup.js';
 import { useJestler } from './oyun/jestler.js';
 import { Liste, useMenuYigini, altMenu, sayfali, RENK, GORUNUM } from './oyun/SesliListe.js';
 import * as B from './oyun/betimleme.js';
@@ -62,7 +63,7 @@ const MUZIK_ADI = { kapali: 'kapalı', dusuk: 'düşük', orta: 'orta', yuksek: 
 let gerilimSon = -1e9;
 function muzikHedefi(d) {
   const k = d.k;
-  const ev = M.gunEvresi(k.dk);
+  const ev = M.evreSimdi(k);
   const temel = (k.magara && !k.magara.alan) || ev === 'gece' || ev === 'aksam' ? 'muzik_gece' : 'muzik_gunduz';
   if (M.gerilimVar(d)) gerilimSon = d.zaman;
   const gerilim = d.zaman - gerilimSon < 12;
@@ -157,6 +158,7 @@ function ortamHedefleri(d) {
   const k = d.k;
   const o = d.oyuncu;
   if (k.magara) return { [k.magara.alan ? UZAK_ALANLAR[k.magara.alan].ortam : 'ortam_magara']: 1 };
+  if (M.oyuncuKutupta(k)) return kutupOrtami(d);
   const h = {};
   const ev = M.gunEvresi(k.dk);
   const gunduz = ev === 'gunduz' || ev === 'safak';
@@ -199,6 +201,43 @@ function ortamHedefleri(d) {
   if (guc > 1) for (const a of Object.keys(h)) h[a] /= Math.sqrt(guc);
   return h;
 }
+// Kuzey Kutbu ortamı: temel tundra rüzgârı; açık suya yaklaştıkça dalga ve buz parçaları, deniz buzuna yaklaştıkça buzun gıcırtısı,
+// kuş yarlarına yaklaştıkça koloni sesi (yazın); tipide fırtına hepsini bastırır
+function kutupOrtami(d) {
+  const k = d.k;
+  const o = d.oyuncu;
+  const h = {};
+  const yakin = (m, menzil) => Math.pow(sinirla01(1 - Math.max(0, m) / menzil), 1.5);
+  const l = Kt.yerel(o);
+  const yuzey = Kt.yuzey(o.x, o.y, k.dk);
+  let baskin = 0;
+  const su = Kt.enYakinSu(o.x, o.y, k.dk);
+  const ws = yuzey === 'su' ? 1 : yakin(Math.hypot(su.x - o.x, su.y - o.y), 70);
+  h.ortam_kutup_deniz = 0.9 * ws;
+  baskin = Math.max(baskin, 0.9 * ws);
+  const bk = Kt.buzKenari(k.dk);
+  const buzVar = bk < KUTUP.r - 5;
+  const mb = yuzey === 'buz' ? 0 : buzVar ? Math.max(0, bk - l.y) : 999;
+  const wb = 0.85 * yakin(mb, 80);
+  h.ortam_kutup_buz = wb;
+  baskin = Math.max(baskin, wb);
+  const yaz = ['yaz', 'ilkbahar'].includes(M.kutupMevsimi(k));
+  if (yaz) {
+    const mk = Math.hypot(l.x - Kt.KUS_YARI.lx, l.y - Kt.KUS_YARI.ly) - Kt.KUS_YARI.r;
+    const wk = 0.9 * yakin(mk, 90);
+    h.ortam_kusyari = wk;
+    baskin = Math.max(baskin, wk);
+  }
+  if (Kt.tipideMi(M.kutupHavasi(k), k.dk)) {
+    h.ortam_tipi = 1;
+    for (const a of Object.keys(h)) if (a !== 'ortam_tipi') h[a] *= 0.35;
+    h.ortam_kutup = 0.2;
+  } else h.ortam_kutup = Math.max(0.25, 1 - 0.7 * baskin);
+  for (const a of Object.keys(h)) if (h[a] < 0.01) delete h[a];
+  const guc = Object.values(h).reduce((t, v) => t + v * v, 0);
+  if (guc > 1) for (const a of Object.keys(h)) h[a] /= Math.sqrt(guc);
+  return h;
+}
 // Konumlu sürekli sesler: her biri 0-1 düzey (uzaklığa göre). Döngü çalarken yön değişmez, yalnız düzey.
 const KONUMLU_DONGULER = ['jenerator', 'kamp_ates', 'selale'];
 function konumluDonguler(d) {
@@ -222,7 +261,7 @@ function konumluDonguler(d) {
   return r;
 }
 // Adım sesi düzeyleri zemine göre (su ve çamur doğal olarak daha gür)
-const ADIM_DUZEY = { ot: 0.3, toprak: 0.27, camur: 0.27, su: 0.28, kaya: 0.26, yaprak: 0.3, magara: 0.3 }; // adım dosyaları aynı vuruş yüksekliğine eşit (araclar/adim-yap.py); ot ve yaprak biraz yukarıda
+const ADIM_DUZEY = { ot: 0.3, toprak: 0.27, camur: 0.27, su: 0.28, kaya: 0.26, yaprak: 0.3, magara: 0.3, kar: 0.3, buz: 0.28 }; // adım dosyaları aynı vuruş yüksekliğine eşit (araclar/adim-yap.py); ot ve yaprak biraz yukarıda
 const ADIM_ARALIK = 1.5; // metre
 const HASSASIYET = { dusuk: 130, orta: 90, yuksek: 60 }; // tam hız için sürükleme (piksel)
 
@@ -296,6 +335,7 @@ const kucuk = (s) => s.toLocaleLowerCase('tr-TR');
 
 // ---------------- Yenilikler (en yeniler üstte): Murat denerken neyin nerede olduğunu bulsun diye ----------------
 const YENILIKLER = [
+  { baslik: 'Yeni bölge: Kuzey Kutbu', metin: 'Kuzeydoğu Grönland kıyısında, savandan ayrı, serbestçe dolaşılan büyük bir harita. Kutup ayısı, halkalı fok, mors, beluga, ren geyiği, misk öküzü, kutup kurdu, kutup tilkisi ve kutup tavşanı yaşıyor; her birinin kendi sesi var. Yazın güneş batmaz, kışın hiç doğmaz; deniz mevsime göre donup çözülür, tipi çıkar, kış gecelerinde kuzey ışıkları görünür. 21 kutup küçük canlısı ve 6 kutup bitkisi, karda ve buzda adım sesleri, rüzgâr, buz, deniz ve kuş yarı ortam sesleri eklendi. İtibarın 50 olunca açılır.', nerede: 'Araştırma merkezi, Saha gezileri: Kuzey Kutbu, yola çık. Yardım, Kuzey Kutbu.' },
   { baslik: 'Zaman artık atlanmıyor', metin: 'Tasarımdaki zaman kuralına uymak için Dinlen menüsü ve Deneme araçlarındaki zamanı ileri alma kaldırıldı. Zaman yalnız oyun açıkken, gerçek akışıyla geçer. Saha kampı hayvanlardan saklanman ve dronunu şarj etmen için duruyor; fırtınada yırtılırsa onarana kadar seni saklamaz. Saha gezilerinin ücreti artık yakıt değil alan izni ve konaklama; araç yakıtı sınırsız.', nerede: 'ana menü; Durum, ayarlar, yardım ve kayıt, Deneme araçları.' },
   { baslik: 'Su kirliliği ve hayvanların kendini tedavi etmesi', metin: 'Su artık kirlenebiliyor. Suyun içinde ya da kıyısında çürüyen bir leş bakteri yükünü artırır. Kurak mevsimde nehir sığlaşınca su aygırlarının toplandığı yerde dışkı birikir, suyun oksijeni azalır; çok azalırsa balıklar ölebilir. Yangından sonraki ilk yağmur yanık alanın külünü suya taşır. Kirli sudan içen hayvanlar parazit kapabilir. Su ölçümü oksijenin düştüğünü ve kirliliğin kaynağını söyler, su numunesi bakteri, amonyak ya da kül bulgusu verir. Nehir akarak kendini temizler, gölet daha yavaş. Ayrıca hasta hayvanlar kendini tedavi ediyor: parazitli babunlar çöl hurmasının acı meyvesini, parazitli filler kil yiyor. Bu nadir davranışları gözlemleyebilirsin.', nerede: 'Doğa, Su araştırması, Kirlilik kaynakları; Doğa, Ekosistem raporu; sahada gözlem.' },
   { baslik: 'Dinamik müzik, toprak ve kıl numunesi, mağara bitkileri', metin: 'Oyunda artık arka plan müziği var: gündüz kalimba ve marimbalı sakin bir müzik, gece gizemli alçak bir müzik çalar. Yakında tehlikeli bir hayvan varsa, yakınlarda bir kovalamaca sürüyorsa ya da yangın yaklaşıyorsa müzik birkaç saniyede gerilimli davullara geçer, tehlike geçince yavaşça sakinleşir. Müzik hayvan seslerini bastırmasın diye düşük başlar; Ayarlar, Ses ve konuşma bölümünden kapatabilir ya da açabilirsin. Numune menüsünde iki yeni numune var: toprak numunesi bölgenin toprağını, nemini, külünü ve tuzunu gösterir; kıl ya da tüy numunesi hayvana dokunmadan DNA, son haftaların stres düzeyi ve uyuz gibi deri asalakları hakkında bilgi verir. Mağarada iki bitki var: su sızan duvarlarda baldıran kara eğreltisi ve tavandan kökleri sarkan kaya inciri.', nerede: 'Ayarlar, Ses ve konuşma, Müzik; Doğa, Numune ve veteriner; mağarada Doğa, Çevredeki bitkiler.' },
@@ -492,6 +532,19 @@ const YARDIM = [
       'Her alanın canlıları yalnızca orada yaşar: flamingolar, dağ bongosu, kolobus maymunu, pabuç gagalı leylek ve daha fazlası. Her alanın merkezde bir araştırması var: beş noktayı gez, dört canlı bul.',
       'Ekolojik yönetim: merkezde. Lantana adlı istilacı çalı bazı otlakları boğuyor; yanına gidip İstilacı bitki temizliği seçince ot yeniden gürleşir. Kurak mevsimin ilk beş gününde kontrollü yakma o yılın büyük yangın olasılığını düşürür. Gölet restorasyonu göletin daha geç kurumasını sağlar.',
       'Tehdit altındaki türler: aslan, leopar, fil, zürafa, su aygırı, kara gergedan, çita ve yaban köpeği. Tür sayfalarında Kırmızı Liste durumu yazar. Her yılın sonunda bu türlerin nüfusu yıl başıyla karşılaştırılır; korunan her tür itibar ve fon getirir.',
+    ],
+  },
+  {
+    id: 'kutup',
+    baslik: 'Kuzey Kutbu',
+    satirlar: [
+      'Kuzey Kutbu gezisi: Araştırma merkezi, Saha gezileri bölümünde. Bilimsel itibarın 50 olunca açılır. İstasyondayken Kuzey Kutbu, yola çık satırını seç; uçak, izin ve kulübe 2.500 lira tutar, yolculuk 5 oyun saati sürer. Kuzeydoğu Grönland kıyısındaki araştırma kulübesine inersin.',
+      'Kutup ayrı, serbestçe dolaşılan bir haritadır: savandaki gibi tek parmakla yürür, dürbünle gözler, fotoğraf ve ses kaydı alırsın. Kuzeyin deniz, güneyin tundra; batıda bir buzul, doğuda deniz kuşlarının yuvaladığı yarlar, denizde kışın da donmayan bir polinya var. Araç, dron ve saha kampı savanda kalır.',
+      'Mevsimler kutup takvimine göredir: 8 gün yaz, güneş hiç batmaz; 4 gün sonbahar; 8 gün kış, güneş hiç doğmaz, açık havada kuzey ışıkları görünür; 4 gün ilkbahar. Deniz sonbaharda donar, ilkbaharın sonunda çözülür. Açık suya giremezsin; donmuş deniz buzunun üstünde yürüyebilirsin.',
+      'Hava: açık, bulutlu, deniz sisi, kar ve tipi. Tipide görüş birkaç metreye iner, hayvanlar korunaklı yere çekilir. Doğa menüsündeki Kutup raporu mevsimi, havayı ve deniz buzunun kenarını söyler.',
+      'Hayvanlar: kutup ayısı, halkalı fok, mors, beluga, ren geyiği, misk öküzü, kutup kurdu, kutup tilkisi ve kutup tavşanı. Kutup ayısı buzda fokların nefes deliklerinin başında pusuya yatar; kutup tilkisi ayının peşinden artıklarını toplar; misk öküzleri kurtlara karşı yavrularını ortaya alıp halka olur. Kutup ayısı, mors ve misk öküzü tehlikelidir; uzak dur.',
+      'Küçük canlılar, kutup bitkileri, su ve toprak numuneleri de kutupta toplanır. Numuneleri savandaki istasyonun laboratuvarına götürürsün.',
+      'Dönüş: ana menüde ve Yerler listesinde Savana dön satırı var. Uçak kulübenin yanından kalkar; kulübeden uzaksan önce oraya yürürsün.',
     ],
   },
   {
@@ -1297,9 +1350,9 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
               bolge: M.bolgeBul(d.oyuncu.x, d.oyuncu.y),
               oda: kk.magara ? aktifOda(kk).id : null,
               alan: kk.magara ? kk.magara.alan : null,
-              evre: M.gunEvresi(kk.dk),
-              mevsim: tk.mevsim,
-              yagmur: !!(kk.eko && (kk.eko.yagmurVar || kk.eko.yagisBugun > 4)),
+              evre: M.evreSimdi(kk),
+              mevsim: M.kucukMevsimi(kk),
+              yagmur: M.kucukYagmur(kk),
             }).filter((id) => KUCUK_SESLI.includes(id));
             if (aday.length) {
               const id = aday[Math.floor(Math.random() * aday.length)];
@@ -1644,10 +1697,31 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     if (!u) return null;
     const yardim = yardimListesi(menu, 'o');
     if (yardim) return liste(u, yardim.baslik, yardim.ogeler.slice(0, -1));
+    // Kuzey Kutbu: savana dönüş satırı (uçak kulübenin yanındaki pistten kalkar)
+    const kutupDonSatiri = () => ({
+      id: 'kutupDon',
+      etiket: K.kulubedeMi(d) ? `Savana dön: uçakla ${String(K.KUTUP_GEZI.donus / 60).replace('.', ',')} saat` : `Kulübeye git, oradan savana dönülür: ${yerTarifi(K.KULUBE_KAPI)}`,
+      sec: () => {
+        if (!K.kulubedeMi(d)) {
+          menu.kapat();
+          M.yerGit(d, 'k_kulube');
+          return 'sessiz';
+        }
+        const h = K.kutuptanHazirla(d);
+        if (h) {
+          Ses.hemen(h);
+          return 'sessiz';
+        }
+        menu.kapat();
+        dinlenBaslat(k.dk + K.KUTUP_GEZI.donus, { metin: 'Uçak kulübenin yanındaki pistten kalktı; savandaki istasyona dönüyorsun.', bitince: () => K.kutuptanDon(d) });
+        return 'sessiz';
+      },
+    });
     if (u === 'ana') {
       // Kısa ana menü (Murat "menüyü daha efektif hale getir" dedi): sık kullanılanlar üstte, seyrek olanlar iki alt menüde.
       // O an yapılabilen işler (mağara, tel tuzağı, dur) Sahaya dön'ün hemen altına gelir.
       const ogeler = [{ id: 'sahayaDon', etiket: 'Sahaya dön', sec: () => (menuKapat(), 'sessiz') }];
+      const kutupta = M.oyuncuKutupta(k);
       const tz = K.yakinTuzak(d, 6);
       if (tz && tz.bulundu) ogeler.push({ id: 'sok', etiket: 'Tel tuzağı sök ve bildir', sec: yap(() => K.tuzakSok(d)) });
       if (k.magara) ogeler.push(altMenu('magara', k.magara.alan ? `Saha gezisi: ${bolumAdi(k)}, ${aktifOda(k).ad}` : `Mağaradasın: ${aktifOda(k).ad}`, menu.ac));
@@ -1676,8 +1750,9 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         { id: 'betimle', etiket: 'Çevreyi betimle', ipucu: 'Işık, hava, zemin, önündeki engel, yakındaki yerler, sesler ve hayvanlar.', sec: () => (Ses.hemen(B.betimle(d, alet.ad)), 'sessiz') },
         altMenu('cevre', `Görüş alanındaki hayvanlar: ${M.gorunurler(d).length}`, menu.ac),
         altMenu('yerler', 'Yerler ve yolculuk', menu.ac),
-        altMenu('harita', `Ekosistem haritası. ${G.haritaOzeti(d)}`, menu.ac),
-        { id: 'arac', etiket: k.aracta ? 'Araçtan in' : aracYakin ? 'Araca bin' : `Araca git: ${yerTarifi(k.arac)}`, sec: kapatVe(aracIslemi) },
+        ...(kutupta
+          ? [kutupDonSatiri()]
+          : [altMenu('harita', `Ekosistem haritası. ${G.haritaOzeti(d)}`, menu.ac), { id: 'arac', etiket: k.aracta ? 'Araçtan in' : aracYakin ? 'Araca bin' : `Araca git: ${yerTarifi(k.arac)}`, sec: kapatVe(aracIslemi) }]),
         altMenu('alet', `Alet: ${alet.ad}. Değiştir`, menu.ac),
         altMenu('doga', 'Doğa: ekosistem, bitkiler, numune, küçük canlılar', menu.ac),
         altMenu('merkez', `Araştırma merkezi${ok ? `: ${ok} okunmamış mesaj` : ''}`, menu.ac),
@@ -1830,6 +1905,33 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       if (s.sayfa) return liste(s.sayfa.anahtar, s.sayfa.baslik, s.sayfa.ogeler);
       return liste(u, 'Videolar', s.ogeler.length ? s.ogeler : [bilgi('bos', 'Henüz video yok. Aletlerden Video kamerayı seçip gözlediğin hayvanı çek.')]);
     }
+    if (u === 'doga' && M.oyuncuKutupta(k)) {
+      const ogeler = [
+        altMenu('kutupEko', `Kutup raporu: ${Kt.MEVSIM_ADI[M.kutupMevsimi(k)]}, ${Kt.havaSozu(M.kutupHavasi(k), k.dk).split(',')[0].toLocaleLowerCase('tr-TR')}`, menu.ac),
+        { id: 'ara', etiket: 'Küçük canlı ara', ipucu: 'Kuş, böcek, balık ve küçük memelileri arar.', sec: kapatVe(() => K.kucukAra(d)) },
+        { id: 'izAra', etiket: 'İzleri incele', ipucu: 'Karda ve çamurda yakındaki ayak izlerini okur.', sec: yap(() => Iz.izAra(d)) },
+        ...(d.sonIz ? [{ id: 'izTakip', etiket: 'İzi takip et', sec: kapatVe(() => Ses.hemen(Iz.izTakip(d))) }] : []),
+        altMenu('bitkiler', `Çevredeki bitkiler: ${Mz.cevredekiBitkiler(d).length}`, menu.ac),
+        ...(['gece', 'aksam'].includes(M.evreSimdi(k)) ? [{ id: 'gozTara', etiket: `Fenerle göz parıltısı tara${Gc.gozKatalogu(k).length ? `: katalogda ${Gc.gozKatalogu(k).length} tür` : ''}`, sec: yap(() => Gc.gozTara(d)) }] : []),
+        altMenu('numune', `Numune${k.numuneKutusu.length ? `: kutuda ${k.numuneKutusu.length} numune` : ''}`, menu.ac),
+      ];
+      return liste(u, 'Doğa: Kuzey Kutbu', ogeler);
+    }
+    if (u === 'kutupEko') {
+      const tk = Kt.kutupTakvim(M.gunNo(k.dk));
+      const bk = Kt.buzKenari(k.dk);
+      const buz = bk >= KUTUP.r - 5 ? 'Deniz açık; kıyıdan ufka kadar buzsuz, yalnız yüzen buz parçaları var.' : bk <= 50 ? 'Deniz tamamen donmuş; buz kıyıya dayanıyor. Halkalı foklar buzun altında nefes delikleri açıyor.' : `Deniz buzunun kenarı kıyıdan yaklaşık ${Math.round(bk - 40)} metre açıkta; aradaki deniz açık.`;
+      const sayilar = KUTUP_SIRASI.filter((t) => k.arsiv.turler[t]).map((t) => `${kucuk(M.SOZ[t])} ${k.hayvanlar.filter((b) => !b.olu && b.tur === t).length}`);
+      const ogeler = [
+        bilgi('mev', `${M.BuyukHarf(Kt.MEVSIM_ADI[tk.mevsim])}, ${tk.mevsimGunu}. gün (${tk.uzunluk} günlük mevsim). ${Kt.isikSozu(k.dk)}`),
+        bilgi('hava', Kt.havaSozu(M.kutupHavasi(k), k.dk)),
+        bilgi('buz', buz),
+        bilgi('polinya', 'Polinya, akıntının kışın bile açık tuttuğu su gölü; kışın belugalar, morslar ve deniz kuşları orada toplanır.'),
+        bilgi('takvim', 'Kutup yılı: 8 gün yaz (güneş batmaz), 4 gün sonbahar, 8 gün kış (güneş doğmaz), 4 gün ilkbahar. Deniz buzu sonbaharda donar, ilkbaharın sonunda kırılır.'),
+      ];
+      if (sayilar.length) ogeler.push(bilgi('nufus', `Kaydedilen türlerin bölgedeki sayıları: ${sayilar.join(', ')}.`));
+      return liste(u, 'Kutup raporu', ogeler);
+    }
     if (u === 'doga') {
       const ogeler = [
         altMenu('ekosistem', `Ekosistem: ${E.MEVSIM_ADI[E.takvim(M.gunNo(k.dk)).mevsim]}, ${k.eko.yagmurVar ? 'yağmur yağıyor' : 'hava ' + E.HAVA_ADI[k.eko.hava.tur]}`, menu.ac),
@@ -1854,7 +1956,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
               },
         ),
         ...(k.kamp && k.kamp.hasarli ? [{ id: 'kampOnar', etiket: `Kamp çadırını onar${M.mesafe(d.oyuncu, k.kamp) > 10 ? `: kamp ${yerTarifi(k.kamp)}` : ''}`, sec: yap(() => Ik.kampOnar(d)) }] : []),
-        ...(['gece', 'aksam'].includes(M.gunEvresi(k.dk)) && !k.magara ? [{ id: 'gozTara', etiket: `Fenerle göz parıltısı tara${Gc.gozKatalogu(k).length ? `: katalogda ${Gc.gozKatalogu(k).length} tür` : ''}`, ipucu: 'Gece fenerin ışığında parlayan gözlerin rengi, yüksekliği ve sayısından hayvanları tanırsın.', sec: yap(() => Gc.gozTara(d)) }] : []),
+        ...(['gece', 'aksam'].includes(M.evreSimdi(k)) && !k.magara ? [{ id: 'gozTara', etiket: `Fenerle göz parıltısı tara${Gc.gozKatalogu(k).length ? `: katalogda ${Gc.gozKatalogu(k).length} tür` : ''}`, ipucu: 'Gece fenerin ışığında parlayan gözlerin rengi, yüksekliği ve sayısından hayvanları tanırsın.', sec: yap(() => Gc.gozTara(d)) }] : []),
         altMenu('tohumlar', `Tohum ve fideler${Bo.yakinTohumlar(d).length ? `: yakında ${Bo.yakinTohumlar(d).length}` : ''}`, menu.ac, 'Hayvanların dışkısıyla taşınan tohumlar, filizlenen fideler ve fidanlar.'),
         ...(Bo.yakinKoloni(d) && !k.magara ? [{ id: 'koloniIncele', etiket: `Koloniyi incele: ${Bo.KOLONILER[Bo.yakinKoloni(d)].ad}`, sec: yap(() => Bo.koloniIncele(d, Bo.yakinKoloni(d))) }] : []),
         altMenu('koloniler', 'Böcek kolonileri: termitler, arılar, karıncalar', menu.ac),
@@ -1931,6 +2033,15 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       if (kule) ogeler.unshift(bilgi('kule', kule));
       if (!ogeler.length) ogeler.push(bilgi('bos', `Dürbünle görebileceğin ${M.durbunMenzili(k.dk, k)} metre içinde hayvan yok. ${M.etrafiTara(d)}`));
       return liste(u, 'Görüş alanındaki hayvanlar', ogeler);
+    }
+    if (u === 'yerler' && M.oyuncuKutupta(k)) {
+      const ogeler = [kutupDonSatiri()];
+      Kt.KUTUP_YERLER.forEach((y) => {
+        const p = Kt.yerKonumu(y);
+        const suda = y.buz && Kt.sudaMi(p.x, p.y, k.dk);
+        ogeler.push({ id: y.id, etiket: `${y.ad}, ${yerTarifi(p)}${suda ? ', şu an açık su' : ''}`, ipucu: y.tarif, sec: kapatVe(() => M.yerGit(d, y.id)) });
+      });
+      return liste(u, 'Yerler: Kuzey Kutbu', ogeler, 'Yürürsün. Açık suya giremezsin; deniz buzu yalnız donmuş mevsimlerde yürünür.');
     }
     if (u === 'yerler') {
       const ogeler = [];
@@ -2144,7 +2255,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     if (u === 'arsiv') {
       const a = k.arsiv;
       return liste(u, 'Arşiv', [
-        altMenu('turler', `Ansiklopedi: ${Object.keys(a.turler).length} / ${TUR_SIRASI.length} tür`, menu.ac),
+        altMenu('turler', `Ansiklopedi: ${Object.keys(a.turler).length} / ${M.turListesi(k).length} tür`, menu.ac),
         altMenu('bireyler', `Tanımlanan bireyler: ${M.taninanBireyler(k).length}`, menu.ac),
         altMenu('fotolar', `Fotoğraflar: ${a.fotolar.length}`, menu.ac),
         altMenu('sesler', `Ses kayıtları: ${a.sesler.length}`, menu.ac),
@@ -2159,7 +2270,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       const ogeler = bilinen.map(({ tur, t, kayit }) =>
         altMenu('tur-' + tur, `${t.ad}: ${kayit.davranislar.length} davranış, ${M.taninanBireyler(k, tur).length} birey${kayit.sesKaydi ? ', sesi kayıtlı' : ''}`, menu.ac)
       );
-      const kalan = TUR_SIRASI.length - bilinen.length;
+      const kalan = M.turListesi(k).length - bilinen.length;
       if (kalan) ogeler.push(bilgi('kalan', `Henüz keşfedilmemiş ${kalan} tür var.`));
       return liste(u, 'Ansiklopedi', ogeler);
     }
@@ -2353,7 +2464,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       const id = u.slice(6);
       const b = E.BITKILER[id];
       const a = (k.arsiv.bitkiler || {})[id] || { evreler: [] };
-      const evAdi = { yE: 'yağışlı mevsimin başı', yG: 'yağışlı mevsimin sonu', kE: 'kurak mevsimin başı', kG: 'kurak mevsimin sonu' };
+      const evAdi = b.kutup ? E.KUTUP_EVRE_ADI : { yE: 'yağışlı mevsimin başı', yG: 'yağışlı mevsimin sonu', kE: 'kurak mevsimin başı', kG: 'kurak mevsimin sonu' };
       const ogeler = [
         bilgi('ad', `${b.ad}, bilimsel adı ${b.bilimsel}, ${b.bicim}. ${b.tarif}`),
         bilgi('ev', `Gözlenen evreler: ${a.evreler.map((e) => `${evAdi[e]}: ${b.evre[['yE', 'yG', 'kE', 'kG'].indexOf(e)]}`).join('; ') || 'yok'}.`),
@@ -2431,6 +2542,27 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
             },
           });
       });
+      {
+        const dur = K.kutupDurumu(k);
+        ogeler.unshift(bilgi('bkutup', K.kutupSatiri(k), 'Kuzeydoğu Grönland kıyısında serbestçe dolaşılan ayrı bir harita: kutup ayısı, fok, mors, beluga, ren geyiği, misk öküzü, kutup kurdu, tilkisi ve tavşanı. Deniz buzu mevsime göre gelir gider; yazın güneş batmaz, kışın hiç doğmaz.'));
+        if (dur.acik && !M.oyuncuKutupta(k))
+          ogeler.splice(1, 0, {
+            id: 'gitkutup',
+            etiket: 'Kuzey Kutbu: yola çık',
+            ipucu: 'İstasyondan uçakla gidilir. Yolda zaman akar; savandaki hayvanlar yaşamaya devam eder.',
+            sec: () => {
+              const h = K.kutupHazirla(d);
+              if (h) {
+                Ses.hemen(h);
+                return 'sessiz';
+              }
+              menu.kapat();
+              dinlenBaslat(k.dk + K.KUTUP_GEZI.yol, { metin: `Kuzey Kutbu'na uçuyorsun. Uçak, izin ve kulübe için ${Mz.liraSozu(K.KUTUP_GEZI.ucret)} ödendi.`, bitince: () => K.kutbaVar(d) });
+              return 'sessiz';
+            },
+          });
+        if (M.oyuncuKutupta(k)) ogeler.splice(1, 0, kutupDonSatiri());
+      }
       return liste(u, 'Saha gezileri', ogeler, 'Savandan uzaktaki özel araştırma alanları. Orada yukarı ve aşağı kaydırarak noktalar arasında gezer, dürbünle canlı ararsın. Her alanın araştırması merkezde.');
     }
     if (u === 'magara') {

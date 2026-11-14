@@ -120,7 +120,7 @@ export function yuvaBul(d, y, nasil) {
 function yuvaDenetle(d) {
   const k = d.k;
   if (!k.yuvalar) return;
-  const gece = M.gunEvresi(k.dk) === 'gece';
+  const gece = M.evreSimdi(k) === 'gece';
   for (const y of k.yuvalar) {
     if (y.bulundu) continue;
     if (!k.magara && M.mesafe(d.oyuncu, y) < 14) yuvaBul(d, y, 'saha');

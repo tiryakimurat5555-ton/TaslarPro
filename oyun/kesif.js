@@ -1,7 +1,8 @@
 // ==== VAHŞİ YAŞAM: KEŞİF (brif Aşama 6) ====
 // Küçük canlıları arama (karar 48, 94, 95), mağara ekosistemi (karar 98), yarasaların akşam çıkışı,
 // kaçak avcıların tel tuzakları ve izleri (karar 60: sınırlı kapsam; oyuncu bulur, söker, bildirir, hayvanı kurtarır).
-import { TURLER, MAGARA, ISTASYON, YARICAP, nehirY, NEHIR_YARI } from './veri.js';
+import { TURLER, MAGARA, ISTASYON, YARICAP, nehirY, NEHIR_YARI, KUTUP, KUTUP_SIRASI } from './veri.js';
+import * as Kt from './kutup.js';
 import * as M from './mantik.js';
 import * as E from './ekosistem.js';
 import { KUCUKLER, MAGARA_ODALARI, UZAK_ALANLAR, UZAK_SIRASI, bulunabilirler, odaListesi, aktifOda, bolumAdi, alanCanlilari } from './kucukler.js';
@@ -50,9 +51,9 @@ export function kucukAra(d) {
   }
   d.sonArama = d.zaman;
   M.efekt(d, 'fener_tik', 0.7);
-  const evre = M.gunEvresi(k.dk);
+  const evre = M.evreSimdi(k);
   const tk = E.takvim(M.gunNo(k.dk));
-  const yagmur = !!(k.eko && (k.eko.yagmurVar || k.eko.yagisBugun > 4));
+  const yagmur = M.kucukYagmur(k);
   const oda = k.magara ? aktifOda(k).id : null;
   const alan = k.magara ? k.magara.alan || null : null;
   const bolge = M.bolgeBul(d.oyuncu.x, d.oyuncu.y);
@@ -66,12 +67,12 @@ export function kucukAra(d) {
     M.olay(d, 'yeniKucuk', m, 4, { nadir: true });
     return m;
   }
-  const liste = bulunabilirler({ bolge, oda, evre, mevsim: tk.mevsim, yagmur, alan });
+  const liste = bulunabilirler({ bolge, oda, evre, mevsim: M.kucukMevsimi(k), yagmur, alan });
   let basari = oda ? 0.85 : 0.75;
   if (!oda && evre === 'gece' && !(k.ekipman.geceDurbunu || k.ekipman.termal)) basari = 0.5;
   basari += M.zorlukCarpani(k, 'kesif', [0.12, 0, -0.1]);
   if (!liste.length || d.rng() > basari) {
-    const m = alan ? 'Dürbünle ve sabırla çevreni taradın ama bu kez bir şey göremedin. Başka bir noktada ya da başka bir saatte dene.' : oda ? 'Fenerinle kayaların çatlaklarına baktın ama bu kez bir şey göremedin.' : evre === 'gece' ? 'Karanlıkta otların arasına baktın; yalnızca cırcır böceklerini duyuyorsun.' : 'Otların ve taşların arasına baktın ama bu kez bir şey göremedin. Başka bir yerde ya da başka bir saatte dene.';
+    const m = alan ? 'Dürbünle ve sabırla çevreni taradın ama bu kez bir şey göremedin. Başka bir noktada ya da başka bir saatte dene.' : oda ? 'Fenerinle kayaların çatlaklarına baktın ama bu kez bir şey göremedin.' : M.oyuncuKutupta(k) ? 'Karın, taşların ve kıyının çevresine baktın ama bu kez bir şey göremedin. Başka bir yerde ya da başka bir saatte dene.' : evre === 'gece' ? 'Karanlıkta otların arasına baktın; yalnızca cırcır böceklerini duyuyorsun.' : 'Otların ve taşların arasına baktın ama bu kez bir şey göremedin. Başka bir yerde ya da başka bir saatte dene.';
     M.olay(d, 'kucuk', m, 2);
     return m;
   }
@@ -222,6 +223,71 @@ export function uzaktanDon(d) {
   const m = `${a.ad} gezisinden istasyona döndün.`;
   M.olay(d, 'magara', m, 3, { cikis: true });
   return m;
+}
+// ---------- Kuzey Kutbu gezisi ----------
+// Savandaki istasyondan uçakla kuzeydoğu Grönland'daki araştırma kulübesine gidilir; orası serbestçe dolaşılan ayrı bir haritadır.
+export const KUTUP_GEZI = { ad: 'Kuzey Kutbu, kuzeydoğu Grönland kıyısı', itibar: 50, ucret: 2500, yol: 300, donus: 300 };
+export const KULUBE_KAPI = Kt.dunya(Kt.ISTASYON_K.lx, Kt.ISTASYON_K.ly + 18); // kulübenin kuzeyindeki açıklık (kamera kulübenin içine düşmesin)
+export function kutupDurumu(k) {
+  if (k.itibar < KUTUP_GEZI.itibar) return { acik: false, neden: 'Kutup araştırma iznine bilimsel itibarın henüz yetmiyor.' };
+  return { acik: true, neden: '' };
+}
+export function kutupHazirla(d) {
+  const k = d.k;
+  const dur = kutupDurumu(k);
+  if (!dur.acik) return dur.neden;
+  if (M.oyuncuKutupta(k)) return 'Zaten kutuptasın.';
+  if (!istasyondaMi(d)) return 'Kutup gezisine istasyondan çıkılır. Önce istasyona dön.';
+  if (k.butce < KUTUP_GEZI.ucret) return `Uçak, izin ve kulübe kirası için ${KUTUP_GEZI.ucret.toLocaleString('tr-TR')} lira gerekli; bütçe yetmiyor.`;
+  k.butce -= KUTUP_GEZI.ucret;
+  d.rota = null;
+  d.yaklasId = null;
+  d.dron = null;
+  M.gozlemBitir(d);
+  if (k.aracta) {
+    k.aracta = false;
+    d.aracHiz = 0;
+  }
+  return null;
+}
+export function kutbaVar(d) {
+  const k = d.k;
+  const ilk = !(k.kutup && k.kutup.ziyaret);
+  if (!k.kutup || typeof k.kutup !== 'object') k.kutup = {};
+  k.kutup.ziyaret = true;
+  k.kutup.gelis = k.dk;
+  k.kutup.gezi = (k.kutup.gezi || 0) + 1;
+  k.teknede = false;
+  Object.assign(d.oyuncu, { x: KULUBE_KAPI.x, y: KULUBE_KAPI.y, yon: 0 });
+  const mev = Kt.MEVSIM_ADI[M.kutupMevsimi(k)];
+  M.arsivOlay(d, 'Saha gezisi: Kuzey Kutbu.');
+  const tanitim = ilk
+    ? 'Kuzeydoğu Grönland kıyısındaki araştırma kulübesine indin. Kuzeyin deniz: yazın açık su ve yüzen buz parçaları, kışın donmuş deniz buzu. Güneyin taşlık tundra, batıda bir buzul dili, doğuda deniz kuşlarının yuvaladığı kayalık yar. Burada araç yok; yürüyerek araştırırsın. Kutup ayısına dikkat et: denizin buzunda fok avlar, karada da dolaşır. '
+    : 'Grönland\'daki araştırma kulübesine döndün. ';
+  const m = `${tanitim}Şimdi ${mev}. ${Kt.isikSozu(k.dk)} ${Kt.havaSozu(M.kutupHavasi(k), k.dk)}`;
+  M.olay(d, 'kutup', m, 3, { gelis: true });
+  return m;
+}
+export const kulubedeMi = (d) => M.oyuncuKutupta(d.k) && Math.hypot(d.oyuncu.x - KULUBE_KAPI.x, d.oyuncu.y - KULUBE_KAPI.y) < 30;
+export function kutuptanHazirla(d) {
+  if (!M.oyuncuKutupta(d.k)) return 'Kutupta değilsin.';
+  if (!kulubedeMi(d)) return 'Dönüş uçağı kulübenin yanındaki pistten kalkar. Önce kulübeye dön.';
+  d.rota = null;
+  d.yaklasId = null;
+  M.gozlemBitir(d);
+  return null;
+}
+export function kutuptanDon(d) {
+  const k = d.k;
+  Object.assign(d.oyuncu, { x: ISTASYON.x + 1, y: ISTASYON.y - 2.5, yon: 0 });
+  const m = 'Kutup gezisinden savandaki istasyona döndün. Kutupta topladığın numuneler laboratuvara teslim edilebilir.';
+  M.olay(d, 'kutup', m, 3, { cikis: true });
+  return m;
+}
+export function kutupSatiri(k) {
+  const dur = kutupDurumu(k);
+  const kayitli = KUTUP_SIRASI.filter((t) => k.arsiv.turler[t]).length;
+  return `Kuzey Kutbu: ${dur.acik ? `uçakla ${String(KUTUP_GEZI.yol / 60).replace('.', ',')} saat, uçak, izin ve kulübe ${KUTUP_GEZI.ucret.toLocaleString('tr-TR')} lira` : 'kilitli'}. Kaydedilen kutup türü ${kayitli} / ${KUTUP_SIRASI.length}.`;
 }
 export function uzakSatirlari(k) {
   return UZAK_SIRASI.map((id) => {

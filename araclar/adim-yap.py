@@ -3,7 +3,7 @@
 # (sert kesik çıt sesi yapıyordu), en çok 0,45 sn (mağarada yankı için 0,7). Ot ve yaprakta ses neredeyse yalnız hışırtıydı:
 # altına aynı sıradaki toprak adımının alçak geçiren gövdesi eklenir (ayağın yere basışı). Dördü aynı vuruş yüksekliğine
 # eşitlenir. Çıktı WAV (sıkıştırma gecikmesi ve dolgu sessizliği yok): assets/efekt/adim_<zemin>_0..3.wav
-# Kullanım: python3 araclar/adim-yap.py <ham klasörü>
+# Kullanım: python3 araclar/adim-yap.py <ham klasörü> [zemin ...] (kutup: kar buz)
 import subprocess, sys, os, numpy as np
 from scipy.signal import butter, sosfilt
 SR = 44100
@@ -47,7 +47,7 @@ def vurus(p):
 govdeler = None
 toprak = adimlar(oku('toprak'), 0.45)
 lp = butter(4, 260, btype='low', fs=SR, output='sos')
-for zemin in ['ot', 'toprak', 'camur', 'su', 'kaya', 'yaprak', 'magara']:
+for zemin in sys.argv[2:] or ['ot', 'toprak', 'camur', 'su', 'kaya', 'yaprak', 'magara']:
     pl = adimlar(oku(zemin), 0.7 if zemin == 'magara' else 0.45)
     # Uzunluğu ve yüksekliği ortalamaya en yakın dört adım (kesik ve aşırı farklıları ele)
     sure = np.median([len(p) for p in pl])

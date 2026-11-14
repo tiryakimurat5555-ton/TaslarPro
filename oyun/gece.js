@@ -22,13 +22,22 @@ export const GOZ = {
   suAygiri: { renk: 'kırmızımsı', boy: 'su yüzeyinde ya da kıyıda alçakta', ipucu: 'suda yaşayan iri bir memeli' },
   timsah: { renk: 'parlak kırmızı', boy: 'tam su yüzeyinde', ipucu: 'bir sürüngen' },
   babun: { renk: null, boy: 'ağaçlarda', ipucu: 'primat' },
+  kutupAyisi: { renk: 'soluk yeşil', boy: 'bel hizasında, iri bir gövdenin önünde', ipucu: 'çok iri bir yırtıcı' },
+  halkaliFok: { renk: 'kırmızımsı', boy: 'buzun hemen üstünde', ipucu: 'buzda yatan bir deniz memelisi' },
+  mors: { renk: 'kırmızımsı', boy: 'yere çok yakın, birbirine sokulmuş birçok çift', ipucu: 'iri, sürü hâlinde deniz memelisi' },
+  beluga: { renk: null, boy: 'suda', ipucu: 'balina' },
+  renGeyigi: { renk: 'mavimsi yeşil', boy: 'omuz hizasında, birçok çift', ipucu: 'boynuzlu, sürü hâlinde otçul' },
+  miskOkuzu: { renk: 'turuncumsu', boy: 'omuz hizasında, kalabalık bir öbek', ipucu: 'iri, sürü hâlinde otçul' },
+  kutupKurdu: { renk: 'sarımsı yeşil', boy: 'diz hizasında, birkaç çift', ipucu: 'sürü hâlindeki köpekgiller' },
+  kutupTilkisi: { renk: 'sarımsı yeşil', boy: 'yere yakın, tek ya da iki çift', ipucu: 'küçük bir köpekgil' },
+  kutupTavsani: { renk: 'kırmızımsı', boy: 'yere çok yakın', ipucu: 'küçük bir otçul' },
 };
 const MENZIL = 45;
 
 export function gozTara(d) {
   const k = d.k;
   if (k.magara) return 'Mağaradasın; burada fenerle zaten etrafı görüyorsun.';
-  const evre = M.gunEvresi(k.dk);
+  const evre = M.evreSimdi(k);
   if (evre !== 'gece' && evre !== 'aksam') return 'Göz parıltısı ancak karanlıkta görünür. Akşam karanlığını ya da geceyi bekle.';
   if (!k.gece || typeof k.gece !== 'object') k.gece = {};
   if (!k.gece.goz || typeof k.gece.goz !== 'object') k.gece.goz = {};

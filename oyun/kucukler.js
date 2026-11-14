@@ -170,7 +170,9 @@ export function bulunabilirler({ bolge, oda, evre, mevsim, yagmur, alan }) {
       if (c.zaman === 'gece' && !gece && !alaca) return false;
       if (c.zaman === 'alaca' && !alaca && !gece) return false;
     }
-    if (c.mevsim && c.mevsim !== mevsim && !(c.yagmur && yagmur)) return false;
+    if (c.kmevsim) {
+      if (!c.kmevsim.includes(mevsim)) return false;
+    } else if (c.mevsim && c.mevsim !== mevsim && !(c.yagmur && yagmur)) return false;
     return true;
   });
 }
@@ -258,6 +260,36 @@ for (const [id, c] of Object.entries(UZAK_CANLILAR)) {
   KUCUKLER[id] = { yer: [], ...c };
   KUCUK_SIRASI.push(id);
 }
+// ---------- Kuzey Kutbu (Grönland kıyısı) küçük canlıları ----------
+// yer: kutup bölgeleri (kutup.js bolge). kmevsim: kutup mevsimleri (yaz, sonbahar, kis, ilkbahar); yoksa yıl boyu.
+const KUTUP_CANLILARI = {
+  lemming: { ad: 'Yakalı lemming', bilimsel: 'Dicrostonyx groenlandicus', grup: 'Memeli', yer: ['tundra', 'kutupIstasyon'], zaman: 'her', sik: 6, ses: 'Öfkelenince çıkardığı ince, tiz cıyaklamalar.', tarif: 'Tundranın küçük kemirgeni. Kışın tüyü beyazlaşır, ön pençeleri karda tünel kazmak için çatallı bir kürek gibi büyür. Kar örtüsünün altında bütün kış yuvasını sürdürür; nüfusu birkaç yılda bir patlayıp çöker.' },
+  karBaykusu: { ad: 'Kar baykuşu', bilimsel: 'Bubo scandiacus', grup: 'Kuş', yer: ['tundra'], zaman: 'her', sik: 2, nadir: true, ses: 'Erkeğin kilometrelerce duyulan alçak, boğuk ötüşü.', tarif: 'Bembeyaz, iri bir baykuş. Gece yarısı güneşinde gündüz de avlanır; lemming bol olduğu yıllarda bir yuvada on yumurtaya kadar çıkar, kıt yıllarda hiç yuva yapmaz.', kmevsim: ['yaz', 'ilkbahar', 'sonbahar'] },
+  kutupSumrusu: { ad: 'Kutup sumrusu', bilimsel: 'Sterna paradisaea', grup: 'Kuş', yer: ['kiyi', 'acikSu', 'buz'], zaman: 'gunduz', sik: 5, ses: 'Yuvasına yaklaşanlara çığlık çığlığa dalış yaparken çıkardığı keskin kirr sesleri.', tarif: 'Her yıl kutuptan kutba göç eder; yılda 70 bin kilometreyi aşan yolculuğuyla bilinen en uzun göçü yapan hayvan. İki yazı yaşadığı için ömrünün çoğunu gün ışığında geçirir.', kmevsim: ['yaz'] },
+  ucParmakliMarti: { ad: 'Üç parmaklı martı', bilimsel: 'Rissa tridactyla', grup: 'Kuş', yer: ['kusYari', 'kiyi', 'acikSu'], zaman: 'gunduz', sik: 6, ses: 'Kendi adını söyler gibi tekrarladığı kitti-veyk çığlıkları.', tarif: 'Sarp kıyı yarlarının dar çıkıntılarına çamur ve yosundan yuva yapar. Açık denizde küçük balıklar ve kabuklularla beslenir.', kmevsim: ['yaz', 'ilkbahar'] },
+  kucukAlk: { ad: 'Küçük alk', bilimsel: 'Alle alle', grup: 'Kuş', yer: ['kusYari'], zaman: 'gunduz', sik: 7, ses: 'Kayalık yamacı dolduran binlerce kuşun gevezeliği.', tarif: 'Sığırcık büyüklüğünde bir deniz kuşu. Grönland\'ın kayalık yamaçlarında milyonlarca çift kuluçkaya yatar; gırtlak kesesini küçük kabuklularla doldurup yavrusuna taşır.', kmevsim: ['yaz'] },
+  kalinGagaliMurre: { ad: 'Kalın gagalı murre', bilimsel: 'Uria lomvia', grup: 'Kuş', yer: ['kusYari'], zaman: 'gunduz', sik: 4, tarif: 'Siyah beyaz, penguene benzeyen bir deniz kuşu; ama uçabilir. 200 metreye kadar dalıp balık avlar. Yavrular uçamadan yarın tepesinden denize atlar.', kmevsim: ['yaz'] },
+  kralEider: { ad: 'Kral eider', bilimsel: 'Somateria spectabilis', grup: 'Kuş', yer: ['acikSu', 'kiyi', 'polinya'], zaman: 'gunduz', sik: 4, tarif: 'Erkeğin başı mavi-gri, gagasının üstünde turuncu bir kabarıklık var. Dibe dalıp midye ve deniz kestanesi yer; kışı buz arasındaki açık sularda geçirir.' },
+  karKirazkusu: { ad: 'Kar kirazkuşu', bilimsel: 'Plectrophenax nivalis', grup: 'Kuş', yer: ['tundra', 'kutupIstasyon'], zaman: 'gunduz', sik: 5, ses: 'Erkeğin uçarken söylediği kısa, şakıyan şarkı.', tarif: 'Kar beyazı ve siyah tüylü küçük bir ötücü. Baharda karlar erimeden gelen ilk göçmendir; kayaların arasındaki yarıklara yuva yapar.', kmevsim: ['ilkbahar', 'yaz'] },
+  kayaPtarmigani: { ad: 'Kaya ptarmigani', bilimsel: 'Lagopus muta', grup: 'Kuş', yer: ['tundra', 'buzul'], zaman: 'gunduz', sik: 4, tarif: 'Kışın bembeyaz, yazın benekli kahverengi olan bir kuş. Ayakları kar ayakkabısı gibi tüylüdür; soğuktan korunmak için kara gömülüp uyur.' },
+  kuzgun: { ad: 'Kuzgun', bilimsel: 'Corvus corax', grup: 'Kuş', yer: ['tundra', 'kutupIstasyon', 'kiyi'], zaman: 'gunduz', sik: 3, ses: 'Derin, gırtlaktan gelen krok sesleri.', tarif: 'Kutup gecesinde bile bölgeden ayrılmayan zeki bir leşçi. Kurtların ve ayıların artıklarını izler, yiyeceğini karın altına saklar.' },
+  ringNehirKirlangici: { ad: 'Halkalı kum kuşu', bilimsel: 'Charadrius hiaticula', grup: 'Kuş', yer: ['kiyi', 'tundra'], zaman: 'gunduz', sik: 3, tarif: 'Göğsünde siyah bir bant olan küçük kıyı kuşu. Yuvasına yaklaşan tilkiyi kanadı kırıkmış gibi yaparak uzaklaştırır.', kmevsim: ['yaz'] },
+  arktikMorina: { ad: 'Arktik morina', bilimsel: 'Boreogadus saida', grup: 'Balık', yer: ['acikSu', 'polinya', 'buz'], zaman: 'her', sik: 5, tarif: 'Deniz buzunun alt yüzündeki çatlaklarda yaşayan küçük bir balık. Kanında donmayı önleyen proteinler var. Foklar, belugalar ve deniz kuşları büyük ölçüde onunla beslenir.' },
+  kutupAlabaligi: { ad: 'Kutup alabalığı', bilimsel: 'Salvelinus alpinus', grup: 'Balık', yer: ['kiyi'], zaman: 'her', sik: 2, tarif: 'Yazın denize inip beslenen, sonbaharda göllere dönen bir alabalık. Kuzeyde yaşayan en kuzeyli tatlı su balığı; üreme döneminde karnı kıpkırmızı olur.', kmevsim: ['yaz', 'sonbahar'] },
+  buzKopepodu: { ad: 'Kalanus kopepodu', bilimsel: 'Calanus hyperboreus', grup: 'Diğer omurgasız', yer: ['acikSu', 'polinya'], zaman: 'her', sik: 6, tarif: 'Pirinç tanesi büyüklüğünde bir kabuklu. Yağ kesesiyle kışı derinde uyuyarak geçirir; küçük alkların ve belugaların besin zincirinin temelidir.' },
+  kutupBombusu: { ad: 'Kutup bombus arısı', bilimsel: 'Bombus polaris', grup: 'Böcek', yer: ['tundra'], zaman: 'gunduz', sik: 3, tarif: 'Kalın tüylü bir bombus arısı. Uçuş kaslarını titreterek gövdesini dışarıdan 20 derece daha sıcak tutar; kısa yazda bir kuşakta koloniyi tamamlar.', kmevsim: ['yaz'] },
+  kutupSivrisinegi: { ad: 'Kutup sivrisineği', bilimsel: 'Aedes nigripes', grup: 'Böcek', yer: ['tundra', 'kiyi'], zaman: 'her', sik: 6, ses: 'Kulağın dibinde vızıldayan bulutlar.', tarif: 'Karlar eriyince ortaya çıkan sığ su birikintilerinde milyarlarca çoğalır. Ren geyiklerini rüzgârlı sırtlara ve kar yamalarına sürer.', kmevsim: ['yaz'] },
+  kolembol: { ad: 'Kar piresi (kolembol)', bilimsel: 'Hypogastrura', grup: 'Böcek', yer: ['tundra', 'buzul', 'kutupIstasyon'], zaman: 'her', sik: 4, tarif: 'Milimetrelik bir eklembacaklı. Karın yüzeyinde kara biber serpilmiş gibi kümelenir; kuyruğundaki yay sayesinde sıçrar. Donmaya dayanıklı proteinlerle eksi 20 dereceyi atlatır.' },
+  kutupOrumcegi: { ad: 'Kutup kurt örümceği', bilimsel: 'Pardosa glacialis', grup: 'Örümcek ve akrep', yer: ['tundra'], zaman: 'gunduz', sik: 3, tarif: 'Taşların üstünde güneşlenip böcek avlayan bir örümcek. Dişi yumurta kesesini ve yavrularını sırtında taşır; kutup yazının kısa günlerinde iki yılda büyür.', kmevsim: ['yaz'] },
+  sakalliFok: { ad: 'Sakallı fok', bilimsel: 'Erignathus barbatus', grup: 'Memeli', yer: ['buz', 'acikSu', 'polinya'], zaman: 'her', sik: 2, nadir: true, ses: 'Erkeğin buzun altında saatlerce süren, inen sarmal ıslığı.', tarif: 'Halkalı foktan çok iri, uzun ve kıvrık bıyıklı bir fok. Bıyıklarıyla deniz dibini yoklayıp kabuklu ve midye bulur; buz kenarında tek başına yatar.' },
+  narval: { ad: 'Narval', bilimsel: 'Monodon monoceros', grup: 'Memeli', yer: ['acikSu', 'polinya'], zaman: 'her', sik: 1, nadir: true, tarif: 'Erkeğinin üst çenesinden iki metreyi aşan sarmal bir diş çıkar. Diş binlerce sinir ucuyla dolu bir algı organıdır. Grönland açıklarında sürüler hâlinde göç eder; çok ürkektir.' },
+  ermin: { ad: 'Kakım', bilimsel: 'Mustela erminea', grup: 'Memeli', yer: ['tundra', 'kutupIstasyon'], zaman: 'her', sik: 1, nadir: true, tarif: 'Kışın kuyruğunun ucu dışında bembeyaz olan küçük bir sansar. Lemmingleri karın altındaki tünellerine kadar izler.' },
+};
+for (const [id, c] of Object.entries(KUTUP_CANLILARI)) {
+  KUCUKLER[id] = { ...c, kutup: true };
+  KUCUK_SIRASI.push(id);
+}
+export const KUTUP_KUCUKLERI = Object.keys(KUTUP_CANLILARI);
 export const alanCanlilari = (alan) => KUCUK_SIRASI.filter((id) => KUCUKLER[id].alan === alan);
 
 // Aşama 17: gerçek sesi olan küçük canlılar (assets/efekt/k_<id>_0..4, 3B). App uzaktan duyulan çağrılarda ve bulununca çalar.
