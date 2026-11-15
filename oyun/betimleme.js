@@ -53,6 +53,22 @@ function zeminSozu(d) {
       return `Şemsiye akasyaların arasındasın; dalların gölgesi yere desen çiziyor, yerde ${otTarif}.${yanik}`;
     case 'galeri':
       return 'Galeri ormanındasın: sık ağaçların altında hava nemli ve gölgeli, yaprak hışırtıları her yanda.';
+    case 'tepeler':
+      return M.gozcuKayasindaMi(k)
+        ? 'Gözcü Kayası\'nın tepesindesin. Rüzgâr burada daha serin; aşağıda ova her yöne uzanıyor. Dürbünle buradan çok daha uzağı görürsün.'
+        : 'Granit tepelerin arasındasın; üst üste yığılmış dev kayalar, aralarında dar geçitler ve kovuklar var. Kayaların üstü güneşte ısınmış.';
+    case 'calilik':
+      return `Sık çalılığın içindesin; dikenli dallar her yandan uzanıyor, birkaç metreden ötesi görünmüyor. Burada gözünden çok kulağına güven.${yanik}`;
+    case 'baobab':
+      return `Baobab düzlüğündesin; dev gövdeli baobablar seyrek aralıklarla yükseliyor, aralarında ${otTarif}.${yanik}`;
+    case 'dere':
+      return M.dereAkiyorMu()
+        ? 'Kum derenin kıyısındasın; yağmurlarla dolan dere kumlu yatağında şırıl şırıl akıyor.'
+        : `Kuru kum dere yatağındasın; yumuşak kum ayaklarının altında kayıyor.${M.kumKuyulari().length ? ' Yatakta fillerin kazdığı kum kuyuları var.' : ''} Kıyıda ağaçlar sıralanmış.`;
+    case 'ova':
+      return `Nehrin güneyindeki geniş ovadasın; ${otTarif} ufka kadar uzanıyor, hiçbir şey görüşü kesmiyor.${yanik}`;
+    case 'kuzeyOtlak':
+      return `Kuzey otlaklarındasın; çevrende ${otTarif} uzanıyor, ağaçlar seyrek.${yanik}`;
     case 'termit':
       return `Termit tepelerinin arasındasın; insan boyunu aşan kızıl toprak kuleler yükseliyor. Yerde ${otTarif}.`;
     default:
@@ -68,7 +84,7 @@ function onSozu(d) {
     const y = o.y + Math.cos(o.yon) * m;
     const e = d.engeller.find((e2) => Math.hypot(e2.x - x, e2.y - y) < e2.r + 0.4);
     if (e) {
-      const ad = { agac: e.agacTur === 'kiyi' ? 'bir kıyı ağacı' : 'bir akasya', kaya: e.magara ? 'mağaranın kayası' : 'bir kaya', bina: e.ad ? `istasyonun ${kucuk(e.ad)} binası` : 'bir bina', termit: 'bir termit tepesi' }[e.tur] || 'bir engel';
+      const ad = { agac: e.agacTur === 'kiyi' ? 'bir kıyı ağacı' : e.agacTur === 'baobab' ? 'dev bir baobab' : e.agacTur === 'cali' ? 'dikenli bir ağaççık' : 'bir akasya', kaya: e.magara ? 'mağaranın kayası' : 'bir kaya', bina: e.ad ? `istasyonun ${kucuk(e.ad)} binası` : 'bir bina', termit: 'bir termit tepesi' }[e.tur] || 'bir engel';
       return `Tam önünde, ${M.metreSozu(m)} ileride ${ad} var.`;
     }
     if (Math.abs(y - nehirY(x)) < 4.2 && !M.gecitteMi(x)) return `Önünde, ${M.metreSozu(m)} ileride nehir var.`;

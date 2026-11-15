@@ -162,7 +162,7 @@ export function bulunabilirler({ bolge, oda, evre, mevsim, yagmur, alan }) {
       if (!c.yer.includes('magara')) return false;
       if (c.oda && !c.oda.includes(oda)) return false;
       if (!c.oda && oda !== 'giris') return false;
-    } else if (!c.yer.includes(bolge)) return false;
+    } else if (!c.yer.includes(bolge) && !(BOLGE_BENZER[bolge] && c.yer.includes(BOLGE_BENZER[bolge]))) return false;
     if ((!oda || alan) && c.zaman !== 'her') {
       const gece = evre === 'gece';
       const alaca = evre === 'safak' || evre === 'aksam';
@@ -290,6 +290,26 @@ for (const [id, c] of Object.entries(KUTUP_CANLILARI)) {
   KUCUK_SIRASI.push(id);
 }
 export const KUTUP_KUCUKLERI = Object.keys(KUTUP_CANLILARI);
+
+// Dış halkanın küçük canlıları (15 Kasım 2026, harita genişlemesi): yalnız yeni bölgelerde bulunur
+const DIS_CANLILAR = {
+  klipspringer: { ad: 'Klipspringer', bilimsel: 'Oreotragus oreotragus', grup: 'Memeli', yer: ['tepeler'], zaman: 'gunduz', sik: 6, ses: 'Çiftin birbirine seslendiği tiz, burundan ıslıklar.', tarif: 'Kayalara tırmanmaya uyum sağlamış küçük bir antilop. Toynaklarının ucuna basarak dik kaya yüzeylerinde sekip durur; çiftler ömür boyu aynı tepede yaşar ve biri beslenirken öbürü nöbet tutar.' },
+  karaKartal: { ad: 'Kara kartal', bilimsel: 'Aquila verreauxii', grup: 'Kuş', yer: ['tepeler'], zaman: 'gunduz', sik: 2, nadir: true, tarif: 'Granit tepelerin yuvalayan iri, simsiyah bir kartalı; sırtında beyaz bir V vardır. Neredeyse yalnızca kaya hyrakslarını avlar; bir çiftin yılda yüzlerce hyraks yakaladığı hesaplanmıştır.' },
+  gerenuk: { ad: 'Gerenuk', bilimsel: 'Litocranius walleri', grup: 'Memeli', yer: ['calilik'], zaman: 'gunduz', sik: 3, tarif: 'Zürafa gibi uzun boyunlu, ince bir antilop. Arka ayakları üstüne dikilip ön ayaklarını dala dayayarak başka antilopların erişemediği yaprakları yer. Neredeyse hiç su içmez; suyunu yapraklardan alır.' },
+  akbabaBecTavugu: { ad: 'Akbaba beç tavuğu', bilimsel: 'Acryllium vulturinum', grup: 'Kuş', yer: ['calilik'], zaman: 'gunduz', sik: 5, ses: 'Sürünün ıslıklı, kesik çığlıkları.', tarif: 'Başı akbaba gibi çıplak, göğsü parlak kobalt mavisi bir beç tavuğu. Kurak çalılıklarda kalabalık sürülerle dolaşır, tehlikede uçmak yerine koşar.' },
+  meyveYarasasi: { ad: 'Saman rengi meyve yarasası', bilimsel: 'Eidolon helvum', grup: 'Memeli', yer: ['baobab'], zaman: 'gece', sik: 4, mevsim: 'yagisli', tarif: 'Baobabın gece açan büyük beyaz çiçeklerini ziyaret eden iri bir meyve yarasası. Çiçeğin nektarını içerken başı polene bulanır ve baobabı tozlaştırır; baobab tohum yapmak için büyük ölçüde yarasalara bağlıdır.' },
+  bufaloDokumacisi: { ad: 'Beyaz başlı bufalo dokumacısı', bilimsel: 'Dinemellia dinemelli', grup: 'Kuş', yer: ['baobab', 'calilik'], zaman: 'gunduz', sik: 5, tarif: 'Başı beyaz, kuyruğunun dibi ve omuzları turuncu kırmızı bir dokumacı. Dikenli dallardan büyük, karışık yuvalar örer; baobabların dallarında koloniler hâlinde yaşar.' },
+  karincaAslani: { ad: 'Karınca aslanı', bilimsel: 'Myrmeleontidae', grup: 'Böcek', yer: ['dere'], zaman: 'her', sik: 7, tarif: 'Kızböceği benzeri bir böceğin larvası. Kuru, yumuşak kuma huni biçiminde bir çukur kazar ve dibine gömülür; kenardan kayan karıncaların üstüne kum atarak onları dibe düşürür. Dere yatağında yüzlerce huni görülür.' },
+  kumBoasi: { ad: 'Kenya kum boası', bilimsel: 'Eryx colubrinus', grup: 'Sürüngen', yer: ['dere', 'ova'], zaman: 'gece', sik: 3, tarif: 'Kalın gövdeli, kısa kuyruklu küçük bir boa. Gününü kumun içinde, yalnız gözleri dışarıda geçirir; geceleri kumdan fırlayıp kemirgen yakalar ve sıkarak öldürür. Zehirsizdir.' },
+  koriToyu: { ad: 'Kori toyu', bilimsel: 'Ardeotis kori', grup: 'Kuş', yer: ['ova', 'kuzeyOtlak'], zaman: 'gunduz', sik: 4, nadir: true, ses: 'Erkeğin kur zamanı çıkardığı derin, gümbürtülü "vum vum" sesi.', tarif: 'Uçabilen en ağır kuşlardan biri. Açık ovalarda ağır adımlarla yürür; kur zamanı erkek boynunu balon gibi şişirip beyaz tüylerini kabartır.' },
+  yerSincabi: { ad: 'Çizgili yer sincabı', bilimsel: 'Xerus erythropus', grup: 'Memeli', yer: ['ova', 'kuzeyOtlak', 'baobab'], zaman: 'gunduz', sik: 6, tarif: 'Yanlarında beyaz bir çizgi olan, yerde yaşayan bir sincap. Gölgelik yapmak için tüylü kuyruğunu şemsiye gibi başının üstünde tutar; yer altında tüneller kazar.' },
+};
+for (const [id, c] of Object.entries(DIS_CANLILAR)) {
+  KUCUKLER[id] = c;
+  KUCUK_SIRASI.push(id);
+}
+// Dış bölgeler, kendi canlılarının yanında benzer eski bölgenin canlılarını da barındırır
+const BOLGE_BENZER = { tepeler: 'kayalik', calilik: 'agaclik', baobab: 'otlak', dere: 'otlak', ova: 'otlak', kuzeyOtlak: 'otlak' };
 export const alanCanlilari = (alan) => KUCUK_SIRASI.filter((id) => KUCUKLER[id].alan === alan);
 
 // Aşama 17: gerçek sesi olan küçük canlılar (assets/efekt/k_<id>_0..4, 3B). App uzaktan duyulan çağrılarda ve bulununca çalar.

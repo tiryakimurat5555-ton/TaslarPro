@@ -4,7 +4,8 @@
 // Kalıcı her şey araştırmacı nesnesinde (k) durur; d yalnızca o anki oturumun geçici durumunu tutar.
 import {
   YARICAP, ISTASYON, ARAC_YERI, OYUN_DK_SN, BASLANGIC_SAATI, GOLET, NEHIR_YARI, nehirY, GECITLER, KAYALIK, MAGARA, YERLER,
-  BOLGE_ADLARI, DAVRANISLAR, GALERI, TERMITLER, SES_TURLERI, TURLER, TUR_SIRASI, KISILIKLER, EVRELER, EKIPMAN, ARAC, ARACLAR, YURUME, TUZ_YALAGI, MINERAL_TURLERI, OZEL_BIREYLER, KUTUP, KUTUP_SIRASI } from './veri.js';
+  BOLGE_ADLARI, DAVRANISLAR, GALERI, TERMITLER, SES_TURLERI, TURLER, TUR_SIRASI, KISILIKLER, EVRELER, EKIPMAN, ARAC, ARACLAR, YURUME, TUZ_YALAGI, MINERAL_TURLERI, OZEL_BIREYLER, KUTUP, KUTUP_SIRASI,
+  TEPELER, GOZCU_KAYASI, CALILIK, BAOBAB, OVA, OVA_SINIR, AGACLIK_UST, DERE_YARI, DERE_UST, dereX, dereYatagindaMi, EK_HABITAT } from './veri.js';
 import * as Kt from './kutup.js';
 import * as E from './ekosistem.js';
 import { UZAK_ALANLAR } from './kucukler.js';
@@ -131,8 +132,17 @@ export const geceMi = (dk) => gunEvresi(dk) === 'gece';
 export function durbunMenzili(dk, k) {
   const kutupta = oyuncuKutupta(k);
   const hava = kutupta ? Kt.gorusCarpani(kutupHavasi(k), dk) : k && k.eko ? E.gorusCarpani(k.eko) : 1;
-  return Math.round(durbunTaban(dk, k) * hava * zorlukCarpani(k, 'kesif', [1.25, 1, 0.85]));
+  return Math.round(durbunTaban(dk, k) * hava * zorlukCarpani(k, 'kesif', [1.25, 1, 0.85]) * yerGorusCarpani(k));
 }
+// Sık çalılıkta dürbün kısa görür; Gözcü Kayası'nın tepesinden uzağı görür
+export function yerGorusCarpani(k) {
+  const o = k && k.oyuncu;
+  if (!o || k.magara || !Number.isFinite(o.x)) return 1;
+  if (Math.hypot(o.x - GOZCU_KAYASI.x, o.y - GOZCU_KAYASI.y) < GOZCU_KAYASI.r) return 1.5;
+  if (Math.hypot(o.x - CALILIK.x, o.y - CALILIK.y) < CALILIK.r) return 0.6;
+  return 1;
+}
+export const gozcuKayasindaMi = (k) => !!(k && k.oyuncu && !k.magara && Math.hypot(k.oyuncu.x - GOZCU_KAYASI.x, k.oyuncu.y - GOZCU_KAYASI.y) < GOZCU_KAYASI.r);
 function durbunTaban(dk, k) {
   const e = (k && k.ekipman) || {};
   const ev = oyuncuKutupta(k) ? Kt.evre(dk) : gunEvresi(dk);
@@ -156,10 +166,15 @@ export function bolgeBul(x, y) {
   if (Math.hypot(x - ISTASYON.x, y - ISTASYON.y) < ISTASYON.r + 2) return 'istasyon';
   if (Math.hypot(x - GOLET.x, y - GOLET.y) < GOLET.r + 14) return 'golet';
   if (Math.abs(y - nehirY(x)) < 16) return 'nehir';
-  if (guneydeMi(x, y)) return 'sulak';
+  if (guneydeMi(x, y)) return y < nehirY(x) - OVA_SINIR ? 'ova' : 'sulak';
+  if (y > nehirY(x) + 16 && y < DERE_UST + 4 && Math.abs(x - dereX(y)) < DERE_YARI + 7) return 'dere';
   if (Math.hypot(x - KAYALIK.x, y - KAYALIK.y) < KAYALIK.r + 6) return 'kayalik';
+  if (Math.hypot(x - TEPELER.x, y - TEPELER.y) < TEPELER.r) return 'tepeler';
+  if (Math.hypot(x - BAOBAB.x, y - BAOBAB.y) < BAOBAB.r) return 'baobab';
   if (x > GALERI.x0 && x < GALERI.x1 && y - nehirY(x) < GALERI.derinlik && y > nehirY(x)) return 'galeri';
   if (Math.hypot(x - TERMITLER.x, y - TERMITLER.y) < TERMITLER.r) return 'termit';
+  if (Math.hypot(x - CALILIK.x, y - CALILIK.y) < CALILIK.r) return 'calilik';
+  if (y >= AGACLIK_UST) return 'kuzeyOtlak';
   if (y > 78 && x > -50) return 'agaclik';
   return 'otlak';
 }
@@ -272,16 +287,29 @@ function nufusOlustur(k) {
   k.hayvanlar = [];
   k.gruplar = [];
   TUR_SIRASI.forEach((tur) => turGrubuKur(k, rng, tur));
+  ekGruplariKur(k);
+}
+// Dış bölgelerin ikinci grupları: yeni oyunda ve eski kayıtlarda (harita genişlemesinden önce açılmış) bir kez kurulur
+function ekGruplariKur(k) {
+  if (!k.ekGruplar || typeof k.ekGruplar !== 'object' || Array.isArray(k.ekGruplar)) k.ekGruplar = {};
+  Object.entries(EK_HABITAT).forEach(([hab, e], i) => {
+    if (k.ekGruplar[hab]) return;
+    k.ekGruplar[hab] = true;
+    if (!k.gruplar.some((g) => g.hab === hab)) turGrubuKur(k, tohumluUretec(7100 + i * 13), e.tur, hab);
+  });
 }
 // Bir türün grubunu habitatında kurar (yeni oyun ya da eski kayda sonradan eklenen türler)
-function turGrubuKur(k, rng, tur) {
+function turGrubuKur(k, rng, tur, hab = null) {
   const gid = Math.max(0, ...k.gruplar.map((g) => g.id), ...((k.disari && k.disari.gruplar) || []).map((g) => g.id)) + 1;
   {
-    const t = TURLER[tur];
+    const ek = hab ? EK_HABITAT[hab] : null;
+    const t = ek ? { ...TURLER[tur], habitat: ek.habitat, grup: ek.grup, erkekOran: ek.erkekOran ?? TURLER[tur].erkekOran } : TURLER[tur];
     const h = t.habitat;
     // İlk sabah zebralar ve filler gölete su içmeye gelir (ilk görev oradadır)
     const susuz = tur === 'zebra' || tur === 'fil' ? 0.8 : rng() * 0.5;
     const g = { id: gid, tur, x: h.x, y: h.y, plan: null, planBitis: 0, hedef: null, susuzluk: susuz, aclik: rng() * 0.6, alarm: 0, kaynak: null, av: null };
+    if (hab) g.hab = hab;
+    const tekCins = ek && (ek.erkekOran === 1 || ek.erkekOran === 0);
     for (let i = 0; i < 40; i++) {
       const x = h.x + arasi(rng, -h.r * 0.4, h.r * 0.4);
       const y = h.nehirde ? nehirY(h.x) + arasi(rng, -2, 2) : h.y + arasi(rng, -h.r * 0.4, h.r * 0.4);
@@ -300,8 +328,9 @@ function turGrubuKur(k, rng, tur) {
       if (n >= 4 && i >= 2) evre = r < 0.25 ? 'yavru' : r < 0.45 ? 'genc' : r < 0.9 ? 'yetiskin' : 'yasli';
       if (tur === 'gergedan' && i === 1) evre = 'genc';
       let cinsiyet = rng() < (t.erkekOran ?? 0.5) ? 'erkek' : 'disi';
-      if (i === 0 && n > 1) cinsiyet = ['zebra', 'aslan'].includes(tur) ? 'erkek' : 'disi';
-      if (i === 1 && n > 2) cinsiyet = 'disi';
+      if (i === 0 && n > 1 && !tekCins) cinsiyet = ['zebra', 'aslan'].includes(tur) ? 'erkek' : 'disi';
+      if (i === 1 && n > 2 && !tekCins) cinsiyet = 'disi';
+      if (tekCins && evre === 'yavru') evre = 'genc'; // bekâr erkek sürüsünde yavru olmaz
       const b = bireyOlustur(k, rng, tur, g, evre, cinsiyet, g.x, g.y);
       if (evre === 'yavru') {
         const anneler = uyeler.filter((u) => u.cinsiyet === 'disi' && u.evre === 'yetiskin');
@@ -460,8 +489,12 @@ export function dunyaOlustur(k) {
   k.arsiv.videolar = k.arsiv.videolar.filter((v) => v && TURLER[v.tur] && Array.isArray(v.davranislar) && sayiMi(v.dk) && sayiMi(v.sure));
   // Sonradan eklenen türler (Aşama 6) eski kayıtlara da yerleşir
   TUR_SIRASI.forEach((tur) => {
-    if (!k.gruplar.some((g) => g.tur === tur) && !((k.disari && k.disari.gruplar) || []).some((g) => g.tur === tur)) turGrubuKur(k, tohumluUretec(900 + TUR_SIRASI.indexOf(tur)), tur);
+    if (!k.gruplar.some((g) => g.tur === tur && !g.hab) && !((k.disari && k.disari.gruplar) || []).some((g) => g.tur === tur && !g.hab)) turGrubuKur(k, tohumluUretec(900 + TUR_SIRASI.indexOf(tur)), tur);
   });
+  ekGruplariKur(k);
+  if (!k.dere || typeof k.dere !== 'object' || !Array.isArray(k.dere.kuyular)) k.dere = { kuyular: [] };
+  k.dere.kuyular = k.dere.kuyular.filter((q) => q && sayiMi(q.x) && sayiMi(q.y) && sayiMi(q.dk)).slice(0, 6);
+  dereDurumu = { akiyor: false, kuyular: k.dere.kuyular };
   simdiDk = k.dk;
   kutupNufusKur(k);
   if (!k.kutup || typeof k.kutup !== 'object') k.kutup = {};
@@ -496,6 +529,7 @@ export function dunyaOlustur(k) {
     if (goletCanagi(x, y, r + 3)) return false;
     if (Math.abs(y - nehirY(x)) < NEHIR_YARI + r + 2) return false;
     if (gecitteMi(x) && Math.abs(y - nehirY(x)) < 18) return false;
+    if (y > nehirY(x) && y < DERE_UST + 4 && Math.abs(x - dereX(y)) < DERE_YARI + r + 1.5) return false;
     for (const e of d.engeller) if (Math.hypot(x - e.x, y - e.y) < e.r + r + 1.5) return false;
     return true;
   };
@@ -531,11 +565,11 @@ export function dunyaOlustur(k) {
   d.engeller.push({ tur: 'kaya', x: MAGARA.x + 4, y: MAGARA.y + 2, r: 4.0, boy: 1, magara: true });
   // Akasya ağaçlığı (kuzey) ve dağınık akasyalar
   yerlestir(130, () => [arasi(rng, -45, 150), arasi(rng, 80, 190)], 'agac', 0.5, 0.65, { agacTur: 'akasya' });
-  yerlestir(45, halkada, 'agac', 0.5, 0.65, { agacTur: 'akasya' });
+  yerlestir(80, halkada, 'agac', 0.5, 0.65, { agacTur: 'akasya' });
   // Gölet ve nehir kıyısında yüksek ağaçlar
   yerlestir(10, () => [GOLET.x + arasi(rng, -22, 22), GOLET.y + arasi(rng, -22, 22)], 'agac', 0.45, 0.55, { agacTur: 'kiyi' });
-  yerlestir(26, () => {
-    const x = arasi(rng, -180, 180);
+  yerlestir(40, () => {
+    const x = arasi(rng, -YARICAP + 25, YARICAP - 25);
     return [x, nehirY(x) + (rng() < 0.5 ? 1 : -1) * arasi(rng, 8, 16)];
   }, 'agac', 0.45, 0.55, { agacTur: 'kiyi' });
   // Galeri ormanı: nehrin doğu kıyısında sık ağaç şeridi (Aşama 6)
@@ -550,11 +584,40 @@ export function dunyaOlustur(k) {
     return [TERMITLER.x + Math.sin(a) * r, TERMITLER.y + Math.cos(a) * r];
   }, 'termit', 0.9, 1.6);
   // Dağınık kayalar
-  yerlestir(18, halkada, 'kaya', 0.6, 1.4);
+  yerlestir(30, halkada, 'kaya', 0.6, 1.4);
+  // ---- Dış halka (15 Kasım 2026) ----
+  // Granit tepeler: iri, üst üste yığılmış kayalar; ortadaki Gözcü Kayası'nın çevresi boş kalır (tırmanılan yer)
+  d.engeller.push({ tur: 'kaya', x: GOZCU_KAYASI.x - 7, y: GOZCU_KAYASI.y + 6, r: 4.6, boy: 1, tepe: true });
+  d.engeller.push({ tur: 'kaya', x: GOZCU_KAYASI.x + 8, y: GOZCU_KAYASI.y + 5, r: 4.2, boy: 1, tepe: true });
+  yerlestir(50, () => {
+    const a = rng() * Math.PI * 2;
+    const r = GOZCU_KAYASI.r + 3 + Math.sqrt(rng()) * (TEPELER.r - GOZCU_KAYASI.r - 3);
+    return [TEPELER.x + Math.sin(a) * r, TEPELER.y + Math.cos(a) * r];
+  }, 'kaya', 1.6, 4.4);
+  // Baobab düzlüğü: seyrek, dev gövdeli ağaçlar
+  yerlestir(16, () => {
+    const a = rng() * Math.PI * 2;
+    const r = Math.sqrt(rng()) * BAOBAB.r;
+    return [BAOBAB.x + Math.sin(a) * r, BAOBAB.y + Math.cos(a) * r];
+  }, 'agac', 1.3, 1.9, { agacTur: 'baobab' });
+  // Sık çalılık: alçak dikenli ağaççıklar
+  yerlestir(85, () => {
+    const a = rng() * Math.PI * 2;
+    const r = Math.sqrt(rng()) * CALILIK.r;
+    return [CALILIK.x + Math.sin(a) * r, CALILIK.y + Math.cos(a) * r];
+  }, 'agac', 0.4, 0.55, { agacTur: 'cali' });
+  // Kuzey otlakları ve güney ovası: tek tük akasyalar
+  yerlestir(14, () => [arasi(rng, -150, 150), arasi(rng, AGACLIK_UST + 5, 300)], 'agac', 0.5, 0.65, { agacTur: 'akasya' });
+  yerlestir(12, () => [OVA.x + arasi(rng, -OVA.r * 1.6, OVA.r * 1.2), OVA.y + arasi(rng, -OVA.r * 0.6, OVA.r * 0.6)], 'agac', 0.5, 0.65, { agacTur: 'akasya' });
+  // Dere yatağının iki yanında kıyı ağaçları
+  yerlestir(30, () => {
+    const y = arasi(rng, nehirY(265) + 20, DERE_UST - 6);
+    return [dereX(y) + (rng() < 0.5 ? -1 : 1) * arasi(rng, DERE_YARI + 3, DERE_YARI + 9), y];
+  }, 'agac', 0.45, 0.55, { agacTur: 'kiyi' });
   // Geçilebilir süs bitkileri: sazlık, çalı (engel değil)
-  for (let i = 0; i < 140; i++) {
-    const x = arasi(rng, -190, 190);
-    const y = arasi(rng, -195, nehirY(x) - 6);
+  for (let i = 0; i < 170; i++) {
+    const x = arasi(rng, -YARICAP + 10, YARICAP - 10);
+    const y = arasi(rng, nehirY(x) - OVA_SINIR, nehirY(x) - 6);
     if (Math.hypot(x, y) < YARICAP - 4) d.suslar.push({ tur: 'saz', x, y, boy: arasi(rng, 0.7, 1.3) });
   }
   for (let i = 0; i < 40; i++) {
@@ -562,9 +625,17 @@ export function dunyaOlustur(k) {
     const r = GOLET.r + arasi(rng, 0.5, 3);
     d.suslar.push({ tur: 'saz', x: GOLET.x + Math.sin(a) * r, y: GOLET.y + Math.cos(a) * r, boy: arasi(rng, 0.7, 1.2) });
   }
-  for (let i = 0; i < 110; i++) {
+  for (let i = 0; i < 160; i++) {
     const [x, y] = halkada();
     if (!guneydeMi(x, y) && Math.hypot(x, y) > ISTASYON.r + 4) d.suslar.push({ tur: 'cali', x, y, boy: arasi(rng, 0.6, 1.3) });
+  }
+  // Çalılıkta sık, geçilebilir çalılar
+  for (let i = 0; i < 160; i++) {
+    const a = rng() * Math.PI * 2;
+    const r = Math.sqrt(rng()) * CALILIK.r;
+    const x = CALILIK.x + Math.sin(a) * r;
+    const y = CALILIK.y + Math.cos(a) * r;
+    if (Math.hypot(x, y) < YARICAP - 4) d.suslar.push({ tur: 'cali', x, y, boy: arasi(rng, 0.9, 1.6) });
   }
   // Sulak alanda küçük çamur gölcükleri (süs)
   for (let i = 0; i < 12; i++) {
@@ -574,6 +645,7 @@ export function dunyaOlustur(k) {
   }
   // Ekosistem (Aşama 5): otlak kapasitesi arazi sabit olduğu için her açılışta yeniden hesaplanır
   d.kap = E.kapasiteHesapla(bolgeBul, d.engeller.filter((e) => e.tur === 'agac'));
+  if (k.eko && Array.isArray(k.eko.ot) && k.eko.ot.length === 256 && d.kap.ot.length !== 256) E.izgaraGoc(k.eko, d.kap, 16, 200); // harita büyümeden önceki kayıt
   if (!k.eko || !Array.isArray(k.eko.ot) || k.eko.ot.length !== d.kap.ot.length) k.eko = E.ekoOlustur(d.kap);
   const bugun = gunNo(k.dk);
   if (!k.eko.hava || k.eko.hava.gun !== bugun) E.havaUret(k.eko, bugun, d.rng);
@@ -659,8 +731,12 @@ function aktifMi(t, dk) {
 function uyeler(d, g) {
   return d.k.hayvanlar.filter((b) => b.grup === g.id && !b.olu);
 }
+// Dış bölgelerdeki ikinci gruplar (g.hab) kendi yaşam alanını kullanır; türün öbür özellikleri aynıdır
+export const grupHabitat = (g) => (g && g.hab && EK_HABITAT[g.hab] ? EK_HABITAT[g.hab].habitat : TURLER[g.tur].habitat);
+const turG = (g) => (g && g.hab && EK_HABITAT[g.hab] ? { ...TURLER[g.tur], habitat: EK_HABITAT[g.hab].habitat } : TURLER[g.tur]);
+export const grupYerliMi = (g) => !!(g && g.hab && EK_HABITAT[g.hab] && EK_HABITAT[g.hab].yerli);
 function habitattaNokta(d, g, yaricapCarpani = 1) {
-  const t = TURLER[g.tur];
+  const t = turG(g);
   const h = t.habitat;
   for (let i = 0; i < 25; i++) {
     const a = d.rng() * Math.PI * 2;
@@ -672,7 +748,7 @@ function habitattaNokta(d, g, yaricapCarpani = 1) {
   return { x: g.x, y: g.y };
 }
 function yakinNokta(d, g, r) {
-  const t = TURLER[g.tur];
+  const t = turG(g);
   for (let i = 0; i < 12; i++) {
     const x = g.x + arasi(d.rng, -r, r);
     const y = g.y + arasi(d.rng, -r, r);
@@ -683,11 +759,36 @@ function yakinNokta(d, g, r) {
 function nehirNoktasi(x, guney, uzak = 2) {
   return { x, y: nehirY(x) + (guney ? -1 : 1) * (NEHIR_YARI + uzak) };
 }
+// Kum dere (15 Kasım 2026): yağışlı mevsimde dere akar; kurakta filler yatağı kazıp kum kuyusu açar, öbür hayvanlar da ondan içer
+let dereDurumu = { akiyor: false, kuyular: [] };
+export const dereAkiyorMu = () => dereDurumu.akiyor;
+export const kumKuyulari = () => dereDurumu.kuyular;
+function dereSuNoktasi(g) {
+  const yakin = g.y > nehirY(g.x) + 20 && g.y < DERE_UST && Math.abs(g.x - dereX(g.y)) < 95;
+  g.kuyu = null;
+  if (!yakin) return null;
+  const y = sinirla(g.y, nehirY(dereX(g.y)) + 14, DERE_UST - 8);
+  const yan = g.x < dereX(y) ? -1 : 1;
+  if (dereDurumu.akiyor) return { x: dereX(y) + yan * (DERE_YARI - 1.5), y };
+  const kuyu = dereDurumu.kuyular.filter((q) => mesafe(q, g) < 130).sort((a, b) => mesafe(a, g) - mesafe(b, g))[0];
+  if (kuyu) {
+    g.kuyu = { id: kuyu.id, kaz: false };
+    return { x: kuyu.x + yan * 1.6, y: kuyu.y };
+  }
+  if (g.tur === 'fil') {
+    g.kuyu = { id: null, kaz: true };
+    return { x: dereX(y), y };
+  }
+  return null;
+}
 function suNoktasi(g) {
-  const t = TURLER[g.tur];
+  const t = turG(g);
   const guney = !!t.habitat.guneyde;
-  const nehir = nehirNoktasi(sinirla(g.x, -170, 170), guney, 1.8);
+  const nehir = nehirNoktasi(sinirla(g.x, -YARICAP + 30, YARICAP - 30), guney, 1.8);
   if (guney) return nehir;
+  const dere = dereSuNoktasi(g);
+  if (dere && (g.kuyu || mesafe(g, dere) < mesafe(g, nehir) * 0.9)) return dere;
+  g.kuyu = null;
   const dx = g.x - GOLET.x;
   const dy = g.y - GOLET.y;
   const m = Math.hypot(dx, dy) || 1;
@@ -704,7 +805,7 @@ function suNoktasi(g) {
 const SU_SAATLERI = { sabah: [6.5, 10], oglen: [11, 15], aksam: [16, 19.5] };
 export const SU_SAATI_ADI = { sabah: 'sabahları', oglen: 'öğle saatlerinde', aksam: 'akşamüstü' };
 function rutinKur(d, g) {
-  const t = TURLER[g.tur];
+  const t = turG(g);
   const h = (n) => {
     const x = Math.sin((g.id + 1) * 91.7 + n * 13.3) * 43758.5;
     return x - Math.floor(x);
@@ -721,7 +822,7 @@ function rutinKur(d, g) {
 function planSec(d, g) {
   if (TURLER[g.tur].kutup) return kutupPlanSec(d, g);
   const k = d.k;
-  const t = TURLER[g.tur];
+  const t = turG(g);
   const dk = k.dk;
   if (!g.rutin || typeof g.rutin !== 'object' || !SU_SAATLERI[g.rutin.suSaat] || (g.rutin.agac && !(Number.isFinite(g.rutin.agac.x) && Number.isFinite(g.rutin.agac.y)))) rutinKur(d, g);
   const aktif = aktifMi(t, dk);
@@ -1949,7 +2050,7 @@ const gocAdi = (g) => `${SOZ[g.tur].toLocaleLowerCase('tr-TR')} sürüsü`;
 // Göç: sürü geçide, nehrin karşı yakasına ve haritanın dışına yürür; dönüşte tersini (karar 43, 111)
 // Aşama 23 (karar 43, 111): göç yolu her seferinde seçilir. Sürü geçitleri uzaklığa, geçitte bekleyen timsahlara, çevredeki yangına
 // ve önceki göçlerde o geçitte yaşadığı kayıplara (g.gocHafiza) göre değerlendirir; taşkındaki geçidi seçmez.
-const GOC_CIKIS = { 70: { x: 124, y: -150, yon: 'güneydoğu' }, '-60': { x: -126, y: -148, yon: 'güneybatı' } };
+const GOC_CIKIS = { 70: { x: 156, y: -264, yon: 'güneydoğu' }, '-60': { x: -156, y: -264, yon: 'güneybatı' } };
 export function gocGecitSec(d, g, donus = false) {
   const k = d.k;
   const gc = E.GOCMENLER[g.tur];
@@ -2282,7 +2383,7 @@ function gunlukEkosistem(d) {
   }
   // Göç kararları ve dönüşler
   k.gruplar.forEach((g) => {
-    if (!E.GOCMENLER[g.tur] || g.goc) return;
+    if (!E.GOCMENLER[g.tur] || g.goc || g.hab) return; // dış bölgelerin sürüleri yerli, göç etmez
     const h = TURLER[g.tur].habitat;
     if (E.gocGerekli(eko, tk, E.ortalamaOt(eko, h.x, h.y, h.r)) && d.rng() < 0.5) {
       const u = uyeler(d, g);
@@ -2396,7 +2497,20 @@ function grupGuncelle(d, g, dt, dtDk) {
       g.hedef = yakinNokta(d, g, 10);
     } else if (g.plan === 'su' && !g.icti && suBasiTehlikesi(d, g, u)) {
       // Aşama 18 (karar 104): timsahlı ya da yakında avlanılmış su başında tedirgin beklerler, gerekirse başka suya giderler
+    } else if (g.plan === 'su' && !g.icti && g.kuyu && g.kuyu.kaz) {
+      // Kurak mevsimde fil sürüsü dere yatağının kumunu kazıp su kuyusu açar
+      g.kuyu.kaz = false;
+      const q = { id: (k.sonrakiId = (k.sonrakiId || 1) + 1), x: Math.round(g.hedef.x * 10) / 10, y: Math.round(g.hedef.y * 10) / 10, dk: k.dk };
+      if (!k.dere || typeof k.dere !== 'object') k.dere = { kuyular: [] };
+      k.dere.kuyular = [q, ...(k.dere.kuyular || [])].slice(0, 6);
+      dereDurumu.kuyular = k.dere.kuyular;
+      g.kuyu.id = q.id;
+      g.planBitis = Math.max(g.planBitis, k.dk + 40);
+      uyeler(d, g).forEach((b) => b.evre !== 'yavru' && (b.ozel = { davranis: 'kumKaziyor', bitis: d.zaman + 55 + d.rng() * 25 }));
+      if (mesafe(d.oyuncu, g) <= durbunMenzili(k.dk, k)) olay(d, 'kuyu', `${BuyukHarf(SOZ[g.tur])} sürüsü kuru dere yatağında kumu kazıyor; ön ayaklarıyla eşeleyip hortumlarıyla kumu atıyorlar. Kumun bir metre kadar altında su var. ${BuyukHarf(yerTarifi(d.oyuncu, g))}.`, 2, { id: (uyeler(d, g)[0] || {}).id });
     } else if (g.plan === 'su' && !g.icti) {
+      if (g.kuyu && g.kuyu.id && !g.kuyuIcti) uyeler(d, g).forEach((b) => b.evre !== 'yavru' && d.rng() < 0.7 && (b.ozel = { davranis: g.tur === 'fil' ? 'suIciyor' : 'kuyudanIciyor', bitis: d.zaman + 30 + d.rng() * 20 }));
+      if (g.kuyu && g.kuyu.id && g.tur !== 'fil' && mesafe(d.oyuncu, g) <= durbunMenzili(k.dk, k)) olay(d, 'kuyu', `${BuyukHarf(SOZ[g.tur])} sürüsü filin kazdığı kum kuyusundan su içiyor. ${BuyukHarf(yerTarifi(d.oyuncu, g))}.`, 2, { id: (uyeler(d, g)[0] || {}).id });
       g.icti = true;
       g.suBekle = 0;
       // Gölette içtiyse suyun kalitesi kaydedilir (kirli su parazit getirir, karar 74)
@@ -2412,6 +2526,16 @@ function grupGuncelle(d, g, dt, dtDk) {
       if (mesafe(d.oyuncu, g) <= durbunMenzili(k.dk, k)) olay(d, 'yalak', `${BuyukHarf(SOZ[g.tur])} sürüsü tuz yalağına geldi; toprağı yalıyorlar. Bitkilerden alamadıkları sodyumu ve mineralleri topraktan alırlar.`, 2, { id: (uyeler(d, g)[0] || {}).id });
     } else if (g.plan === 'gez') {
       g.planBitis = Math.min(g.planBitis, k.dk + 3);
+    }
+  }
+  // Baobab düzlüğü: filler kurakta baobabın sulu kabuğunu soyar (günde en çok iki kez)
+  if (g.tur === 'fil' && (g.plan === 'otla' || g.plan === 'gez' || g.plan === 'dinlen') && !g.goc && d.rng() < dt * 0.012 && !(g.kabukDk > k.dk - 600)) {
+    const bb = d.engeller.find((e) => e.agacTur === 'baobab' && mesafe(e, g) < 16);
+    if (bb) {
+      g.kabukDk = k.dk;
+      g.hedef = { x: bb.x + (g.x < bb.x ? -1 : 1) * (bb.r + 1.8), y: bb.y };
+      uyeler(d, g).forEach((b) => b.evre !== 'yavru' && d.rng() < 0.75 && (b.ozel = { davranis: 'kabukSoyuyor', bitis: d.zaman + 50 + d.rng() * 30 }));
+      if (mesafe(d.oyuncu, g) <= durbunMenzili(k.dk, k)) olay(d, 'kabuk', `${BuyukHarf(SOZ[g.tur])} sürüsü bir baobabın kabuğunu dişleriyle soyuyor; baobabın lifli iç dokusu su deposu gibidir, kurakta filler bu suyu çiğneyerek alır. ${BuyukHarf(yerTarifi(d.oyuncu, g))}.`, 2, { id: (uyeler(d, g)[0] || {}).id });
     }
   }
   if (MINERAL_TURLERI.includes(g.tur)) g.mineral = Math.min(1, (Number.isFinite(g.mineral) ? g.mineral : d.rng() * 0.7) + dtDk / (1440 * 2.5));
@@ -3192,6 +3316,16 @@ export function guncelle(d, dt, girdi = {}) {
 
   // --- Oyuncu ---
   taskinVar = !!(k.eko && k.eko.taskin);
+  // Kum dere: yağışlı mevsimde toprak nemliyse akar; kum kuyuları üç gün sonra dolup kapanır
+  if (k.eko) {
+    const tk = E.takvim(gunNo(k.dk));
+    dereDurumu.akiyor = (tk.mevsim === 'yagisli' && k.eko.islaklik > 0.5) || !!k.eko.taskin;
+    d.dereAkiyor = dereDurumu.akiyor;
+    if (k.dere && k.dere.kuyular && k.dere.kuyular.length && (dereDurumu.akiyor || k.dere.kuyular.some((q) => k.dk - q.dk > 3 * 1440))) {
+      k.dere.kuyular = dereDurumu.akiyor ? [] : k.dere.kuyular.filter((q) => k.dk - q.dk <= 3 * 1440);
+      dereDurumu.kuyular = k.dere.kuyular;
+    }
+  }
   const ileri = k.magara ? 0 : sinirla(girdi.ileri || 0, -1, 1);
   const don = k.magara ? 0 : sinirla(girdi.don || 0, -1, 1);
   const elle = Math.abs(ileri) > 0.08 || Math.abs(don) > 0.08;
@@ -3352,6 +3486,12 @@ export function guncelle(d, dt, girdi = {}) {
     if (ilk) k.gezilen.push(bolge);
     const yer = Kt.kutupNoktaMi(o) ? (() => { const y = Kt.KUTUP_YERLER.find((z) => { const p = Kt.yerKonumu(z); return bolgeBul(p.x, p.y) === bolge; }); return y ? { tarif: y.tarif } : null; })() : bolge === 'otlak' ? null : YERLER.find((y) => bolgeBul(y.x, y.y) === bolge);
     olay(d, 'bolge', `${BOLGE_ADLARI[bolge]}.${ilk && yer ? ' ' + yer.tarif : ''}`, 1, { bolge });
+  }
+  // Gözcü Kayası'na çıkınca: buradan dürbün daha uzağı görür
+  const gozcu = gozcuKayasindaMi(k);
+  if (gozcu !== !!d.gozcuda) {
+    d.gozcuda = gozcu;
+    if (gozcu) olay(d, 'gozcu', `Gözcü Kayası'nın tepesine çıktın. Buradan dürbünle ${durbunMenzili(k.dk, k)} metreye kadar görürsün; çevredeki sürüleri taramak için iyi bir yer.`, 2);
   }
   k.oyuncu = o;
   return sonuc;
@@ -3709,7 +3849,10 @@ export function zeminTuru(d, p) {
   }
   if (nehirdeMi(o.x, o.y) || (GOLET.su > 0 && Math.hypot(o.x - GOLET.x, o.y - GOLET.y) < GOLET.su + 0.5)) return 'su';
   const b = bolgeBul(o.x, o.y);
-  if (b === 'kayalik') return 'kaya';
+  if (b === 'kayalik' || b === 'tepeler') return 'kaya';
+  if (b === 'dere') return dereDurumu.akiyor && dereYatagindaMi(o.x, o.y) ? 'su' : 'toprak';
+  if (b === 'baobab') return 'toprak';
+  if (b === 'calilik') return 'yaprak';
   if (b === 'galeri') return 'yaprak';
   if (b === 'istasyon') return 'toprak';
   const islak = k.eko && (k.eko.yagmurVar || k.eko.islaklik > 0.75);

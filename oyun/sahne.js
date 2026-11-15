@@ -3,7 +3,7 @@
 // hayvanlar (düşük poligonlu, sanatsal), gün ve gece ışığı. Mantık koordinatı (x doğu, y kuzey) three'de (x, 0, -y);
 // yön (0 = kuzey) three'de rotation.y = -yon. Kamera araştırmacının arkasından ve üstünden bakar (üçüncü şahıs).
 import * as THREE from 'three';
-import { TURLER, YARICAP, GOLET, NEHIR_YARI, nehirY, GECITLER, MAGARA, OZEL_BIREYLER, TUZ_YALAGI, KUTUP } from './veri.js';
+import { TURLER, YARICAP, GOLET, NEHIR_YARI, nehirY, GECITLER, MAGARA, OZEL_BIREYLER, TUZ_YALAGI, KUTUP, TEPELER, GOZCU_KAYASI, CALILIK, BAOBAB, OVA, AGACLIK_UST, DERE_YARI, DERE_UST, dereX } from './veri.js';
 import { isikDuzeyi, kutupHavasi } from './mantik.js';
 import * as Kt from './kutup.js';
 
@@ -420,6 +420,27 @@ function seritGeo(yari, x0, x1, adim, yKaydir = 0) {
   return geo;
 }
 
+// Kum dere: y boyunca dereX(y) eğrisini izleyen şerit (nehir şeridinin dikine benzeri)
+function dereGeo(yari, y0, y1, adim) {
+  const noktalar = [];
+  const indisler = [];
+  let i = 0;
+  for (let y = y0; y <= y1; y += adim) {
+    const x = dereX(y);
+    noktalar.push(x - yari, 0, R(y), x + yari, 0, R(y));
+    if (i > 0) {
+      const a = (i - 1) * 2;
+      indisler.push(a, a + 1, a + 2, a + 1, a + 3, a + 2);
+    }
+    i++;
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(noktalar, 3));
+  geo.setIndex(indisler);
+  geo.computeVertexNormals();
+  return geo;
+}
+
 const renkKarisim = (a, b, t) => new THREE.Color(a).lerp(new THREE.Color(b), t);
 
 // Kayıp Okyanus'tan (telefonda çalıştığı doğrulanmış): expo-gl bağlamını three.js'e uydurur.
@@ -516,6 +537,16 @@ export function sahneKur(gl, d, secenek = {}) {
   yama(0, -160, 120, '#6f7a44', 1.6, 0.6);
   yama(-115, 45, 38, '#a39070');
   yama(0, 0, 14, '#9a7e55');
+  // Dış halka (15 Kasım 2026): granit tepeler, çalılık, baobab düzlüğü, güney ovası, kuzey otlakları
+  yama(TEPELER.x, TEPELER.y, TEPELER.r + 6, '#9b8f7a');
+  yama(CALILIK.x, CALILIK.y, CALILIK.r, '#80783e');
+  yama(BAOBAB.x, BAOBAB.y, BAOBAB.r, '#c4aa6a');
+  yama(OVA.x - 40, OVA.y, OVA.r * 1.6, '#a7a85c', 1.6, 0.55);
+  yama(0, AGACLIK_UST + 45, 120, '#bba556', 1.6, 0.45);
+  // Gözcü Kayası: tepelerin ortasında üstüne çıkılan yassı granit sırt
+  const gozcu = new THREE.Mesh(new THREE.CylinderGeometry(GOZCU_KAYASI.r, GOZCU_KAYASI.r + 2.5, 0.35, 14), mat('#8e8576'));
+  gozcu.position.set(GOZCU_KAYASI.x, 0.17, R(GOZCU_KAYASI.y));
+  sahne.add(gozcu);
   // Sulak alan çamur gölcükleri
   d.suslar.filter((s) => s.tur === 'camur').forEach((s) => yama(s.x, s.y, s.boy, '#5a5034'));
 
@@ -532,6 +563,19 @@ export function sahneKur(gl, d, secenek = {}) {
     tas.position.set(gc.x, 0.06, R(nehirY(gc.x)));
     sahne.add(tas);
   });
+  // Kum dere yatağı ve (yağışlı mevsimde) içinde akan su
+  const dereY0 = nehirY(dereX(-90)) + 2;
+  const dereKum = new THREE.Mesh(dereGeo(DERE_YARI + 1.5, dereY0, DERE_UST, 4), mat('#d6c08a'));
+  dereKum.position.y = 0.03;
+  sahne.add(dereKum);
+  const dereSu = new THREE.Mesh(dereGeo(DERE_YARI - 2, dereY0, DERE_UST - 2, 4), new THREE.MeshLambertMaterial({ color: '#5a8a8e' }));
+  dereSu.position.y = 0.05;
+  dereSu.visible = false;
+  sahne.add(dereSu);
+  const kuyuIm = new THREE.InstancedMesh(new THREE.CircleGeometry(1.3, 10), new THREE.MeshLambertMaterial({ color: '#4a5a52' }), 6);
+  kuyuIm.count = 0;
+  sahne.add(kuyuIm);
+  let kuyuImza = '';
   // Gölet
   const goletKiyi = new THREE.Mesh(new THREE.CircleGeometry(GOLET.r + 2.5, 28), mat('#7a6a44'));
   goletKiyi.rotation.x = -Math.PI / 2;
@@ -547,7 +591,7 @@ export function sahneKur(gl, d, secenek = {}) {
   const q = new THREE.Quaternion();
   const olcek = new THREE.Vector3();
   const yer = new THREE.Vector3();
-  const sinirSayi = 70;
+  const sinirSayi = 110;
   const sinir = new THREE.InstancedMesh(new THREE.DodecahedronGeometry(6, 0), mat('#8a7a5a'), sinirSayi);
   for (let i = 0; i < sinirSayi; i++) {
     const a = (i / sinirSayi) * Math.PI * 2;
@@ -583,6 +627,26 @@ export function sahneKur(gl, d, secenek = {}) {
   ornekle(new THREE.CylinderGeometry(3.0, 2.2, 0.7, 9), '#6e8a32', akasya, dik(3.4));
   ornekle(new THREE.CylinderGeometry(0.25, 0.35, 4.2, 6), '#5a4a38', kiyiAgac, dik(2.1));
   ornekle(new THREE.IcosahedronGeometry(2.2, 0), '#4d7a34', kiyiAgac, dik(4.8));
+  // Baobab: şişkin, kalın gövde ve gövdenin tepesinde kök gibi uzanan kısa dallar
+  const baobablar = agaclar.filter((e) => e.agacTur === 'baobab');
+  ornekle(new THREE.CylinderGeometry(0.7, 1.05, 5.5, 9), '#8e7a68', baobablar, (e) => {
+    q.identity();
+    olcek.set(e.r, e.boy, e.r);
+    yer.set(e.x, 2.75 * e.boy, R(e.y));
+  });
+  ornekle(new THREE.CylinderGeometry(2.4, 1.2, 1.4, 7), '#6f7a3c', baobablar, (e) => {
+    q.setFromEuler(new THREE.Euler(0, e.x, 0));
+    olcek.set(e.r * 0.9, e.boy, e.r * 0.9);
+    yer.set(e.x, 6.2 * e.boy, R(e.y));
+  });
+  // Çalılık ağaççıkları: kısa gövde, alçak dikenli taç
+  const caliAgac = agaclar.filter((e) => e.agacTur === 'cali');
+  ornekle(new THREE.CylinderGeometry(0.1, 0.15, 1.4, 5), '#5a4a38', caliAgac, dik(0.7));
+  ornekle(new THREE.IcosahedronGeometry(1.4, 0), '#6a6a30', caliAgac, (e) => {
+    q.setFromEuler(new THREE.Euler(0, e.y, 0));
+    olcek.set(e.boy * 1.2, e.boy * 0.75, e.boy * 1.2);
+    yer.set(e.x, 1.7 * e.boy, R(e.y));
+  });
   ornekle(new THREE.DodecahedronGeometry(1, 0), '#9a9184', d.engeller.filter((e) => e.tur === 'kaya'), (e) => {
     q.setFromEuler(new THREE.Euler(0, e.x * 0.37, 0));
     olcek.set(e.r, e.r * (e.magara ? 1.4 : 0.85), e.r);
@@ -1062,14 +1126,15 @@ export function sahneKur(gl, d, secenek = {}) {
     sahne.add(m);
     dumanlar.push(m);
   }
-  const yanikIm = new THREE.InstancedMesh(new THREE.CircleGeometry(13, 14), new THREE.MeshLambertMaterial({ color: '#3a3328' }), 256);
+  const yanikIm = new THREE.InstancedMesh(new THREE.CircleGeometry(13, 14), new THREE.MeshLambertMaterial({ color: '#3a3328' }), 680);
   yanikIm.count = 0;
   sahne.add(yanikIm);
   let yanikImza = '';
   const nehirRenk = new THREE.Color('#4a7a8a');
   const selRenk = new THREE.Color('#7a6a48');
   const HUCRE_K = 25;
-  const hucreMerkez = (h) => ({ x: (h % 16) * HUCRE_K - YARICAP + HUCRE_K / 2, y: Math.floor(h / 16) * HUCRE_K - YARICAP + HUCRE_K / 2 });
+  const KENAR_K = Math.ceil((YARICAP * 2) / HUCRE_K);
+  const hucreMerkez = (h) => ({ x: (h % KENAR_K) * HUCRE_K - YARICAP + HUCRE_K / 2, y: Math.floor(h / KENAR_K) * HUCRE_K - YARICAP + HUCRE_K / 2 });
   let ilk = true;
   let saat = 0;
   const gunduzGok = new THREE.Color('#9ec9ea');
@@ -1251,8 +1316,8 @@ export function sahneKur(gl, d, secenek = {}) {
         const imza = yanikH.length + ':' + yanikH.slice(-3).join(',');
         if (imza !== yanikImza) {
           yanikImza = imza;
-          yanikIm.count = Math.min(256, yanikH.length);
-          yanikH.slice(0, 256).forEach((hs, i) => {
+          yanikIm.count = Math.min(680, yanikH.length);
+          yanikH.slice(0, 680).forEach((hs, i) => {
             const c = hucreMerkez(Number(hs));
             q.setFromEuler(new THREE.Euler(-Math.PI / 2, 0, 0));
             olcek.set(1, 1, 1);
@@ -1263,6 +1328,21 @@ export function sahneKur(gl, d, secenek = {}) {
           yanikIm.instanceMatrix.needsUpdate = true;
         }
         su.material.color.copy(nehirRenk).lerp(selRenk, eko.taskin ? 0.8 : 0);
+        dereSu.visible = !!d.dereAkiyor;
+        const kuyular = (k.dere && k.dere.kuyular) || [];
+        const ki = kuyular.map((x) => x.id).join(',');
+        if (ki !== kuyuImza) {
+          kuyuImza = ki;
+          kuyuIm.count = Math.min(6, kuyular.length);
+          kuyular.slice(0, 6).forEach((x, i) => {
+            q.setFromEuler(new THREE.Euler(-Math.PI / 2, 0, 0));
+            olcek.set(1, 1, 1);
+            yer.set(x.x, 0.06, R(x.y));
+            m4.compose(yer, q, olcek);
+            kuyuIm.setMatrixAt(i, m4);
+          });
+          kuyuIm.instanceMatrix.needsUpdate = true;
+        }
       }
       // Kamera
       const dikey = kamera.aspect < 1 ? 1.35 : 1; // dikey ekranda kamera biraz daha geride ve yüksekte

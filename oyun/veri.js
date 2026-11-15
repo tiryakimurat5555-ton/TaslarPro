@@ -3,7 +3,7 @@
 // Tasarım brifi: 113 karar (Vahşi Yaşam Oyun Tasarım Dosyası). Bu sürüm Aşama 1-3: teknik temel, saha prototipi,
 // ilk hayvan ve gözlem döngüsü.
 
-export const YARICAP = 200; // haritanın yarıçapı
+export const YARICAP = 320; // haritanın yarıçapı (15 Kasım 2026: 200'den büyütüldü; dış halkada yeni bölgeler)
 export const ISTASYON = { x: 0, y: 0, r: 12 }; // hayvanlar istasyona girmez (kuşlar hariç)
 export const ARAC_YERI = { x: 5, y: -5, yon: Math.PI / 2 }; // garajın önü
 
@@ -25,6 +25,35 @@ export const KAYALIK = { x: -115, y: 45, r: 32 };
 export const KUTUP = { x: 0, y: 6000, r: 230 };
 export const MAGARA = { x: -128, y: 64 };
 
+// ---------- Dış halkanın bölgeleri (15 Kasım 2026, harita genişlemesi) ----------
+// Granit tepeler (kopje): kuzeybatıda iri kaya yığınları; tepedeki Gözcü Kayası'ndan dürbün daha uzağı görür
+export const TEPELER = { x: -195, y: 175, r: 50 };
+export const GOZCU_KAYASI = { x: -195, y: 175, r: 9 };
+// Sık çalılık (Commiphora ve dikenli çalılar): kuzeydoğuda görüşün kısaldığı, gergedanların gizlendiği yer
+export const CALILIK = { x: 200, y: 185, r: 58 };
+// Baobab düzlüğü: doğuda, kum derenin batısında dev baobabların seyrek durduğu kurak düzlük
+export const BAOBAB = { x: 205, y: 10, r: 42 };
+// Kum dere (lugga): doğuda kuzeyden nehre inen kuru dere yatağı. Yağışlı mevsimde akar, kurakta filler kumu kazıp su bulur.
+export const DERE_YARI = 5; // dere yatağının yarı genişliği
+export const dereX = (y) => 265 + 18 * Math.sin(y / 45);
+export const DERE_UST = 182; // derenin kuzey ucu (haritanın sınırına yakın)
+export const dereYatagindaMi = (x, y) => y > nehirY(x) + 6 && y < DERE_UST && Math.abs(x - dereX(y)) < DERE_YARI;
+// Güney ovası: nehrin güneyinde, sulak alanın ötesinde kısa otlu geniş düzlük
+export const OVA = { x: 130, y: -240, r: 80 };
+export const OVA_SINIR = 85; // nehirden bu kadar güneyden sonrası ova
+// Kuzey otlakları: akasya ağaçlığının ötesindeki uzun otlu düzlük
+export const AGACLIK_UST = 232;
+// Dış bölgelerde yaşayan ikinci gruplar: aynı türün başka bir yaşam alanındaki sürüsü (g.hab)
+export const EK_HABITAT = {
+  tepeBabun: { tur: 'babun', habitat: { x: -200, y: 168, r: 42 }, grup: [8, 10], ad: 'tepelerin babun sürüsü' },
+  tepeLeopar: { tur: 'leopar', habitat: { x: -188, y: 182, r: 40 }, grup: [1, 1], erkekOran: 1, ad: 'tepelerin leoparı' },
+  caliGergedan: { tur: 'gergedan', habitat: { x: 205, y: 180, r: 45 }, grup: [2, 2], erkekOran: 0, ad: 'çalılığın gergedanları' },
+  dereFil: { tur: 'fil', habitat: { x: 240, y: 35, r: 65, dere: true }, grup: [3, 4], erkekOran: 1, ad: 'bekâr erkek fil sürüsü' },
+  baobabZurafa: { tur: 'zurafa', habitat: { x: 200, y: 12, r: 40 }, grup: [3, 5], erkekOran: 0.3, ad: 'baobab düzlüğünün zürafaları' },
+  ovaZebra: { tur: 'zebra', habitat: { x: 120, y: -235, r: 60, guneyde: true }, grup: [6, 8], erkekOran: 0.2, yerli: true, ad: 'güney ovasının zebraları' },
+  ovaCeylan: { tur: 'ceylan', habitat: { x: 165, y: -250, r: 55, guneyde: true }, grup: [8, 10], erkekOran: 0.25, yerli: true, ad: 'güney ovasının ceylanları' },
+  ovaCita: { tur: 'cita', habitat: { x: 140, y: -245, r: 65, guneyde: true }, grup: [2, 2], erkekOran: 1, ad: 'güney ovasının çita kardeşleri' },
+};
 // Gidilebilecek yerler (Yerler paneli). y değeri işlev olabilir (nehir boyu).
 export const YERLER = [
   { id: 'istasyon', ad: 'Araştırma istasyonu', x: 0, y: 2, tarif: 'Küçük laboratuvar, garaj ve çadırdan oluşan istasyonun.' },
@@ -40,6 +69,13 @@ export const YERLER = [
   { id: 'galeri', ad: 'Galeri ormanı', x: 140, y: -82, tarif: 'Nehrin doğu kıyısı boyunca uzanan sık, gölgeli bir orman şeridi. Babunlar, maymunlar ve orman kuşları burada yaşar.' },
   { id: 'iskele', ad: 'İskele', x: 22, y: nehirY(22) + 7, tarif: 'Nehrin kuzey kıyısında küçük ahşap bir iskele. Araştırma teknesi burada bağlanır.' },
   { id: 'termitler', ad: 'Termit tepeleri', x: -140, y: -40, tarif: 'Batı otlaklarında boyu insanı aşan termit tepeleri. Eski tepelerde firavunfareleri ve yerdomuzu yuvaları var.' },
+  { id: 'tepeler', ad: 'Granit tepeler', x: -168, y: 160, tarif: 'Kuzeybatıda ovadan yükselen dev granit kaya yığınları. Babunlar kayaların tepesinde uyur, bir leopar kovuklarda saklanır.' },
+  { id: 'gozcuKayasi', ad: 'Gözcü Kayası', x: GOZCU_KAYASI.x + 4, y: GOZCU_KAYASI.y - 4, tarif: 'Granit tepelerin en yüksek kayası. Üstünden dürbünle ovanın çok uzağı görülür.' },
+  { id: 'calilik', ad: 'Sık çalılık', x: 168, y: 160, tarif: 'Kuzeydoğuda dikenli çalıların ve kısa ağaçların sık büyüdüğü bir çalılık. İçinde görüş kısalır; gergedanlar burada saklanır. Burada kulağına güven.' },
+  { id: 'dere', ad: 'Kum dere yatağı', x: dereX(40) - 8, y: 40, tarif: 'Doğuda kuzeyden nehre inen kumlu bir dere yatağı. Yağışlı mevsimde akar, kurakta kurur; o zaman filler kumu kazıp altındaki suya ulaşır.' },
+  { id: 'baobab', ad: 'Baobab düzlüğü', x: 178, y: 10, tarif: 'Doğuda, kum derenin batısında dev gövdeli baobabların seyrek durduğu kurak bir düzlük. Zürafalar burada beslenir; bekâr erkek filler baobab kabuğunu soyup sulu iç dokusunu çiğner.' },
+  { id: 'ova', ad: 'Güney ovası', x: 120, y: -215, tarif: 'Nehrin güneyinde, sulak alanın ötesinde ufka kadar uzanan kısa otlu bir ova. Zebralar, ceylanlar ve iki çita burada yaşar; göç eden sürüler buradan geçer.' },
+  { id: 'kuzeyOtlak', ad: 'Kuzey otlakları', x: 20, y: 255, tarif: 'Akasya ağaçlığının ötesinde, haritanın kuzey ucunda uzun otlu açık bir düzlük.' },
   { id: 'tuzYalagi', ad: 'Tuz yalağı', x: -32, y: 58, tarif: 'Toprağı tuz ve mineral bakımından zengin, çiğnenmiş, çukurlaşmış bir açıklık. Filler, mandalar ve zürafalar buraya toprağı yalamaya gelir.' },
 ];
 // Aşama 14 (karar 103): otçulların mineral ihtiyacını karşıladığı tuz yalağı
@@ -68,6 +104,12 @@ export const BOLGE_ADLARI = {
   galeri: 'Galeri ormanı',
   termit: 'Termit tepeleri',
   magara: 'Mağara',
+  tepeler: 'Granit tepeler',
+  calilik: 'Sık çalılık',
+  baobab: 'Baobab düzlüğü',
+  dere: 'Kum dere yatağı',
+  ova: 'Güney ovası',
+  kuzeyOtlak: 'Kuzey otlakları',
   // Kuzey Kutbu
   kutupIstasyon: 'Araştırma kulübesi',
   tundra: 'Tundra',
@@ -111,6 +153,9 @@ export const DAVRANISLAR = {
   nehirGeciyor: { fiil: 'göç sırasında nehri geçiyor', ad: 'Göçte nehir geçişi', nadir: true },
   meydanOkuyor: { fiil: 'grubun liderine meydan okuyor', ad: 'Liderlik mücadelesi', nadir: true },
   bolgeKoruyor: { fiil: 'bölgesinden rakip yırtıcıları kovalıyor', ad: 'Bölge savunması', nadir: true },
+  kumKaziyor: { fiil: 'kuru dere yatağında ön ayakları ve hortumuyla kumu kazıyor, altındaki suya ulaşmaya çalışıyor', ad: 'Kumda su kuyusu kazma', nadir: true },
+  kuyudanIciyor: { fiil: 'filin kazdığı kum kuyusundan su içiyor', ad: 'Kum kuyusundan su içme', nadir: true },
+  kabukSoyuyor: { fiil: 'bir baobabın kabuğunu dişleriyle soyup lifli, sulu iç dokusunu çiğniyor', ad: 'Baobab kabuğu soyma', nadir: true },
   topragiYaliyor: { fiil: 'tuz yalağında mineralli toprağı yalıyor', ad: 'Mineral yalama', nadir: true },
   // Aşama 13: avlanma, savunma ve sosyal yaşam (karar 68, 102, 106, 107)
   kusatiyor: { fiil: 'avın önünü keserek kuşatıyor', ad: 'Sürü hâlinde kuşatma', nadir: true },

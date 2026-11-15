@@ -31,7 +31,7 @@ export function hucre(x, y) {
 }
 export const hucreMerkezi = (h) => ({ x: (h % KENAR) * HUCRE - YARICAP + HUCRE / 2, y: Math.floor(h / KENAR) * HUCRE - YARICAP + HUCRE / 2 });
 // Bölgeye göre otlak taşıma kapasitesi
-const OT_KAPASITE = { otlak: 1, agaclik: 0.7, golet: 0.9, nehir: 0.8, sulak: 1, kayalik: 0.35, istasyon: 0.5, galeri: 0.55, termit: 0.9 };
+const OT_KAPASITE = { otlak: 1, agaclik: 0.7, golet: 0.9, nehir: 0.8, sulak: 1, kayalik: 0.35, istasyon: 0.5, galeri: 0.55, termit: 0.9, tepeler: 0.3, calilik: 0.55, baobab: 0.6, dere: 0.5, ova: 1.05, kuzeyOtlak: 0.95 };
 
 // Arazi sabittir; kapasiteler her açılışta aynı hesaplanır (kayda girmez)
 export function kapasiteHesapla(bolgeBul, agaclar) {
@@ -57,6 +57,40 @@ export function kapasiteHesapla(bolgeBul, agaclar) {
     yaprak.push(Math.min(1, agacSayisi[h] / 5));
   }
   return { ot, yaprak, yanmaz };
+}
+
+// Harita büyüyünce (15 Kasım 2026: yarıçap 200 → 320, ızgara 16 → 26) eski kaydın ızgarası yerine göre yeni ızgaraya taşınır.
+// Her yeni hücre, eski haritada aynı yere düşen hücrenin değerini alır; eski haritanın dışındaki yeni hücreler kapasitenin %80'iyle başlar.
+export function izgaraGoc(eko, kap, eskiKenar = 16, eskiYaricap = 200) {
+  const eskiHucre = (x, y) => {
+    const i = Math.floor((x + eskiYaricap) / HUCRE);
+    const j = Math.floor((y + eskiYaricap) / HUCRE);
+    return i < 0 || j < 0 || i >= eskiKenar || j >= eskiKenar ? -1 : j * eskiKenar + i;
+  };
+  const yeniyeTasi = (eh) => {
+    const m = { x: (eh % eskiKenar) * HUCRE - eskiYaricap + HUCRE / 2, y: Math.floor(eh / eskiKenar) * HUCRE - eskiYaricap + HUCRE / 2 };
+    return hucre(m.x, m.y);
+  };
+  const dizi = (eski, kapasite, oran) =>
+    kapasite.map((v, h) => {
+      const m = hucreMerkezi(h);
+      const eh = Math.hypot(m.x, m.y) <= eskiYaricap ? eskiHucre(m.x, m.y) : -1;
+      const ev = eh >= 0 && Array.isArray(eski) ? eski[eh] : undefined;
+      return Number.isFinite(ev) ? +ev.toFixed(3) : +(v * oran).toFixed(3);
+    });
+  eko.ot = dizi(eko.ot, kap.ot, 0.8);
+  eko.yaprak = dizi(eko.yaprak, kap.yaprak, 0.9);
+  ['yanik', 'yanan', 'istilaci'].forEach((alan) => {
+    const o = eko[alan];
+    if (!o || typeof o !== 'object' || Array.isArray(o)) return;
+    const yeni = {};
+    Object.keys(o).forEach((h) => {
+      const n = yeniyeTasi(Number(h));
+      if (n >= 0) yeni[n] = o[h];
+    });
+    eko[alan] = yeni;
+  });
+  return eko;
 }
 
 // ---------- Ekosistem durumu (k.eko, kayda girer) ----------
@@ -333,6 +367,20 @@ export function ekoAdim(eko, kap, gun, gunDk, dtDk, rng = Math.random) {
 // ---------- Bitkiler ve botanik (karar 29, 57, 96) ----------
 // evre: [yağışlı erken, yağışlı geç, kurak erken, kurak geç]; tohum: o evrede tohum numunesi alınabilir mi
 export const BITKILER = {
+  baobab: {
+    ad: 'Baobab', bilimsel: 'Adansonia digitata', bicim: 'ağaç', bolge: ['baobab'], ozellik: 'besin',
+    tarif: 'Gövdesi bir arabadan geniş, binlerce yıl yaşayabilen dev bir ağaç. Süngerimsi gövdesinde yağmur suyunu depolar; kurakta yapraklarını döker ve çıplak dalları kök gibi göğe uzanır.',
+    evre: ['yeni yapraklanmış; gece açan iri beyaz çiçekleri yarasaları çağırıyor', 'tüylü, yeşil meyveleri büyüyor', 'kadife kabuklu, kalın meyveleri dallarda sallanıyor', 'yapraksız; gövdesi biriktirdiği suyla şişkin'],
+    tohum: [false, false, true, true],
+    analiz: 'Gövde dokusunun büyük kısmı su. Kabuğu soyulsa bile yeniden kabuk bağlıyor; fillerin açtığı derin yaralar yıllarca görülüyor. Meyvesinin kuru özü C vitamini bakımından çok zengin; babunlar ve filler tohumları yayıyor.',
+  },
+  murAgaci: {
+    ad: 'Mür ağacı', bilimsel: 'Commiphora africana', bicim: 'çalı', bolge: ['calilik'], ozellik: 'şifalı',
+    tarif: 'Kurak çalılıkların dikenli, kısa boylu ağacı. Kabuğu ince yaprak yaprak soyulur; yarıldığında güzel kokulu bir reçine sızar. Yağmurlar başlayınca yapraktan önce küçük kırmızı çiçekler açar.',
+    evre: ['küçük kırmızı çiçekler açmış, ardından yapraklanıyor', 'yeşil yapraklı; gergedanlar ve gerenuklar dallarını kemiriyor', 'küçük kırmızı meyveler olgunlaşıyor', 'yapraklarını dökmüş; kabuğundan reçine sızıyor'],
+    tohum: [false, false, true, true],
+    analiz: 'Reçinesinde böcek kovucu ve mikrop öldürücü maddeler bulundu. Kara gergedanlar kurakta dallarıyla besleniyor; meyvelerini yiyen kuşlar tohumlarını çalılığa yayıyor.',
+  },
   semsiyeAkasya: {
     ad: 'Şemsiye akasya', bilimsel: 'Vachellia tortilis', bicim: 'ağaç', bolge: ['agaclik', 'otlak'], ozellik: 'besin',
     tarif: 'Savanın simgesi olan şemsiye biçimli, dikenli ağaç. Kökleri yerin çok derinine iner; kurakta bile yaprak tutar.',
@@ -468,7 +516,9 @@ export function bitkiEvresi(id, gun, eko) {
   if (eko && eko.yil && eko.yil.kuraklik && tk.mevsim === 'kurak' && !tk.erken) metin += '; kuraklıktan solmuş';
   return { anahtar: ['yE', 'yG', 'kE', 'kG'][i], mevsim: tk.mevsim, metin, tohum: BITKILER[id].tohum[i] };
 }
-export const bolgedekiBitkiler = (bolge) => BITKI_SIRASI.filter((id) => BITKILER[id].bolge.includes(bolge));
+// Dış bölgelerde, kendi bitkilerinin yanında benzer eski bölgenin bitkileri de yetişir (tepeler kayalık gibi, ova otlak gibi)
+const BITKI_BENZER = { tepeler: 'kayalik', calilik: 'agaclik', baobab: 'otlak', dere: 'nehir', ova: 'otlak', kuzeyOtlak: 'otlak' };
+export const bolgedekiBitkiler = (bolge) => BITKI_SIRASI.filter((id) => BITKILER[id].bolge.includes(bolge) || (BITKI_BENZER[bolge] && BITKILER[id].bolge.includes(BITKI_BENZER[bolge])));
 
 // ---------- Hastalıklar (karar 28) ----------
 // gunluk: tedavisiz günlük şiddet değişimi; iyilesme: günlük kendiliğinden iyileşme şansı
@@ -568,9 +618,9 @@ export const kondisyonSozu = (v) => (v > 0.7 ? 'iyi' : v > 0.45 ? 'orta' : v > 0
 // ---------- Mevsimsel göç (karar 43, 111) ----------
 // Göçmen sürüler kurak mevsimde güneye, haritanın dışındaki sulak otlaklara gider; yağmurlarla döner.
 export const GOCMENLER = {
-  zebra: { gecit: 70, cikis: { x: 128, y: -146 }, yon: 'güneydoğu' },
-  gnu: { gecit: 70, cikis: { x: 118, y: -154 }, yon: 'güneydoğu' },
-  ceylan: { gecit: -60, cikis: { x: -128, y: -146 }, yon: 'güneybatı' },
+  zebra: { gecit: 70, cikis: { x: 160, y: -262 }, yon: 'güneydoğu' },
+  gnu: { gecit: 70, cikis: { x: 148, y: -270 }, yon: 'güneydoğu' },
+  ceylan: { gecit: -60, cikis: { x: -158, y: -264 }, yon: 'güneybatı' },
 };
 // Göç kararı: kurak mevsimin ortasında otlak ve su azaldıysa
 export function gocGerekli(eko, tk, habitatOt) {

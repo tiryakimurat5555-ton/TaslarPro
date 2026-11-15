@@ -517,6 +517,20 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   son konumlu sesi tutar (sonar/adım/kapı hariç); seseDon(d, secili) oyuncuyu o yöne çevirir (hedef_onde + titreşim). Ana menüde
   Kulak ver, Son duyduğun sese dön (90 sn), 'kulak' alt menüsü Dinlediğin seslerden birine dön; VoiceOver bağlam satırında Kulak ver,
   Sese dön. Tarayıcı scratchpad kulak-dene.cjs. Telefonda doğrulanmadı.
+- HARİTA GENİŞLEMESİ (15 Kasım 2026, Murat "harita olarak genişlet ve geliştir"; sayılar ÖNERİ): YARICAP 200 → 320. Dış halka (veri.js):
+  TEPELER (-195,175) r50 + GOZCU_KAYASI r9 (mantik yerGorusCarpani: dürbün ×1,5; olay 'gozcu'), CALILIK (200,185) r58 (dürbün ×0,6),
+  BAOBAB (205,10) r42 (agacTur 'baobab'), kum dere dereX(y)=265+18sin(y/45), DERE_YARI 5, DERE_UST 182 (bölge 'dere' ±12 m),
+  OVA: nehrin 85 m'den güneyi 'ova' (öncesi 'sulak'), AGACLIK_UST 232 üstü 'kuzeyOtlak'. EK_HABITAT 8 ikinci grup (g.hab; grupHabitat/turG
+  habitat yerine geçer; ekGruplariKur yeni/eski kayıtta bir kez, k.ekGruplar): tepeBabun, tepeLeopar, caliGergedan, dereFil (bekâr erkek),
+  baobabZurafa, ovaZebra/ovaCeylan (yerli, göç etmez: g.hab'lı grup gocBaslat'a girmez), ovaCita. Kum dere: d.dereAkiyor = yağışlı mevsim
+  + islaklik > 0,5 (ya da taşkın): sahnede su şeridi, adım 'su', ortam su katmanı; kurakta dereSuNoktasi: fil grubu kum kuyusu kazar
+  (b.ozel kumKaziyor, olay 'kuyu', k.dere.kuyular en çok 6, 3 gün), öbürleri 130 m'deki kuyudan içer (kuyudanIciyor). Filler baobab yanında
+  kabukSoyuyor (olay 'kabuk'). Göç çıkışları (156,-264)/(-156,-264). Eko ızgarası 16 → 26 (KENAR otomatik); eski kayıt E.izgaraGoc ile
+  yerine göre taşınır (ot, yaprak, yanik, yanan, istilaci). kucukler DIS_CANLILAR 10 + BOLGE_BENZER (yeni bölge eski benzerinin
+  canlılarını da barındırır), ekosistem BITKILER baobab, murAgaci + BITKI_BENZER. genisleme HAKIM_BOLGELER/BOLGE_MERKEZ, betimleme
+  metinleri, App ortam (tepeler kayalık katmanı, çalılık galeri katmanı, akan dere su), Yardım "Savan, zaman ve yerler", YENILIKLER, YERLER +7.
+  Testler: bot 2 gün (Bozuk 0, 0,63 ms/kare), dayanıklılık, ekosistem 20 gün (göç çıktı), eski kayıt göçü (scratchpad goc.js),
+  dere/kabuk benzetimi (scratchpad dere.js), menu-tara 278 sayfa iki kipte sorun 0, görüntüler scratchpad harita-goruntu.cjs. Telefonda doğrulanmadı.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

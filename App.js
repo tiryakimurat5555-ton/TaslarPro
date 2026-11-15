@@ -38,7 +38,7 @@ import * as Kr from './oyun/kirlilik.js';
 import { KUCUKLER, KUCUK_SIRASI, GRUPLAR, MAGARA_ODALARI, UZAK_ALANLAR, odaListesi, aktifOda, bolumAdi, KUCUK_SESLI, bulunabilirler } from './oyun/kucukler.js';
 import * as Efekt from './oyun/efekt.js';
 import { sahneKur } from './oyun/sahne.js';
-import { TURLER, TUR_SIRASI, YERLER, DAVRANISLAR, EVRELER, BOLGE_ADLARI, ARAC, OZEL_BIREYLER, GECITLER, ISTASYON, nehirY, GOLET, GALERI, KAYALIK, NEHIR_YARI, KUTUP, KUTUP_SIRASI } from './oyun/veri.js';
+import { TURLER, TUR_SIRASI, YERLER, DAVRANISLAR, EVRELER, BOLGE_ADLARI, ARAC, OZEL_BIREYLER, GECITLER, ISTASYON, nehirY, GOLET, GALERI, KAYALIK, NEHIR_YARI, KUTUP, KUTUP_SIRASI, TEPELER, CALILIK, dereX, DERE_UST } from './oyun/veri.js';
 import * as Kt from './oyun/kutup.js';
 import { useJestler } from './oyun/jestler.js';
 import { Liste, useMenuYigini, altMenu, sayfali, RENK, GORUNUM } from './oyun/SesliListe.js';
@@ -152,6 +152,14 @@ function enYakinSu(d) {
     const m = Math.hypot(o.x - GOLET.x, o.y - GOLET.y) - GOLET.su;
     if (m < en.m) en = { m, nokta: { x: GOLET.x, y: GOLET.y } };
   }
+  // Yağışlı mevsimde akan kum dere (dikey tarama)
+  if (d.dereAkiyor && Math.abs(o.x - dereX(o.y)) < 90) {
+    for (let y = Math.max(o.y - 70, nehirY(dereX(o.y)) + 8); y <= Math.min(o.y + 70, DERE_UST); y += 2.5) {
+      const x = dereX(y);
+      const m = Math.hypot(x - o.x, y - o.y) - 2;
+      if (m < en.m) en = { m, nokta: { x, y } };
+    }
+  }
   return en;
 }
 function ortamHedefleri(d) {
@@ -167,7 +175,7 @@ function ortamHedefleri(d) {
   // Su: kıyıya 60 metreden yükselir; kıyıda ya da suyun içindeyken yönsüz. Nehrin güneyindeki sulak alanda hep hafif su sesi.
   const su = enYakinSu(d);
   let ws = Math.pow(sinirla01(1 - Math.max(0, su.m) / ORTAM_MENZIL.su), 1.6);
-  if (M.guneydeMi(o.x, o.y)) ws = Math.max(ws, 0.35);
+  if (M.bolgeBul(o.x, o.y) === 'sulak') ws = Math.max(ws, 0.35);
   if (k.teknede) ws = 1;
   if (su.nokta) yonluKatman(h, 'ortam_nehir', ws, o, su.nokta, sinirla01((su.m - 3) / 15));
   baskin = Math.max(baskin, ws);
@@ -180,10 +188,21 @@ function ortamHedefleri(d) {
     const wg = 0.9 * Math.pow(sinirla01(1 - m / ORTAM_MENZIL.galeri), 1.4);
     yonluKatman(h, 'ortam_galeri', wg, o, { x: gx, y: gy }, sinirla01(m / 12));
     baskin = Math.max(baskin, wg);
-    const mk = Math.hypot(o.x - KAYALIK.x, o.y - KAYALIK.y) - KAYALIK.r;
+    // Kayalık ve granit tepeler: hangisi yakınsa onun yönünden
+    const kaya = [KAYALIK, TEPELER].map((y) => ({ y, m: Math.hypot(o.x - y.x, o.y - y.y) - y.r })).sort((a, b) => a.m - b.m)[0];
+    const mk = kaya.m;
     const wk = 0.85 * Math.pow(sinirla01(1 - Math.max(0, mk) / ORTAM_MENZIL.kayalik), 1.4);
-    yonluKatman(h, 'ortam_kayalik', wk, o, KAYALIK, sinirla01(mk / 12));
+    yonluKatman(h, 'ortam_kayalik', wk, o, kaya.y, sinirla01(mk / 12));
     baskin = Math.max(baskin, wk);
+    // Sık çalılık: kuşların ve böceklerin yoğun sesi (galeri ormanı katmanı, daha hafif)
+    const mc = Math.hypot(o.x - CALILIK.x, o.y - CALILIK.y) - CALILIK.r;
+    const wc = 0.6 * Math.pow(sinirla01(1 - Math.max(0, mc) / ORTAM_MENZIL.galeri), 1.4);
+    if (wc > (h.ortam_galeri_sol || 0) + (h.ortam_galeri_sag || 0)) {
+      delete h.ortam_galeri_sol;
+      delete h.ortam_galeri_sag;
+      yonluKatman(h, 'ortam_galeri', wc, o, CALILIK, sinirla01(mc / 12));
+    }
+    baskin = Math.max(baskin, wc);
   }
   // Yangın: 100 metreden yükselir
   const yy = M.yanginYakin(d);
@@ -381,6 +400,7 @@ const kucuk = (s) => s.toLocaleLowerCase('tr-TR');
 
 // ---------------- Yenilikler (en yeniler üstte): Murat denerken neyin nerede olduğunu bulsun diye ----------------
 const YENILIKLER = [
+  { baslik: 'Harita büyüdü: altı yeni bölge', metin: 'Araştırma alanı her yöne yaklaşık 300 metreye genişledi; eskisinin iki buçuk katı. Dış halkada altı yeni bölge var. Granit tepeler: dev kaya yığınları, babun sürüsü ve bir leopar; tepedeki Gözcü Kayası\'ndan dürbün çok daha uzağı görür. Sık çalılık: dikenli çalılar görüşü kısaltır, iki gergedan saklanır. Kum dere: yağışlı mevsimde akar, kurakta bekâr erkek filler kumu kazıp su kuyusu açar, başka hayvanlar da bu kuyulardan içer. Baobab düzlüğü: dev baobablar, zürafalar, kabuk soyan filler. Güney ovası: zebralar, ceylanlar ve iki çita kardeş; göçmen sürüler buradan geçer. Kuzey otlakları. On yeni küçük canlı (klipspringer, kara kartal, gerenuk, akbaba beç tavuğu, meyve yarasası, bufalo dokumacısı, karınca aslanı, kum boası, kori toyu, yer sincabı) ve iki yeni bitki (baobab, mür ağacı). Üç yeni nadir davranış: kum kuyusu kazma, kuyudan içme, baobab kabuğu soyma.', nerede: 'Menüde Yerler: Granit tepeler, Gözcü Kayası, Sık çalılık, Kum dere yatağı, Baobab düzlüğü, Güney ovası, Kuzey otlakları. Yardım, Savan, zaman ve yerler.' },
   { baslik: 'Kulak ver ve sese dön', metin: 'Yeni alet: Kulak ver. Çift dokununca durup dinlersin; çevrendeki en yakın altı sürünün ya da hayvanın sesi, önünden başlayıp saat yönünde, her biri bulunduğu yönden ve uzaklıktan sırayla duyulur. Ardından ne duyduğun aynı sırayla söylenir. Böylece çevreni görmeden, yalnız kulağınla tanırsın. Bir ses duyduktan sonra menüdeki Son duyduğun sese dön satırı seni o sesin geldiği yöne çevirir; kulak verdikten sonra Dinlediğin seslerden birine dön ile istediğin hayvana yönelirsin.', nerede: 'İki parmakla sağa ya da sola kaydırıp Kulak ver aletini seç; ana menü; VoiceOver kipinde üstteki düğmeler.' },
   { baslik: 'Yeni 3 boyutlu ses motoru', metin: 'Hayvan ve canlı sesleri artık tek bir kayıttan, çalarken gerçek zamanlı yönlendiriliyor. Önceden her ses beş sabit yönden birine yerleşiyordu; şimdi sesin yönü kesintisiz. Ses çalarken hayvan yürürse ya da sen dönersen ses de başının çevresinde kayıyor. Arkandan gelen ses boğuk duyulur. Arada kaya, ağaç ya da bina varsa ses boğuklaşır ve kısılır; mağaradayken dışarıdaki sesler boğuk gelir. Uzaklaştıkça ses kısılır. Bu değişiklik oyunun dosya sayısını da yarıya indirdi.', nerede: 'Sahada her yerde; kulaklıkla dinle.' },
   { baslik: 'Kutup araştırmaları, deniz buzu ölçümü ve kutup sesleri', metin: 'Merkezde dört kutup araştırması var. Deniz buzunun üstündeyken buzun kalınlığını ölçebilirsin. Kutup kuşlarının, lemmingin ve sakallı fokun sesleri artık çevrede duyuluyor. Kışın ya da ilkbaharda kutuptayken yeni bir gizem başlayabilir: Buzun altındaki şarkı. Kuzey ışıkları gökyüzünde daha belirgin.', nerede: 'Kutupta Doğa menüsü: Deniz buzunu ölç ve Kutup raporu. Merkez, Araştırmalar. Merkez, Gizemler.' },
@@ -476,7 +496,8 @@ const YARDIM = [
     baslik: 'Savan, zaman ve yerler',
     satirlar: [
       'Zaman oyun açıkken akar, kapalıyken durur. Bir gün 48 dakika sürer. Gündüz otçullar otlar; akşam ve gece yırtıcılar avlanır. Gece dürbünle görüş kısalır.',
-      'Savanda gölet, nehir, nehrin güneyinde sulak alan, batıda kayalık ve mağara girişi, kuzeyde akasya ağaçlığı var. Nehir yalnızca iki geçitten geçilir.',
+      'Savanın ortasında gölet, nehir, nehrin güneyinde sulak alan, batıda kayalık ve mağara girişi, kuzeyde akasya ağaçlığı var. Nehir yalnızca iki geçitten geçilir. Araştırma alanı istasyondan her yöne yaklaşık 300 metre uzanır.',
+      'Dış halkada altı bölge var. Kuzeybatıda granit tepeler: babunlar ve bir leopar yaşar; ortadaki Gözcü Kayası\'nın tepesinden dürbün bir buçuk kat uzağı görür. Kuzeydoğuda sık çalılık: görüş kısalır, iki gergedan saklanır; burada kulağına güven. Doğuda kuzeyden nehre inen kum dere: yağışlı mevsimde akar, kurakta bekâr erkek filler kumu kazıp su kuyusu açar, öbür hayvanlar da o kuyulardan içer. Derenin batısında baobab düzlüğü: zürafalar beslenir, filler baobab kabuğunu soyar. Nehrin güneyinde, sulak alanın ötesinde geniş güney ovası: zebralar, ceylanlar ve iki çita kardeş yaşar, göç eden sürüler oradan geçer. En kuzeyde de uzun otlu kuzey otlakları.',
       'Menüdeki Yerler seni istediğin yere yürütür ya da araçla götürür. Saat yönleri: 12 tam önün, 3 sağın, 6 arkan, 9 solun.',
     ],
   },
@@ -1173,6 +1194,9 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       case 'yonetim':
       case 'sosyal':
       case 'yalak':
+      case 'kuyu':
+      case 'kabuk':
+      case 'gozcu':
       case 'kamera':
         Efekt.cal('odak', 0.5);
         return;

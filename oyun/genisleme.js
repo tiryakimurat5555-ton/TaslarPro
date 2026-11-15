@@ -6,7 +6,7 @@
 //  41 kamp sistemi                     → saha kampı (saklanak, dinlenme, şarj)
 //  84 canlı ekosistem haritası         → gözlem, GPS, kamera tuzağı ve dronla açılan bilgiler
 // mantik ve ekosistemi kullanır; mantik bunu içe aktarmaz. Sayılar ÖNERİ (Murat onaylamadı).
-import { TURLER, ISTASYON, GOLET, KAYALIK, TERMITLER, YARICAP, nehirY, BOLGE_ADLARI, DAVRANISLAR, ARACLAR, ARAC_YERI } from './veri.js';
+import { TURLER, ISTASYON, GOLET, KAYALIK, TERMITLER, YARICAP, nehirY, BOLGE_ADLARI, DAVRANISLAR, ARACLAR, ARAC_YERI, TEPELER, CALILIK, BAOBAB, OVA, dereX } from './veri.js';
 import * as M from './mantik.js';
 import * as E from './ekosistem.js';
 import * as Iz from './izler.js';
@@ -120,7 +120,7 @@ export function translokasyon(d) {
 // 2. BÖLGESEL HÂKİMİYET VE REKABET (karar 73)
 // =====================================================================
 export const YIRTICI_GUC = { aslan: 3, sirtlan: 1.6, leopar: 1.4, yabanKopegi: 1.3, cita: 0.8 };
-export const HAKIM_BOLGELER = ['golet', 'nehir', 'sulak', 'kayalik', 'galeri', 'termit', 'agaclik', 'otlak'];
+export const HAKIM_BOLGELER = ['golet', 'nehir', 'sulak', 'kayalik', 'galeri', 'termit', 'agaclik', 'otlak', 'tepeler', 'calilik', 'baobab', 'dere', 'ova', 'kuzeyOtlak'];
 const LIDERLI = ['aslan', 'zebra', 'impala'];
 const grupGucu = (d, g) => {
   const u = M.uyeler(d, g);
@@ -504,6 +504,12 @@ export const BOLGE_MERKEZ = {
   termit: { x: TERMITLER.x, y: TERMITLER.y },
   agaclik: { x: 40, y: 125 },
   otlak: { x: -70, y: 10 },
+  tepeler: { x: TEPELER.x, y: TEPELER.y },
+  calilik: { x: CALILIK.x, y: CALILIK.y },
+  baobab: { x: BAOBAB.x, y: BAOBAB.y },
+  dere: { x: dereX(40), y: 40 },
+  ova: { x: OVA.x, y: OVA.y },
+  kuzeyOtlak: { x: 20, y: 260 },
 };
 export function haritaIsle(k, g, sayi, kaynak) {
   if (!k.harita || !g) return;
