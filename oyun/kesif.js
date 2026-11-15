@@ -471,7 +471,7 @@ export const uzakIlerleme = (k, alan) => {
 };
 
 // ---------- Kaçak avcılık: tel tuzaklar (karar 60) ----------
-const OTCULLAR = ['zebra', 'ceylan', 'impala', 'gnu', 'domuz', 'manda', 'zurafa'];
+const OTCULLAR = ['zebra', 'ceylan', 'impala', 'gnu', 'domuz', 'manda', 'zurafa', 'topi', 'kongoni', 'grantCeylani', 'eland'];
 export function tuzakKurulumu(d) {
   // Günde bir çağrılır: kaçak avcılar bazen otçulların yollarına tel tuzak kurar
   const k = d.k;

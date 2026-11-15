@@ -88,7 +88,7 @@ export const YERLER = [
 ];
 // Aşama 14 (karar 103): otçulların mineral ihtiyacını karşıladığı tuz yalağı
 export const TUZ_YALAGI = { x: -32, y: 58, r: 7 };
-export const MINERAL_TURLERI = ['fil', 'manda', 'zurafa', 'zebra', 'gnu', 'impala', 'gergedan'];
+export const MINERAL_TURLERI = ['fil', 'manda', 'zurafa', 'zebra', 'gnu', 'impala', 'gergedan', 'eland', 'suAntilopu'];
 // Aşama 14 (karar 100): nadir özel bireyler; gerçek vakalardan esinlenildi
 export const OZEL_BIREYLER = {
   benekliZebra: { tur: 'zebra', ad: 'benekli zebra', renk: '#2a2420', gorunus: 'çizgileri yerine koyu zemin üzerinde beyaz benekler taşıyor', tarif: 'Çizgileri yerine koyu zemin üzerinde beyaz benekler taşıyan çok nadir bir zebra. Pigment hücreleri normal, ama melanin dağılımı bozuk; buna psödomelanizm denir. 2019\'da Masai Mara\'da böyle bir tay fotoğraflanınca dünya bu desenle ilk kez tanıştı.' },
@@ -399,6 +399,55 @@ export const TURLER = {
     hiz: 7, aktif: 'gunduz', kacis: 30, sesSik: 70, sesTuru: 'alarm', alarmSesi: true, yeme: 'yiyecekAriyor',
     habitat: { x: 148, y: -80, r: 26 }, grup: [8, 12], erkekOran: 0.35,
     tarif: 'Galeri ormanında ve kayalıklarda yaşayan büyük bir maymun. Sürüde karmaşık bir hiyerarşi ve dostluklar vardır; tımarlaşma bağları güçlendirir. Hemen her şeyi yer.',
+  },
+  // Gerçek türler genişlemesi (savan): Doğu Afrika savanında yaşayan öbür büyük hayvanlar
+  devekusu: {
+    ad: 'Devekuşu', bilimsel: 'Struthio camelus', kisa: 'DVK', sinif: 'Kuş', ses: 'k_devekusu', sekil: 'emu', boy: 1.9, renk: '#8a7a68',
+    hiz: 13, aktif: 'gunduz', kacis: 45, sesSik: 160, sesTuru: 'bolge',
+    habitat: { x: -60, y: -235, r: 70, guneyde: true }, grup: [3, 6], erkekOran: 0.35,
+    tarif: 'Yaşayan en büyük kuş. Uçamaz ama saatte 70 kilometreyle koşar ve tek tekmesi bir aslanı yaralayabilir. Erkek siyah beyaz, dişi gri kahverengidir. Erkek, aslan kükremesine benzeyen derin bir gümbürtüyle bölgesini duyurur; yumurtaları gündüz dişi, gece erkek kuluçkaya yatırır. Zebra ve antilop sürülerinin yanında otlar: keskin gözü tehlikeyi erken görür.',
+  },
+  eland: {
+    ad: 'Eland', bilimsel: 'Taurotragus oryx', kisa: 'ELN', sinif: 'Memeli', ses: 'eland', sekil: 'ceylan', boy: 1.55, renk: '#b89a70',
+    hiz: 7, aktif: 'karma', kacis: 45, sesSik: 140, sesTuru: 'iletisim', yeme: 'yapraklaBesleniyor',
+    habitat: { x: -80, y: 205, r: 60 }, grup: [6, 10], erkekOran: 0.25,
+    tarif: 'Dünyanın en büyük antilobu; erkekler bir tona yaklaşır. İki cinsiyette de düz, burgulu boynuz vardır; boğazlarında sarkık bir gerdan taşırlar. Yürürken dizlerinden gelen tık tık sesi uzaktan duyulur. Çalı yaprağı ve ot yer, su içmeden uzun süre dayanabilir. Çok ürkektir.',
+  },
+  topi: {
+    ad: 'Topi', bilimsel: 'Damaliscus lunatus jimela', kisa: 'TOP', sinif: 'Memeli', ses: 'topi', sekil: 'ceylan', boy: 1.0, renk: '#8a4e30',
+    hiz: 10, aktif: 'gunduz', kacis: 38, sesSik: 100, sesTuru: 'alarm', alarmSesi: true,
+    habitat: { x: 40, y: 245, r: 55 }, grup: [6, 10], erkekOran: 0.2,
+    tarif: 'Parlak kızıl kahverengi postu ve bacaklarındaki koyu mavimsi lekeleriyle tanınır. Erkekler bölgelerini bir termit tepesinin üstünde dikilip gözleyerek korur. Çok hızlıdır ve uzun mesafe koşabilir. Islak otlakların yeşil otunu sever.',
+  },
+  kongoni: {
+    ad: 'Kongoni', bilimsel: 'Alcelaphus buselaphus cokii', kisa: 'KNG', sinif: 'Memeli', ses: 'kongoni', sekil: 'ceylan', boy: 1.0, renk: '#b8925e',
+    hiz: 10, aktif: 'gunduz', kacis: 40, sesSik: 100, sesTuru: 'alarm', alarmSesi: true,
+    habitat: { x: 110, y: -235, r: 60, guneyde: true }, grup: [5, 9], erkekOran: 0.2,
+    tarif: 'Coke kongonisi, uzun ve dar yüzlü bir kanna antilobu. Kısa boynuzları kafasının tepesindeki kemik bir kaidenin üstünden çıkar. Tehlikede hapşırır gibi tıslar. Koşarken yorulmadan saatlerce dayanır.',
+  },
+  suAntilopu: {
+    ad: 'Su antilobu', bilimsel: 'Kobus ellipsiprymnus defassa', kisa: 'SUA', sinif: 'Memeli', ses: 'suantilopu', sekil: 'ceylan', boy: 1.15, renk: '#6e5e4c',
+    hiz: 8, aktif: 'karma', kacis: 35, sesSik: 120, sesTuru: 'alarm',
+    habitat: { x: -75, y: nehirY(-75) + 28, r: 32 }, grup: [4, 7], erkekOran: 0.2,
+    tarif: 'Hiç sudan uzaklaşmayan iri, tüylü bir antilop. Postu yağlıdır ve misk gibi kokar; bu kokusu yüzünden yırtıcıların gözdesi değildir. Tehlikede suya kaçar. Yalnız erkeklerin öne doğru kıvrılan uzun, halkalı boynuzu vardır.',
+  },
+  grantCeylani: {
+    ad: 'Grant ceylanı', bilimsel: 'Nanger granti', kisa: 'GRC', sinif: 'Memeli', ses: 'ceylan', sekil: 'ceylan', boy: 0.78, renk: '#c8a272',
+    hiz: 10, aktif: 'gunduz', kacis: 32, sesSik: 140, sesTuru: 'alarm', alarmSesi: true,
+    habitat: { x: 145, y: 120, r: 45 }, grup: [6, 10], erkekOran: 0.2,
+    tarif: 'Thomson ceylanının daha iri akrabası. Beyaz arka lekesi kuyruğunun üstüne kadar uzanır. Yaprak da yediği için kurak, çalılık yerlerde su içmeden yaşayabilir. Erkeklerin boynuzu çok uzundur.',
+  },
+  karakulak: {
+    ad: 'Karakulak', bilimsel: 'Caracal caracal', kisa: 'KRK', sinif: 'Memeli', ses: 'karakulak', sekil: 'kedi', boy: 0.55, renk: '#b87a4a',
+    hiz: 12, aktif: 'gece', kacis: 40, yirtici: true, avlar: ['ceylan', 'grantCeylani', 'impala'], sesSik: 240, sesTuru: 'tehdit',
+    habitat: { x: 215, y: 165, r: 55 }, grup: [1, 1], erkekOran: 0.5,
+    tarif: 'Uzun, kara püsküllü kulakları olan orta boy bir yaban kedisi. Yerinden üç metre yükseğe sıçrayıp uçan kuşu havada yakalayabilir. Kendinden büyük antilop yavrularını da avlar. Gizli yaşar, çoğunlukla gece ve alacakaranlıkta dolaşır.',
+  },
+  beisaOriks: {
+    ad: 'Beisa oriksi', bilimsel: 'Oryx beisa', kisa: 'ORK', sinif: 'Memeli', ses: 'oriks', sekil: 'ceylan', boy: 1.05, renk: '#bdb3a2',
+    hiz: 9, aktif: 'gunduz', kacis: 40, sesSik: 160, sesTuru: 'iletisim',
+    habitat: { x: -215, y: -30, r: 55 }, grup: [4, 8], erkekOran: 0.3,
+    tarif: 'Kurak düzlüklerin antilobu. Gri postu, yüzündeki kara maskesi ve iki cinsiyette de bulunan mızrak gibi düz, uzun boynuzlarıyla tanınır. Vücut ısısının gündüz yükselmesine izin vererek su kaybetmez; aylarca su içmeden yalnızca bitkilerin nemiyle yaşayabilir. Boynuzlarıyla aslanı bile savuşturabilir.',
   },
 };
 

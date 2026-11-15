@@ -253,7 +253,7 @@ export function iklimSatirlari(k) {
 }
 
 // ---------- Grup hâlinde uyku ve nöbet (karar 110) ----------
-const NOBET_TUTAN = ['zebra', 'impala', 'gnu', 'ceylan', 'manda', 'babun', 'yabanKopegi', 'zurafa'];
+const NOBET_TUTAN = ['zebra', 'impala', 'gnu', 'ceylan', 'manda', 'babun', 'yabanKopegi', 'zurafa', 'topi', 'kongoni', 'grantCeylani', 'beisaOriks', 'eland'];
 function uykuDenetle(d) {
   const k = d.k;
   for (const g of k.gruplar) {

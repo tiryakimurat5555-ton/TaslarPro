@@ -630,7 +630,13 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   (fok, sürü; kara lir deseni, yavru beyaz: fg.material = mat(), ortak malzemeye dokunma), kapucinFok (fok, tehlikeli; erkekte kara kese + kırmızı balon),
   kurtPorsugu (vombat biçimi + yan şerit + kuyruk; yırtıcı + lesci). narval ve sakalliFok küçük canlı kaldı (kutupSes gizemi sakalliFok'u kullanır).
   KUTUP_CANLILARI + 11; KUCUK_SESLI kirmiziBoyunluDalgic, bernacleKazi. Merkez araştırması arktikDevleri. assets/efekt 754.
-  SIRADAKİ: Savan.
+  SAVAN YAPILDI (15 Kasım 2026): TURLER + 8 (savan bloğunun sonunda, kutup bayrağı yok): devekusu (küçük canlıdan büyük türe taşındı; KUCUKLER ve
+  KUCUK_SESLI'den silindi, ses 'k_devekusu'; sahne emu biçimi + erkek kara tüy, beyaz kanat/kuyruk, pembe boyun; güney ovası), eland (ceylan biçimi, gerdan,
+  beyaz çizgiler, iki cinste burgulu boynuz, yapraklaBesleniyor), topi (kızıl, mavimsi leke), kongoni (uzun yüz, kaide üstünde boynuz; güney ovası),
+  suAntilopu (nehir kıyısı, beyaz rump halkası, yalnız erkekte boynuz), grantCeylani (ses ceylan, ALARM_SESI), karakulak (kedi + kara püsküllü kulak; yırtıcı,
+  gece, avlar ceylan/grant/impala; sık çalılık), beisaOriks (kara maske, uzun düz boynuz, EN; batı kurak düzlük). NOBET_TUTAN, MINERAL_TURLERI, OTCULLAR,
+  TUKETIM, YIRTICI_GUC eklendi. Merkez araştırması savanAntiloplari. Sesler eland, topi, kongoni, suantilopu, karakulak, oriks (konumlu); assets/efekt 778.
+  Yardım "Savan, zaman ve yerler" 5. satır tür listesi. Hiçbir harita kalmadı.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

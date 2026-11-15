@@ -119,7 +119,7 @@ export function translokasyon(d) {
 // =====================================================================
 // 2. BÖLGESEL HÂKİMİYET VE REKABET (karar 73)
 // =====================================================================
-export const YIRTICI_GUC = { aslan: 3, sirtlan: 1.6, leopar: 1.4, yabanKopegi: 1.3, cita: 0.8 };
+export const YIRTICI_GUC = { aslan: 3, sirtlan: 1.6, leopar: 1.4, yabanKopegi: 1.3, cita: 0.8, karakulak: 0.5 };
 export const HAKIM_BOLGELER = ['golet', 'nehir', 'sulak', 'kayalik', 'galeri', 'termit', 'agaclik', 'otlak', 'tepeler', 'calilik', 'baobab', 'dere', 'ova', 'kuzeyOtlak'];
 const LIDERLI = ['aslan', 'zebra', 'impala'];
 const grupGucu = (d, g) => {

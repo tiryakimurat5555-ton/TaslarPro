@@ -36,6 +36,7 @@ export const SOZ = {
   aslan: 'Aslan', leopar: 'Leopar', sirtlan: 'Sırtlan', fil: 'Fil', zurafa: 'Zürafa', zebra: 'Zebra', ceylan: 'Ceylan',
   domuz: 'Yaban domuzu', suAygiri: 'Su aygırı', timsah: 'Timsah', gergedan: 'Gergedan', kartal: 'Balık kartalı', piton: 'Piton', manda: 'Manda',
   gnu: 'Gnu', cita: 'Çita', impala: 'İmpala', yabanKopegi: 'Yaban köpeği', babun: 'Babun',
+  devekusu: 'Devekuşu', eland: 'Eland', topi: 'Topi', kongoni: 'Kongoni', suAntilopu: 'Su antilobu', grantCeylani: 'Grant ceylanı', karakulak: 'Karakulak', beisaOriks: 'Oriks',
   kutupAyisi: 'Kutup ayısı', halkaliFok: 'Halkalı fok', mors: 'Mors', beluga: 'Beluga', renGeyigi: 'Ren geyiği', miskOkuzu: 'Misk öküzü',
   kutupKurdu: 'Kutup kurdu', kutupTilkisi: 'Kutup tilkisi', kutupTavsani: 'Kutup tavşanı',
   gronlandBalinasi: 'Grönland balinası', gronlandFoku: 'Grönland foku', kapucinFok: 'Kapüşonlu fok', kurtPorsugu: 'Kutup porsuğu',
@@ -705,7 +706,7 @@ export function efekt(d, ad, duzey = 0.8, konum = null, duyma = 60) {
   if (q.length < 20) q.push(konum ? { ad, duzey, x: konum.x, y: konum.y, duyma } : { ad, duzey });
 }
 // Alarm sesi veren otçullar (Ses efektleri genişlemesi): impala ve ceylan havlar gibi homurdanır, zebra ve gnu kişner
-const ALARM_SESI = { impala: 'h_alarm_impala', ceylan: 'h_alarm_impala', zebra: 'h_alarm_zebra', gnu: 'h_alarm_zebra' };
+const ALARM_SESI = { impala: 'h_alarm_impala', ceylan: 'h_alarm_impala', grantCeylani: 'h_alarm_impala', zebra: 'h_alarm_zebra', gnu: 'h_alarm_zebra' };
 export function efektleriAl(d) {
   const l = d.efektKuyruk || [];
   d.efektKuyruk = [];
@@ -2322,6 +2323,9 @@ export function kacisMesafesi(d, b) {
 // ---------- Duyular (Aşama 9, karar 71) ----------
 // Türlerin koku, görme ve işitme duyarlılığı (1 ortalama)
 export const DUYULAR = {
+  devekusu: { koku: 0.6, gorme: 1.8, isitme: 1 }, eland: { koku: 1.2, gorme: 1, isitme: 1.3 }, topi: { koku: 1, gorme: 1.3, isitme: 1.1 },
+  kongoni: { koku: 1.1, gorme: 1.2, isitme: 1.2 }, suAntilopu: { koku: 1.1, gorme: 1, isitme: 1.2 }, grantCeylani: { koku: 1, gorme: 1.2, isitme: 1.2 },
+  karakulak: { koku: 0.9, gorme: 1.4, isitme: 1.6 }, beisaOriks: { koku: 1.1, gorme: 1.2, isitme: 1.1 },
   aslan: { koku: 1.1, gorme: 1.1, isitme: 1.2 }, leopar: { koku: 1, gorme: 1.2, isitme: 1.3 }, sirtlan: { koku: 1.5, gorme: 0.9, isitme: 1.3 },
   fil: { koku: 1.6, gorme: 0.6, isitme: 1.3 }, zurafa: { koku: 0.8, gorme: 1.6, isitme: 1 }, zebra: { koku: 1, gorme: 1.1, isitme: 1.2 },
   ceylan: { koku: 1, gorme: 1.2, isitme: 1.2 }, domuz: { koku: 1.4, gorme: 0.7, isitme: 1.1 }, suAygiri: { koku: 1, gorme: 0.8, isitme: 1 },
@@ -2477,6 +2481,7 @@ function avciMetni(av, avci) {
 
 // Aşama 13: türlere göre av stratejisi (karar 102). sure: kovalamadan vazgeçme (sn), yardimci: kuşatmaya katılan yetişkin sayısı
 export const AV_STRATEJI = {
+  karakulak: { ad: 'tek başına sinsice yaklaşma ve olağanüstü bir sıçrayış: avın üstüne birkaç metreden atılır, kuşları havada yakalar', sure: 6, yardimci: 0 },
   aslan: { ad: 'pusu ve ortak kuşatma', sure: 13, yardimci: 2 },
   leopar: { ad: 'tek başına sinsice yaklaşıp kısa atılış', sure: 8, yardimci: 0 },
   cita: { ad: 'yakına sokulup çok hızlı kısa koşu', sure: 8, yardimci: 0, hiz: 1.15 },
@@ -2737,7 +2742,7 @@ function kalitim(d, y, anne, baba) {
 }
 
 // Doğum: gebeliğin sonunda (Aşama 21)
-export const GEBE_GUN = { aslan: 3, leopar: 3, sirtlan: 3, cita: 3, yabanKopegi: 2, fil: 7, zurafa: 5, zebra: 4, gnu: 3, impala: 3, ceylan: 2, domuz: 2, suAygiri: 4, gergedan: 6, manda: 4, babun: 3, kutupAyisi: 6, halkaliFok: 5, mors: 7, beluga: 7, renGeyigi: 4, miskOkuzu: 4, kutupKurdu: 2, kutupTilkisi: 2, kutupTavsani: 2, imparatorPengueni: 3, adeliPengueni: 2, weddellFoku: 5, leoparFoku: 5, orka: 7, filFoku: 6, takhi: 5, karLeopari: 3, kizilGeyik: 4, karaca: 3, yabanDomuzu: 2, vasak: 2, kizilTilki: 2, porsuk: 2, dagKecisi: 3, kulan: 5, saiga: 3, mogolKurdu: 2, dzeren: 3, argali: 4, kaplan: 3, hintFili: 7, cital: 3, sambar: 3, gaur: 4, langur: 2, kirmiziKanguru: 3, koala: 3, emu: 3, vombat: 3, dingo: 2, hintLeopari: 3, tembelAyi: 4, hintYabanKopegi: 2, cizgiliSirtlan: 3, altinCakal: 2, barasingha: 4, nilgay: 4, muntjak: 3, hintYabanDomuzu: 2, dortBoynuzlu: 3, rhesus: 3, bozKanguru: 3, euro: 3, kayaValabisi: 3, bilbi: 2, kuol: 2, perentie: 3, avTilkisi: 2, yabaniDeve: 6, avrupaTavsani: 1, yengecYiyenFok: 5, rossFoku: 5, kurkluFok: 5, minkeBalina: 7, kamburBalina: 7, maviBalina: 7, gronlandBalinasi: 7, gronlandFoku: 5, kapucinFok: 5, kurtPorsugu: 3 };
+export const GEBE_GUN = { aslan: 3, leopar: 3, sirtlan: 3, cita: 3, yabanKopegi: 2, fil: 7, zurafa: 5, zebra: 4, gnu: 3, impala: 3, ceylan: 2, domuz: 2, suAygiri: 4, gergedan: 6, manda: 4, babun: 3, kutupAyisi: 6, halkaliFok: 5, mors: 7, beluga: 7, renGeyigi: 4, miskOkuzu: 4, kutupKurdu: 2, kutupTilkisi: 2, kutupTavsani: 2, imparatorPengueni: 3, adeliPengueni: 2, weddellFoku: 5, leoparFoku: 5, orka: 7, filFoku: 6, takhi: 5, karLeopari: 3, kizilGeyik: 4, karaca: 3, yabanDomuzu: 2, vasak: 2, kizilTilki: 2, porsuk: 2, dagKecisi: 3, kulan: 5, saiga: 3, mogolKurdu: 2, dzeren: 3, argali: 4, kaplan: 3, hintFili: 7, cital: 3, sambar: 3, gaur: 4, langur: 2, kirmiziKanguru: 3, koala: 3, emu: 3, vombat: 3, dingo: 2, hintLeopari: 3, tembelAyi: 4, hintYabanKopegi: 2, cizgiliSirtlan: 3, altinCakal: 2, barasingha: 4, nilgay: 4, muntjak: 3, hintYabanDomuzu: 2, dortBoynuzlu: 3, rhesus: 3, bozKanguru: 3, euro: 3, kayaValabisi: 3, bilbi: 2, kuol: 2, perentie: 3, avTilkisi: 2, yabaniDeve: 6, avrupaTavsani: 1, yengecYiyenFok: 5, rossFoku: 5, kurkluFok: 5, minkeBalina: 7, kamburBalina: 7, maviBalina: 7, gronlandBalinasi: 7, gronlandFoku: 5, kapucinFok: 5, kurtPorsugu: 3, devekusu: 2, eland: 5, topi: 4, kongoni: 4, suAntilopu: 4, grantCeylani: 3, karakulak: 2, beisaOriks: 4 };
 function dogumYap(d, g, anne, baba) {
   const k = d.k;
   const y = bireyOlustur(k, d.rng, g.tur, g, 'yavru', d.rng() < 0.5 ? 'erkek' : 'disi', anne.x + 0.8, anne.y + 0.8, anne.id);
@@ -2840,9 +2845,9 @@ function gunlukDogumlar(d) {
 
 // ---------- Ekosistem: sağlık, yaşam döngüsü, göç (Aşama 5) ----------
 // Yırtıcıların acıkma süresi (oyun dakikası): büyük av birkaç gün doyurur, timsah haftalarca aç kalabilir
-const ACLIK_SURESI = { aslan: 4300, leopar: 7000, sirtlan: 3600, timsah: 12000, cita: 5000, yabanKopegi: 4500, kutupAyisi: 8000, kutupKurdu: 5000, kutupTilkisi: 2600, leoparFoku: 5000, orka: 6000, dingo: 4200, kaplan: 5200, karLeopari: 6000, mogolKurdu: 4600, vasak: 5000, hintLeopari: 6000, hintYabanKopegi: 4200, cizgiliSirtlan: 9000, altinCakal: 3600, kuol: 3000, avTilkisi: 3200, kurtPorsugu: 6000 };
+const ACLIK_SURESI = { aslan: 4300, leopar: 7000, sirtlan: 3600, timsah: 12000, cita: 5000, yabanKopegi: 4500, kutupAyisi: 8000, kutupKurdu: 5000, kutupTilkisi: 2600, leoparFoku: 5000, orka: 6000, dingo: 4200, kaplan: 5200, karLeopari: 6000, mogolKurdu: 4600, vasak: 5000, hintLeopari: 6000, hintYabanKopegi: 4200, cizgiliSirtlan: 9000, altinCakal: 3600, kuol: 3000, avTilkisi: 3200, kurtPorsugu: 6000, karakulak: 4800 };
 // Otlayan bir bireyin saatlik tüketimi (zebra = 1)
-const TUKETIM = { fil: 3, manda: 1.5, zebra: 1, ceylan: 0.4, domuz: 0.5, gergedan: 2, suAygiri: 2, zurafa: 1.5, gnu: 1.1, impala: 0.5, babun: 0.3 };
+const TUKETIM = { fil: 3, manda: 1.5, zebra: 1, ceylan: 0.4, domuz: 0.5, gergedan: 2, suAygiri: 2, zurafa: 1.5, gnu: 1.1, impala: 0.5, babun: 0.3, devekusu: 0.4, eland: 1.2, topi: 0.7, kongoni: 0.7, suAntilopu: 0.8, grantCeylani: 0.4, beisaOriks: 0.6 };
 
 export function gecmisEkle(k, b, metin) {
   if (!b) return;
@@ -4876,6 +4881,7 @@ export function donusTikirtisi(d) {
 
 // Koşu sesi türü (kaçarken, kovalarken, sahte saldırıda; App 3B çalar): toynak orta boy, hafif toynak, ağır, pati
 export const KOSU_SESI = {
+  devekusu: 'kosu_hafif', eland: 'kosu_toynak', topi: 'kosu_toynak', kongoni: 'kosu_toynak', suAntilopu: 'kosu_toynak', grantCeylani: 'kosu_hafif', karakulak: 'kosu_pati', beisaOriks: 'kosu_toynak',
   zebra: 'kosu_toynak', gnu: 'kosu_toynak', zurafa: 'kosu_toynak',
   ceylan: 'kosu_hafif', impala: 'kosu_hafif', domuz: 'kosu_hafif',
   fil: 'kosu_agir', gergedan: 'kosu_agir', suAygiri: 'kosu_agir', manda: 'kosu_agir',

@@ -287,6 +287,18 @@ export const ARASTIRMALAR = [
     odul: { itibar: 14, fon: 5000 },
     sonuc: 'Tundranın bütün yaşamının birkaç haftalık yaza sıkıştığı gösterildi: bitkiler kar kalkar kalkmaz çiçek açıyor, kuşlar gece yarısı güneşinde yavrularını büyütüyor, lemmingler kar altında kışı geçiriyor.',
   },
+  // Savan: gerçek türler genişlemesi
+  {
+    id: 'savanAntiloplari',
+    ad: 'Savanın antilopları ve devekuşları',
+    kosulMetni: 'Devekuşu, eland, topi, kongoni, su antilobu, Grant ceylanı, karakulak ve beisa oriksini kaydet; bunlardan 3 bireyi tanımla',
+    ilerleme: (k) => {
+      const l = ['devekusu', 'eland', 'topi', 'kongoni', 'suAntilopu', 'grantCeylani', 'karakulak', 'beisaOriks'];
+      return [l.filter((t) => k.arsiv.turler[t]).length + Math.min(3, k.hayvanlar.filter((b) => b.no > 0 && l.includes(b.tur)).length), 11];
+    },
+    odul: { itibar: 16, fon: 6000 },
+    sonuc: 'Savanın otlakları türlere göre bölüşülüyor: topi ve kongoni orta boylu otu, Grant ceylanı ve oriks kurak çalılığı, eland çalı yaprağını, su antilobu nehir kıyısını kullanıyor. Devekuşlarının keskin gözü yanındaki antilop sürülerini de uyarıyor; karakulak bu sürülerin yavrularını avlıyor.',
+  },
   // Moğol bozkırı araştırmaları
   {
     id: 'bozkirFaunasi',
