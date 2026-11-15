@@ -490,6 +490,7 @@ const EK_GEZI_TARIF = {
   madagaskar: 'Madagaskar\'ın güneybatısında serbestçe dolaşılan ayrı bir harita: halka kuyruklu lemur, sifaka, kızıl alınlı lemur, ay-ay, fossa, radyal kaplumbağa ve çalı domuzu. Galeri ormanı, dikenli orman ve baobab düzlüğü; hayvanların neredeyse hepsi dünyada yalnız burada yaşar.',
 };
 const YENILIKLER = [
+  { baslik: 'Gerçek 3B ses (APK ve oyunun kendi derlemesinde)', metin: 'Hayvan, kuş ve koşu sesleri artık tek kayıttan çalarken gerçek zamanlı yönlendiriliyor: ses yandan gelince uzak kulağa biraz geç ve tizleri kısılmış ulaşır, arkadan gelen ses boğuk duyulur, uzaktaki seste yankı artar, ağaç ve kayanın ardındaki ses boğulur, mağarada yankılanır, yaklaşan hayvanın sesi tizleşir, uzaklaşanınki pesleşir (Doppler). Kulaklıkla en iyi duyulur. Bu yalnız oyunun kendi derlemesinde (APK) çalışır; Expo Go\'da konumlu sesler yönsüz, yalnız uzaklığa göre kısılarak çalar. Sesin dört kopyası kaldırıldı; oyun 560 dosya hafifledi.', nerede: 'sahada; Kulak ver ile dene.' },
   { baslik: 'Yeni harita: Madagaskar', metin: 'Madagaskar\'ın güneybatısında, savandan ayrı, serbestçe dolaşılan yeni bir harita. Halka kuyruklu lemur, beyaz sifaka, kızıl alınlı lemur, gece ağaçlara tıklayan ay-ay, adanın tek büyük yırtıcısı fossa, sarı ışınlı radyal kaplumbağa ve çalı domuzu yaşıyor. Galeri ormanı, dünyada yalnız burada yetişen dikenli Didierea ormanı ve dev baobablar. Lemurlar sabah güneşlenir, erkekler kuyruklarıyla koku düellosu yapar, sifakalar yerde yan yan sekerek dans eder; fossa yaklaşınca lemurlar alarm verir. 10 küçük canlı (bukalemun, fare lemuru, tenrek, zürafa boyunlu böcek), 3 bitki ve üç araştırma var. İtibarın 95 olunca açılır.', nerede: 'Araştırma merkezi, Saha gezileri: Madagaskar, yola çık. Yardım, Yeni haritalar.' },
   { baslik: 'Yeni harita: Borneo yağmur ormanı', metin: 'Malezya\'da, Borneo adasının Kinabatangan Nehri kıyısında yeni bir harita. Orangutan, büyük burunlu hortumlu maymun, Borneo cüce fili, bulutlu leopar, dünyanın en küçük ayısı güneş ayısı, sakallı domuz ve tuzlu su timsahı yaşıyor. Orangutanlar her akşam dallardan yuva yapar, hortumlu maymunlar nehri yüzerek geçer, güneş ayıları ağaç kovuğunda bal arar. Kuzeydoğu musonunda nehir taşar. 10 küçük canlı (gibon, gergedan boynuzgagası, uçan ejder kertenkelesi, senkron ateş böcekleri), 2 bitki ve üç araştırma var. İtibarın 90 olunca açılır.', nerede: 'Araştırma merkezi, Saha gezileri: Borneo yağmur ormanı, yola çık. Yardım, Yeni haritalar.' },
   { baslik: 'Yeni harita: Yellowstone', metin: 'ABD\'de, Yellowstone\'un Lamar Vadisi\'nde yeni bir harita. Boz ayı, gri kurt, bizon, wapiti, sığın, çatal boynuzlu antilop, puma ve çakal kurdu yaşıyor. Ortadan yürüyerek geçilebilen sığ bir nehir akar; kuzeyde çam ormanı ve kayalık sırt, güneydoğuda buharı tüten, renkli sıcak su kaynakları var. Kışı çok sert: vadi karla örtülür, ayılar inlerinde uyur, bizonlar başlarıyla karı süpürür ve sıcak kaynaklarda ısınır, kurt ulumaları vadide yankılanır. Sıcak kaynakların kendi sesi var. 10 küçük canlı (kunduz, ak başlı kartal, kuzgun, pika), 2 bitki ve üç araştırma var. İtibarın 85 olunca açılır.', nerede: 'Araştırma merkezi, Saha gezileri: Yellowstone, yola çık. Yardım, Yeni haritalar.' },
@@ -1179,7 +1180,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
   };
 
   useEffect(() => {
-    Efekt.onYukle(['adim_ot_0', 'adim_ot_1', 'adim_ot_2', 'adim_ot_3', 'donus_tik', 'hedef_onde', 'sonar_L', 'sonar_R', 'odak', 'etkinles', 'altin', 'seviye', 'hata', 'carpma', 'sinir', 'menu_odak', 'menu_sec', 'menu_geri', 'menu_sinir', 'deklansor', 'durbun_odak']);
+    Efekt.onYukle(['adim_ot_0', 'adim_ot_1', 'adim_ot_2', 'adim_ot_3', 'donus_tik', 'hedef_onde', 'odak', 'etkinles', 'altin', 'seviye', 'hata', 'carpma', 'sinir', 'menu_odak', 'menu_sec', 'menu_geri', 'menu_sinir', 'deklansor', 'durbun_odak']);
     ortamSec();
     let silici;
     setAltyazi('');
@@ -1629,6 +1630,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         if (dongulerSayac <= 0) {
           dongulerSayac = 0.25;
           if (a.ortam !== false) Efekt.ortamKatmanlar(ortamHedefleri(d));
+          Efekt.magaraAyarla(!!(d.k.magara && !d.k.magara.alan)); // 3B ses motorunda mağara yankısı
           Efekt.muzikAyarla(muzikHedefi(d), MUZIK_DUZEY[a.muzik] ?? MUZIK_DUZEY.dusuk);
           const dz = konumluDonguler(d);
           for (const ad of KONUMLU_DONGULER) Efekt.dongu(ad, a.efekt === false ? 0 : dz[ad] || 0);

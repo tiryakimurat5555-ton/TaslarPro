@@ -34,6 +34,14 @@
         "image": "latest"
       },
       "channel": "production"
+    },
+    "apk": {
+      "distribution": "internal",
+      "channel": "main",
+      "android": {
+        "image": "latest",
+        "buildType": "apk"
+      }
     }
   },
   "submit": {

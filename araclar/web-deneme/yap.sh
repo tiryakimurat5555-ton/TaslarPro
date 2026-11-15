@@ -12,6 +12,7 @@ NODE_PATH=/opt/npm-tools/node_modules /opt/npm-tools/node_modules/.bin/esbuild "
   --alias:react-native="$T/rn-taklit.js" \
   --alias:expo-linear-gradient="$T/expo-taklit.js" \
   --alias:expo-audio="$T/expo-taklit.js" \
+  --alias:react-native-audio-api="$T/ses3b-taklit.js" \
   --alias:expo-haptics="$T/expo-taklit.js" \
   --alias:expo-status-bar="$T/expo-taklit.js" \
   --alias:react-native-safe-area-context="$T/expo-taklit.js" \

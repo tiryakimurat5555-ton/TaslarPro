@@ -1,10 +1,11 @@
 // ==== SES EFEKTLERİ (3B konumlu) ====
 // Hayvan sesleri ElevenLabs ile üretildi. Konumlu sesler (yonlu) tek kayıttan, çalarken gerçek zamanlı yönlendirilir: aşağıdaki
-// KONUMLU SES MOTORU bölümüne bakın (ad_L, ad_R ve boğuk ad_La, ad_Ra dosyaları).
+// KONUMLU SES MOTORU bölümüne ve uzamsal.js'e bakın.
 // Ortam sesi (haritanın rüzgârı, kuşları...) ayrı bir döngü kanalında çalar.
 import { createAudioPlayer } from 'expo-audio';
 import { SESLER } from './sesler.js';
 import { konusuyorMu, efektCalindi, konusmaBaslarken, ayarlar as sesAyarlari } from './ses.js';
+import * as U from './uzamsal.js';
 
 const durum = { acik: true, genel: 0.9, kis: true, ortam: 0.35 };
 const oynaticilar = {};
@@ -114,116 +115,79 @@ export function cal(ad, ses = 1, arkaPlan = false) {
   } catch (e) {}
 }
 
-// ==== KONUMLU SES MOTORU (15 Kasım 2026) ====
-// Her ses tek bir kayıttan gelir; yönünü ve uzaklığını oyun çalarken gerçek zamanlı hesaplar. Expo Go'daki ses oynatıcısında
-// sağ-sol (pan) ayarı olmadığı için her ses iki "kulak" dosyasıyla çalınır: ad_L yalnız sol kulakta, ad_R yalnız sağ kulakta.
-// İkisi birlikte başlar; iki kulağın düzeyi kaynağın o anki yönüne göre eşit güçlü pan ile ayarlanır (sesin kulaklar arası düzey
-// farkı). Kaynak arkadaysa ya da arada kaya, ağaç ya da bina varsa boğuk sürüm çalar: ad_La / ad_Ra (alçak geçiren süzgeç ve hafif
-// yankı; engelin ardındaki ses biraz da kısılır). Uzaklık 3 metreden sonra ters kareye yakın bir eğriyle kısar. Ses çalarken hayvan
-// yürür ya da sen dönersen düzeyler 80 ms'de bir yeniden hesaplanır: ses başının çevresinde kayar.
+// ==== KONUMLU SES MOTORU ====
+// Her konumlu ses tek bir kayıttan (ad.m4a) gelir. Oyunun kendi derlemesinde (APK, iPhone derlemesi) gerçek zamanlı 3B ses
+// motoru çalar: uzamsal.js (kulaklar arası zaman ve düzey farkı, baş gölgesi, arkadan gelen sesin boğukluğu, engel, mağara
+// yankısı, Doppler). Expo Go'da o kütüphane yoktur: ses yalnız uzaklığa göre kısılarak yönsüz çalar.
 let engelDenetle = null; // (kim, hedef) => true: arada sesi boğan bir engel var
 export function engelAyarla(f) {
   engelDenetle = typeof f === 'function' ? f : null;
 }
-const KULAK_AYRIM = 0.88; // tam yandaki seste uzak kulağa da biraz ses ulaşır (baş gölgesi sesi tümden kesmez)
-function kulaklar(kim, hedef, ses, duyma, engel) {
-  const dx = hedef.x - kim.x;
-  const dy = hedef.y - kim.y;
-  const m = Math.hypot(dx, dy);
-  if (!(m <= duyma)) return null;
-  let rel = m < 0.01 ? 0 : Math.atan2(dx, dy) - (kim.yon || 0);
-  while (rel > Math.PI) rel -= 2 * Math.PI;
-  while (rel < -Math.PI) rel += 2 * Math.PI;
-  const a = ((Math.sin(rel) * KULAK_AYRIM + 1) * Math.PI) / 4;
-  const uzaklik = m < 3 ? 1 : Math.max(0.06, Math.pow(3 / m, 0.85));
-  const v = Math.max(0, Math.min(1, ses * uzaklik * (engel ? 0.72 : 1) * durum.genel));
-  return { m, rel, sol: v * Math.cos(a), sag: v * Math.sin(a), arka: Math.abs(rel) > Math.PI / 2 + 0.2 };
+export function magaraAyarla(acik) {
+  U.ayarla({ magara: !!acik });
 }
-// İki kulak dosyasını aynı anda başa sarıp birlikte başlatır (biri önce başlarsa ses ikilenir)
-function ikisiniCal(p1, p2) {
-  let oldu = false;
-  const oynat = () => {
-    if (oldu) return;
-    oldu = true;
-    try {
-      p1.play();
-      p2.play();
-    } catch (e) {}
-  };
-  try {
-    if (p1.playing) p1.pause();
-    if (p2.playing) p2.pause();
-    const s1 = p1.seekTo(0);
-    const s2 = p2.seekTo(0);
-    if (s1 && typeof s1.then === 'function' && s2 && typeof s2.then === 'function') {
-      Promise.all([s1, s2]).then(oynat, oynat);
-      setTimeout(oynat, 120);
-    } else oynat();
-  } catch (e) {
-    oynat();
-  }
-  for (const p of [p1, p2]) {
-    const sure = Number.isFinite(p.duration) && p.duration > 0 ? p.duration : 1;
-    clearTimeout(geriSarZaman.get(p));
-    geriSarZaman.set(p, setTimeout(() => {
-      try {
-        if (!p.playing) p.seekTo(0);
-      } catch (e) {}
-    }, sure * 1000 + 150));
-  }
-}
-const calanKonumlu = new Map(); // taban → { kim, hedef, ses, duyma, engel, L, R, bitis }
-let konumSayac = null;
-function konumAdim() {
+export const sesMotoru = () => U.motor();
+const calanYonsuz = new Map(); // Expo Go: taban → { kim, hedef, ses, p, bitis }
+let yonsuzSayac = null;
+const uzaklikDuzeyi = (m) => (m < 3 ? 1 : Math.max(0.06, Math.pow(3 / m, 0.85)));
+function yonsuzAdim() {
   const simdi = Date.now();
-  for (const [taban, x] of calanKonumlu) {
+  for (const [taban, x] of calanYonsuz) {
     if (simdi > x.bitis) {
-      calanKonumlu.delete(taban);
+      calanYonsuz.delete(taban);
       continue;
     }
-    const k = kulaklar(x.kim, x.hedef, x.ses, Infinity, x.engel);
-    if (!k) continue;
     try {
-      x.L.volume = k.sol;
-      x.R.volume = k.sag;
+      x.p.volume = Math.min(1, x.ses * uzaklikDuzeyi(Math.hypot(x.hedef.x - x.kim.x, x.hedef.y - x.kim.y)) * durum.genel);
     } catch (e) {}
   }
-  if (!calanKonumlu.size) {
-    clearInterval(konumSayac);
-    konumSayac = null;
+  if (!calanYonsuz.size) {
+    clearInterval(yonsuzSayac);
+    yonsuzSayac = null;
   }
 }
 // Konumlu ses. kim: { x, y, yon } (çoğunlukla oyuncu nesnesinin kendisi), hedef: { x, y } (hayvan nesnesi olabilir; çalarken
 // izlenir). Döndürür: duyulduysa true
 export function yonlu(taban, kim, hedef, ses = 1, duyma = 45, zorla = false) {
   if (!durum.acik || !kim || !hedef) return false;
-  const engel = !!(engelDenetle && Math.hypot(hedef.x - kim.x, hedef.y - kim.y) > 2 && engelDenetle(kim, hedef));
-  const k = kulaklar(kim, hedef, ses, duyma, engel);
-  if (!k) return false;
+  const m = Math.hypot(hedef.x - kim.x, hedef.y - kim.y);
+  if (!(m <= duyma)) return false;
   const voiceover = sesAyarlari().kip === 'voiceover';
   const arkaPlan = taban.startsWith('k_') || taban.startsWith('h_') || taban.startsWith('kosu_');
   if (durum.kis && !voiceover && !arkaPlan && !zorla && konusuyorMu()) return true;
-  const ek = k.arka || engel ? 'a' : '';
-  const L = oynatici(`${taban}_L${ek}`);
-  const R = oynatici(`${taban}_R${ek}`);
-  if (!L || !R) return false;
-  try {
-    L.volume = k.sol;
-    R.volume = k.sag;
-    ikisiniCal(L, R);
-    const uzun = Number.isFinite(L.duration) && L.duration > 0 ? L.duration : 4;
-    calanKonumlu.set(taban, { kim, hedef, ses, duyma, engel, L, R, bitis: Date.now() + uzun * 1000 + 200 });
-    if (!/^(sonar|adim|kapi|tel_|tuzak|tasma)/.test(taban)) sonKonumlu = { taban, hedef, x: hedef.x, y: hedef.y, zaman: Date.now() };
-    if (!konumSayac) konumSayac = setInterval(konumAdim, 80);
-    if (durum.kis && !voiceover && !arkaPlan && !zorla) efektCalindi(Math.min(sure(taban), 0.6) * 1000);
-  } catch (e) {}
+  const kaynak = SESLER[taban];
+  if (!kaynak) return false;
+  let uzun = 1;
+  if (U.hazir()) {
+    U.ayarla({ genel: durum.genel });
+    const engelF = engelDenetle ? () => m > 2 && engelDenetle(kim, hedef) : null;
+    if (!U.cal(taban, kaynak, kim, hedef, { ses, engelF })) return false;
+  } else {
+    const p = oynatici(taban);
+    if (!p) return false;
+    try {
+      p.volume = Math.min(1, ses * uzaklikDuzeyi(m) * durum.genel);
+      basaSarVeCal(p);
+      uzun = Number.isFinite(p.duration) && p.duration > 0 ? p.duration : 4;
+      calanYonsuz.set(taban, { kim, hedef, ses, p, bitis: Date.now() + uzun * 1000 + 200 });
+      if (!yonsuzSayac) yonsuzSayac = setInterval(yonsuzAdim, 100);
+    } catch (e) {
+      return false;
+    }
+  }
+  if (!/^(sonar|adim|kapi|tel_|tuzak|tasma)/.test(taban)) sonKonumlu = { taban, hedef, x: hedef.x, y: hedef.y, zaman: Date.now() };
+  if (durum.kis && !voiceover && !arkaPlan && !zorla) efektCalindi(Math.min(sure(taban), 0.6) * 1000);
   return true;
+}
+// Sık çalınacak konumlu seslerin kayıtlarını önceden çözer (gerçek 3B motorunda ilk çalışta gecikme olmasın)
+export function konumluOnYukle(adlar) {
+  U.onYukle(adlar.map((a) => SESLER[a]).filter(Boolean));
 }
 // Son duyulan konumlu ses (oyuncu "Sese dön" diyebilsin diye): { taban, hedef, x, y, zaman }
 let sonKonumlu = null;
 export const sonDuyulan = () => sonKonumlu;
 // Tarayıcı denemeleri için: çalan konumlu seslerin kulak düzeyleri
-export const konumluDurum = () => Object.fromEntries([...calanKonumlu].map(([a, x]) => [a, { sol: Math.round(x.L.volume * 100) / 100, sag: Math.round(x.R.volume * 100) / 100, engel: x.engel }]));
+export const konumluDurum = () => (U.hazir() ? U.durum() : Object.fromEntries([...calanYonsuz].map(([a, x]) => [a, { duzey: Math.round(x.p.volume * 100) / 100 }])));
 
 // Haritanın ortam sesi: katmanlı döngüler. Savanın (ya da yağmurun) temel sesi her zaman çalar; nehir, galeri ormanı ve
 // kayalık katmanları oraya uzaklığa göre yükselir ve birbirine karışır. Yönlü katmanlar (<ad>_sol / <ad>_sag) birlikte
@@ -524,6 +488,7 @@ export function muzikAyarla(hedef, duzey) {
 }
 export const muzikDurumu = () => Object.fromEntries(Object.entries(muzikler).map(([a, x]) => [a, Math.round(x.ses * 1000) / 1000]));
 export function birak() {
+  U.hepsiniSustur();
   ortamDurdur();
   muzikAyarla({}, 0);
   Object.keys(muzikler).forEach((a) => {
@@ -556,6 +521,7 @@ export function birak() {
 try {
   globalThis.__ortamDurumu = ortamDurumu;
   globalThis.__konumluDurum = () => konumluDurum();
+  globalThis.__sesMotoru = () => U.motor();
   globalThis.__muzikDurumu = () => muzikDurumu();
   globalThis.__yonluDurum = () => Object.fromEntries(Object.entries(yonluDonguler).map(([a, x]) => [a, { sol: Math.round(x.sol.volume * 100) / 100, sag: Math.round(x.sag.volume * 100) / 100, hiz: x.hiz }]));
 } catch (e) {}

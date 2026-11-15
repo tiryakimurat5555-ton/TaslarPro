@@ -511,6 +511,16 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   Efekt.engelAyarla. k_/h_/kosu_ sesleri konuşma sırasında da çalar. Tanı globalThis.__konumluDurum; tarayıcı scratchpad konumlu-dene.cjs.
   Expo Go'daki expo-audio'da pan, süzgeç, HRTF yok (sdk-58 kaynağı denetlendi; react-native-audio-api Expo Go'da yok): gerçek HRTF,
   gerçek zamanlı süzgeç ve yankı ancak özel derlemeyle (development build) mümkün. Telefonda doğrulanmadı.
+- GERÇEK 3B SES MOTORU (15 Kasım 2026, Murat "Bahtiyar'a APK göndereceğiz, sesleri telefonda gerçek 3B yap, gereksiz sesleri çıkar"): bağımlılık
+  react-native-audio-api ~1.0.0 (Software Mansion, Web Audio API; RN 0.88 uyumlu; Expo Go'da YOK, app.json eklentisi gerekmiyor). `oyun/uzamsal.js`:
+  require try/catch, hazir() (Expo Go'da false), kaynak başına iki kulak yolu (DelayNode ITD ≤0,66 ms, BiquadFilter lowpass baş gölgesi/arka/
+  uzaklık/engel 850 Hz, GainNode ILD) → ChannelMerger → ana; ortak ConvolverNode yankı (yapay 1,6 sn dürtü; mağarada 0,45, açıkta uzaklıkla
+  0,04-0,26); Doppler playbackRate (vr/340·2, 0,9-1,1); 50 ms'de setTargetAtTime, engel 250 ms'de bir; en çok 14 ses; tampon önbelleği
+  decodeAudioData(require). Kütüphanenin HRTF'i açık değil (yalnız equalpower), bu yüzden baş modeli bizim. efekt.yonlu önce U.cal; Expo Go'da
+  tek dosyayı uzaklığa göre kısarak yönsüz çalar. Efekt.magaraAyarla (App 0,25 sn'de). Varlıklar: araclar/konumlu-tekle.py eski ad_L/R/La/Ra →
+  ad.m4a (sol kanal ×0,8); sesleri-isle.sh UC sesleri artık tek kanal tek dosya. assets 881 → 320. Tarayıcı: web-deneme ses3b-taklit.js (tarayıcının
+  Web Audio'su; dosyalar http'den: python3 -m http.server + URL=), scratchpad uzamsal-dene.cjs. eas.json profil 'apk' (internal, apk, kanal main:
+  main dalının JS güncellemelerini alır; runtime appVersion 1.0.0). YENİ YEREL MODÜL EKLENİRSE APK yeniden derlenmeli. Telefonda doğrulanmadı.
 - KULAK VER VE SESE DÖN (15 Kasım 2026, Murat "oyunu geliştirmeye devam"): alet 'kulak' (ALETLER): M.kulakVer(d, 160) en yakın 6 grubu
   (grup başına en yakın birey) önünden başlayıp saat yönünde sıralar (saat 12 dilimi başta), App kulakVerCal sesleri 1,6 sn arayla
   Efekt.yonlu(..., 2.5, 200, zorla=true) (zorla: konuşma sırasında da çalar), sonra özeti söyler; d.sonKulak (3 dk). Efekt.sonDuyulan()

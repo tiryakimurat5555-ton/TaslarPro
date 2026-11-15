@@ -1,8 +1,7 @@
 #!/bin/bash
 # ElevenLabs'ten indirilen ham sesleri (.sesler/ham/*.mp3) oyuna hazırlar ve oyun/sesler.js'i yazar.
 #  - Baştaki sessizliği kırpar, her sesi hedef yüksekliğe (LUFS) getirir, tepe sınırlayıcı uygular.
-#  - Hayvan sesleri konumlu olur: ad_L / ad_R (tek kulak) ve ad_La / ad_Ra (arkadan ya da engelin ardından boğuk);
-#    yönü ve uzaklığı efekt.js çalarken gerçek zamanlı hesaplar.
+#  - Hayvan sesleri konumlu olur: tek kanallı tek dosya; yönü, uzaklığı ve boğukluğu oyun çalarken hesaplar (oyun/uzamsal.js).
 #  - Ortam sesleri döngüye uygun olsun diye sonu başına yumuşak geçişle bağlanır.
 # Kullanım: bash araclar/sesleri-isle.sh <ham klasörü>
 set -e
@@ -59,15 +58,10 @@ for f in "$GIRDI"/*.mp3; do
   case "$ad" in h_*) UC=1; KIS="atrim=0:4,afade=t=out:st=3.4:d=0.6," ;; esac
   ffmpeg -loglevel error -y -i "$f" -af "silenceremove=start_periods=1:start_threshold=-45dB,${KIS}volume=${KAZANC}dB,alimiter=limit=0.79:level=false,areverse,silenceremove=start_periods=1:start_threshold=-55dB,afade=t=in:d=0.08,areverse" -ac 1 -ar 44100 "$GECICI/m.wav"
   if [ "$UC" = 1 ]; then
-    # Konumlu ses (15 Kasım 2026): ses başına 4 dosya. ad_L / ad_R önden gelen ses yalnız sol / yalnız sağ kulakta;
-    # ad_La / ad_Ra arkadan ya da engelin ardından gelen boğuk sürüm. Yön ve uzaklığı efekt.js çalarken gerçek zamanlı hesaplar.
-    YANKI=",aecho=0.8:0.6:35:0.25"; case "$ad" in kosu_*) YANKI="" ;; esac
-    for yan in L R; do
-      if [ "$yan" = L ]; then PAN="c0=1.25*c0|c1=0*c0"; else PAN="c0=0*c0|c1=1.25*c0"; fi
-      ffmpeg -loglevel error -y -i "$GECICI/m.wav" -af "pan=stereo|${PAN},alimiter=limit=0.95:level=false" -c:a aac -b:a 96k "$CIKTI/${ad}_${yan}.m4a"
-      ffmpeg -loglevel error -y -i "$GECICI/m.wav" -af "lowpass=f=1300,lowpass=f=1800,volume=-2dB${YANKI},pan=stereo|${PAN},alimiter=limit=0.95:level=false" -c:a aac -b:a 96k "$CIKTI/${ad}_${yan}a.m4a"
-    done
-    echo "$ad: konumlu (4 dosya), $I -> $H LUFS"
+    # Konumlu ses (15 Kasım 2026): tek kanal, tek dosya. Yönü, uzaklığı, boğukluğu ve yankıyı oyun çalarken hesaplar
+    # (oyun/uzamsal.js; Expo Go'da yalnız uzaklık).
+    ffmpeg -loglevel error -y -i "$GECICI/m.wav" -ac 1 -c:a aac -b:a 96k "$CIKTI/$ad.m4a"
+    echo "$ad: konumlu (tek dosya), $I -> $H LUFS"
   else
     ffmpeg -loglevel error -y -i "$GECICI/m.wav" -c:a aac -b:a 96k "$CIKTI/$ad.m4a"
     echo "$ad: $I -> $H LUFS"
