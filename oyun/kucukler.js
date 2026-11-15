@@ -290,6 +290,26 @@ for (const [id, c] of Object.entries(KUTUP_CANLILARI)) {
   KUCUK_SIRASI.push(id);
 }
 export const KUTUP_KUCUKLERI = Object.keys(KUTUP_CANLILARI);
+// ---------- Antarktika (Adélie Kıyısı) küçük canlıları ----------
+const ANTARKTIKA_CANLILARI = {
+  antKrili: { ad: 'Antarktika krili', bilimsel: 'Euphausia superba', grup: 'Diğer omurgasız', yer: ['antSu', 'antPolinya', 'antBuz'], zaman: 'her', sik: 7, tarif: 'Parmak boyunda, kırmızımsı yarı saydam bir kabuklu. Kışı deniz buzunun alt yüzündeki algleri kazıyarak geçirir; sürüleri bazen denizi kilometrelerce kızıla boyar. Penguenlerin, fokların ve balinaların besin zincirinin temelidir.' },
+  karPetreli: { ad: 'Kar petreli', bilimsel: 'Pagodroma nivea', grup: 'Kuş', yer: ['antKiyi', 'kayaBurnu', 'buzOrtusu', 'antBuz'], zaman: 'gunduz', sik: 4, tarif: 'Güvercin büyüklüğünde, bembeyaz bir deniz kuşu. Kıyıdan yüzlerce kilometre içerideki buzdan sıyrılmış kayalarda yuvalar; saldırgana midesindeki kokulu yağı püskürtür.' },
+  guneyDevPetreli: { ad: 'Güney dev petreli', bilimsel: 'Macronectes giganteus', grup: 'Kuş', yer: ['antKiyi', 'antSu', 'kayaBurnu'], zaman: 'gunduz', sik: 3, ses: 'Leş başında birbirini iterken çıkardığı boğuk, gıcırtılı sesler.', tarif: 'İki metreye yakın kanatlı iri bir deniz kuşu. Hem balık avlar hem de penguen ve fok leşlerinin başına ilk gelendir; karada yürürken kanatlarını açıp rakiplerini kovalar.' },
+  guneyKutupKarabatagi: { ad: 'Güney kutup paçalı martısı', bilimsel: 'Stercorarius maccormicki', grup: 'Kuş', yer: ['kayaBurnu', 'antKiyi', 'antUs'], zaman: 'gunduz', sik: 4, ses: 'Yuvasına yaklaşanın başına dalarken attığı sert çığlıklar.', tarif: 'Koyu kahverengi, güçlü bir yırtıcı martı. Adélie kolonisinin kenarında bekler, sahipsiz kalan yumurtaları ve yavruları kapar. Güney Kutbu\'na en yakın görülen kuştur.', kmevsim: ['yaz', 'ilkbahar'] },
+  wilsonFirtinaKusu: { ad: 'Wilson fırtına kuşu', bilimsel: 'Oceanites oceanicus', grup: 'Kuş', yer: ['antSu', 'antKiyi', 'kayaBurnu'], zaman: 'gunduz', sik: 4, tarif: 'Kırlangıç büyüklüğünde bir deniz kuşu. Uzun bacaklarını sarkıtıp suyun yüzeyinde yürüyormuş gibi kanat çırparak krill toplar. Kayaların yarıklarında yuvalar.', kmevsim: ['yaz'] },
+  kapPetreli: { ad: 'Benekli petrel', bilimsel: 'Daption capense', grup: 'Kuş', yer: ['antSu', 'antKiyi'], zaman: 'gunduz', sik: 3, tarif: 'Sırtı satranç tahtası gibi siyah beyaz benekli bir petrel. Gemilerin ve fok sürülerinin arkasından gelir, suyun yüzeyinden krill toplar.', kmevsim: ['yaz', 'ilkbahar', 'sonbahar'] },
+  kizilKarinliKiyiBaligi: { ad: 'Buz balığı', bilimsel: 'Chaenocephalus aceratus', grup: 'Balık', yer: ['antSu', 'antPolinya'], zaman: 'her', sik: 2, nadir: true, tarif: 'Kanında hemoglobin olmayan tek omurgalılardan biri: kanı renksiz, solungaçları beyazdır. Soğuk ve oksijence zengin suda oksijeni doğrudan kanında çözer; kalbi ve damarları çok büyüktür.' },
+  antDisBaligi: { ad: 'Antarktika gümüş balığı', bilimsel: 'Pleuragramma antarcticum', grup: 'Balık', yer: ['antSu', 'antBuz', 'antPolinya'], zaman: 'her', sik: 5, tarif: 'Buzun altında sürüler hâlinde yaşayan küçük bir balık. Kanında donmayı önleyen proteinler var; yumurtalarını buzun alt yüzündeki kristallerin arasına bırakır. Weddell foklarının ve imparator penguenlerin başlıca besinidir.' },
+  antMidgesi: { ad: 'Antarktika tatarcığı', bilimsel: 'Belgica antarctica', grup: 'Böcek', yer: ['kayaBurnu', 'antKiyi'], zaman: 'her', sik: 2, nadir: true, tarif: 'Kanatsız, birkaç milimetrelik bir sinek: Antarktika\'nın tek gerçek kara böceği. Penguen guanosuyla beslenen yosunların arasında yaşar; dondurulup çözülmeye ve kurumaya dayanır.', kmevsim: ['yaz', 'ilkbahar'] },
+  antKolembolu: { ad: 'Antarktika kolembolu', bilimsel: 'Cryptopygus antarcticus', grup: 'Böcek', yer: ['kayaBurnu', 'antKiyi', 'antUs'], zaman: 'her', sik: 4, tarif: 'Milimetrelik bir eklembacaklı. Taşların altında ve yosun yastıklarında milyonlarca yaşar; vücut sıvısını eksi 30 dereceye kadar donmadan tutabilir.' },
+  deniz_orumcegi: { ad: 'Dev deniz örümceği', bilimsel: 'Colossendeis', grup: 'Diğer omurgasız', yer: ['antSu', 'antPolinya'], zaman: 'her', sik: 1, nadir: true, tarif: 'Bacakları bir tabak genişliğine ulaşan deniz örümceği. Soğuk suda yavaş büyüyen hayvanların dev boyutlara ulaşmasının (kutup gigantizmi) en çarpıcı örneklerinden biridir.' },
+  krabeaterFoku: { ad: 'Yengeçyiyen fok', bilimsel: 'Lobodon carcinophaga', grup: 'Memeli', yer: ['antBuz', 'antSu', 'antPolinya'], zaman: 'her', sik: 2, nadir: true, tarif: 'Adı yanıltıcıdır: yengeç değil, krill yer. Dişlerindeki girintili çıkıntılı uçlar bir süzgeç gibi suyu dışarı atıp krilleri içeride tutar. Dünyanın en kalabalık fokudur ama buz parçalarının üstünde tek tek yaşar.' },
+};
+for (const [id, c] of Object.entries(ANTARKTIKA_CANLILARI)) {
+  KUCUKLER[id] = { ...c, kutup: true, guney: true };
+  KUCUK_SIRASI.push(id);
+}
+export const ANTARKTIKA_KUCUKLERI = Object.keys(ANTARKTIKA_CANLILARI);
 
 // Dış halkanın küçük canlıları (15 Kasım 2026, harita genişlemesi): yalnız yeni bölgelerde bulunur
 const DIS_CANLILAR = {
@@ -313,4 +333,4 @@ const BOLGE_BENZER = { tepeler: 'kayalik', calilik: 'agaclik', baobab: 'otlak', 
 export const alanCanlilari = (alan) => KUCUK_SIRASI.filter((id) => KUCUKLER[id].alan === alan);
 
 // Aşama 17: gerçek sesi olan küçük canlılar (assets/efekt/k_<id>_0..4, 3B). App uzaktan duyulan çağrılarda ve bulununca çalar.
-export const KUCUK_SESLI = ['devekusu', 'tacliTurna', 'yerBoynuzgagasi', 'goAway', 'becTavugu', 'alacaYalicapkini', 'misirKazi', 'maviTurako', 'vervet', 'agustosBocegi', 'kayaHyraksi', 'cuceFiravunfaresi', 'puhu', 'cobanaldatan', 'galago', 'agacDamani', 'bogaKurbagasi', 'kamisKurbagasi', 'karaSirtliCakal', 'pabucGaga', 'turako', 'kolobus', 'papirusGonolegi', 'sykesMaymunu', 'sakalliFok', 'karBaykusu', 'kutupSumrusu', 'ucParmakliMarti', 'kucukAlk', 'kralEider', 'karKirazkusu', 'kuzgun', 'lemming'];
+export const KUCUK_SESLI = ['devekusu', 'tacliTurna', 'yerBoynuzgagasi', 'goAway', 'becTavugu', 'alacaYalicapkini', 'misirKazi', 'maviTurako', 'vervet', 'agustosBocegi', 'kayaHyraksi', 'cuceFiravunfaresi', 'puhu', 'cobanaldatan', 'galago', 'agacDamani', 'bogaKurbagasi', 'kamisKurbagasi', 'karaSirtliCakal', 'pabucGaga', 'turako', 'kolobus', 'papirusGonolegi', 'sykesMaymunu', 'sakalliFok', 'karBaykusu', 'kutupSumrusu', 'ucParmakliMarti', 'kucukAlk', 'kralEider', 'karKirazkusu', 'kuzgun', 'lemming', 'guneyDevPetreli', 'guneyKutupKarabatagi'];

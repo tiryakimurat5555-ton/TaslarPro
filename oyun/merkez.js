@@ -2,14 +2,14 @@
 // Saf mantık: bütçe ve dengeli ekonomi (karar 22, 62, 91), ekipman (89, 88), tesisler (21, 79, 80), personel (54, 81),
 // basit araştırma ekranı ve analizler (45), hibe teklifleri ve dinamik görevler (61, 62, 90), mesajlar (82),
 // kamera tuzakları (41, 93) ve GPS tasmaları (11, 84). Sayılar öneridir; Murat onaylamadı.
-import { TURLER, TUR_SIRASI, DAVRANISLAR, ISTASYON, YARICAP, GOLET, nehirY, NEHIR_YARI, TUZ_YALAGI, KUTUP_SIRASI } from './veri.js';
+import { TURLER, TUR_SIRASI, DAVRANISLAR, ISTASYON, YARICAP, GOLET, nehirY, NEHIR_YARI, TUZ_YALAGI, KUTUP_SIRASI, ANTARKTIKA_SIRASI } from './veri.js';
 import * as M from './mantik.js';
 import * as Kt from './kutup.js';
 import * as E from './ekosistem.js';
 import * as K from './kesif.js';
 import * as G from './genisleme.js';
 import * as S from './su.js';
-import { KUCUKLER, KUTUP_KUCUKLERI } from './kucukler.js';
+import { KUCUKLER, KUTUP_KUCUKLERI, ANTARKTIKA_KUCUKLERI } from './kucukler.js';
 
 const lira = (n) => `${Math.round(n).toLocaleString('tr-TR')} lira`;
 export const liraSozu = lira;
@@ -251,7 +251,7 @@ export const ARASTIRMALAR = [
     id: 'kutupFaunasi',
     ad: 'Grönland kıyısının memelileri',
     kosulMetni: 'Kuzey Kutbu\'nda 9 büyük türü kaydet ve kutup türlerinden 6 bireyi tanımla',
-    ilerleme: (k) => [Math.min(9, KUTUP_SIRASI.filter((t) => k.arsiv.turler[t]).length) + Math.min(6, k.hayvanlar.filter((b) => b.no > 0 && TURLER[b.tur] && TURLER[b.tur].kutup).length), 15],
+    ilerleme: (k) => [Math.min(9, KUTUP_SIRASI.filter((t) => k.arsiv.turler[t]).length) + Math.min(6, k.hayvanlar.filter((b) => b.no > 0 && TURLER[b.tur] && TURLER[b.tur].kutup && !TURLER[b.tur].guney).length), 15],
     odul: { itibar: 15, fon: 6000 },
     sonuc: 'Kıyının memeli topluluğu belgelendi: deniz buzuna bağlı türler (kutup ayısı, halkalı fok, mors) ile tundra türleri (ren geyiği, misk öküzü, kurt, tilki, tavşan) birbirine besin zinciriyle bağlı. Fok azalırsa ayılar karaya, kuş yuvalarına yöneliyor.',
   },
@@ -275,9 +275,34 @@ export const ARASTIRMALAR = [
     id: 'tundraYazi',
     ad: 'Kısa tundra yazı',
     kosulMetni: '6 kutup bitkisini incele ve 10 kutup küçük canlısını bul',
-    ilerleme: (k) => [Math.min(6, E.BITKI_SIRASI.filter((id) => E.BITKILER[id].kutup && (k.arsiv.bitkiler || {})[id]).length) + Math.min(10, KUTUP_KUCUKLERI.filter((id) => (k.arsiv.kucukler || {})[id]).length), 16],
+    ilerleme: (k) => [Math.min(6, E.BITKI_SIRASI.filter((id) => E.BITKILER[id].kutup && !E.BITKILER[id].guney && (k.arsiv.bitkiler || {})[id]).length) + Math.min(10, KUTUP_KUCUKLERI.filter((id) => (k.arsiv.kucukler || {})[id]).length), 16],
     odul: { itibar: 14, fon: 5000 },
     sonuc: 'Tundranın bütün yaşamının birkaç haftalık yaza sıkıştığı gösterildi: bitkiler kar kalkar kalkmaz çiçek açıyor, kuşlar gece yarısı güneşinde yavrularını büyütüyor, lemmingler kar altında kışı geçiriyor.',
+  },
+  // Antarktika araştırmaları
+  {
+    id: 'antarktikaFaunasi',
+    ad: 'Adélie Kıyısı\'nın penguenleri ve fokları',
+    kosulMetni: 'Antarktika\'da 6 büyük türü kaydet ve Antarktika türlerinden 5 bireyi tanımla',
+    ilerleme: (k) => [Math.min(6, ANTARKTIKA_SIRASI.filter((t) => k.arsiv.turler[t]).length) + Math.min(5, k.hayvanlar.filter((b) => b.no > 0 && TURLER[b.tur] && TURLER[b.tur].guney).length), 11],
+    odul: { itibar: 18, fon: 8000 },
+    sonuc: 'Kıyının topluluğu belgelendi: Adélie ve imparator penguenleri, Weddell ve fil fokları kril ve balıkla, leopar foku ve orkalar onlarla besleniyor. Bütün zincir deniz buzunun altında büyüyen alglere ve krile bağlı.',
+  },
+  {
+    id: 'penguenYili',
+    ad: 'İki penguenin iki ayrı yılı',
+    kosulMetni: 'Dört davranışı gözle: imparator penguenlerin fırtınada sokulması, Adélie erkeğinin taş toplaması, leopar fokunun penguen pususu, orkaların dalga yapması',
+    ilerleme: (k) => [[['imparatorPengueni', 'sokuluyor'], ['adeliPengueni', 'tasTopluyor'], ['leoparFoku', 'penguenPususu'], ['orka', 'dalgaYapiyor']].filter(([t, dv]) => davranisVar(k, t, dv)).length, 4],
+    odul: { itibar: 18, fon: 6000 },
+    sonuc: 'İmparator penguenlerin kışın, karanlıkta ve fırtınada ürediği, sırayla ısınmak için binlercesinin bir yığında döndüğü; Adélie penguenlerinin ise yazın buzdan kurtulan kayalarda taş yuvalar kurduğu gösterildi. Leopar fokları ve orkalar her iki türün de deniz buzunun kenarındaki en tehlikeli anını bekliyor.',
+  },
+  {
+    id: 'buzKitasiYazi',
+    ad: 'Buz kıtasının kısa yazı',
+    kosulMetni: '4 Antarktika bitkisini (alg ve liken dahil) incele ve 6 Antarktika küçük canlısını bul',
+    ilerleme: (k) => [Math.min(4, E.BITKI_SIRASI.filter((id) => E.BITKILER[id].guney && (k.arsiv.bitkiler || {})[id]).length) + Math.min(6, ANTARKTIKA_KUCUKLERI.filter((id) => (k.arsiv.kucukler || {})[id]).length), 10],
+    odul: { itibar: 15, fon: 5000 },
+    sonuc: 'Antarktika\'nın karasında yaşamın birkaç kayalık burnun ve kıyı şeridinin korunaklı köşelerine sığdığı, penguen guanosunun bu küçük vahaları gübrelediği belgelendi. Asıl zenginlik denizde: buzun altındaki algler ve kril.',
   },
   // Aşama 11: nehir ve gölet araştırmaları (karar 94, 99)
   {

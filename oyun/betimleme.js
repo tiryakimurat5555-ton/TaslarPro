@@ -164,6 +164,22 @@ function kutupZemin(d) {
   const karli = mev === 'kis' || mev === 'ilkbahar' || (mev === 'sonbahar' && Kt.kutupTakvim(M.gunNo(k.dk)).mevsimGunu > 2);
   const tundra = karli ? 'karla örtülü, rüzgârın sertleştirdiği bir kar yüzeyi; yer yer taşlar çıkıyor' : 'yosun, liken ve cüce söğütlerle kaplı taşlık bir tundra; aralarda kutup çiçekleri';
   switch (b) {
+    case 'antUs':
+      return 'Araştırma üssünün önündesin: kızıl boyalı, ayaklar üstünde yükselen modüller, yakıt tankları, rüzgâr ölçerler ve kar tutmuş bir kar aracı.';
+    case 'kayaBurnu':
+      return mev === 'yaz' || mev === 'ilkbahar' ? 'Kayalık burundasın: koyu kayaların arası Adélie penguenlerinin çakıl taşı yuvalarıyla dolu; keskin bir guano kokusu var.' : 'Kayalık burundasın: penguenler denize açılmış, buz tutmuş kayalar ve terk edilmiş çakıl yuvaları kalmış.';
+    case 'sahanlik':
+      return 'Buz sahanlığının düz yüzeyindesin: altında yüzlerce metre kalınlıkta buz, kuzeyinde denize dik inen buz yarı. Kenara yaklaşma.';
+    case 'buzOrtusu':
+      return 'Kıta buz örtüsünün eteğindesin: güneye doğru sonsuz, hafifçe yükselen beyaz bir düzlük; rüzgârın kazıdığı kar dalgaları.';
+    case 'antKiyi':
+      return `Kıyıdasın: buz tutmuş kayalar ve sert kar. ${Kt.yuzey(o.x, o.y + 20, k.dk) === 'buz' ? 'Kuzeyinde deniz donmuş; buz kıyıya kadar uzanıyor.' : 'Kuzeyinde açık deniz, yer yer buz parçaları ve küçük buzdağları.'}`;
+    case 'antBuz':
+      return 'Deniz buzunun üstündesin: düz, karlı bir yüzey; altında Güney Okyanusu. Yer yer fokların nefes delikleri var.';
+    case 'antPolinya':
+      return 'Polinyanın kenarındasın: buzun ortasında açık kalan koyu bir su; üstünden buhar tütüyor.';
+    case 'antSu':
+      return 'Açık suyun kenarındasın.';
     case 'kutupIstasyon':
       return 'Araştırma kulübesinin önündesin: küçük ahşap kulübe, yakıt varilleri ve rüzgârda çınlayan bir telsiz direği.';
     case 'kusYari':
@@ -192,7 +208,8 @@ function kutupOn(d) {
     const yz = Kt.yuzey(x, y, k.dk);
     if (yz === 'su' && simdi !== 'su') return `Önünde, ${M.metreSozu(m)} ileride açık su var; buzun kenarı.`;
     if (yz === 'buz' && simdi === 'kara') return `Önünde, ${M.metreSozu(m)} ileride kıyı bitiyor, deniz buzu başlıyor.`;
-    if (Math.hypot(x - KUTUP.x, y - KUTUP.y) > KUTUP.r - 3) return `Önünde, ${M.metreSozu(m)} ileride araştırma alanının sınırı var.`;
+    const MK = Kt.harita(o).MERKEZ;
+    if (Math.hypot(x - MK.x, y - MK.y) > MK.r - 3) return `Önünde, ${M.metreSozu(m)} ileride araştırma alanının sınırı var.`;
   }
   return 'Önün açık.';
 }
@@ -224,12 +241,14 @@ function kutupSes(d) {
   if (M.mesafe(o, su) < 60) ortam.push('dalgaların buz parçalarına çarpışı');
   if (Kt.buzKenari(k.dk) - Kt.yerel(o).y < 70) ortam.push('deniz buzunun gıcırtısı');
   const l = Kt.yerel(o);
-  if (['yaz', 'ilkbahar'].includes(M.kutupMevsimi(k)) && Math.hypot(l.x - Kt.KUS_YARI.lx, l.y - Kt.KUS_YARI.ly) < 110) ortam.push('kuş kolonisinin gevezeliği');
+  const H = Kt.harita(o);
+  if (H.KUS_YARI && ['yaz', 'ilkbahar'].includes(M.kutupMevsimi(k)) && Math.hypot(l.x - H.KUS_YARI.lx, l.y - H.KUS_YARI.ly) < 110) ortam.push('kuş kolonisinin gevezeliği');
+  if (H.KAYA_BURNU && ['yaz', 'ilkbahar'].includes(M.kutupMevsimi(k)) && Math.hypot(l.x - H.KAYA_BURNU.lx, l.y - H.KAYA_BURNU.ly) < 100) ortam.push('penguen kolonisinin bağırışları');
   return `Duyduğun sesler: ${[...parca, ...ortam].join(', ')}.`;
 }
 function kutupBetimle(d, aletAdi) {
   const k = d.k;
-  const p = [`${M.saatMetni(k.dk)}, Kuzey Kutbu, ${Kt.MEVSIM_ADI[M.kutupMevsimi(k)]}. ${Kt.isikSozu(k.dk)}`, Kt.havaSozu(M.kutupHavasi(k), k.dk), kutupZemin(d), kutupOn(d), kutupIsaret(d), kutupSes(d), hayvanSozu(d)];
+  const p = [`${M.saatMetni(k.dk)}, ${Kt.harita(d.oyuncu).baslik}, ${Kt.MEVSIM_ADI[M.kutupMevsimi(k)]}. ${Kt.isikSozu(k.dk)}`, Kt.havaSozu(M.kutupHavasi(k), k.dk), kutupZemin(d), kutupOn(d), kutupIsaret(d), kutupSes(d), hayvanSozu(d)];
   const g = M.gozlenen(d);
   if (g) p.push(`Gözlediğin: ${M.gozlemTarifi(d, g)}.${M.ruzgarUyarisi(d, g)}`);
   if (aletAdi) p.push(`Elindeki alet: ${aletAdi}.`);

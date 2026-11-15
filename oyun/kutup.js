@@ -1,180 +1,166 @@
-// ==== VAHŞİ YAŞAM: KUZEY KUTBU BÖLGESİ (Kuzeydoğu Grönland kıyısı) ====
+// ==== VAHŞİ YAŞAM: KUTUP HARİTALARI (Kuzey Kutbu ve Antarktika) ====
 // Brif karar 16 ("sonradan kutup ekosistemi eklenebilir") ve 17 (büyük harita + ayrı bölümler). Savanla aynı dünya koordinatlarında,
-// ama çok uzakta (KUTUP merkezi), kendi coğrafyası, mevsimi, ışığı ve havası olan ikinci bir ana harita.
-// Saf modül: yalnızca veri.js ve ekosistem.js'i kullanır; mantik.js, betimleme, sahne ve App bunu içe aktarır.
-// Yerel koordinat: lx = x - KUTUP.x (doğu), ly = y - KUTUP.y (kuzey). Kuzeyde deniz (deniz buzu ya da açık su), güneyde kara (tundra).
-// Sayılar ÖNERİDİR.
-import { KUTUP } from './veri.js';
+// ama çok uzakta, kendi coğrafyası, mevsimi, ışığı ve havası olan iki harita:
+//   KUZEY: kuzeydoğu Grönland kıyısı (KUTUP merkezi, y +6000). Kuzeyde deniz, güneyde tundra.
+//   GUNEY: Antarktika, Adélie Kıyısı (ANTARKTIKA merkezi, y -6000). Kuzeyde Güney Okyanusu, güneyde kıta buz örtüsü; mevsimleri
+//          kuzeyin tersidir (12 gün kaydırılmış): kuzeyde yaz iken Antarktika'da kıştır.
+// Her harita aynı arayüzü sunar (haritaYap). Konum alan işlevler (yuzey, bolge, sudaMi...) noktanın hangi haritada olduğunu kendisi bulur;
+// yalnız zaman alan işlevlerin (isik, evre, buzKenari, kutupTakvim...) üst düzey sürümleri Kuzey içindir: Antarktika için harita(p).isik(dk).
+// Saf modül: yalnızca veri.js ve ekosistem.js'i kullanır. Sayılar ÖNERİDİR.
+import { KUTUP, ANTARKTIKA } from './veri.js';
 import { YIL_GUN } from './ekosistem.js';
 
-export const KUTUP_SINIR = KUTUP.y - 600; // bu y'den kuzeyi kutup haritası
-export const kutuptaMi = (x, y) => Number.isFinite(y) && y > KUTUP_SINIR;
-export const kutupNoktaMi = (p) => !!p && kutuptaMi(p.x, p.y);
-export const yerel = (p) => ({ x: p.x - KUTUP.x, y: p.y - KUTUP.y });
-export const dunya = (lx, ly) => ({ x: KUTUP.x + lx, y: KUTUP.y + ly });
+function haritaYap(c) {
+  const M = c.merkez;
+  const H = { ad: c.ad, baslik: c.baslik, MERKEZ: M, kayma: c.kayma || 0 };
+  H.icinde = (x, y) => Number.isFinite(y) && Math.abs(y - M.y) < 600 && Math.abs(x - M.x) < 600;
+  H.noktaMi = (p) => !!p && H.icinde(p.x, p.y);
+  H.yerel = (p) => ({ x: p.x - M.x, y: p.y - M.y });
+  H.dunya = (lx, ly) => ({ x: M.x + lx, y: M.y + ly });
+  H.kiyiY = c.kiyiY;
+  H.ISTASYON_K = c.ISTASYON_K;
+  H.BUZUL = c.BUZUL;
+  H.POLINYA = c.POLINYA;
+  Object.assign(H, c.ozel || {});
+  // ---------- Takvim ----------
+  H.MEVSIM_ADI = c.MEVSIM_ADI;
+  H.kutupTakvim = (gun) => {
+    const yg = ((((gun - 1 + H.kayma) % YIL_GUN) + YIL_GUN) % YIL_GUN) + 1;
+    if (yg <= 8) return { mevsim: 'yaz', mevsimGunu: yg, uzunluk: 8, yilGunu: yg };
+    if (yg <= 12) return { mevsim: 'sonbahar', mevsimGunu: yg - 8, uzunluk: 4, yilGunu: yg };
+    if (yg <= 20) return { mevsim: 'kis', mevsimGunu: yg - 12, uzunluk: 8, yilGunu: yg };
+    return { mevsim: 'ilkbahar', mevsimGunu: yg - 20, uzunluk: 4, yilGunu: yg };
+  };
+  H.yilKonumu = (dk) => {
+    const g = dk / 1440 + H.kayma;
+    return ((g % YIL_GUN) + YIL_GUN) % YIL_GUN;
+  };
+  // Gün ışığı süresi (saat): yazın 24, kışın 0 (Antarktika kıyısında kışın da öğleye doğru kısa bir alacakaranlık olur)
+  H.gunIsigiSaat = (dk) => {
+    const f = H.yilKonumu(dk);
+    if (f < 8) return 24;
+    if (f < 12) return 24 * (1 - (f - 8) / 4);
+    if (f < 20) return 0;
+    return (24 * (f - 20)) / 4;
+  };
+  H.isik = (dk) => {
+    const L = H.gunIsigiSaat(dk);
+    const s = (((dk % 1440) + 1440) % 1440) / 60;
+    const ogle = Math.cos(((s - 12) / 24) * Math.PI * 2);
+    if (L >= 23.9) return 0.78 + 0.18 * ogle;
+    if (L <= 0.1) {
+      const f = H.yilKonumu(dk);
+      const derinlik = Math.min(1, Math.min(f - 12, 20 - f) / 3);
+      return Math.max(0.03, 0.03 + (0.2 - 0.17 * derinlik) * Math.max(0, ogle));
+    }
+    const yarim = L / 2;
+    const fark = Math.abs(s - 12);
+    if (fark < yarim - 1) return Math.min(1, 0.5 + 0.5 * Math.min(1, (yarim - 1 - fark) / 3));
+    if (fark < yarim + 1) return 0.12 + (0.38 * (yarim + 1 - fark)) / 2;
+    return 0.06;
+  };
+  H.evre = (dk) => {
+    const l = H.isik(dk);
+    const s = (((dk % 1440) + 1440) % 1440) / 60;
+    if (l >= 0.5) return 'gunduz';
+    if (l >= 0.12) return s < 12 ? 'safak' : 'aksam';
+    return 'gece';
+  };
+  H.isikSozu = (dk) => {
+    const t = H.kutupTakvim(Math.floor(dk / 1440) + 1);
+    const L = H.gunIsigiSaat(dk);
+    const l = H.isik(dk);
+    const ufuk = c.ad === 'guney' ? 'kuzey' : 'güney'; // kutup gecesinde alacakaranlık ekvatora bakan ufukta
+    if (L >= 23.9) return l < 0.7 ? 'Gece yarısı güneşi ufkun hemen üstünde, her şey turuncu bir ışığa boğulmuş; güneş hiç batmıyor.' : 'Güneş gökyüzünde; kutup yazında hiç batmıyor.';
+    if (L <= 0.1) return l > 0.08 ? `Kutup gecesi; öğle olmasına rağmen ${ufuk} ufkunda yalnızca soluk mavi bir alacakaranlık var.` : 'Kutup gecesi: güneş haftalardır doğmadı, her yer karanlık. Kar yıldızların ve ayın ışığıyla soluk parlıyor.';
+    if (l >= 0.5) return `${t.mevsim === 'ilkbahar' ? 'Güneş kutup gecesinden sonra yeniden yükseliyor; günler hızla uzuyor.' : 'Güneş alçakta ilerliyor; günler hızla kısalıyor.'}`;
+    if (l >= 0.12) return 'Güneş ufkun hemen altında; uzun bir kutup alacakaranlığı.';
+    return 'Karanlık; kutup gecesi yaklaşıyor.';
+  };
+  // ---------- Deniz buzu ----------
+  H.buzKenari = (dk) => {
+    const f = H.yilKonumu(dk);
+    let acik;
+    if (f < 8) acik = 45 + (f / 8) * 120;
+    else if (f < 12) acik = 165 - ((f - 8) / 4) * 175;
+    else if (f < 20) acik = -10;
+    else acik = -10 + ((f - 20) / 4) * 55;
+    return c.buzTaban + acik;
+  };
+  H.polinyadaMi = (lx, ly, pay = 0) => Math.hypot(lx - H.POLINYA.lx, ly - H.POLINYA.ly) < H.POLINYA.r + pay;
+  H.yuzey = (x, y, dk) => {
+    const lx = x - M.x;
+    const ly = y - M.y;
+    if (ly <= H.kiyiY(lx)) return 'kara';
+    if (H.polinyadaMi(lx, ly)) return 'su';
+    return ly > H.buzKenari(dk) ? 'buz' : 'su';
+  };
+  H.sudaMi = (x, y, dk) => H.yuzey(x, y, dk) === 'su';
+  H.karadaMi = (x, y) => y - M.y <= H.kiyiY(x - M.x);
+  H.enYakinSu = (x, y, dk, delik) => {
+    const lx = x - M.x;
+    const aday = [];
+    const bk = H.buzKenari(dk);
+    const kenarY = Math.max(H.kiyiY(lx) + 2, bk - 2);
+    if (kenarY < M.r - 5) aday.push(H.dunya(lx, kenarY));
+    aday.push(H.dunya(H.POLINYA.lx, H.POLINYA.ly));
+    if (delik) aday.push(delik);
+    aday.sort((a, b) => Math.hypot(a.x - x, a.y - y) - Math.hypot(b.x - x, b.y - y));
+    return aday[0];
+  };
+  // ---------- Bölgeler ve yerler ----------
+  H.BOLGE_ADLARI_K = c.BOLGE_ADLARI_K;
+  H.bolge = (x, y, dk) => c.bolge(H, x - M.x, y - M.y, dk);
+  H.KUTUP_YERLER = c.YERLER;
+  H.yerKonumu = (y) => H.dunya(y.lx, y.ly);
+  H.istasyonBolgesi = c.istasyonBolgesi;
+  // ---------- Hava ----------
+  H.havaUret = (gun, rng) => {
+    const t = H.kutupTakvim(gun);
+    const [a, b] = c.SICAKLIK[t.mevsim];
+    const sicaklik = Math.round(a + rng() * (b - a));
+    const r = rng();
+    let tur = 'acik';
+    if (r < c.TIPI_SANSI[t.mevsim]) tur = 'tipi';
+    else if (t.mevsim === 'yaz' && r < 0.25) tur = 'sis';
+    else if (r < 0.45) tur = 'bulutlu';
+    else if (t.mevsim !== 'yaz' && r < 0.62) tur = 'kar';
+    const h = { gun, tur, sicaklik, ruzgarYon: c.ruzgarYon !== undefined && rng() < 0.6 ? c.ruzgarYon + (rng() - 0.5) * 0.6 : rng() * Math.PI * 2, ruzgarHiz: tur === 'tipi' ? 3.4 : 0.5 + rng() * 1.6 };
+    if (tur === 'tipi') {
+      const bas = Math.floor(rng() * 16) * 60;
+      h.tipi = { bas, bit: bas + 240 + Math.floor(rng() * 360) };
+    }
+    return h;
+  };
+  H.tipideMi = tipideMi;
+  H.gorusCarpani = gorusCarpani;
+  H.havaSozu = (h, dk) => havaSozuGenel(h, dk, c.ad);
+  // Kutup haritasında tek tip "otçul besin" değeri (bitki örtüsü mevsime göre)
+  H.tundraBesin = (dk, h) => {
+    const t = H.kutupTakvim(Math.floor(dk / 1440) + 1).mevsim;
+    const taban = { yaz: 0.9, sonbahar: 0.6, kis: 0.3, ilkbahar: 0.38 }[t];
+    return taban * (tipideMi(h, dk) ? 0.5 : 1);
+  };
+  // ---------- Deniz buzu kalınlığı (araştırma ölçümü) ----------
+  H.buzKalinligi = (x, y, dk, isinma = 0) => {
+    const lx = x - M.x;
+    const ly = y - M.y;
+    const f = H.yilKonumu(dk);
+    let cm;
+    if (f >= 10.5 && f < 20) cm = 15 + (f - 10.5) * 16.5;
+    else if (f >= 20) cm = 172 - (f - 20) * 28;
+    else if (f < 8) cm = 260 - f * 4;
+    else cm = 230;
+    if (ly - H.kiyiY(lx) < 25) cm *= 1.15;
+    const mp = Math.hypot(lx - H.POLINYA.lx, ly - H.POLINYA.ly) - H.POLINYA.r;
+    if (mp < 25) cm *= 0.35 + (0.65 * Math.max(0, mp)) / 25;
+    cm -= isinma * 9;
+    return Math.max(5, Math.round(cm));
+  };
+  return H;
+}
 
-// ---------- Coğrafya ----------
-// Kıyı çizgisi (yerel y): kuzeyi deniz, güneyi kara
-export const kiyiY = (lx) => 40 + 9 * Math.sin(lx / 38) + 5 * Math.sin(lx / 13 + 1);
-export const ISTASYON_K = { lx: 0, ly: -150, r: 9 }; // Zackenberg yakınındaki araştırma kulübesi
-export const BUZUL = { lx0: -230, lx1: -150 }; // batıda denize inen buzul
-export const KUS_YARI = { lx: 168, ly: 22, r: 26 }; // doğuda kıyı yarları: deniz kuşu kolonisi
-export const MORS_KIYISI = { lx: 120, ly: kiyiY(120) - 4 }; // morsların karaya çıktığı çakıllı kıyı
-export const POLINYA = { lx: 70, ly: 150, r: 15 }; // kışın da donmayan açık su gölü (rüzgâr ve akıntı buzu açık tutar)
-
-// ---------- Takvim: yılın 24 gününde kutup mevsimleri ----------
-// 1-8 yaz (gece yarısı güneşi, deniz buzu geri çekilir), 9-12 sonbahar, 13-20 kış (kutup gecesi), 21-24 ilkbahar (güneş döner)
-export const MEVSIM_ADI = { yaz: 'kutup yazı', sonbahar: 'sonbahar', kis: 'kutup kışı', ilkbahar: 'ilkbahar' };
-export function kutupTakvim(gun) {
-  const yg = ((((gun - 1) % YIL_GUN) + YIL_GUN) % YIL_GUN) + 1;
-  if (yg <= 8) return { mevsim: 'yaz', mevsimGunu: yg, uzunluk: 8, yilGunu: yg };
-  if (yg <= 12) return { mevsim: 'sonbahar', mevsimGunu: yg - 8, uzunluk: 4, yilGunu: yg };
-  if (yg <= 20) return { mevsim: 'kis', mevsimGunu: yg - 12, uzunluk: 8, yilGunu: yg };
-  return { mevsim: 'ilkbahar', mevsimGunu: yg - 20, uzunluk: 4, yilGunu: yg };
-}
-// Yıl içindeki sürekli konum (0..24) dakikadan
-export const yilKonumu = (dk) => {
-  const g = dk / 1440; // 0 = 1. günün başı
-  return ((g % YIL_GUN) + YIL_GUN) % YIL_GUN;
-};
-// Gün ışığı süresi (saat): yazın 24, kışın 0; ilkbahar ve sonbaharda hızla değişir
-export function gunIsigiSaat(dk) {
-  const f = yilKonumu(dk);
-  if (f < 8) return 24;
-  if (f < 12) return 24 * (1 - (f - 8) / 4);
-  if (f < 20) return 0;
-  return (24 * (f - 20)) / 4;
-}
-// Işık 0 (karanlık) .. 1 (öğle güneşi)
-export function isik(dk) {
-  const L = gunIsigiSaat(dk);
-  const s = (((dk % 1440) + 1440) % 1440) / 60;
-  const ogle = Math.cos(((s - 12) / 24) * Math.PI * 2); // öğlende 1, gece yarısında -1
-  if (L >= 23.9) return 0.78 + 0.18 * ogle; // gece yarısı güneşi: güneş hiç batmaz, gece yarısı alçakta
-  if (L <= 0.1) {
-    // Kutup gecesi: öğleye doğru ufukta kısa bir alacakaranlık (kışın ortasında neredeyse hiç)
-    const f = yilKonumu(dk);
-    const derinlik = Math.min(1, Math.min(f - 12, 20 - f) / 3);
-    return Math.max(0.03, 0.03 + (0.2 - 0.17 * derinlik) * Math.max(0, ogle));
-  }
-  const yarim = L / 2;
-  const fark = Math.abs(s - 12);
-  if (fark < yarim - 1) return Math.min(1, 0.5 + 0.5 * Math.min(1, (yarim - 1 - fark) / 3));
-  if (fark < yarim + 1) return 0.12 + (0.38 * (yarim + 1 - fark)) / 2; // gün doğumu ve batımı (kutupta uzun sürer)
-  return 0.06;
-}
-// Gün evresi (aktiflik, dürbün menzili ve betimleme için): ışığa göre
-export function evre(dk) {
-  const l = isik(dk);
-  const s = (((dk % 1440) + 1440) % 1440) / 60;
-  if (l >= 0.5) return 'gunduz';
-  if (l >= 0.12) return s < 12 ? 'safak' : 'aksam';
-  return 'gece';
-}
-export function isikSozu(dk) {
-  const t = kutupTakvim(Math.floor(dk / 1440) + 1);
-  const L = gunIsigiSaat(dk);
-  const l = isik(dk);
-  if (L >= 23.9) return l < 0.7 ? 'Gece yarısı güneşi ufkun hemen üstünde, her şey turuncu bir ışığa boğulmuş; güneş hiç batmıyor.' : 'Güneş gökyüzünde; kutup yazında hiç batmıyor.';
-  if (L <= 0.1) return l > 0.08 ? 'Kutup gecesi; öğle olmasına rağmen güney ufkunda yalnızca soluk mavi bir alacakaranlık var.' : 'Kutup gecesi: güneş haftalardır doğmadı, her yer karanlık. Kar yıldızların ve ayın ışığıyla soluk parlıyor.';
-  if (l >= 0.5) return `${t.mevsim === 'ilkbahar' ? 'Güneş kutup gecesinden sonra yeniden yükseliyor; günler hızla uzuyor.' : 'Güneş alçakta ilerliyor; günler hızla kısalıyor.'}`;
-  if (l >= 0.12) return 'Güneş ufkun hemen altında; uzun bir kutup alacakaranlığı.';
-  return 'Karanlık; kutup gecesi yaklaşıyor.';
-}
-
-// ---------- Deniz buzu ----------
-// Buz kenarının yerel y'si: kışın kıyıya dayalı (fiyort donar), ilkbaharda kıyıda kırılmaya başlar, yazın kuzeye çekilir.
-export function buzKenari(dk) {
-  const f = yilKonumu(dk);
-  let acik;
-  if (f < 8) acik = 45 + (f / 8) * 120; // yaz: 45 → 165
-  else if (f < 12) acik = 165 - ((f - 8) / 4) * 175; // sonbahar: 165 → -10 (deniz donar)
-  else if (f < 20) acik = -10; // kış: fiyort buzla kaplı
-  else acik = -10 + ((f - 20) / 4) * 55; // ilkbahar: -10 → 45 (kıyıda çatlaklar açılır)
-  return 44 + acik;
-}
-// Kışın polinya (açık su gölü) dışında her yer donar; yazın polinya zaten açık denizin parçası
-export const polinyadaMi = (lx, ly, pay = 0) => Math.hypot(lx - POLINYA.lx, ly - POLINYA.ly) < POLINYA.r + pay;
-// Noktanın yüzeyi: 'kara' | 'buz' | 'su'
-export function yuzey(x, y, dk) {
-  const lx = x - KUTUP.x;
-  const ly = y - KUTUP.y;
-  if (ly <= kiyiY(lx)) return 'kara';
-  if (polinyadaMi(lx, ly)) return 'su';
-  return ly > buzKenari(dk) ? 'buz' : 'su';
-}
-export const sudaMi = (x, y, dk) => yuzey(x, y, dk) === 'su';
-export const karadaMi = (x, y) => y - KUTUP.y <= kiyiY(x - KUTUP.x);
-// En yakın açık su noktası (fokun kaçacağı yer): buz kenarı, polinya ya da kendi nefes deliği
-export function enYakinSu(x, y, dk, delik) {
-  const lx = x - KUTUP.x;
-  const ly = y - KUTUP.y;
-  const aday = [];
-  const bk = buzKenari(dk);
-  const kenarY = Math.max(kiyiY(lx) + 2, bk - 2);
-  if (kenarY < KUTUP.r - 5) aday.push(dunya(lx, kenarY));
-  aday.push(dunya(POLINYA.lx, POLINYA.ly));
-  if (delik) aday.push(delik);
-  aday.sort((a, b) => Math.hypot(a.x - x, a.y - y) - Math.hypot(b.x - x, b.y - y));
-  return aday[0];
-}
-
-// ---------- Bölgeler ----------
-export const BOLGE_ADLARI_K = {
-  kutupIstasyon: 'Araştırma kulübesi',
-  tundra: 'Tundra',
-  kiyi: 'Kıyı',
-  buz: 'Deniz buzu',
-  acikSu: 'Açık su',
-  buzul: 'Buzul',
-  kusYari: 'Kuş yarları',
-  polinya: 'Polinya',
-};
-export function bolge(x, y, dk) {
-  const lx = x - KUTUP.x;
-  const ly = y - KUTUP.y;
-  if (Math.hypot(lx - ISTASYON_K.lx, ly - ISTASYON_K.ly) < ISTASYON_K.r + 12) return 'kutupIstasyon';
-  if (Math.hypot(lx - KUS_YARI.lx, ly - KUS_YARI.ly) < KUS_YARI.r) return 'kusYari';
-  if (lx < BUZUL.lx1 && ly <= kiyiY(lx) + 25) return 'buzul';
-  if (polinyadaMi(lx, ly, 4) && ly > kiyiY(lx)) return 'polinya';
-  if (ly > kiyiY(lx)) return ly > buzKenari(dk) ? 'buz' : 'acikSu';
-  if (ly > kiyiY(lx) - 16) return 'kiyi';
-  return 'tundra';
-}
-
-// ---------- Yerler (Yerler paneli, betimleme) ----------
-export const KUTUP_YERLER = [
-  { id: 'k_kulube', ad: 'Araştırma kulübesi', lx: 0, ly: -132, tarif: 'Zackenberg yakınlarında, tundranın ortasında küçük ahşap bir araştırma kulübesi. Isıtıcı, telsiz ve laboratuvar kutusu burada.' },
-  { id: 'k_tundra', ad: 'Tundra vadisi', lx: -60, ly: -80, tarif: 'Yosun, liken, cüce söğüt ve kutup çiçekleriyle kaplı geniş bir vadi. Ren geyikleri ve misk öküzleri burada otlar.' },
-  { id: 'k_kiyi', ad: 'Kıyı', lx: -10, ly: kiyiY(-10) - 8, tarif: 'Çakıllı, rüzgâr savrulmuş bir kıyı. Kışın deniz buzu buraya dayanır, yazın küçük dalgalar buz parçalarını kıyıya vurur.' },
-  { id: 'k_mors', ad: 'Mors kıyısı', lx: MORS_KIYISI.lx - 14, ly: MORS_KIYISI.ly - 12, tarif: 'Morsların karaya çıkıp sırt sırta yattığı çakıllı bir burun.' },
-  { id: 'k_kusyari', ad: 'Kuş yarları', lx: KUS_YARI.lx - 30, ly: KUS_YARI.ly - 18, tarif: 'Denize dik inen kayalık yarlar. Yazın binlerce küçük alk ve üç parmaklı martı burada yuvalar.' },
-  { id: 'k_buzul', ad: 'Buzul cephesi', lx: BUZUL.lx1 + 12, ly: 10, tarif: 'Batıda denize dökülen bir buzulun mavi buz duvarı. Arada bir buz kütleleri kopup denize düşer.' },
-  { id: 'k_buz', ad: 'Deniz buzu', lx: -20, ly: 130, buz: true, tarif: 'Donmuş fiyordun düz, karlı yüzeyi. Halkalı foklar buzun altında nefes delikleri açar; kutup ayıları onları burada avlar.' },
-  { id: 'k_polinya', ad: 'Polinya', lx: POLINYA.lx - 6, ly: POLINYA.ly - POLINYA.r - 6, buz: true, tarif: 'Akıntı ve rüzgârın kışın bile açık tuttuğu bir su gölü. Belugalar ve morslar kışı burada geçirir.' },
-];
-export const yerKonumu = (y) => dunya(y.lx, y.ly);
-
-// ---------- Hava (günlük) ----------
-const SICAKLIK = { yaz: [2, 9], sonbahar: [-14, -3], kis: [-34, -20], ilkbahar: [-20, -8] };
-const TIPI_SANSI = { yaz: 0.03, sonbahar: 0.18, kis: 0.25, ilkbahar: 0.18 };
-export function havaUret(gun, rng) {
-  const t = kutupTakvim(gun);
-  const [a, b] = SICAKLIK[t.mevsim];
-  const sicaklik = Math.round(a + rng() * (b - a));
-  const r = rng();
-  let tur = 'acik';
-  if (r < TIPI_SANSI[t.mevsim]) tur = 'tipi';
-  else if (t.mevsim === 'yaz' && r < 0.25) tur = 'sis';
-  else if (r < 0.45) tur = 'bulutlu';
-  else if (t.mevsim !== 'yaz' && r < 0.62) tur = 'kar';
-  const h = { gun, tur, sicaklik, ruzgarYon: rng() * Math.PI * 2, ruzgarHiz: tur === 'tipi' ? 3.4 : 0.5 + rng() * 1.6 };
-  if (tur === 'tipi') {
-    const bas = Math.floor(rng() * 16) * 60;
-    h.tipi = { bas, bit: bas + 240 + Math.floor(rng() * 360) };
-  }
-  return h;
-}
+// ---------- Ortak hava yardımcıları ----------
 export const tipideMi = (h, dk) => !!(h && h.tur === 'tipi' && h.tipi && (dk % 1440) >= h.tipi.bas && (dk % 1440) < h.tipi.bit);
 export function gorusCarpani(h, dk) {
   if (!h) return 1;
@@ -183,39 +169,182 @@ export function gorusCarpani(h, dk) {
   if (h.tur === 'kar') return 0.75;
   return 1;
 }
-export function havaSozu(h, dk) {
+function havaSozuGenel(h, dk, ad) {
   if (!h) return '';
   const derece = `${h.sicaklik < 0 ? 'eksi ' + -h.sicaklik : h.sicaklik} derece`;
   const r = h.ruzgarHiz > 2.5 ? 'sert' : h.ruzgarHiz > 1.2 ? 'orta' : 'hafif';
-  if (tipideMi(h, dk)) return `Tipi var: rüzgâr uğulduyor, savrulan kar görüşü birkaç metreye indiriyor. Hava ${derece}, rüzgârla hissedilen çok daha soğuk.`;
-  const t = { acik: 'Hava açık', bulutlu: 'Gökyüzü bulutlu', sis: 'Deniz sisi kıyıyı örtmüş', kar: 'Hafif kar yağıyor', tipi: 'Gün içinde tipi bekleniyor' }[h.tur];
+  if (tipideMi(h, dk)) return ad === 'guney' ? `Kar fırtınası var: buz örtüsünden inen katabatik rüzgâr uğulduyor, savrulan kar görüşü birkaç metreye indiriyor. Hava ${derece}.` : `Tipi var: rüzgâr uğulduyor, savrulan kar görüşü birkaç metreye indiriyor. Hava ${derece}, rüzgârla hissedilen çok daha soğuk.`;
+  const t = { acik: 'Hava açık', bulutlu: 'Gökyüzü bulutlu', sis: 'Deniz sisi kıyıyı örtmüş', kar: 'Hafif kar yağıyor', tipi: 'Gün içinde kar fırtınası bekleniyor' }[h.tur];
   return `${t}, ${derece}, ${r} rüzgâr.`;
 }
-
-// Kutup haritasında tek tip "otçul besin" değeri (tundra bitki örtüsü mevsime göre): yazın bol, kışın karın altında az
-export function tundraBesin(dk, h) {
-  const t = kutupTakvim(Math.floor(dk / 1440) + 1).mevsim;
-  const taban = { yaz: 0.9, sonbahar: 0.6, kis: 0.3, ilkbahar: 0.38 }[t];
-  return taban * (tipideMi(h, dk) ? 0.5 : 1);
-}
-
-// ---------- Deniz buzu kalınlığı (araştırma ölçümü) ----------
-// Deniz sonbaharın sonunda donar (yıl konumu ~10,5), kış boyunca kalınlaşır (en çok ~170 cm), ilkbaharda incelir.
-// Kıyıya yapışık buz (kıyıdan 25 m) daha kalın, polinya kenarı çok ince; yazın açıkta kalan çok yıllık buz kalın ve eski.
-// Isınan iklim (derece) buzu inceltir.
-export function buzKalinligi(x, y, dk, isinma = 0) {
-  const lx = x - KUTUP.x;
-  const ly = y - KUTUP.y;
-  const f = yilKonumu(dk);
-  let cm;
-  if (f >= 10.5 && f < 20) cm = 15 + (f - 10.5) * 16.5; // donma ve kalınlaşma
-  else if (f >= 20) cm = 172 - (f - 20) * 28; // ilkbahar erimesi
-  else if (f < 8) cm = 260 - f * 4; // yaz: açıkta kalan çok yıllık buz
-  else cm = 230;
-  if (ly - kiyiY(lx) < 25) cm *= 1.15;
-  const mp = Math.hypot(lx - POLINYA.lx, ly - POLINYA.ly) - POLINYA.r;
-  if (mp < 25) cm *= 0.35 + 0.65 * Math.max(0, mp) / 25;
-  cm -= isinma * 9;
-  return Math.max(5, Math.round(cm));
-}
 export const buzSozu = (cm) => (cm < 10 ? 'çok ince, üstünde yürümek tehlikeli' : cm < 30 ? 'ince ve esnek' : cm < 80 ? 'orta kalınlıkta' : cm < 150 ? 'kalın' : 'çok kalın, eski buz');
+
+// =====================================================================
+// KUZEY KUTBU: kuzeydoğu Grönland kıyısı
+// =====================================================================
+const kiyiYK = (lx) => 40 + 9 * Math.sin(lx / 38) + 5 * Math.sin(lx / 13 + 1);
+const KUS_YARI_K = { lx: 168, ly: 22, r: 26 };
+const POLINYA_K = { lx: 70, ly: 150, r: 15 };
+const ISTASYON_KK = { lx: 0, ly: -150, r: 9 };
+const BUZUL_K = { lx0: -230, lx1: -150 };
+const MORS_KIYISI_K = { lx: 120, ly: kiyiYK(120) - 4 };
+export const KUZEY = haritaYap({
+  ad: 'kuzey',
+  baslik: 'Kuzey Kutbu',
+  merkez: KUTUP,
+  kayma: 0,
+  kiyiY: kiyiYK,
+  buzTaban: 44,
+  ISTASYON_K: ISTASYON_KK,
+  BUZUL: BUZUL_K,
+  POLINYA: POLINYA_K,
+  ozel: { KUS_YARI: KUS_YARI_K, MORS_KIYISI: MORS_KIYISI_K, FOK_KIYISI: MORS_KIYISI_K },
+  MEVSIM_ADI: { yaz: 'kutup yazı', sonbahar: 'sonbahar', kis: 'kutup kışı', ilkbahar: 'ilkbahar' },
+  BOLGE_ADLARI_K: { kutupIstasyon: 'Araştırma kulübesi', tundra: 'Tundra', kiyi: 'Kıyı', buz: 'Deniz buzu', acikSu: 'Açık su', buzul: 'Buzul', kusYari: 'Kuş yarları', polinya: 'Polinya' },
+  istasyonBolgesi: 'kutupIstasyon',
+  bolge(H, lx, ly, dk) {
+    if (Math.hypot(lx - ISTASYON_KK.lx, ly - ISTASYON_KK.ly) < ISTASYON_KK.r + 12) return 'kutupIstasyon';
+    if (Math.hypot(lx - KUS_YARI_K.lx, ly - KUS_YARI_K.ly) < KUS_YARI_K.r) return 'kusYari';
+    if (lx < BUZUL_K.lx1 && ly <= kiyiYK(lx) + 25) return 'buzul';
+    if (H.polinyadaMi(lx, ly, 4) && ly > kiyiYK(lx)) return 'polinya';
+    if (ly > kiyiYK(lx)) return ly > H.buzKenari(dk) ? 'buz' : 'acikSu';
+    if (ly > kiyiYK(lx) - 16) return 'kiyi';
+    return 'tundra';
+  },
+  YERLER: [
+    { id: 'k_kulube', ad: 'Araştırma kulübesi', lx: 0, ly: -132, tarif: 'Zackenberg yakınlarında, tundranın ortasında küçük ahşap bir araştırma kulübesi. Isıtıcı, telsiz ve laboratuvar kutusu burada.' },
+    { id: 'k_tundra', ad: 'Tundra vadisi', lx: -60, ly: -80, tarif: 'Yosun, liken, cüce söğüt ve kutup çiçekleriyle kaplı geniş bir vadi. Ren geyikleri ve misk öküzleri burada otlar.' },
+    { id: 'k_kiyi', ad: 'Kıyı', lx: -10, ly: kiyiYK(-10) - 8, tarif: 'Çakıllı, rüzgâr savrulmuş bir kıyı. Kışın deniz buzu buraya dayanır, yazın küçük dalgalar buz parçalarını kıyıya vurur.' },
+    { id: 'k_mors', ad: 'Mors kıyısı', lx: MORS_KIYISI_K.lx - 14, ly: MORS_KIYISI_K.ly - 12, tarif: 'Morsların karaya çıkıp sırt sırta yattığı çakıllı bir burun.' },
+    { id: 'k_kusyari', ad: 'Kuş yarları', lx: KUS_YARI_K.lx - 30, ly: KUS_YARI_K.ly - 18, tarif: 'Denize dik inen kayalık yarlar. Yazın binlerce küçük alk ve üç parmaklı martı burada yuvalar.' },
+    { id: 'k_buzul', ad: 'Buzul cephesi', lx: BUZUL_K.lx1 + 12, ly: 10, tarif: 'Batıda denize dökülen bir buzulun mavi buz duvarı. Arada bir buz kütleleri kopup denize düşer.' },
+    { id: 'k_buz', ad: 'Deniz buzu', lx: -20, ly: 130, buz: true, tarif: 'Donmuş fiyordun düz, karlı yüzeyi. Halkalı foklar buzun altında nefes delikleri açar; kutup ayıları onları burada avlar.' },
+    { id: 'k_polinya', ad: 'Polinya', lx: POLINYA_K.lx - 6, ly: POLINYA_K.ly - POLINYA_K.r - 6, buz: true, tarif: 'Akıntı ve rüzgârın kışın bile açık tuttuğu bir su gölü. Belugalar ve morslar kışı burada geçirir.' },
+  ],
+  SICAKLIK: { yaz: [2, 9], sonbahar: [-14, -3], kis: [-34, -20], ilkbahar: [-20, -8] },
+  TIPI_SANSI: { yaz: 0.03, sonbahar: 0.18, kis: 0.25, ilkbahar: 0.18 },
+});
+
+// =====================================================================
+// ANTARKTİKA: Adélie Kıyısı (Dumont d'Urville yakınları)
+// Kuzeyde Güney Okyanusu, güneyde kıta buz örtüsü. Kıyı boyunca buzsuz kayalık bir şerit; doğuda Adélie penguenlerinin
+// kayalık burnu, batıda denize uzanan buz sahanlığı. İmparator penguenler kışın kıyıya yapışık deniz buzunda ürer.
+// =====================================================================
+const kiyiTabanG = (lx) => 30 + 10 * Math.sin(lx / 45) + 4 * Math.sin(lx / 11 + 2);
+// Batıda buz sahanlığı denize 45 metre taşar (yürünebilir buz düzlüğü; kenarı dik bir buz yarı)
+const sahanlikPayi = (lx) => (lx < -150 ? 45 : lx < -120 ? (45 * (-120 - lx)) / 30 : 0);
+const kiyiYG = (lx) => kiyiTabanG(lx) + sahanlikPayi(lx);
+const ISTASYON_G = { lx: 0, ly: -70, r: 9 };
+const KAYA_BURNU = { lx: 110, ly: 5, r: 34 };
+const FILFOK_KIYISI = { lx: -40, ly: kiyiTabanG(-40) - 4 };
+const IMPARATOR_KOLONISI = { lx: -70, ly: 95, r: 18 };
+const POLINYA_G = { lx: 80, ly: 168, r: 16 };
+const BUZ_ORTUSU_Y = -115; // bunun güneyi kıta buz örtüsü
+export const GUNEY = haritaYap({
+  ad: 'guney',
+  baslik: 'Antarktika',
+  merkez: ANTARKTIKA,
+  kayma: 12,
+  kiyiY: kiyiYG,
+  buzTaban: 34,
+  ISTASYON_K: ISTASYON_G,
+  BUZUL: { lx0: -230, lx1: -120 },
+  POLINYA: POLINYA_G,
+  ruzgarYon: Math.PI, // katabatik rüzgâr buz örtüsünden, güneyden eser (rüzgârın geldiği yön)
+  ozel: { KAYA_BURNU, FOK_KIYISI: FILFOK_KIYISI, MORS_KIYISI: FILFOK_KIYISI, IMPARATOR_KOLONISI, BUZ_ORTUSU_Y, sahanlikta: (lx) => lx < -120 },
+  MEVSIM_ADI: { yaz: 'Antarktika yazı', sonbahar: 'sonbahar', kis: 'Antarktika kışı', ilkbahar: 'ilkbahar' },
+  BOLGE_ADLARI_K: { antUs: 'Araştırma üssü', buzOrtusu: 'Kıta buz örtüsü', kayaBurnu: 'Kayalık burun', antKiyi: 'Kıyı', antBuz: 'Deniz buzu', antSu: 'Açık deniz', sahanlik: 'Buz sahanlığı', antPolinya: 'Polinya' },
+  istasyonBolgesi: 'antUs',
+  bolge(H, lx, ly, dk) {
+    if (Math.hypot(lx - ISTASYON_G.lx, ly - ISTASYON_G.ly) < ISTASYON_G.r + 12) return 'antUs';
+    if (Math.hypot(lx - KAYA_BURNU.lx, ly - KAYA_BURNU.ly) < KAYA_BURNU.r && ly <= kiyiYG(lx)) return 'kayaBurnu';
+    if (lx < -120 && ly <= kiyiYG(lx) && ly > kiyiTabanG(lx) - 20) return 'sahanlik';
+    if (H.polinyadaMi(lx, ly, 4) && ly > kiyiYG(lx)) return 'antPolinya';
+    if (ly > kiyiYG(lx)) return ly > H.buzKenari(dk) ? 'antBuz' : 'antSu';
+    if (ly < BUZ_ORTUSU_Y) return 'buzOrtusu';
+    return 'antKiyi';
+  },
+  YERLER: [
+    { id: 'a_us', ad: 'Araştırma üssü', lx: 0, ly: -52, tarif: 'Kayalık kıyı şeridinde, rüzgâra karşı sağlam bağlanmış kırmızı bir araştırma üssü. Isıtıcı, telsiz ve laboratuvar kutusu burada.' },
+    { id: 'a_burun', ad: 'Adélie kolonisi', lx: KAYA_BURNU.lx - 20, ly: KAYA_BURNU.ly - 14, tarif: 'Doğuda buzsuz, çakıllı bir kayalık burun. Yazın binlerce Adélie pengueni burada çakıl taşından yuva yapar; hava keskin bir guano kokusuyla dolu.' },
+    { id: 'a_imparator', ad: 'İmparator penguen kolonisi', lx: IMPARATOR_KOLONISI.lx + 6, ly: IMPARATOR_KOLONISI.ly - IMPARATOR_KOLONISI.r - 6, buz: true, tarif: 'Kıyıya yapışık deniz buzunun üstünde, kışın imparator penguenlerin ürediği yer. Erkekler yumurtaları ayaklarının üstünde taşıyarak fırtınalarda birbirine sokulur.' },
+    { id: 'a_kumsal', ad: 'Fil foku kumsalı', lx: FILFOK_KIYISI.lx - 4, ly: FILFOK_KIYISI.ly - 14, tarif: 'Kıyıda çakıllı küçük bir kumsal. Yazın güney fil fokları tüy değiştirmek için buraya çıkıp üst üste yatar.' },
+    { id: 'a_sahanlik', ad: 'Buz sahanlığı', lx: -175, ly: 40, tarif: 'Batıda kıta buzunun denize uzanan yüzen düz ucu. Kenarı denizden on metreler yükselen dik, mavi bir buz yarıdır; ondan kopan dev düz buzdağları açıkta yüzer.' },
+    { id: 'a_buzOrtusu', ad: 'Kıta buz örtüsü', lx: 20, ly: -170, tarif: 'Kıyının güneyinde ufka kadar yükselen sonsuz buz. Kalınlığı içerilere doğru kilometreleri bulur; katabatik rüzgârlar buradan kıyıya iner.' },
+    { id: 'a_buz', ad: 'Deniz buzu', lx: 10, ly: 120, buz: true, tarif: 'Donmuş denizin düz, karlı yüzeyi. Weddell fokları buzun altında, dişleriyle açık tuttukları nefes deliklerinin yanında yaşar.' },
+    { id: 'a_polinya', ad: 'Polinya', lx: POLINYA_G.lx - 6, ly: POLINYA_G.ly - POLINYA_G.r - 6, buz: true, tarif: 'Rüzgârın kışın bile açık tuttuğu bir su gölü. Orkalar, leopar fokları ve penguenler kışın burada beslenir.' },
+  ],
+  SICAKLIK: { yaz: [-4, 2], sonbahar: [-18, -8], kis: [-32, -18], ilkbahar: [-22, -10] },
+  TIPI_SANSI: { yaz: 0.06, sonbahar: 0.22, kis: 0.3, ilkbahar: 0.22 },
+});
+
+export const HARITALAR = { kuzey: KUZEY, guney: GUNEY };
+// Noktanın kutup haritası (yoksa null)
+export const haritaBul = (p) => (p ? (KUZEY.noktaMi(p) ? KUZEY : GUNEY.noktaMi(p) ? GUNEY : null) : null);
+// Noktanın kutup haritası; kutupta değilse Kuzey (eski çağrılar için)
+export const harita = (p) => haritaBul(p) || KUZEY;
+
+// ---------- Geriye uyumlu üst düzey adlar ----------
+// Konum alanlar noktanın haritasını kendisi bulur; yalnız zaman alanlar Kuzey içindir.
+export const KUTUP_SINIR = KUTUP.y - 600;
+export const kutuptaMi = (x, y) => KUZEY.icinde(x, y) || GUNEY.icinde(x, y);
+export const kutupNoktaMi = (p) => !!p && kutuptaMi(p.x, p.y);
+export const guneyMi = (p) => GUNEY.noktaMi(p);
+export const yerel = (p) => harita(p).yerel(p);
+// Oyuncunun bulunduğu kutup haritası ("etkin"): zaman ve oyuncu bağlamındaki adlar ona göre değişir (mantik her karede etkinAyarla çağırır).
+// Hayvanlar için her zaman harita(g) kullanılır.
+export let ETKIN = KUZEY;
+export let dunya = KUZEY.dunya;
+export let kiyiY = KUZEY.kiyiY;
+export let ISTASYON_K = KUZEY.ISTASYON_K;
+export let BUZUL = KUZEY.BUZUL;
+export let POLINYA = KUZEY.POLINYA;
+export let MEVSIM_ADI = KUZEY.MEVSIM_ADI;
+export let kutupTakvim = KUZEY.kutupTakvim;
+export let yilKonumu = KUZEY.yilKonumu;
+export let gunIsigiSaat = KUZEY.gunIsigiSaat;
+export let isik = KUZEY.isik;
+export let evre = KUZEY.evre;
+export let isikSozu = KUZEY.isikSozu;
+export let buzKenari = KUZEY.buzKenari;
+export let polinyadaMi = KUZEY.polinyadaMi;
+export let KUTUP_YERLER = KUZEY.KUTUP_YERLER;
+export let tundraBesin = KUZEY.tundraBesin;
+export let havaSozu = KUZEY.havaSozu;
+export let havaUret = KUZEY.havaUret;
+export const KUS_YARI = KUS_YARI_K;
+export const MORS_KIYISI = MORS_KIYISI_K;
+export function etkinAyarla(p) {
+  const H = haritaBul(p) || KUZEY;
+  if (H === ETKIN) return H;
+  ETKIN = H;
+  dunya = H.dunya;
+  kiyiY = H.kiyiY;
+  ISTASYON_K = H.ISTASYON_K;
+  BUZUL = H.BUZUL;
+  POLINYA = H.POLINYA;
+  MEVSIM_ADI = H.MEVSIM_ADI;
+  kutupTakvim = H.kutupTakvim;
+  yilKonumu = H.yilKonumu;
+  gunIsigiSaat = H.gunIsigiSaat;
+  isik = H.isik;
+  evre = H.evre;
+  isikSozu = H.isikSozu;
+  buzKenari = H.buzKenari;
+  polinyadaMi = H.polinyadaMi;
+  KUTUP_YERLER = H.KUTUP_YERLER;
+  tundraBesin = H.tundraBesin;
+  havaSozu = H.havaSozu;
+  havaUret = H.havaUret;
+  return H;
+}
+export const yuzey = (x, y, dk) => harita({ x, y }).yuzey(x, y, dk);
+export const sudaMi = (x, y, dk) => yuzey(x, y, dk) === 'su';
+export const karadaMi = (x, y) => harita({ x, y }).karadaMi(x, y);
+export const enYakinSu = (x, y, dk, delik) => harita({ x, y }).enYakinSu(x, y, dk, delik);
+export const BOLGE_ADLARI_K = { ...KUZEY.BOLGE_ADLARI_K, ...GUNEY.BOLGE_ADLARI_K };
+export const bolge = (x, y, dk) => harita({ x, y }).bolge(x, y, dk);
+export const TUM_KUTUP_YERLER = [...KUZEY.KUTUP_YERLER, ...GUNEY.KUTUP_YERLER];
+export const kutupYeriHarita = (y) => (GUNEY.KUTUP_YERLER.includes(y) ? GUNEY : KUZEY);
+export const yerKonumu = (y) => kutupYeriHarita(y).yerKonumu(y);
+export const buzKalinligi = (x, y, dk, isinma = 0) => harita({ x, y }).buzKalinligi(x, y, dk, isinma);

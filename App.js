@@ -38,7 +38,7 @@ import * as Kr from './oyun/kirlilik.js';
 import { KUCUKLER, KUCUK_SIRASI, GRUPLAR, MAGARA_ODALARI, UZAK_ALANLAR, odaListesi, aktifOda, bolumAdi, KUCUK_SESLI, bulunabilirler } from './oyun/kucukler.js';
 import * as Efekt from './oyun/efekt.js';
 import { sahneKur } from './oyun/sahne.js';
-import { TURLER, TUR_SIRASI, YERLER, DAVRANISLAR, EVRELER, BOLGE_ADLARI, ARAC, OZEL_BIREYLER, GECITLER, ISTASYON, nehirY, GOLET, GALERI, KAYALIK, NEHIR_YARI, KUTUP, KUTUP_SIRASI, TEPELER, CALILIK, dereX, DERE_UST } from './oyun/veri.js';
+import { TURLER, TUR_SIRASI, YERLER, DAVRANISLAR, EVRELER, BOLGE_ADLARI, ARAC, OZEL_BIREYLER, GECITLER, ISTASYON, nehirY, GOLET, GALERI, KAYALIK, NEHIR_YARI, KUTUP, KUTUP_SIRASI, ANTARKTIKA_SIRASI, TEPELER, CALILIK, dereX, DERE_UST } from './oyun/veri.js';
 import * as Kt from './oyun/kutup.js';
 import { useJestler } from './oyun/jestler.js';
 import { Liste, useMenuYigini, altMenu, sayfali, RENK, GORUNUM } from './oyun/SesliListe.js';
@@ -234,24 +234,35 @@ function kutupOrtami(d) {
   const ws = yuzey === 'su' ? 1 : yakin(Math.hypot(su.x - o.x, su.y - o.y), 70);
   h.ortam_kutup_deniz = 0.9 * ws;
   baskin = Math.max(baskin, 0.9 * ws);
-  const bk = Kt.buzKenari(k.dk);
-  const buzVar = bk < KUTUP.r - 5;
+  const H = Kt.harita(o);
+  const guney = H.ad === 'guney';
+  const bk = H.buzKenari(k.dk);
+  const buzVar = bk < H.MERKEZ.r - 5;
   const mb = yuzey === 'buz' ? 0 : buzVar ? Math.max(0, bk - l.y) : 999;
   const wb = 0.85 * yakin(mb, 80);
   h.ortam_kutup_buz = wb;
   baskin = Math.max(baskin, wb);
   const yaz = ['yaz', 'ilkbahar'].includes(M.kutupMevsimi(k));
-  if (yaz) {
-    const mk = Math.hypot(l.x - Kt.KUS_YARI.lx, l.y - Kt.KUS_YARI.ly) - Kt.KUS_YARI.r;
+  if (yaz && H.KUS_YARI) {
+    const mk = Math.hypot(l.x - H.KUS_YARI.lx, l.y - H.KUS_YARI.ly) - H.KUS_YARI.r;
     const wk = 0.9 * yakin(mk, 90);
     h.ortam_kusyari = wk;
     baskin = Math.max(baskin, wk);
   }
+  if (guney) {
+    // Penguen kolonileri: yazın kayalık burundaki Adélie'ler, kışın deniz buzundaki imparatorlar
+    const kol = yaz ? H.KAYA_BURNU : Kt.yuzey(...Object.values(H.dunya(H.IMPARATOR_KOLONISI.lx, H.IMPARATOR_KOLONISI.ly)), k.dk) === 'buz' ? H.IMPARATOR_KOLONISI : null;
+    if (kol) {
+      const wp = 0.9 * yakin(Math.hypot(l.x - kol.lx, l.y - kol.ly) - kol.r, 100);
+      h.ortam_penguen = wp;
+      baskin = Math.max(baskin, wp);
+    }
+  }
   if (Kt.tipideMi(M.kutupHavasi(k), k.dk)) {
     h.ortam_tipi = 1;
     for (const a of Object.keys(h)) if (a !== 'ortam_tipi') h[a] *= 0.35;
-    h.ortam_kutup = 0.2;
-  } else h.ortam_kutup = Math.max(0.25, 1 - 0.7 * baskin);
+    h[guney ? 'ortam_antarktika' : 'ortam_kutup'] = 0.2;
+  } else h[guney ? 'ortam_antarktika' : 'ortam_kutup'] = Math.max(0.25, 1 - 0.7 * baskin);
   for (const a of Object.keys(h)) if (h[a] < 0.01) delete h[a];
   const guc = Object.values(h).reduce((t, v) => t + v * v, 0);
   if (guc > 1) for (const a of Object.keys(h)) h[a] /= Math.sqrt(guc);
@@ -400,6 +411,7 @@ const kucuk = (s) => s.toLocaleLowerCase('tr-TR');
 
 // ---------------- Yenilikler (en yeniler üstte): Murat denerken neyin nerede olduğunu bulsun diye ----------------
 const YENILIKLER = [
+  { baslik: 'Yeni harita: Antarktika', metin: 'Adélie Kıyısı\'nda, savandan ve Kuzey Kutbu\'ndan ayrı, serbestçe dolaşılan yeni bir harita. İmparator pengueni, Adélie pengueni, Weddell foku, leopar foku, fil foku ve orka yaşıyor; her birinin kendi sesi var. Mevsimler kuzeyin tersi: imparator penguenler kışın karanlıkta deniz buzunda ürer ve fırtınada birbirine sokulur, Adélie penguenleri yazın kayalık burunda taş yuvalar kurar. Leopar fokları buz kenarında penguen bekler, orkalar dalga yaparak fokları buzdan düşürür. Buz sahanlığı, kıta buz örtüsü, kızıl üs binaları ve güney ışıkları görünür. 12 küçük canlı, 5 bitki ve alg, üç araştırma ve bir gizem eklendi. İtibarın 70 olunca açılır.', nerede: 'Araştırma merkezi, Saha gezileri: Antarktika, yola çık. Yardım, Antarktika.' },
   { baslik: 'Harita büyüdü: altı yeni bölge', metin: 'Araştırma alanı her yöne yaklaşık 300 metreye genişledi; eskisinin iki buçuk katı. Dış halkada altı yeni bölge var. Granit tepeler: dev kaya yığınları, babun sürüsü ve bir leopar; tepedeki Gözcü Kayası\'ndan dürbün çok daha uzağı görür. Sık çalılık: dikenli çalılar görüşü kısaltır, iki gergedan saklanır. Kum dere: yağışlı mevsimde akar, kurakta bekâr erkek filler kumu kazıp su kuyusu açar, başka hayvanlar da bu kuyulardan içer. Baobab düzlüğü: dev baobablar, zürafalar, kabuk soyan filler. Güney ovası: zebralar, ceylanlar ve iki çita kardeş; göçmen sürüler buradan geçer. Kuzey otlakları. On yeni küçük canlı (klipspringer, kara kartal, gerenuk, akbaba beç tavuğu, meyve yarasası, bufalo dokumacısı, karınca aslanı, kum boası, kori toyu, yer sincabı) ve iki yeni bitki (baobab, mür ağacı). Üç yeni nadir davranış: kum kuyusu kazma, kuyudan içme, baobab kabuğu soyma.', nerede: 'Menüde Yerler: Granit tepeler, Gözcü Kayası, Sık çalılık, Kum dere yatağı, Baobab düzlüğü, Güney ovası, Kuzey otlakları. Yardım, Savan, zaman ve yerler.' },
   { baslik: 'Kulak ver ve sese dön', metin: 'Yeni alet: Kulak ver. Çift dokununca durup dinlersin; çevrendeki en yakın altı sürünün ya da hayvanın sesi, önünden başlayıp saat yönünde, her biri bulunduğu yönden ve uzaklıktan sırayla duyulur. Ardından ne duyduğun aynı sırayla söylenir. Böylece çevreni görmeden, yalnız kulağınla tanırsın. Bir ses duyduktan sonra menüdeki Son duyduğun sese dön satırı seni o sesin geldiği yöne çevirir; kulak verdikten sonra Dinlediğin seslerden birine dön ile istediğin hayvana yönelirsin.', nerede: 'İki parmakla sağa ya da sola kaydırıp Kulak ver aletini seç; ana menü; VoiceOver kipinde üstteki düğmeler.' },
   { baslik: 'Yeni 3 boyutlu ses motoru', metin: 'Hayvan ve canlı sesleri artık tek bir kayıttan, çalarken gerçek zamanlı yönlendiriliyor. Önceden her ses beş sabit yönden birine yerleşiyordu; şimdi sesin yönü kesintisiz. Ses çalarken hayvan yürürse ya da sen dönersen ses de başının çevresinde kayıyor. Arkandan gelen ses boğuk duyulur. Arada kaya, ağaç ya da bina varsa ses boğuklaşır ve kısılır; mağaradayken dışarıdaki sesler boğuk gelir. Uzaklaştıkça ses kısılır. Bu değişiklik oyunun dosya sayısını da yarıya indirdi.', nerede: 'Sahada her yerde; kulaklıkla dinle.' },
@@ -618,6 +630,18 @@ const YARDIM = [
       'Dönüş: ana menüde ve Yerler listesinde Savana dön satırı var. Uçak kulübenin yanından kalkar; kulübeden uzaksan önce oraya yürürsün.',
       'Deniz buzunu ölç: buzun üstündeyken Doğa menüsünde. Buz matkabıyla buzun kalınlığını ölçersin; buz sonbaharın sonunda donar, kışın kalınlaşır, ilkbaharda incelir, polinyanın kenarında çok incedir. Ölçümler Kutup raporunda.',
       'Kutup araştırmaları merkezde: Grönland kıyısının memelileri, Deniz buzunun yıllık döngüsü, Buzun ve tundranın avcıları, Kısa tundra yazı. Kutup kuşlarının, lemmingin ve sakallı fokun sesleri çevrede duyulur; sesini duyduğun canlıyı aramak onu bulmayı kolaylaştırır.',
+    ],
+  },
+  {
+    id: 'antarktika',
+    baslik: 'Antarktika',
+    satirlar: [
+      'Antarktika gezisi: Araştırma merkezi, Saha gezileri bölümünde. Bilimsel itibarın 70 olunca açılır. İstasyondayken Antarktika, yola çık satırını seç; uçak, izin ve üs 3.500 lira tutar, yolculuk 6 oyun saati sürer. Adélie Kıyısı\'ndaki araştırma üssüne inersin.',
+      'Antarktika da ayrı, serbestçe dolaşılan bir haritadır. Kuzeyin Güney Okyanusu, güneyin kıtanın buz örtüsü. Batıda denize uzanan düz bir buz sahanlığı, doğuda Adélie penguenlerinin yuva yaptığı kayalık bir burun, açıkta kışın da donmayan bir polinya var. Buz sahanlığının kenarı dik bir yardır; açık suya giremezsin.',
+      'Mevsimler kuzeyin tersidir: Kuzey Kutbu\'nda yaz olduğunda Antarktika\'da kıştır. Kışın güneş doğmaz, deniz kıyıya kadar donar; açık havada güney ışıkları görünür. Rüzgâr çoğunlukla güneyden, buz örtüsünden eser.',
+      'Hayvanlar: imparator pengueni, Adélie pengueni, Weddell foku, leopar foku, fil foku ve orka. İmparator penguenler kışın deniz buzunun üstünde, karanlıkta ürer; fırtınada sıkı bir yığın hâlinde birbirine sokulurlar. Adélie penguenleri yazın kayalık burunda çakıl taşlarından yuva yapar. Leopar foku buz kenarında suya giren penguenleri, orkalar buz parçalarındaki fokları avlar. Leopar foku ve fil foku boğaları tehlikelidir.',
+      'Antarktika\'nın küçük canlıları (kril, petreller, paçalı martı, buz balığı), alg ve likenleri, merkezde üç Antarktika araştırması ve bir gizem var. Penguen kolonilerine yaklaşınca kolonilerin sesi duyulur.',
+      'Dönüş: ana menüde ve Yerler listesinde Savana dön satırı var. Uçak üssün yanındaki buz pistinden kalkar; üsten uzaksan önce oraya yürürsün.',
     ],
   },
   {
@@ -1777,11 +1801,13 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     // Kuzey Kutbu: savana dönüş satırı (uçak kulübenin yanındaki pistten kalkar)
     const kutupDonSatiri = () => ({
       id: 'kutupDon',
-      etiket: K.kulubedeMi(d) ? `Savana dön: uçakla ${String(K.KUTUP_GEZI.donus / 60).replace('.', ',')} saat` : `Kulübeye git, oradan savana dönülür: ${yerTarifi(K.KULUBE_KAPI)}`,
+      etiket: K.kulubedeMi(d)
+        ? `Savana dön: uçakla ${String((M.oyuncuGuneyde(k) ? K.ANTARKTIKA_GEZI : K.KUTUP_GEZI).donus / 60).replace('.', ',')} saat`
+        : M.oyuncuGuneyde(k) ? `Üsse git, oradan savana dönülür: ${yerTarifi(K.US_KAPI)}` : `Kulübeye git, oradan savana dönülür: ${yerTarifi(K.KULUBE_KAPI)}`,
       sec: () => {
         if (!K.kulubedeMi(d)) {
           menu.kapat();
-          M.yerGit(d, 'k_kulube');
+          M.yerGit(d, M.oyuncuGuneyde(k) ? 'a_us' : 'k_kulube');
           return 'sessiz';
         }
         const h = K.kutuptanHazirla(d);
@@ -1790,7 +1816,8 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
           return 'sessiz';
         }
         menu.kapat();
-        dinlenBaslat(k.dk + K.KUTUP_GEZI.donus, { metin: 'Uçak kulübenin yanındaki pistten kalktı; savandaki istasyona dönüyorsun.', bitince: () => K.kutuptanDon(d) });
+        const guney = M.oyuncuGuneyde(k);
+        dinlenBaslat(k.dk + (guney ? K.ANTARKTIKA_GEZI : K.KUTUP_GEZI).donus, { metin: guney ? 'Uçak üssün yanındaki buz pistinden kalktı; savandaki istasyona dönüyorsun.' : 'Uçak kulübenin yanındaki pistten kalktı; savandaki istasyona dönüyorsun.', bitince: () => K.kutuptanDon(d) });
         return 'sessiz';
       },
     });
@@ -2001,19 +2028,20 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         ...(['gece', 'aksam'].includes(M.evreSimdi(k)) ? [{ id: 'gozTara', etiket: `Fenerle göz parıltısı tara${Gc.gozKatalogu(k).length ? `: katalogda ${Gc.gozKatalogu(k).length} tür` : ''}`, sec: yap(() => Gc.gozTara(d)) }] : []),
         altMenu('numune', `Numune${k.numuneKutusu.length ? `: kutuda ${k.numuneKutusu.length} numune` : ''}`, menu.ac),
       ];
-      return liste(u, 'Doğa: Kuzey Kutbu', ogeler);
+      return liste(u, `Doğa: ${Kt.ETKIN.baslik}`, ogeler);
     }
     if (u === 'kutupEko') {
+      const guney = M.oyuncuGuneyde(k);
       const tk = Kt.kutupTakvim(M.gunNo(k.dk));
       const bk = Kt.buzKenari(k.dk);
-      const buz = bk >= KUTUP.r - 5 ? 'Deniz açık; kıyıdan ufka kadar buzsuz, yalnız yüzen buz parçaları var.' : bk <= 50 ? 'Deniz tamamen donmuş; buz kıyıya dayanıyor. Halkalı foklar buzun altında nefes delikleri açıyor.' : `Deniz buzunun kenarı kıyıdan yaklaşık ${Math.round(bk - 40)} metre açıkta; aradaki deniz açık.`;
-      const sayilar = KUTUP_SIRASI.filter((t) => k.arsiv.turler[t]).map((t) => `${kucuk(M.SOZ[t])} ${k.hayvanlar.filter((b) => !b.olu && b.tur === t).length}`);
+      const buz = bk >= Kt.ETKIN.MERKEZ.r - 5 ? 'Deniz açık; kıyıdan ufka kadar buzsuz, yalnız yüzen buz parçaları var.' : bk <= 50 ? `Deniz tamamen donmuş; buz kıyıya dayanıyor. ${guney ? 'Weddell fokları' : 'Halkalı foklar'} buzun altında nefes delikleri açıyor.` : `Deniz buzunun kenarı kıyıdan yaklaşık ${Math.round(bk - 40)} metre açıkta; aradaki deniz açık.`;
+      const sayilar = (guney ? ANTARKTIKA_SIRASI : KUTUP_SIRASI).filter((t) => k.arsiv.turler[t]).map((t) => `${kucuk(M.SOZ[t])} ${k.hayvanlar.filter((b) => !b.olu && b.tur === t).length}`);
       const ogeler = [
         bilgi('mev', `${M.BuyukHarf(Kt.MEVSIM_ADI[tk.mevsim])}, ${tk.mevsimGunu}. gün (${tk.uzunluk} günlük mevsim). ${Kt.isikSozu(k.dk)}`),
         bilgi('hava', Kt.havaSozu(M.kutupHavasi(k), k.dk)),
         bilgi('buz', buz),
-        bilgi('polinya', 'Polinya, akıntının kışın bile açık tuttuğu su gölü; kışın belugalar, morslar ve deniz kuşları orada toplanır.'),
-        bilgi('takvim', 'Kutup yılı: 8 gün yaz (güneş batmaz), 4 gün sonbahar, 8 gün kış (güneş doğmaz), 4 gün ilkbahar. Deniz buzu sonbaharda donar, ilkbaharın sonunda kırılır.'),
+        bilgi('polinya', guney ? 'Polinya, rüzgârın ve akıntının kışın bile açık tuttuğu su; kışın fil fokları, Weddell fokları ve penguenler orada beslenir.' : 'Polinya, akıntının kışın bile açık tuttuğu su gölü; kışın belugalar, morslar ve deniz kuşları orada toplanır.'),
+        bilgi('takvim', guney ? 'Antarktika yılı kuzeyin tersidir: savan takviminde Kuzey Kutbu\'nda yaz olduğunda burada kıştır. 8 gün yaz (güneş batmaz), 4 gün sonbahar, 8 gün kış (güneş doğmaz), 4 gün ilkbahar.' : 'Kutup yılı: 8 gün yaz (güneş batmaz), 4 gün sonbahar, 8 gün kış (güneş doğmaz), 4 gün ilkbahar. Deniz buzu sonbaharda donar, ilkbaharın sonunda kırılır.'),
       ];
       if (sayilar.length) ogeler.push(bilgi('nufus', `Kaydedilen türlerin bölgedeki sayıları: ${sayilar.join(', ')}.`));
       K.buzSatirlari(k).forEach((m, i) => ogeler.push(bilgi('buz' + i, m)));
@@ -2137,7 +2165,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         const suda = y.buz && Kt.sudaMi(p.x, p.y, k.dk);
         ogeler.push({ id: y.id, etiket: `${y.ad}, ${yerTarifi(p)}${suda ? ', şu an açık su' : ''}`, ipucu: y.tarif, sec: kapatVe(() => M.yerGit(d, y.id)) });
       });
-      return liste(u, 'Yerler: Kuzey Kutbu', ogeler, 'Yürürsün. Açık suya giremezsin; deniz buzu yalnız donmuş mevsimlerde yürünür.');
+      return liste(u, `Yerler: ${Kt.ETKIN.baslik}`, ogeler, 'Yürürsün. Açık suya giremezsin; deniz buzu yalnız donmuş mevsimlerde yürünür.');
     }
     if (u === 'yerler') {
       const ogeler = [];
@@ -2658,6 +2686,24 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
             },
           });
         if (M.oyuncuKutupta(k)) ogeler.splice(1, 0, kutupDonSatiri());
+        const durG = K.kutupDurumu(k, true);
+        ogeler.splice(1, 0, bilgi('bant', K.kutupSatiri(k, true), 'Antarktika\'nın Adélie Kıyısı\'nda serbestçe dolaşılan ayrı bir harita: imparator ve Adélie penguenleri, Weddell foku, leopar foku, fil foku ve orkalar. Mevsimler kuzeyin tersidir; kışın imparator penguenler deniz buzunun üstünde ürer.'));
+        if (durG.acik && !M.oyuncuKutupta(k))
+          ogeler.splice(2, 0, {
+            id: 'gitant',
+            etiket: 'Antarktika: yola çık',
+            ipucu: 'İstasyondan uçakla gidilir. Yolda zaman akar; savandaki hayvanlar yaşamaya devam eder.',
+            sec: () => {
+              const h = K.antarktikaHazirla(d);
+              if (h) {
+                Ses.hemen(h);
+                return 'sessiz';
+              }
+              menu.kapat();
+              dinlenBaslat(k.dk + K.ANTARKTIKA_GEZI.yol, { metin: `Antarktika'ya uçuyorsun. Uçak, izin ve üs için ${Mz.liraSozu(K.ANTARKTIKA_GEZI.ucret)} ödendi.`, bitince: () => K.antarktikayaVar(d) });
+              return 'sessiz';
+            },
+          });
       }
       return liste(u, 'Saha gezileri', ogeler, 'Savandan uzaktaki özel araştırma alanları. Orada yukarı ve aşağı kaydırarak noktalar arasında gezer, dürbünle canlı ararsın. Her alanın araştırması merkezde.');
     }

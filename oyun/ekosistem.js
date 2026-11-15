@@ -496,6 +496,42 @@ export const BITKILER = {
     tohum: [false, false, false, false],
     analiz: 'Kutup denizindeki yıllık üretimin önemli bir kısmı buzun altındaki bu alglerden geliyor. Kopepodlar ve arktik morinalar onlarla, foklar ve belugalar onlarla beslenir. Buz azaldıkça bu üretim de azalıyor.',
   },
+  // ---- Antarktika (guney: true; evre güney takvimine göre) ----
+  antCimeni: {
+    ad: 'Antarktika çimeni', bilimsel: 'Deschampsia antarctica', bicim: 'ot', bolge: ['kayaBurnu', 'antKiyi'], ozellik: 'besin', kutup: true, guney: true,
+    tarif: 'Antarktika\'da yetişen yalnızca iki çiçekli bitkiden biri. Kayaların arasındaki korunaklı köşelerde küçük, sık öbekler oluşturur.',
+    evre: ['kısa yaz güneşinde yeşermiş, rüzgârda küçük başaklar sallıyor', 'başakları sararmış, tohumlarını döküyor', 'kar ve buz altında; donmuş hâlde bekliyor', 'kar kalkınca yaprakları birkaç gün içinde yeşeriyor'],
+    tohum: [false, true, false, false],
+    analiz: 'Hücrelerinde donmayı önleyen şekerler ve proteinler var; yaprakları eksi 25 dereceye dayanıyor. Isınan yazlarda yayılış alanının genişlediği gözleniyor.',
+  },
+  antInciotu: {
+    ad: 'Antarktika inci otu', bilimsel: 'Colobanthus quitensis', bicim: 'yastık bitkisi', bolge: ['kayaBurnu'], ozellik: 'besin', kutup: true, guney: true,
+    tarif: 'Kıtanın öbür çiçekli bitkisi: yere yapışık, sarımsı yeşil küçük bir yastık. Çiçekleri çok küçüktür ve çoğu zaman açmadan kendi kendini döller.',
+    evre: ['yastığın üstünde küçük sarı çiçekler', 'tohum kapsülleri olgunlaşmış', 'kar altında', 'yeni sürgünler veriyor'],
+    tohum: [false, true, false, false],
+    analiz: 'Güçlü morötesi ışığa karşı yapraklarında koruyucu boyalar biriktiriyor. Penguen kolonilerinin guanoyla gübrelediği kayalar çevresinde daha gür.',
+  },
+  karAlgi: {
+    ad: 'Kırmızı kar algi', bilimsel: 'Chlamydomonas nivalis', bicim: 'alg', bolge: ['antKiyi', 'buzOrtusu', 'antUs', 'sahanlik'], ozellik: 'besin', kutup: true, guney: true,
+    tarif: 'Yazın eriyen karın yüzeyinde yeşil, turuncu ya da kan kırmızısı lekeler oluşturan tek hücreli bir alg. Kırmızı rengi, güneşten korunmak için biriktirdiği boyadan gelir.',
+    evre: ['karın yüzeyi kıpkırmızı lekelerle kaplı', 'lekeler solmuş; hücreler kalın çeperli dinlenme evresine geçiyor', 'karın içinde uyuyor', 'ilk eriyen karda yeşil lekeler beliriyor'],
+    tohum: [false, false, false, false],
+    analiz: 'Koyu renkli lekeler güneşi daha çok soğurup karın daha hızlı erimesine yol açıyor; ısınan yazlarda kar algi alanlarının genişlediği ölçülüyor.',
+  },
+  turuncuLiken: {
+    ad: 'Turuncu kaya likeni', bilimsel: 'Xanthoria elegans', bicim: 'liken', bolge: ['kayaBurnu', 'antKiyi', 'antUs'], ozellik: 'besin', kutup: true, guney: true,
+    tarif: 'Kayaları turuncuya boyayan bir liken: bir mantar ile bir algin ortak yaşamı. Kuşların konduğu, guanoyla gübrelenen kayalarda en parlaktır.',
+    evre: ['ıslak ve parlak turuncu', 'kurumuş, rengi koyulaşmış', 'donmuş ama canlı; birkaç saatlik güneşte bile fotosentez yapabiliyor', 'kar suyuyla yeniden canlanıyor'],
+    tohum: [false, false, false, false],
+    analiz: 'Yılda yalnızca birkaç milimetre büyüyor; çapından kayanın buzdan ne zaman kurtulduğu hesaplanabiliyor. Antarktika kayalarında yüzlerce yaşında likenler var.',
+  },
+  antBuzAlgi: {
+    ad: 'Deniz buzu diatomları', bilimsel: 'Fragilariopsis cylindrus', bicim: 'alg', bolge: ['antBuz', 'antPolinya'], ozellik: 'besin', kutup: true, guney: true,
+    tarif: 'Deniz buzunun alt yüzünü kahverengiye boyayan tek hücreli algler. Kışın krillerin başlıca besini.',
+    evre: ['buz çözülürken suya dökülüyor', 'yeni buzun içine kapanıyor', 'karanlıkta buzun içinde yavaşça yaşıyor', 'güneş dönünce buzun altı kahverengi bir perdeyle kaplanıyor'],
+    tohum: [false, false, false, false],
+    analiz: 'Kriller kışı bu alglerle geçiriyor; deniz buzu azaldığı yıllarda kril, dolayısıyla Adélie pengueni sayıları da düşüyor.',
+  },
 };
 export const BITKI_SIRASI = Object.keys(BITKILER);
 // Kutup bitkilerinin evresi kutup takvimine göre (yıl 24 gün: 1-8 yaz, 9-12 sonbahar, 13-20 kış, 21-24 ilkbahar)
@@ -507,7 +543,8 @@ export const KUTUP_EVRE_ADI = { yE: 'kutup yazı', yG: 'sonbahar', kE: 'kutup k�
 export const OZELLIK_ADI = { besin: 'önemli bir besin bitkisi', su: 'suyu temizleyen bir bitki', zehirli: 'zehirli', 'şifalı': 'şifalı' };
 export function bitkiEvresi(id, gun, eko) {
   if (BITKILER[id].kutup) {
-    const i = kutupEvreNo(gun);
+    const i = kutupEvreNo(gun + (BITKILER[id].guney ? 12 : 0)); // güney yarıkürede mevsimler tersine
+
     return { anahtar: ['yE', 'yG', 'kE', 'kG'][i], mevsim: ['yaz', 'sonbahar', 'kis', 'ilkbahar'][i], metin: BITKILER[id].evre[i], tohum: BITKILER[id].tohum[i] };
   }
   const tk = takvim(gun);
@@ -581,6 +618,12 @@ export const YASAM = {
   kutupKurdu: { yavru: 1, genc: 2, yasli: 9, omur: 13 },
   kutupTilkisi: { yavru: 0.5, genc: 1, yasli: 4, omur: 6 },
   kutupTavsani: { yavru: 0.4, genc: 1, yasli: 4, omur: 5 },
+  imparatorPengueni: { yavru: 0.5, genc: 4, yasli: 18, omur: 22 },
+  adeliPengueni: { yavru: 0.3, genc: 3, yasli: 13, omur: 17 },
+  weddellFoku: { yavru: 1, genc: 4, yasli: 22, omur: 28 },
+  leoparFoku: { yavru: 1, genc: 4, yasli: 20, omur: 26 },
+  orka: { yavru: 2, genc: 10, yasli: 45, omur: 60 },
+  filFoku: { yavru: 1, genc: 4, yasli: 16, omur: 20 },
 };
 export const yilGun = (yil) => yil * YIL_GUN;
 export function evreBul(tur, yasGun) {

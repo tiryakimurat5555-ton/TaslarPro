@@ -1,7 +1,7 @@
 // ==== VAHŞİ YAŞAM: KEŞİF (brif Aşama 6) ====
 // Küçük canlıları arama (karar 48, 94, 95), mağara ekosistemi (karar 98), yarasaların akşam çıkışı,
 // kaçak avcıların tel tuzakları ve izleri (karar 60: sınırlı kapsam; oyuncu bulur, söker, bildirir, hayvanı kurtarır).
-import { TURLER, MAGARA, ISTASYON, YARICAP, nehirY, NEHIR_YARI, KUTUP, KUTUP_SIRASI } from './veri.js';
+import { TURLER, MAGARA, ISTASYON, YARICAP, nehirY, NEHIR_YARI, KUTUP, KUTUP_SIRASI, ANTARKTIKA_SIRASI } from './veri.js';
 import * as Kt from './kutup.js';
 import * as M from './mantik.js';
 import * as E from './ekosistem.js';
@@ -230,19 +230,24 @@ export function uzaktanDon(d) {
 // ---------- Kuzey Kutbu gezisi ----------
 // Savandaki istasyondan uçakla kuzeydoğu Grönland'daki araştırma kulübesine gidilir; orası serbestçe dolaşılan ayrı bir haritadır.
 export const KUTUP_GEZI = { ad: 'Kuzey Kutbu, kuzeydoğu Grönland kıyısı', itibar: 50, ucret: 2500, yol: 300, donus: 300 };
-export const KULUBE_KAPI = Kt.dunya(Kt.ISTASYON_K.lx, Kt.ISTASYON_K.ly + 18); // kulübenin kuzeyindeki açıklık (kamera kulübenin içine düşmesin)
-export function kutupDurumu(k) {
-  if (k.itibar < KUTUP_GEZI.itibar) return { acik: false, neden: 'Kutup araştırma iznine bilimsel itibarın henüz yetmiyor.' };
+export const KULUBE_KAPI = Kt.KUZEY.dunya(Kt.KUZEY.ISTASYON_K.lx, Kt.KUZEY.ISTASYON_K.ly + 18); // kulübenin kuzeyindeki açıklık (kamera kulübenin içine düşmesin)
+// Antarktika: Adélie Kıyısı'ndaki araştırma üssü (aynı kutup altyapısı, güney haritası)
+export const ANTARKTIKA_GEZI = { ad: 'Antarktika, Adélie Kıyısı', itibar: 70, ucret: 3500, yol: 360, donus: 360 };
+export const US_KAPI = Kt.GUNEY.dunya(Kt.GUNEY.ISTASYON_K.lx, Kt.GUNEY.ISTASYON_K.ly + 16); // üssün kuzeyindeki açıklık
+export function kutupDurumu(k, guney = false) {
+  const g = guney ? ANTARKTIKA_GEZI : KUTUP_GEZI;
+  if (k.itibar < g.itibar) return { acik: false, neden: guney ? 'Antarktika araştırma iznine bilimsel itibarın henüz yetmiyor.' : 'Kutup araştırma iznine bilimsel itibarın henüz yetmiyor.' };
   return { acik: true, neden: '' };
 }
-export function kutupHazirla(d) {
+export function kutupHazirla(d, guney = false) {
   const k = d.k;
-  const dur = kutupDurumu(k);
+  const dur = kutupDurumu(k, guney);
+  const gz = guney ? ANTARKTIKA_GEZI : KUTUP_GEZI;
   if (!dur.acik) return dur.neden;
   if (M.oyuncuKutupta(k)) return 'Zaten kutuptasın.';
   if (!istasyondaMi(d)) return 'Kutup gezisine istasyondan çıkılır. Önce istasyona dön.';
-  if (k.butce < KUTUP_GEZI.ucret) return `Uçak, izin ve kulübe kirası için ${KUTUP_GEZI.ucret.toLocaleString('tr-TR')} lira gerekli; bütçe yetmiyor.`;
-  k.butce -= KUTUP_GEZI.ucret;
+  if (k.butce < gz.ucret) return `Uçak, izin ve ${guney ? 'üs' : 'kulübe'} için ${gz.ucret.toLocaleString('tr-TR')} lira gerekli; bütçe yetmiyor.`;
+  k.butce -= gz.ucret;
   d.rota = null;
   d.yaklasId = null;
   d.dron = null;
@@ -262,6 +267,7 @@ export function kutbaVar(d) {
   k.kutup.gezi = (k.kutup.gezi || 0) + 1;
   k.teknede = false;
   Object.assign(d.oyuncu, { x: KULUBE_KAPI.x, y: KULUBE_KAPI.y, yon: 0 });
+  Kt.etkinAyarla(d.oyuncu);
   const mev = Kt.MEVSIM_ADI[M.kutupMevsimi(k)];
   M.arsivOlay(d, 'Saha gezisi: Kuzey Kutbu.');
   const tanitim = ilk
@@ -271,10 +277,32 @@ export function kutbaVar(d) {
   M.olay(d, 'kutup', m, 3, { gelis: true });
   return m;
 }
-export const kulubedeMi = (d) => M.oyuncuKutupta(d.k) && Math.hypot(d.oyuncu.x - KULUBE_KAPI.x, d.oyuncu.y - KULUBE_KAPI.y) < 30;
+export const antarktikaHazirla = (d) => kutupHazirla(d, true);
+export function antarktikayaVar(d) {
+  const k = d.k;
+  if (!k.kutup || typeof k.kutup !== 'object') k.kutup = {};
+  const ilk = !k.kutup.guneyZiyaret;
+  k.kutup.guneyZiyaret = true;
+  k.kutup.gelis = k.dk;
+  k.kutup.guneyGezi = (k.kutup.guneyGezi || 0) + 1;
+  k.teknede = false;
+  Object.assign(d.oyuncu, { x: US_KAPI.x, y: US_KAPI.y, yon: 0 });
+  Kt.etkinAyarla(d.oyuncu);
+  const mev = Kt.MEVSIM_ADI[M.kutupMevsimi(k)];
+  M.arsivOlay(d, 'Saha gezisi: Antarktika.');
+  const tanitim = ilk
+    ? 'Antarktika\'da, Adélie Kıyısı\'ndaki araştırma üssüne indin. Kuzeyin Güney Okyanusu: yazın açık deniz ve buz parçaları, kışın kıyıya kadar donmuş deniz buzu. Güneyin kıtanın sonsuz buz örtüsü; batıda denize uzanan bir buz sahanlığı, doğuda Adélie penguenlerinin yuva yaptığı kayalık bir burun. İmparator penguenler kışın deniz buzunun üstünde ürer. Burada mevsimler kuzeyin tersidir. Araç yok; yürüyerek araştırırsın. Leopar foklarına ve fil foku boğalarına yaklaşma. '
+    : 'Antarktika\'daki araştırma üssüne döndün. ';
+  const m = `${tanitim}Şimdi ${mev}. ${Kt.GUNEY.isikSozu(k.dk)} ${Kt.havaSozu(M.kutupHavasi(k), k.dk)}`;
+  M.olay(d, 'kutup', m, 3, { gelis: true });
+  return m;
+}
+// Dönüş kapısı oyuncunun bulunduğu kutba göre: kuzeyde kulübe, güneyde üs
+export const donusKapisi = (d) => (M.oyuncuGuneyde(d.k) ? US_KAPI : KULUBE_KAPI);
+export const kulubedeMi = (d) => M.oyuncuKutupta(d.k) && Math.hypot(d.oyuncu.x - donusKapisi(d).x, d.oyuncu.y - donusKapisi(d).y) < 30;
 export function kutuptanHazirla(d) {
   if (!M.oyuncuKutupta(d.k)) return 'Kutupta değilsin.';
-  if (!kulubedeMi(d)) return 'Dönüş uçağı kulübenin yanındaki pistten kalkar. Önce kulübeye dön.';
+  if (!kulubedeMi(d)) return M.oyuncuGuneyde(d.k) ? 'Dönüş uçağı üssün yanındaki buz pistinden kalkar. Önce üsse dön.' : 'Dönüş uçağı kulübenin yanındaki pistten kalkar. Önce kulübeye dön.';
   d.rota = null;
   d.yaklasId = null;
   M.gozlemBitir(d);
@@ -283,6 +311,7 @@ export function kutuptanHazirla(d) {
 export function kutuptanDon(d) {
   const k = d.k;
   Object.assign(d.oyuncu, { x: ISTASYON.x + 1, y: ISTASYON.y - 2.5, yon: 0 });
+  Kt.etkinAyarla(d.oyuncu);
   const m = 'Kutup gezisinden savandaki istasyona döndün. Kutupta topladığın numuneler laboratuvara teslim edilebilir.';
   M.olay(d, 'kutup', m, 3, { cikis: true });
   return m;
@@ -326,9 +355,14 @@ export function buzSatirlari(k) {
     ...Object.entries(mev).map(([m, a]) => `${M.BuyukHarf(Kt.MEVSIM_ADI[m])}: ortalama ${Math.round(a.reduce((t, v) => t + v, 0) / a.length)} santimetre, ${a.length} ölçüm (en ince ${Math.min(...a)}, en kalın ${Math.max(...a)}).`),
   ];
 }
-export function kutupSatiri(k) {
+export function kutupSatiri(k, guney = false) {
   const dur = kutupDurumu(k);
   const kayitli = KUTUP_SIRASI.filter((t) => k.arsiv.turler[t]).length;
+  if (guney) {
+    const dur2 = kutupDurumu(k, true);
+    const kay2 = ANTARKTIKA_SIRASI.filter((t) => k.arsiv.turler[t]).length;
+    return `Antarktika: ${dur2.acik ? `uçakla ${ANTARKTIKA_GEZI.yol / 60} saat, uçak, izin ve üs ${ANTARKTIKA_GEZI.ucret.toLocaleString('tr-TR')} lira` : `kilitli (itibar ${ANTARKTIKA_GEZI.itibar} gerekir)`}. Kaydedilen Antarktika türü ${kay2} / ${ANTARKTIKA_SIRASI.length}.`;
+  }
   return `Kuzey Kutbu: ${dur.acik ? `uçakla ${String(KUTUP_GEZI.yol / 60).replace('.', ',')} saat, uçak, izin ve kulübe ${KUTUP_GEZI.ucret.toLocaleString('tr-TR')} lira` : 'kilitli'}. Kaydedilen kutup türü ${kayitli} / ${KUTUP_SIRASI.length}.`;
 }
 export function uzakSatirlari(k) {

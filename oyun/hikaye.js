@@ -196,13 +196,25 @@ export const GIZEMLER = {
   kutupSes: {
     ad: 'Buzun altındaki şarkı',
     giris: 'Kulübedeki su altı mikrofonu geceleri buzun altından gelen, inen sarmal ıslıklar kaydediyor. Saatlerce süren, hiç duyulmamış bir şarkı gibi. Bir balina mı, buzun kendi sesi mi?',
-    baslat: (k) => M.oyuncuKutupta(k) && ['kis', 'ilkbahar'].includes(M.kutupMevsimi(k)),
+    baslat: (k) => M.oyuncuKutupta(k) && !M.oyuncuGuneyde(k) && ['kis', 'ilkbahar'].includes(M.kutupMevsimi(k)),
     adimlar: [
-      { metin: 'Donmuş denize, deniz buzunun üstüne çık. Yerler menüsünde Deniz buzu var.', tamam: (d) => M.oyuncuKutupta(d.k) && Kt.yuzey(d.oyuncu.x, d.oyuncu.y, d.k.dk) === 'buz', sonra: 'Buzun üstünde, ayaklarının altından gelen titrek ıslığı neredeyse hissediyorsun. Ses buzdaki açıklıklara yakın yerde daha güçlü.' },
+      { metin: 'Donmuş denize, deniz buzunun üstüne çık. Yerler menüsünde Deniz buzu var.', tamam: (d) => M.oyuncuKutupta(d.k) && !M.oyuncuGuneyde(d.k) && Kt.yuzey(d.oyuncu.x, d.oyuncu.y, d.k.dk) === 'buz', sonra: 'Buzun üstünde, ayaklarının altından gelen titrek ıslığı neredeyse hissediyorsun. Ses buzdaki açıklıklara yakın yerde daha güçlü.' },
       { metin: 'Buzun kalınlığını ölç; ses buzun inceldiği yerlerden yükseliyor (Doğa menüsü, Deniz buzunu ölç).', tamam: (d, g) => ((d.k.kutup && d.k.kutup.buz) || []).some((b) => b.dk >= g.bas), sonra: 'Buz kalınlığı sesin geçmesine izin veriyor; şarkı buzun kenarındaki açık suya, polinyaya doğru güçleniyor.' },
       { metin: 'Buz kenarında ya da polinyada şarkının sahibini ara (Doğa menüsü, Küçük canlı ara).', tamam: (d) => !!(d.k.arsiv.kucukler || {}).sakalliFok },
     ],
     cozum: 'Şarkının sahibi sakallı fok. Erkekler ilkbaharın çiftleşme döneminde buzun altında, bölgelerini ve kendilerini ilan etmek için kilometrelerce duyulan, aşağı inen sarmal ıslıklar söyler. Her erkeğin şarkısı biraz farklıdır; araştırmacılar bireyleri seslerinden tanıyabilir.',
+    odul: { itibar: 12, fon: 3000 },
+  },
+  penguenSessizligi: {
+    ad: 'Burundaki boş yuvalar',
+    giris: 'Üssün kayıtlarına göre kayalık burundaki Adélie kolonisinde geçen yazlardan çok daha az yuva var. Çakıl yuvaların bir kısmı boş duruyor. Penguenler nereye gitti?',
+    baslat: (k) => M.oyuncuGuneyde(k) && ['yaz', 'ilkbahar'].includes(M.kutupMevsimi(k)),
+    adimlar: [
+      { metin: 'Doğudaki kayalık buruna, Adélie kolonisine git. Yerler menüsünde Kayalık burun var.', tamam: (d) => M.oyuncuGuneyde(d.k) && Kt.bolge(d.oyuncu.x, d.oyuncu.y, d.k.dk) === 'kayaBurnu', sonra: 'Yuvaların arasında yürürken çoğu yetişkinin zayıf olduğunu, yavruların cılız kaldığını görüyorsun. Sorun yuvada değil, denizde olabilir.' },
+      { metin: 'İki Adélie penguenini birey olarak tanımla (gözlemle ve bekle).', tamam: (d) => d.k.hayvanlar.filter((b) => b.tur === 'adeliPengueni' && b.no > 0).length >= 2, sonra: 'Tanımladığın penguenler beslenmek için her gün çok uzağa, açık denize gidip geliyor. Yakında yiyecek bulamıyorlar.' },
+      { metin: 'Denizde penguenlerin besinini bul: buz kenarında ya da polinyada küçük canlı ara.', tamam: (d) => !!(d.k.arsiv.kucukler || {}).antKrili },
+    ],
+    cozum: 'Adélie penguenleri neredeyse yalnızca krille beslenir; kril de kışı deniz buzunun altındaki alglerle geçirir. Geçen kış deniz buzu az ve kısa ömürlü olunca kril azaldı, penguenler yavrularını besleyecek kadar yiyecek bulamadı. Koloninin küçülmesi buzun azalmasının bir işareti.',
     odul: { itibar: 12, fon: 3000 },
   },
   kacak: {

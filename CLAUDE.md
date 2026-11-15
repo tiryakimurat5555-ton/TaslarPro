@@ -531,6 +531,25 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   metinleri, App ortam (tepeler kayalık katmanı, çalılık galeri katmanı, akan dere su), Yardım "Savan, zaman ve yerler", YENILIKLER, YERLER +7.
   Testler: bot 2 gün (Bozuk 0, 0,63 ms/kare), dayanıklılık, ekosistem 20 gün (göç çıktı), eski kayıt göçü (scratchpad goc.js),
   dere/kabuk benzetimi (scratchpad dere.js), menu-tara 278 sayfa iki kipte sorun 0, görüntüler scratchpad harita-goruntu.cjs. Telefonda doğrulanmadı.
+- ANTARKTİKA (15 Kasım 2026, Murat "Farklı haritalar ekle", seçtiği Antarktika ve Avustralya çalılığı; önce Antarktika; sayılar ÖNERİ):
+  ANTARKTIKA {x 0, y -6000, r 230}. kutup.js artık fabrika: haritaYap(c) → KUZEY ve GUNEY (Adélie Kıyısı; kayma 12 = mevsimler kuzeyin tersi,
+  buzTaban 34, kiyiY + batıda 45 m buz sahanlığı, ISTASYON_K üs (0,-70), KAYA_BURNU (110,5) r34, FOK_KIYISI, IMPARATOR_KOLONISI (-70,95) r18,
+  POLINYA (80,168), rüzgâr güneyden). haritaBul(p)/harita(p)/guneyMi; konum alan adlar noktanın haritasını bulur; zaman/oyuncu adları (isik,
+  evre, isikSozu, kutupTakvim, buzKenari, dunya, ISTASYON_K, POLINYA, KUTUP_YERLER, havaSozu, havaUret, MEVSIM_ADI) `export let` canlı bağlar:
+  Kt.etkinAyarla(d.oyuncu) (mantik guncelle başı ve gezi/dönüş) oyuncunun haritasına çevirir. HAYVAN MANTIĞINDA hep Kt.harita(g) ya da
+  Kt.KUZEY kullan. Bölgeler antUs, buzOrtusu, kayaBurnu, antKiyi, antBuz, antSu, sahanlik, antPolinya; YERLER a_*. Hava k.kutup.havaG,
+  mevsimG (kutupHavasi(k, p) noktaya/oyuncuya göre). TURLER 6 (guney: true; ANTARKTIKA_SIRASI): imparatorPengueni (IPG, penguen, suCanlisi),
+  adeliPengueni, weddellFoku (fok: true → halkalı fok dalı), leoparFoku, orka, filFoku (karayaCikar → mors dalı). mantik antarktikaPlanSec /
+  antarktikaGrupAdim: imparator kışın buzda koloni, fırtınada 'sokul'; Adélie yazın burunda 'koloni' (tasTopluyor), kışın buz kenarı/deniz;
+  leopar foku 'pusuSu' (penguen suya girince av), orka 'avDeniz' (buzdaki fok için dalga, g.dalga), avlanan tür ≤6/5 kalınca bırakılır.
+  kesif ANTARKTIKA_GEZI (itibar 70, 3.500, 360 dk), US_KAPI, antarktikaHazirla/antarktikayaVar, donusKapisi, kulubedeMi iki kutupta;
+  k.kutup.guneyZiyaret → turListesi. Merkez 3 araştırma (antarktikaFaunasi, penguenYili, buzKitasiYazi), hikaye gizemi penguenSessizligi
+  (kutupSes yalnız kuzeyde). kucukler ANTARKTIKA_CANLILARI 12 (guney), BITKILER + 5 (guney: true; evre gün+12). sahne: penguen modeli, fok
+  benekleri, fil foku burnu, orka beyaz lekeleri; antGrup (deniz, buz, kara, kaya şeridi, burun + guano, buz sahanlığı, kıta buz örtüsü +
+  nunataklar, koloni izi, üs modülleri, masa buzdağları); karVeIsik ortak (güney ışıkları güneyde). Sesler 6 tür konumlu (UC_B), ortam_antarktika,
+  ortam_penguen (koloni katmanı), k_guneyDevPetreli, k_guneyKutupKarabatagi. Testler: bot, dayanıklılık 150/150, menu-tara Antarktika ve savanda
+  iki kipte sorun 0 (/tmp/claude-0/ant-kayit.json), /tmp/claude-0/kr/ant1.js, görüntüler scratchpad ant-goruntu.cjs. Telefonda doğrulanmadı.
+  Sıradaki: Avustralya çalılığı (ayrı harita).
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

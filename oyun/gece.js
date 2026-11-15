@@ -31,6 +31,12 @@ export const GOZ = {
   kutupKurdu: { renk: 'sarımsı yeşil', boy: 'diz hizasında, birkaç çift', ipucu: 'sürü hâlindeki köpekgiller' },
   kutupTilkisi: { renk: 'sarımsı yeşil', boy: 'yere yakın, tek ya da iki çift', ipucu: 'küçük bir köpekgil' },
   kutupTavsani: { renk: 'kırmızımsı', boy: 'yere çok yakın', ipucu: 'küçük bir otçul' },
+  imparatorPengueni: { renk: null, boy: 'bel hizasında, sıkı bir kalabalık', ipucu: 'kuş; gözleri ışığı yansıtmaz' },
+  adeliPengueni: { renk: null, boy: 'diz hizasında, kalabalık', ipucu: 'kuş; gözleri ışığı yansıtmaz' },
+  weddellFoku: { renk: 'kırmızımsı', boy: 'buzun hemen üstünde', ipucu: 'buzda yatan bir fok' },
+  leoparFoku: { renk: 'kırmızımsı', boy: 'buz kenarında, tek bir çift', ipucu: 'iri, tek başına bir fok' },
+  orka: { renk: null, boy: 'suda', ipucu: 'balina' },
+  filFoku: { renk: 'kırmızımsı', boy: 'yere çok yakın, iri gövdeler', ipucu: 'dev, sürü hâlinde fok' },
 };
 const MENZIL = 45;
 

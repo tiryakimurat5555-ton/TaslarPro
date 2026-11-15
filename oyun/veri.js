@@ -23,6 +23,8 @@ export const GECITLER = [
 export const KAYALIK = { x: -115, y: 45, r: 32 };
 // Kuzey Kutbu haritası (Kuzeydoğu Grönland kıyısı): savandan çok uzakta, kendi coğrafyası ve mevsimi olan ikinci ana harita (kutup.js)
 export const KUTUP = { x: 0, y: 6000, r: 230 };
+// Antarktika haritası (Adélie Kıyısı): savanın çok güneyinde, Kuzey Kutbu ile aynı kurallarla işleyen ama mevsimleri ters üçüncü ana harita (kutup.js GUNEY)
+export const ANTARKTIKA = { x: 0, y: -6000, r: 230 };
 export const MAGARA = { x: -128, y: 64 };
 
 // ---------- Dış halkanın bölgeleri (15 Kasım 2026, harita genişlemesi) ----------
@@ -119,6 +121,15 @@ export const BOLGE_ADLARI = {
   buzul: 'Buzul',
   kusYari: 'Kuş yarları',
   polinya: 'Polinya',
+  // Antarktika
+  antUs: 'Araştırma üssü',
+  buzOrtusu: 'Kıta buz örtüsü',
+  kayaBurnu: 'Kayalık burun',
+  antKiyi: 'Kıyı',
+  antBuz: 'Deniz buzu',
+  antSu: 'Açık deniz',
+  sahanlik: 'Buz sahanlığı',
+  antPolinya: 'Polinya',
 };
 
 // Davranışlar: fiil (konuşmada "Zebra 4 otluyor"), ad (arşivde), nadir (bilimsel değeri yüksek)
@@ -192,6 +203,13 @@ export const DAVRANISLAR = {
   ayiyiTakipEdiyor: { fiil: 'kutup ayısını uzaktan izliyor, artıklarını bekliyor', ad: 'Ayıyı takip etme', nadir: true },
   karaDaliyor: { fiil: 'kulaklarını dikip dinliyor, sonra havaya sıçrayıp burnuyla kara dalıyor', ad: 'Kara dalarak avlanma', nadir: true },
   ulumaKorosu: { fiil: 'sürüsüyle birlikte uluyor', ad: 'Uluma korosu', nadir: true },
+  // Antarktika
+  sokuluyor: { fiil: 'fırtınaya karşı yüzlercesiyle birbirine sokulmuş; sırayla rüzgârlı dış kenardan sıcak ortaya geçiyor', ad: 'Isınmak için sokulma', nadir: true },
+  kolonide: { fiil: 'kolonide yuvasının başında bekliyor', ad: 'Kolonide bekleme' },
+  tasTopluyor: { fiil: 'gagasıyla çakıl taşı taşıyıp yuvasını yükseltiyor; arada komşusunun taşını çalıyor', ad: 'Yuva taşı toplama', nadir: true },
+  penguenPususu: { fiil: 'buz kenarının altında, penguenlerin suya girdiği yerde pusuya yatmış', ad: 'Penguen pususu', nadir: true },
+  dalgaYapiyor: { fiil: 'ailesiyle yan yana hızla yüzüp bir dalga yaratıyor; buz parçasının üstündeki foku suya düşürmeye çalışıyor', ad: 'Dalga yaparak avlanma', nadir: true },
+  bogaKavgasi: { fiil: 'göğsünü kaldırıp rakibine kükrüyor; iki erkek boyunlarını birbirine çarpıyor', ad: 'Erkeklerin kumsal kavgası', nadir: true },
   bedenDiliUyari: { fiil: 'kuyruğunu dikip başını kaldırarak sürüye tehlikeyi bildiriyor', ad: 'Beden diliyle uyarı' },
 };
 
@@ -385,8 +403,49 @@ Object.assign(TURLER, {
     tarif: 'Kısa kulaklı, kalın kürklü iri bir tavşan. Bazen yüzlerce bir arada dolaşır; tehlikede arka ayakları üstünde dikilip kanguru gibi zıplayarak kaçar.',
   },
 });
+// ---------- Antarktika türleri (kutup: true, guney: true; habitatlar ANTARKTIKA merkezine göre) ----------
+const AY = -6000;
+Object.assign(TURLER, {
+  imparatorPengueni: {
+    ad: 'İmparator Pengueni', bilimsel: 'Aptenodytes forsteri', kisa: 'IPG', sinif: 'Kuş', ses: 'imparatorpengueni', sekil: 'penguen', boy: 1.0, renk: '#1c1e24', kutup: true, guney: true,
+    hiz: 2.5, aktif: 'karma', kacis: 7, suCanlisi: true, sesSik: 40, sesTuru: 'iletisim', penguen: true,
+    habitat: { x: -70, y: AY + 95, r: 55 }, grup: [10, 14], erkekOran: 0.5,
+    tarif: 'Penguenlerin en büyüğü. Antarktika kışının ortasında, donmuş deniz buzunun üstünde ürer: dişi tek yumurtasını erkeğe bırakıp denize gider, erkek yumurtayı ayaklarının üstünde, karın kıvrımının altında iki ay aç kalarak kuluçkaya yatar. Fırtınada binlerce erkek birbirine sokulup dönerek ısınır.',
+  },
+  adeliPengueni: {
+    ad: 'Adélie Pengueni', bilimsel: 'Pygoscelis adeliae', kisa: 'ADL', sinif: 'Kuş', ses: 'adelipengueni', sekil: 'penguen', boy: 0.62, renk: '#202228', kutup: true, guney: true,
+    hiz: 3, aktif: 'karma', kacis: 6, yuzer: true, sesSik: 30, sesTuru: 'iletisim', penguen: true, karaKolonisi: true,
+    habitat: { x: 110, y: AY + 5, r: 30 }, grup: [10, 14], erkekOran: 0.5,
+    tarif: 'Gözünün çevresinde beyaz halka olan küçük, meraklı bir penguen. Yazın buzsuz kayalık burunlarda kalabalık koloniler kurar; yuvasını çakıl taşlarından yapar, komşusunun taşlarını çalmaktan da çekinmez. Kışı açık denizde, buz kenarında geçirir.',
+  },
+  weddellFoku: {
+    ad: 'Weddell Foku', bilimsel: 'Leptonychotes weddellii', kisa: 'WDF', sinif: 'Memeli', ses: 'weddellfoku', sekil: 'fok', boy: 1.0, renk: '#4a5058', kutup: true, guney: true,
+    hiz: 4, aktif: 'karma', kacis: 5, suCanlisi: true, sesSik: 60, sesTuru: 'iletisim', fok: true,
+    habitat: { x: 20, y: AY + 130, r: 60 }, grup: [3, 5], erkekOran: 0.4,
+    tarif: 'Yeryüzünün en güneyinde yaşayan memeli. Bütün kış kıyıya yapışık deniz buzunun altında kalır, nefes deliklerini dişleriyle buzu kemirerek açık tutar. Buzun altından yükselen uzay seslerine benzeyen çağrıları buzun üstünden bile duyulur. İnsandan neredeyse hiç korkmaz.',
+  },
+  leoparFoku: {
+    ad: 'Leopar Foku', bilimsel: 'Hydrurga leptonyx', kisa: 'LPF', sinif: 'Memeli', ses: 'leoparfoku', sekil: 'fok', boy: 1.3, renk: '#7a7e84', kutup: true, guney: true,
+    hiz: 5, aktif: 'karma', kacis: 14, tehlikeli: true, suCanlisi: true, yirtici: true, avlar: ['adeliPengueni', 'imparatorPengueni'], sesSik: 120, sesTuru: 'bolge',
+    habitat: { x: 60, y: AY + 75, r: 70 }, grup: [1, 1], erkekOran: 0.4,
+    tarif: 'Benekli gri postu ve sürüngeni andıran iri başıyla Antarktika\'nın tepe yırtıcılarından. Buz kenarının altında pusuya yatar, suya giren ya da sudan çıkan penguenleri yakalar. Kurbağa adamlara bile meraklı yaklaştığı bilinir; ona asla yaklaşma.',
+  },
+  orka: {
+    ad: 'Orka (Katil Balina)', bilimsel: 'Orcinus orca', kisa: 'ORK', sinif: 'Memeli', ses: 'orka', sekil: 'balina', boy: 2.0, renk: '#16181c', kutup: true, guney: true,
+    hiz: 7, aktif: 'karma', kacis: 20, suCanlisi: true, deniz: true, yirtici: true, avlar: ['weddellFoku', 'adeliPengueni'], sesSik: 50, sesTuru: 'iletisim',
+    habitat: { x: 0, y: AY + 175, r: 55 }, grup: [4, 6], erkekOran: 0.4,
+    tarif: 'Yunusların en büyüğü. Aileler hâlinde yaşar, her ailenin kendine özgü bir "lehçesi" vardır. Antarktika\'daki bazı orkalar buz parçası üstünde dinlenen fokları, hep birlikte yüzerek yaptıkları bir dalgayla buzdan suya düşürür.',
+  },
+  filFoku: {
+    ad: 'Güney Fil Foku', bilimsel: 'Mirounga leonina', kisa: 'FLF', sinif: 'Memeli', ses: 'filfoku', sekil: 'mors', boy: 1.55, renk: '#7a6a5a', kutup: true, guney: true,
+    hiz: 2.5, aktif: 'karma', kacis: 10, tehlikeli: true, suCanlisi: true, karayaCikar: true, sesSik: 40, sesTuru: 'bolge',
+    habitat: { x: -40, y: AY + 30, r: 30 }, grup: [6, 9], erkekOran: 0.35,
+    tarif: 'Dünyanın en büyük foku: erkekleri dört tonu aşar. Erkeklerin hortum gibi sarkan burnu, gürültülü kükremelerini yükseltir. Yazın kumsallara çıkıp tüy değiştirir ve sırt sırta yatar; erkekler kumsal için kanlı kavgalar yapar. Bin metreden derine dalabilir.',
+  },
+});
 export const TUR_SIRASI = Object.keys(TURLER).filter((t) => !TURLER[t].kutup);
-export const KUTUP_SIRASI = Object.keys(TURLER).filter((t) => TURLER[t].kutup);
+export const KUTUP_SIRASI = Object.keys(TURLER).filter((t) => TURLER[t].kutup && !TURLER[t].guney);
+export const ANTARKTIKA_SIRASI = Object.keys(TURLER).filter((t) => TURLER[t].guney);
 
 export const KISILIKLER = {
   cesur: { ad: 'cesur', kacis: 0.7, alisma: 1.2 },
