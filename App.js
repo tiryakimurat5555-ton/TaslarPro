@@ -288,10 +288,56 @@ const ALETLER = [
   { id: 'ses', ad: 'Ses kayıt cihazı', ipucu: 'Çift dokununca 6 saniye kayıt yapıp sesleri çözümlersin.', kullan: (d) => M.sesKaydiBaslat(d) },
   { id: 'yaklas', ad: 'Yaklaşma', ipucu: 'Çift dokununca gözlediğin hayvana ürkütmeden yaklaşırsın.', kullan: (d) => M.yaklas(d) },
   { id: 'dron', ad: 'Araştırma dronu', gerek: 'drone', ipucu: 'Çift dokununca dron baktığın yönde 110 metre öteye uçar, oradaki hayvanları sayıp haritaya işler ve geri döner.', kullan: (d) => { const m = G.dronBaslat(d); if (m) M.olay(d, 'hata', m, 3); } },
+  { id: 'kulak', ad: 'Kulak ver', ipucu: 'Çift dokununca durup dinlersin: çevredeki sürülerin ve hayvanların sesleri önünden başlayıp saat yönünde, her biri bulunduğu yönden ve uzaklıktan sırayla duyulur; ardından ne duyduğun sırayla söylenir. Kulaklıkla dinle.', kullan: (d) => kulakVerCal(d) },
   { id: 'ara', ad: 'Büyüteç ve fener', ipucu: 'Çift dokununca yakındaki küçük canlıları ararsın: böcekler, kuşlar, kurbağalar, sürüngenler. Hemen ardından fotoğraf makinesiyle fotoğrafını çekebilirsin.', kullan: (d) => K.kucukAra(d) },
 ];
 // Elindeki aletler: dron yalnızca satın alınınca listeye girer
 const aletlerAl = (k) => ALETLER.filter((a) => !a.gerek || (k.ekipman && k.ekipman[a.gerek]));
+// Kulak ver: her grubun sesini gerçek yönünden sırayla çalar (1,6 sn arayla), sonra özeti söyler
+let kulakNo = 0;
+function kulakVerCal(d) {
+  const r = M.kulakVer(d);
+  if (r.hata) return Ses.hemen(r.hata);
+  const no = ++kulakNo;
+  Ses.sus();
+  d.sonKulak = { liste: r.liste.map((g) => ({ b: g.b, sayi: g.sayi })), zaman: Date.now() };
+  if (!r.liste.length) return Ses.hemen(r.ozet);
+  r.liste.forEach((g, i) =>
+    setTimeout(() => {
+      if (no !== kulakNo) return;
+      // Uzaktaki sürüler de duyulsun diye düzey artırılır; uzaklık farkı yine duyulur
+      Efekt.yonlu(TURLER[g.b.tur].ses, d.oyuncu, g.b, 2.5, 200, true);
+    }, 250 + i * 1600)
+  );
+  setTimeout(() => {
+    if (no === kulakNo) Ses.hemen(r.ozet);
+  }, 250 + r.liste.length * 1600 + 1000);
+}
+// Son duyulan sesin adı (Sese dön satırı için)
+function sesKaynagiAdi(s) {
+  if (!s) return '';
+  const h = s.hedef || {};
+  if (h.tur && TURLER[h.tur] && h.id) return M.bireyAdi(h);
+  if (s.taban.startsWith('k_') && KUCUKLER[s.taban.slice(2)]) return KUCUKLER[s.taban.slice(2)].ad.toLocaleLowerCase('tr');
+  if (s.taban.startsWith('kosu_')) return 'koşan hayvan';
+  if (s.taban.startsWith('h_')) return 'hayvan sesi';
+  if (s.taban === 'dron_dongu' || s.taban.startsWith('dron')) return 'dron';
+  if (s.taban.startsWith('yangin')) return 'yangın';
+  return 'ses';
+}
+// Oyuncuyu son duyulan sesin bulunduğu yöne çevirir (ses son 90 saniyede çaldıysa)
+function seseDon(d, secili) {
+  const s = secili || Efekt.sonDuyulan();
+  if (!s || Date.now() - s.zaman > 90000) return Ses.hemen('Son zamanlarda yönünü belirleyebileceğin bir ses duymadın.');
+  const h = s.hedef && s.hedef.id && !s.hedef.olu ? s.hedef : { x: s.x, y: s.y };
+  const m = M.mesafe(d.oyuncu, h);
+  if (m < 1) return Ses.hemen('Ses tam yanında.');
+  d.oyuncu.yon = M.yonAcisi(d.oyuncu, h);
+  Efekt.cal('hedef_onde', 0.7);
+  Haptics.selectionAsync().catch(() => {});
+  Ses.hemen(`${BuyukHarfA(sesKaynagiAdi(s))} sesinin geldiği yöne döndün; ${M.metreSozu(m)} önünde.`);
+}
+const BuyukHarfA = (s) => s.charAt(0).toLocaleUpperCase('tr-TR') + s.slice(1);
 const OLU_BOLGE = 0.12;
 let tamSurukleme = 90; // bu kadar piksel sürükleyince tam hız (Ayarlar > Kontroller > Hassasiyet)
 function olcekle(piksel) {
@@ -335,6 +381,7 @@ const kucuk = (s) => s.toLocaleLowerCase('tr-TR');
 
 // ---------------- Yenilikler (en yeniler üstte): Murat denerken neyin nerede olduğunu bulsun diye ----------------
 const YENILIKLER = [
+  { baslik: 'Kulak ver ve sese dön', metin: 'Yeni alet: Kulak ver. Çift dokununca durup dinlersin; çevrendeki en yakın altı sürünün ya da hayvanın sesi, önünden başlayıp saat yönünde, her biri bulunduğu yönden ve uzaklıktan sırayla duyulur. Ardından ne duyduğun aynı sırayla söylenir. Böylece çevreni görmeden, yalnız kulağınla tanırsın. Bir ses duyduktan sonra menüdeki Son duyduğun sese dön satırı seni o sesin geldiği yöne çevirir; kulak verdikten sonra Dinlediğin seslerden birine dön ile istediğin hayvana yönelirsin.', nerede: 'İki parmakla sağa ya da sola kaydırıp Kulak ver aletini seç; ana menü; VoiceOver kipinde üstteki düğmeler.' },
   { baslik: 'Yeni 3 boyutlu ses motoru', metin: 'Hayvan ve canlı sesleri artık tek bir kayıttan, çalarken gerçek zamanlı yönlendiriliyor. Önceden her ses beş sabit yönden birine yerleşiyordu; şimdi sesin yönü kesintisiz. Ses çalarken hayvan yürürse ya da sen dönersen ses de başının çevresinde kayıyor. Arkandan gelen ses boğuk duyulur. Arada kaya, ağaç ya da bina varsa ses boğuklaşır ve kısılır; mağaradayken dışarıdaki sesler boğuk gelir. Uzaklaştıkça ses kısılır. Bu değişiklik oyunun dosya sayısını da yarıya indirdi.', nerede: 'Sahada her yerde; kulaklıkla dinle.' },
   { baslik: 'Kutup araştırmaları, deniz buzu ölçümü ve kutup sesleri', metin: 'Merkezde dört kutup araştırması var. Deniz buzunun üstündeyken buzun kalınlığını ölçebilirsin. Kutup kuşlarının, lemmingin ve sakallı fokun sesleri artık çevrede duyuluyor. Kışın ya da ilkbaharda kutuptayken yeni bir gizem başlayabilir: Buzun altındaki şarkı. Kuzey ışıkları gökyüzünde daha belirgin.', nerede: 'Kutupta Doğa menüsü: Deniz buzunu ölç ve Kutup raporu. Merkez, Araştırmalar. Merkez, Gizemler.' },
   { baslik: 'Yeni bölge: Kuzey Kutbu', metin: 'Kuzeydoğu Grönland kıyısında, savandan ayrı, serbestçe dolaşılan büyük bir harita. Kutup ayısı, halkalı fok, mors, beluga, ren geyiği, misk öküzü, kutup kurdu, kutup tilkisi ve kutup tavşanı yaşıyor; her birinin kendi sesi var. Yazın güneş batmaz, kışın hiç doğmaz; deniz mevsime göre donup çözülür, tipi çıkar, kış gecelerinde kuzey ışıkları görünür. 21 kutup küçük canlısı ve 6 kutup bitkisi, karda ve buzda adım sesleri, rüzgâr, buz, deniz ve kuş yarı ortam sesleri eklendi. İtibarın 50 olunca açılır.', nerede: 'Araştırma merkezi, Saha gezileri: Kuzey Kutbu, yola çık. Yardım, Kuzey Kutbu.' },
@@ -393,7 +440,8 @@ const YARDIM = [
       'Telefonu dik tut ve kulaklık tak. Hayvanlar bulundukları yönden ses verir: soldaki sol kulaktan, arkadaki boğuk, uzaktaki kısık duyulur.',
       'Tek parmakla sürükle: yukarı ileri yürür, aşağı geri gider, sağa ve sola döndürür. Araçtayken sürersin.',
       'Dokun: izlediğin hayvanı ya da çevredeki hayvanları anlatır. Uzun bas: çevreni ayrıntılı betimler: ışık, hava, zemin, önündeki engel, yakındaki yerler, duyulan sesler ve hayvanlar.',
-      'Çift dokun: elindeki aleti kullanır. İki parmakla sağa ya da sola kaydır: alet değiştirir. Aletler dürbün, fotoğraf makinesi, ses kayıt cihazı ve yaklaşmadır.',
+      'Çift dokun: elindeki aleti kullanır. İki parmakla sağa ya da sola kaydır: alet değiştirir. Aletler dürbün, fotoğraf makinesi, video kamera, ses kayıt cihazı, yaklaşma, kulak ver ve büyüteçtir; dron alınınca o da eklenir.',
+      'Kulak ver: çift dokununca çevrendeki en yakın altı sürünün ya da hayvanın sesi, önünden başlayıp saat yönünde, her biri gerçekten bulunduğu yönden ve uzaklıktan sırayla duyulur; uzaktaki kısık, arkadaki boğuk gelir. Sonra ne duyduğun aynı sırayla söylenir. Menüde Son duyduğun sese dön satırı seni son duyulan sesin yönüne çevirir; Dinlediğin seslerden birine dön ile kulak verdiğin hayvanlardan birini seçersin. VoiceOver kipinde üstteki Kulak ver ve Sese dön düğmeleri aynısını yapar.',
       'İki parmakla yukarı kaydır: araca biner ya da inersin; araç uzaktaysa yanına yürürsün. İki parmakla aşağı kaydır: durur ve gözlemi bitirirsin.',
       'İki parmakla dokun: konuşmayı susturur. İki parmakla iki kez dokun: menüyü açar.',
       'Ayak seslerin zemine göre değişir: kuru ot, çıplak toprak, çamur, sığ su, kaya, yaprak ve mağara taşı. Dönerken her 30 derecede bir tık duyulur; kuzey, doğu, güney ve batıda tık daha güçlüdür. İzlediğin hayvan ya da gittiğin yer tam önüne gelince ayrı bir ses çalar ve telefon hafifçe titrer. Tıkırtıyı Ayarlar, Ses ve konuşma bölümünden kapatabilirsin.',
@@ -1753,6 +1801,14 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       const ok = Mz.okunmamis(k);
       ogeler.push(
         { id: 'betimle', etiket: 'Çevreyi betimle', ipucu: 'Işık, hava, zemin, önündeki engel, yakındaki yerler, sesler ve hayvanlar.', sec: () => (Ses.hemen(B.betimle(d, alet.ad)), 'sessiz') },
+        ...(k.magara ? [] : [{ id: 'kulakVer', etiket: 'Kulak ver: çevredeki hayvanları sesleriyle dinle', ipucu: 'Menü kapanır; her sürünün sesi bulunduğu yönden sırayla duyulur, sonra özetlenir.', sec: kapatVe(() => kulakVerCal(d)) }]),
+        ...((() => {
+          const sd = Efekt.sonDuyulan();
+          const r = [];
+          if (sd && Date.now() - sd.zaman < 90000 && !k.magara) r.push({ id: 'seseDon', etiket: `Son duyduğun sese dön: ${sesKaynagiAdi(sd)}`, ipucu: 'Seni sesin geldiği yöne çevirir.', sec: kapatVe(() => seseDon(d)) });
+          if (d.sonKulak && Date.now() - d.sonKulak.zaman < 180000 && d.sonKulak.liste.length > 1 && !k.magara) r.push(altMenu('kulak', 'Dinlediğin seslerden birine dön', menu.ac));
+          return r;
+        })()),
         altMenu('cevre', `Görüş alanındaki hayvanlar: ${M.gorunurler(d).length}`, menu.ac),
         altMenu('yerler', 'Yerler ve yolculuk', menu.ac),
         ...(kutupta
@@ -2032,6 +2088,15 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         ],
         'Bu kısayollar yalnızca yeni özellikleri hızlı denemek içindir. Zaman ileri alınamaz; savan yalnız oynarken yaşar.'
       );
+    }
+    if (u === 'kulak') {
+      const l = ((d.sonKulak && d.sonKulak.liste) || []).filter((x) => !x.b.olu);
+      const ogeler = l.map(({ b, sayi }) => {
+        const ad = sayi >= 3 ? `${M.SOZ[b.tur]} sürüsü` : M.BuyukHarf(M.bireyAdi(b));
+        return { id: 'k' + b.id, etiket: `${ad}, ${yerTarifi(b)}`, ipucu: 'Seçince bu yöne dönersin.', sec: kapatVe(() => seseDon(d, { taban: TURLER[b.tur].ses, hedef: b, x: b.x, y: b.y, zaman: Date.now() })) };
+      });
+      if (!ogeler.length) ogeler.push(bilgi('bos', 'Dinlediğin hayvanların hiçbiri artık yakında değil.'));
+      return liste(u, 'Dinlediğin sesler', ogeler);
     }
     if (u === 'cevre') {
       const l = M.gorunurler(d).slice(0, 20);
@@ -2666,6 +2731,8 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
           {!jestli && (
             <View style={st.baglamSatir}>
               <Dugme etiket="Çevreyi betimle" ipucu="Işık, hava, zemin, önündeki engel, yakındaki yerler, sesler ve hayvanlar" onEtkin={() => Ses.hemen(B.betimle(d))} stil={st.baglamDugme} />
+              {!k.magara && <Dugme etiket="Kulak ver" ipucu="Çevredeki hayvanların sesleri yönlerinden sırayla duyulur, sonra özetlenir" onEtkin={() => kulakVerCal(d)} stil={st.baglamDugme} />}
+              {!k.magara && <Dugme etiket="Sese dön" ipucu="Son duyduğun sesin geldiği yöne döndürür" onEtkin={() => seseDon(d)} stil={st.baglamDugme} />}
               <Dugme etiket={k.teknede ? 'Tekneden in' : G.tekneYakin(d) && !aracYakin ? 'Tekneye bin' : k.aracta ? 'Araçtan in' : aracYakin ? 'Araca bin' : 'Araca git'} onEtkin={aracIslemi} stil={st.baglamDugme} />
               {(d.rota || d.yaklasId || gb) && <Dugme etiket="Dur ve gözlemi bitir" onEtkin={durVeBitir} stil={st.baglamDugme} />}
             </View>

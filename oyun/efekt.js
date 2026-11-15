@@ -195,14 +195,14 @@ function konumAdim() {
 }
 // Konumlu ses. kim: { x, y, yon } (çoğunlukla oyuncu nesnesinin kendisi), hedef: { x, y } (hayvan nesnesi olabilir; çalarken
 // izlenir). Döndürür: duyulduysa true
-export function yonlu(taban, kim, hedef, ses = 1, duyma = 45) {
+export function yonlu(taban, kim, hedef, ses = 1, duyma = 45, zorla = false) {
   if (!durum.acik || !kim || !hedef) return false;
   const engel = !!(engelDenetle && Math.hypot(hedef.x - kim.x, hedef.y - kim.y) > 2 && engelDenetle(kim, hedef));
   const k = kulaklar(kim, hedef, ses, duyma, engel);
   if (!k) return false;
   const voiceover = sesAyarlari().kip === 'voiceover';
   const arkaPlan = taban.startsWith('k_') || taban.startsWith('h_') || taban.startsWith('kosu_');
-  if (durum.kis && !voiceover && !arkaPlan && konusuyorMu()) return true;
+  if (durum.kis && !voiceover && !arkaPlan && !zorla && konusuyorMu()) return true;
   const ek = k.arka || engel ? 'a' : '';
   const L = oynatici(`${taban}_L${ek}`);
   const R = oynatici(`${taban}_R${ek}`);
@@ -213,11 +213,15 @@ export function yonlu(taban, kim, hedef, ses = 1, duyma = 45) {
     ikisiniCal(L, R);
     const uzun = Number.isFinite(L.duration) && L.duration > 0 ? L.duration : 4;
     calanKonumlu.set(taban, { kim, hedef, ses, duyma, engel, L, R, bitis: Date.now() + uzun * 1000 + 200 });
+    if (!/^(sonar|adim|kapi|tel_|tuzak|tasma)/.test(taban)) sonKonumlu = { taban, hedef, x: hedef.x, y: hedef.y, zaman: Date.now() };
     if (!konumSayac) konumSayac = setInterval(konumAdim, 80);
-    if (durum.kis && !voiceover && !arkaPlan) efektCalindi(Math.min(sure(taban), 0.6) * 1000);
+    if (durum.kis && !voiceover && !arkaPlan && !zorla) efektCalindi(Math.min(sure(taban), 0.6) * 1000);
   } catch (e) {}
   return true;
 }
+// Son duyulan konumlu ses (oyuncu "Sese dön" diyebilsin diye): { taban, hedef, x, y, zaman }
+let sonKonumlu = null;
+export const sonDuyulan = () => sonKonumlu;
 // Tarayıcı denemeleri için: çalan konumlu seslerin kulak düzeyleri
 export const konumluDurum = () => Object.fromEntries([...calanKonumlu].map(([a, x]) => [a, { sol: Math.round(x.L.volume * 100) / 100, sag: Math.round(x.R.volume * 100) / 100, engel: x.engel }]));
 

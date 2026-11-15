@@ -511,6 +511,12 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   Efekt.engelAyarla. k_/h_/kosu_ sesleri konuşma sırasında da çalar. Tanı globalThis.__konumluDurum; tarayıcı scratchpad konumlu-dene.cjs.
   Expo Go'daki expo-audio'da pan, süzgeç, HRTF yok (sdk-58 kaynağı denetlendi; react-native-audio-api Expo Go'da yok): gerçek HRTF,
   gerçek zamanlı süzgeç ve yankı ancak özel derlemeyle (development build) mümkün. Telefonda doğrulanmadı.
+- KULAK VER VE SESE DÖN (15 Kasım 2026, Murat "oyunu geliştirmeye devam"): alet 'kulak' (ALETLER): M.kulakVer(d, 160) en yakın 6 grubu
+  (grup başına en yakın birey) önünden başlayıp saat yönünde sıralar (saat 12 dilimi başta), App kulakVerCal sesleri 1,6 sn arayla
+  Efekt.yonlu(..., 2.5, 200, zorla=true) (zorla: konuşma sırasında da çalar), sonra özeti söyler; d.sonKulak (3 dk). Efekt.sonDuyulan()
+  son konumlu sesi tutar (sonar/adım/kapı hariç); seseDon(d, secili) oyuncuyu o yöne çevirir (hedef_onde + titreşim). Ana menüde
+  Kulak ver, Son duyduğun sese dön (90 sn), 'kulak' alt menüsü Dinlediğin seslerden birine dön; VoiceOver bağlam satırında Kulak ver,
+  Sese dön. Tarayıcı scratchpad kulak-dene.cjs. Telefonda doğrulanmadı.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

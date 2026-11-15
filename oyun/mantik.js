@@ -3436,6 +3436,46 @@ export function etrafiTara(d) {
   return parcalar.join('. ') + '.';
 }
 
+// Kulak ver: çevredeki sürülerin ve tek hayvanların listesi, önünden başlayıp saat yönünde sıralı. Arayüz her birinin
+// sesini gerçek yönünden sırayla çalar, sonra bu sırayla özetler (görmeden çevreyi sesle tanımak için).
+export function kulakVer(d, menzil = 160) {
+  const k = d.k;
+  if (k.magara) return { hata: k.magara.alan ? 'Burada dinlenecek büyük hayvan yok; canlıları dürbünle ararsın.' : 'Mağaranın içinde dışarıdaki hayvanları duyamazsın.' };
+  const gruplar = new Map();
+  for (const b of k.hayvanlar) {
+    if (!gozlenebilirMi(b)) continue;
+    const m = mesafe(d.oyuncu, b);
+    if (m > menzil) continue;
+    const g = gruplar.get(b.grup);
+    if (!g) gruplar.set(b.grup, { b, m, sayi: 1, yavru: b.evre === 'yavru' ? 1 : 0 });
+    else {
+      g.sayi++;
+      if (b.evre === 'yavru') g.yavru++;
+      if (m < g.m) {
+        g.b = b;
+        g.m = m;
+      }
+    }
+  }
+  const liste = [...gruplar.values()]
+    .filter((g) => TURLER[g.b.tur] && TURLER[g.b.tur].ses)
+    .sort((a, b) => a.m - b.m)
+    .slice(0, 6)
+    .map((g) => {
+      let rel = aciNormal(yonAcisi(d.oyuncu, g.b) - d.oyuncu.yon);
+      if (rel < -Math.PI / 12) rel += 2 * Math.PI; // saat 12 dilimindekiler en başta
+      return { ...g, rel, saat: saatYonu(d.oyuncu, g.b) };
+    })
+    .sort((a, b) => a.rel - b.rel);
+  if (!liste.length) return { liste, ozet: `${menzil} metre içinde ses verecek büyük hayvan yok. Yalnızca rüzgârı ve böcekleri duyuyorsun.` };
+  const parcalar = liste.map((g) => {
+    const tad = SOZ[g.b.tur].toLocaleLowerCase('tr');
+    const ad = g.sayi >= 3 ? `${tad} sürüsü, ${g.sayi} birey${g.yavru ? `, ${g.yavru} yavru` : ''}` : g.sayi === 2 ? `iki ${tad}` : bireyAdi(g.b);
+    return `${saatSozu(g.saat)} ${ad}, ${metreSozu(g.m)}`;
+  });
+  return { liste, ozet: `Önünden başlayıp saat yönünde: ${parcalar.join('; ')}.` };
+}
+
 // ---------- Arşiv listeleri (arayüz için) ----------
 export function turListesi(k) {
   // Kutup türleri, kutba bir kez gidildikten (ya da biri kaydedildikten) sonra listeye girer
