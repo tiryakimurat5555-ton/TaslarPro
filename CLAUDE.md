@@ -685,6 +685,10 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   true → 'voiceover' / false iken seçili kip 'voiceover' ise 'kendi' (eskiden ekran okuyucu kapalıyken düğmeli düzen sessiz kalıyordu: duyurular
   announceForAccessibility'ye gidiyordu). (3) BackHandler: Liste onGeri (TalkBack geri hareketi/geri tuşu = iOS Z), Oyun sahada menuAc('ana').
   (4) EO / EO_I / GERI_HAREKETI sabitleri: Android'de yazı ve duyurularda TalkBack. menu-tara.cjs voiceover kipinde window.__voiceover = true.
+- OTOMATİK YÜRÜYÜŞ BÜTÜN HARİTALARDA (15 Kasım 2026, Murat "Moğol haritasında menüden seçtiğim yere yürümüyor"): mantik yerGit yalnız k_ ve a_
+  önekli kutup yerlerini tanıyordu; v_, h_, m_, az_, ys_, bn_, md_ sessizce düşüyordu. Artık oyuncu savan dışındaysa id o haritanın KUTUP_YERLER'inde aranır.
+  yolNoktasi savan dışında doğrudan hedef (savan nehrinin guneydeMi/GECITLER'i Avustralya ve Hindistan'da y < -100 noktaları yanlış "karşı kıyı" sayıyordu).
+  Taşkın denetimi yalnız savanda. Test /tmp/claude-0/kr/yergit.js (K=<kayıt>): 9 haritanın bütün yerlerine varıldı (k_buz/k_polinya yazın açık su, bilerek ret).
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

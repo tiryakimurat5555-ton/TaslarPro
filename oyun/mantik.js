@@ -4901,9 +4901,14 @@ export function yerGit(d, id) {
     const t = d.k.tekne;
     const yan = t.y >= nehirY(t.x) ? 1 : -1;
     hedef = { x: t.x, y: nehirY(t.x) + yan * 6, ad: 'Tekne', yakin: 2.5 };
-  } else if (String(id).startsWith('k_') || String(id).startsWith('a_')) {
-    const y = Kt.harita(d.oyuncu).KUTUP_YERLER.find((x) => x.id === id);
-    if (!y || !oyuncuKutupta(d.k)) return;
+  } else if (oyuncuKutupta(d.k)) {
+    // Savan dışındaki bütün haritalar (Kuzey Kutbu, Antarktika, Avustralya, Hindistan, Moğolistan, Amazon, Yellowstone, Borneo, Madagaskar):
+    // yerler o haritanın kendi listesinde (k_, a_, v_, h_, m_, az_, ys_, bn_, md_ önekleri). Eskiden yalnız k_ ve a_ tanınıyordu.
+    const y = (Kt.harita(d.oyuncu).KUTUP_YERLER || []).find((x) => x.id === id);
+    if (!y) {
+      olay(d, 'hata', 'Bu yer bulunduğun haritada değil.', 3);
+      return;
+    }
     let p = Kt.yerKonumu(y);
     if (y.buz && Kt.sudaMi(p.x, p.y, d.k.dk)) {
       olay(d, 'hata', `${y.ad} şu an açık su; buz yok. Kıyıdan dürbünle izleyebilirsin.`, 3);
@@ -4919,7 +4924,7 @@ export function yerGit(d, id) {
     }
     hedef = { x: y.x, y: y.y, ad: y.ad, yakin: 4 };
   }
-  if (taskinVar && guneydeMi(hedef.x, hedef.y) !== guneydeMi(d.oyuncu.x, d.oyuncu.y)) {
+  if (taskinVar && !oyuncuKutupta(d.k) && guneydeMi(hedef.x, hedef.y) !== guneydeMi(d.oyuncu.x, d.oyuncu.y)) {
     olay(d, 'hata', 'Nehir taştı, geçitler sular altında. Sular çekilene kadar karşı kıyıya geçemezsin.', 3);
     return;
   }
@@ -4933,6 +4938,8 @@ export function yerGit(d, id) {
 }
 function yolNoktasi(d, hedef) {
   const o = d.oyuncu;
+  // Savan dışındaki haritalarda savan nehri ve geçitleri yok: doğrudan hedefe (su ve engellerden engeldenKacan dolaştırır)
+  if (Kt.kutupNoktaMi(o)) return hedef;
   const benGuney = guneydeMi(o.x, o.y);
   const oGuney = guneydeMi(hedef.x, hedef.y);
   if (benGuney === oGuney) return hedef;
