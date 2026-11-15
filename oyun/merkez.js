@@ -272,6 +272,14 @@ export const ARASTIRMALAR = [
     sonuc: 'Kutup ayısının saatlerce bir nefes deliğinin başında beklediği, misk öküzlerinin kurtlara karşı yavruları ortaya alıp boynuzlarını dışa çeviren bir duvar ördüğü belgelendi. Kutup tilkileri ayıların artıklarıyla kışı atlatıyor.',
   },
   {
+    id: 'arktikDevleri',
+    ad: 'Buzun devleri ve leşçileri',
+    kosulMetni: 'Grönland balinası, Grönland foku, kapüşonlu fok ve kutup porsuğunu kaydet; kutup porsuğunu bir leşin başında gözle',
+    ilerleme: (k) => [['gronlandBalinasi', 'gronlandFoku', 'kapucinFok', 'kurtPorsugu'].filter((t) => k.arsiv.turler[t]).length + (davranisVar(k, 'kurtPorsugu', 'lesteBesleniyor') ? 1 : 0), 5],
+    odul: { itibar: 16, fon: 6000 },
+    sonuc: 'Arktik denizinin buza bağlı devleri belgelendi: Grönland balinası buzu kırarak nefes alıyor, Grönland ve kapüşonlu foklar buz kenarını izleyerek göç ediyor. Karada kutup porsuğunun ayıların ve kurtların bıraktığı leşleri temizlediği, tundranın besin zincirindeki boşlukları doldurduğu görüldü.',
+  },
+  {
     id: 'tundraYazi',
     ad: 'Kısa tundra yazı',
     kosulMetni: '6 kutup bitkisini incele ve 10 kutup küçük canlısını bul',

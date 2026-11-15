@@ -626,7 +626,11 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   göğüs yüzgeçleri; 'kabarcik' → kabarcikAgi nadir), maviBalina (gocmenBalina: true → kışın ve sonbaharın yarısında haritanın kuzey ucundaki
   açık denize çekilir). gece.js GOZ 'karalti' metni (renk null türlerde ağaçlar yerine; orka, beluga, penguen, emu da düzeltildi).
   ANTARKTIKA_CANLILARI + 11; KUCUK_SESLI karPetreli. Merkez araştırması guneyOkyanusuDevleri. assets/efekt 730. Test /tmp/claude-0/kr/ant2.js (BAS=12 yaz).
-  SIRADAKİ: Kuzey Kutbu, Savan.
+  KUZEY KUTBU YAPILDI (15 Kasım 2026): TURLER + 4 (yalnız kutup: true): gronlandBalinasi (beluga 'yuz' dalı; sırt yüzgeçsiz, beyaz çene), gronlandFoku
+  (fok, sürü; kara lir deseni, yavru beyaz: fg.material = mat(), ortak malzemeye dokunma), kapucinFok (fok, tehlikeli; erkekte kara kese + kırmızı balon),
+  kurtPorsugu (vombat biçimi + yan şerit + kuyruk; yırtıcı + lesci). narval ve sakalliFok küçük canlı kaldı (kutupSes gizemi sakalliFok'u kullanır).
+  KUTUP_CANLILARI + 11; KUCUK_SESLI kirmiziBoyunluDalgic, bernacleKazi. Merkez araştırması arktikDevleri. assets/efekt 754.
+  SIRADAKİ: Savan.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

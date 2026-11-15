@@ -38,6 +38,7 @@ export const SOZ = {
   gnu: 'Gnu', cita: 'Çita', impala: 'İmpala', yabanKopegi: 'Yaban köpeği', babun: 'Babun',
   kutupAyisi: 'Kutup ayısı', halkaliFok: 'Halkalı fok', mors: 'Mors', beluga: 'Beluga', renGeyigi: 'Ren geyiği', miskOkuzu: 'Misk öküzü',
   kutupKurdu: 'Kutup kurdu', kutupTilkisi: 'Kutup tilkisi', kutupTavsani: 'Kutup tavşanı',
+  gronlandBalinasi: 'Grönland balinası', gronlandFoku: 'Grönland foku', kapucinFok: 'Kapüşonlu fok', kurtPorsugu: 'Kutup porsuğu',
   kizilGeyik: 'Kızıl geyik', karaca: 'Karaca', yabanDomuzu: 'Yaban domuzu', vasak: 'Vaşak', kizilTilki: 'Kızıl tilki', porsuk: 'Porsuk', dagKecisi: 'Dağ keçisi', kulan: 'Kulan',
   takhi: 'Yaban atı', karLeopari: 'Kar leoparı', saiga: 'Saiga', mogolKurdu: 'Moğol kurdu', dzeren: 'Moğol ceylanı', argali: 'Argali',
   kaplan: 'Kaplan', hintFili: 'Hint fili', cital: 'Benekli geyik', sambar: 'Sambar geyiği', gaur: 'Gaur', langur: 'Langur',
@@ -1870,7 +1871,7 @@ function kutupPlanSec(d, g) {
     g.planBitis = sure(60, 140);
     return;
   }
-  if (g.tur === 'beluga') {
+  if (g.tur === 'beluga' || g.tur === 'gronlandBalinasi') {
     g.plan = 'yuz';
     g.hedef = kutupSuNoktasi(d, g, h.x, h.y, h.r * 1.4);
     g.planBitis = sure(25, 60);
@@ -2330,6 +2331,7 @@ export const DUYULAR = {
   kutupAyisi: { koku: 1.8, gorme: 1, isitme: 1 }, halkaliFok: { koku: 1.2, gorme: 1.1, isitme: 1.5 }, mors: { koku: 1.2, gorme: 0.6, isitme: 1 },
   beluga: { koku: 0.3, gorme: 0.9, isitme: 1.6 }, renGeyigi: { koku: 1.3, gorme: 1, isitme: 1.1 }, miskOkuzu: { koku: 1.2, gorme: 0.9, isitme: 1 },
   kutupKurdu: { koku: 1.5, gorme: 1.1, isitme: 1.3 }, kutupTilkisi: { koku: 1.4, gorme: 1, isitme: 1.6 }, kutupTavsani: { koku: 1, gorme: 1.2, isitme: 1.3 },
+  gronlandBalinasi: { koku: 0.3, gorme: 0.7, isitme: 1.7 }, gronlandFoku: { koku: 0.9, gorme: 1.1, isitme: 1.1 }, kapucinFok: { koku: 0.9, gorme: 1.1, isitme: 1.1 }, kurtPorsugu: { koku: 1.8, gorme: 0.8, isitme: 1.2 },
   imparatorPengueni: { koku: 0.4, gorme: 1, isitme: 1 }, adeliPengueni: { koku: 0.4, gorme: 1, isitme: 1 }, weddellFoku: { koku: 1, gorme: 0.9, isitme: 1.2 },
   kizilGeyik: { koku: 1.4, gorme: 1.1, isitme: 1.4 }, karaca: { koku: 1.3, gorme: 1.1, isitme: 1.5 }, yabanDomuzu: { koku: 1.7, gorme: 0.6, isitme: 1.2 },
   vasak: { koku: 0.9, gorme: 1.4, isitme: 1.5 }, kizilTilki: { koku: 1.4, gorme: 1.1, isitme: 1.6 }, porsuk: { koku: 1.6, gorme: 0.5, isitme: 1.1 },
@@ -2480,6 +2482,7 @@ export const AV_STRATEJI = {
   cita: { ad: 'yakına sokulup çok hızlı kısa koşu', sure: 8, yardimci: 0, hiz: 1.15 },
   yabanKopegi: { ad: 'sürüyle uzun soluklu takip', sure: 32, yardimci: 3 },
   kutupAyisi: { ad: 'fokun nefes deliği başında saatlerce pusu; buzda dinlenen foka sürünerek yaklaşıp kısa bir atılış', sure: 7, yardimci: 0 },
+  kurtPorsugu: { ad: 'derin karda kar ayakkabısı gibi geniş pençeleriyle batmadan koşar, saplanan avı yakalar; çoğu zaman leşle yetinir', sure: 10, yardimci: 0 },
   kutupKurdu: { ad: 'sürüyle kilometrelerce takip, sürüyü koşturup zayıfı ayırma', sure: 30, yardimci: 3 },
   kutupTilkisi: { ad: 'karın altındaki lemmingleri sesinden bulup kara dalma; küçük avları kısa bir koşuyla yakalama', sure: 6, yardimci: 0 },
   leoparFoku: { ad: 'buz kenarının altında pusu; suya giren ya da sudan çıkan penguene ani atılış', sure: 6, yardimci: 0 },
@@ -2734,7 +2737,7 @@ function kalitim(d, y, anne, baba) {
 }
 
 // Doğum: gebeliğin sonunda (Aşama 21)
-export const GEBE_GUN = { aslan: 3, leopar: 3, sirtlan: 3, cita: 3, yabanKopegi: 2, fil: 7, zurafa: 5, zebra: 4, gnu: 3, impala: 3, ceylan: 2, domuz: 2, suAygiri: 4, gergedan: 6, manda: 4, babun: 3, kutupAyisi: 6, halkaliFok: 5, mors: 7, beluga: 7, renGeyigi: 4, miskOkuzu: 4, kutupKurdu: 2, kutupTilkisi: 2, kutupTavsani: 2, imparatorPengueni: 3, adeliPengueni: 2, weddellFoku: 5, leoparFoku: 5, orka: 7, filFoku: 6, takhi: 5, karLeopari: 3, kizilGeyik: 4, karaca: 3, yabanDomuzu: 2, vasak: 2, kizilTilki: 2, porsuk: 2, dagKecisi: 3, kulan: 5, saiga: 3, mogolKurdu: 2, dzeren: 3, argali: 4, kaplan: 3, hintFili: 7, cital: 3, sambar: 3, gaur: 4, langur: 2, kirmiziKanguru: 3, koala: 3, emu: 3, vombat: 3, dingo: 2, hintLeopari: 3, tembelAyi: 4, hintYabanKopegi: 2, cizgiliSirtlan: 3, altinCakal: 2, barasingha: 4, nilgay: 4, muntjak: 3, hintYabanDomuzu: 2, dortBoynuzlu: 3, rhesus: 3, bozKanguru: 3, euro: 3, kayaValabisi: 3, bilbi: 2, kuol: 2, perentie: 3, avTilkisi: 2, yabaniDeve: 6, avrupaTavsani: 1, yengecYiyenFok: 5, rossFoku: 5, kurkluFok: 5, minkeBalina: 7, kamburBalina: 7, maviBalina: 7 };
+export const GEBE_GUN = { aslan: 3, leopar: 3, sirtlan: 3, cita: 3, yabanKopegi: 2, fil: 7, zurafa: 5, zebra: 4, gnu: 3, impala: 3, ceylan: 2, domuz: 2, suAygiri: 4, gergedan: 6, manda: 4, babun: 3, kutupAyisi: 6, halkaliFok: 5, mors: 7, beluga: 7, renGeyigi: 4, miskOkuzu: 4, kutupKurdu: 2, kutupTilkisi: 2, kutupTavsani: 2, imparatorPengueni: 3, adeliPengueni: 2, weddellFoku: 5, leoparFoku: 5, orka: 7, filFoku: 6, takhi: 5, karLeopari: 3, kizilGeyik: 4, karaca: 3, yabanDomuzu: 2, vasak: 2, kizilTilki: 2, porsuk: 2, dagKecisi: 3, kulan: 5, saiga: 3, mogolKurdu: 2, dzeren: 3, argali: 4, kaplan: 3, hintFili: 7, cital: 3, sambar: 3, gaur: 4, langur: 2, kirmiziKanguru: 3, koala: 3, emu: 3, vombat: 3, dingo: 2, hintLeopari: 3, tembelAyi: 4, hintYabanKopegi: 2, cizgiliSirtlan: 3, altinCakal: 2, barasingha: 4, nilgay: 4, muntjak: 3, hintYabanDomuzu: 2, dortBoynuzlu: 3, rhesus: 3, bozKanguru: 3, euro: 3, kayaValabisi: 3, bilbi: 2, kuol: 2, perentie: 3, avTilkisi: 2, yabaniDeve: 6, avrupaTavsani: 1, yengecYiyenFok: 5, rossFoku: 5, kurkluFok: 5, minkeBalina: 7, kamburBalina: 7, maviBalina: 7, gronlandBalinasi: 7, gronlandFoku: 5, kapucinFok: 5, kurtPorsugu: 3 };
 function dogumYap(d, g, anne, baba) {
   const k = d.k;
   const y = bireyOlustur(k, d.rng, g.tur, g, 'yavru', d.rng() < 0.5 ? 'erkek' : 'disi', anne.x + 0.8, anne.y + 0.8, anne.id);
@@ -2803,7 +2806,7 @@ function gunlukDogumlar(d) {
     // Otçullar çoğunlukla yağışlı mevsimde, otlar gürken gebe kalır ve doğurur (karar 43)
     // Kutup türleri ilkbaharda ve yazın doğurur (karar 20)
     const yagisli = t.kutup ? (t.mogol ? ['ilkbahar', 'yaz'] : t.hindistan ? ['sonbahar', 'kis'] : t.avustralya ? ['yaz', 'sonbahar'] : g.tur === 'imparatorPengueni' ? ['kis', 'ilkbahar'] : ['ilkbahar', 'yaz']).includes(Kt.harita(g).kutupTakvim(gunNo(k.dk)).mevsim) : E.takvim(gunNo(k.dk)).mevsim === 'yagisli';
-    let sans = t.yirtici ? 0.1 : ['fil', 'gergedan', 'zurafa', 'mors', 'beluga', 'orka', 'filFoku', 'minkeBalina', 'kamburBalina', 'maviBalina', 'yabaniDeve'].includes(g.tur) ? 0.06 : ['piton', 'timsah', 'kartal'].includes(g.tur) ? 0 : kucukGrup ? 0.5 : 0.3;
+    let sans = t.yirtici ? 0.1 : ['fil', 'gergedan', 'zurafa', 'mors', 'beluga', 'orka', 'filFoku', 'gronlandBalinasi', 'minkeBalina', 'kamburBalina', 'maviBalina', 'yabaniDeve'].includes(g.tur) ? 0.06 : ['piton', 'timsah', 'kartal'].includes(g.tur) ? 0 : kucukGrup ? 0.5 : 0.3;
     if (!t.yirtici && !yagisli) sans *= 0.15;
     // Büyük otçul sürülerinde yağmurlarla birden çok dişi aynı günlerde gebe kalır (gnu, zebra, impala...)
     const kalabalik = !t.yirtici && t.grup[1] >= 8 && yagisli;
@@ -2837,7 +2840,7 @@ function gunlukDogumlar(d) {
 
 // ---------- Ekosistem: sağlık, yaşam döngüsü, göç (Aşama 5) ----------
 // Yırtıcıların acıkma süresi (oyun dakikası): büyük av birkaç gün doyurur, timsah haftalarca aç kalabilir
-const ACLIK_SURESI = { aslan: 4300, leopar: 7000, sirtlan: 3600, timsah: 12000, cita: 5000, yabanKopegi: 4500, kutupAyisi: 8000, kutupKurdu: 5000, kutupTilkisi: 2600, leoparFoku: 5000, orka: 6000, dingo: 4200, kaplan: 5200, karLeopari: 6000, mogolKurdu: 4600, vasak: 5000, hintLeopari: 6000, hintYabanKopegi: 4200, cizgiliSirtlan: 9000, altinCakal: 3600, kuol: 3000, avTilkisi: 3200 };
+const ACLIK_SURESI = { aslan: 4300, leopar: 7000, sirtlan: 3600, timsah: 12000, cita: 5000, yabanKopegi: 4500, kutupAyisi: 8000, kutupKurdu: 5000, kutupTilkisi: 2600, leoparFoku: 5000, orka: 6000, dingo: 4200, kaplan: 5200, karLeopari: 6000, mogolKurdu: 4600, vasak: 5000, hintLeopari: 6000, hintYabanKopegi: 4200, cizgiliSirtlan: 9000, altinCakal: 3600, kuol: 3000, avTilkisi: 3200, kurtPorsugu: 6000 };
 // Otlayan bir bireyin saatlik tüketimi (zebra = 1)
 const TUKETIM = { fil: 3, manda: 1.5, zebra: 1, ceylan: 0.4, domuz: 0.5, gergedan: 2, suAygiri: 2, zurafa: 1.5, gnu: 1.1, impala: 0.5, babun: 0.3 };
 
@@ -4877,7 +4880,7 @@ export const KOSU_SESI = {
   ceylan: 'kosu_hafif', impala: 'kosu_hafif', domuz: 'kosu_hafif',
   fil: 'kosu_agir', gergedan: 'kosu_agir', suAygiri: 'kosu_agir', manda: 'kosu_agir',
   aslan: 'kosu_pati', leopar: 'kosu_pati', cita: 'kosu_pati', sirtlan: 'kosu_pati', yabanKopegi: 'kosu_pati', babun: 'kosu_pati',
-  renGeyigi: 'kosu_toynak', miskOkuzu: 'kosu_agir', kutupAyisi: 'kosu_agir', kutupKurdu: 'kosu_pati', kutupTilkisi: 'kosu_pati', kutupTavsani: 'kosu_hafif',
+  renGeyigi: 'kosu_toynak', miskOkuzu: 'kosu_agir', kutupAyisi: 'kosu_agir', kutupKurdu: 'kosu_pati', kutupTilkisi: 'kosu_pati', kutupTavsani: 'kosu_hafif', kurtPorsugu: 'kosu_pati',
   filFoku: 'kosu_agir',
   kizilGeyik: 'kosu_toynak', karaca: 'kosu_hafif', yabanDomuzu: 'kosu_hafif', vasak: 'kosu_pati', kizilTilki: 'kosu_pati', porsuk: 'kosu_hafif', dagKecisi: 'kosu_hafif', kulan: 'kosu_toynak',
   takhi: 'kosu_toynak', karLeopari: 'kosu_pati', saiga: 'kosu_hafif', mogolKurdu: 'kosu_pati', dzeren: 'kosu_hafif', argali: 'kosu_toynak',

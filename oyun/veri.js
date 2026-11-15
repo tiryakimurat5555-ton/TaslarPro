@@ -574,6 +574,33 @@ Object.assign(TURLER, {
     tarif: 'Gri tüylü, siyah yüzlü, uzun kuyruklu bir maymun. Gününün çoğunu ağaçlarda yaprak, çiçek ve meyve yiyerek geçirir. Ağaçtan çevreyi iyi görür; kaplanı ya da leoparı fark edince yüksek sesle alarm verir, bunu duyan geyikler de kaçar.',
   },
 });
+// Kuzey Kutbu'nda gerçekten yaşayan öbür büyük hayvanlar (15 Kasım 2026): Grönland balinası, Grönland foku, kapüşonlu fok, kutup porsuğu
+Object.assign(TURLER, {
+  gronlandBalinasi: {
+    ad: 'Grönland Balinası', bilimsel: 'Balaena mysticetus', kisa: 'GRB', sinif: 'Memeli', ses: 'gronlandbalinasi', sekil: 'balina', boy: 4.0, renk: '#1a1c20', kutup: true,
+    hiz: 4, aktif: 'karma', kacis: 25, suCanlisi: true, deniz: true, sesSik: 160, sesTuru: 'iletisim',
+    habitat: { x: 40, y: KY + 185, r: 45 }, grup: [1, 3], erkekOran: 0.5,
+    tarif: 'Yalnızca Arktik sularında yaşayan iri, sırt yüzgeçsiz bir balina. Devasa başıyla yarım metrelik buzu kırıp nefes alabilir. Yeryüzünün en uzun yaşayan memelisidir: iki yüz yılı aşan bireyler bulundu. Çene ucu beyazdır; şarkıları yıldan yıla değişir.',
+  },
+  gronlandFoku: {
+    ad: 'Grönland Foku', bilimsel: 'Pagophilus groenlandicus', kisa: 'GRF', sinif: 'Memeli', ses: 'gronlandfoku', sekil: 'fok', boy: 0.8, renk: '#c8c8c4', kutup: true,
+    hiz: 5, aktif: 'karma', kacis: 25, suCanlisi: true, sesSik: 120, sesTuru: 'iletisim', fok: true,
+    habitat: { x: 80, y: KY + 150, r: 55 }, grup: [5, 10], erkekOran: 0.45,
+    tarif: 'Gümüşi gri sırtında kara bir lir ya da at nalı deseni olan, sürü hâlinde yaşayan bir fok. Yavruları kar beyazı tüyle doğar ve ilk günlerinde bebek gibi ağlar. Kayan buz kenarlarını izleyerek binlerce kilometre göç eder.',
+  },
+  kapucinFok: {
+    ad: 'Kapüşonlu Fok', bilimsel: 'Cystophora cristata', kisa: 'KPF', sinif: 'Memeli', ses: 'kapucinfok', sekil: 'fok', boy: 1.0, renk: '#6a6e74', kutup: true,
+    hiz: 5, aktif: 'karma', kacis: 18, tehlikeli: true, suCanlisi: true, sesSik: 200, sesTuru: 'bolge', fok: true,
+    habitat: { x: -70, y: KY + 170, r: 45 }, grup: [1, 2], erkekOran: 0.5,
+    tarif: 'Erkeği alnındaki siyah bir keseyi kapüşon gibi şişirir, burun deliğinden de kırmızı bir balon çıkarıp sallar; bu gösteriyle dişileri etkiler, rakipleri korkutur. Yavruları dünyada en kısa sürede sütten kesilen memelilerdir: yalnızca dört gün. Sinirli erkeklerine yaklaşma.',
+  },
+  kurtPorsugu: {
+    ad: 'Kutup Porsuğu (Vulverin)', bilimsel: 'Gulo gulo', kisa: 'VLV', sinif: 'Memeli', ses: 'kurtporsugu', sekil: 'vombat', boy: 0.75, renk: '#3a2e26', kutup: true,
+    hiz: 9, aktif: 'karma', kacis: 30, tehlikeli: true, yirtici: true, lesci: true, avlar: ['kutupTavsani', 'renGeyigi'], sesSik: 300, sesTuru: 'bolge',
+    habitat: { x: 60, y: KY - 100, r: 100 }, grup: [1, 1], erkekOran: 0.5,
+    tarif: 'Küçük bir ayıyı andıran, kahverengi, yanlarında açık renkli bir şerit olan güçlü bir sansar. Gündüz gece demeden kilometrelerce yürür; leşi kokusundan bulur, gerekirse kurtları bile leşten uzaklaştırır. Geniş pençeleri kar ayakkabısı gibidir; derin karda ren geyiği bile yakalayabilir.',
+  },
+});
 // Adélie Kıyısı'nda ve çevresindeki denizde gerçekten yaşayan öbür büyük hayvanlar: yengeçyiyen fok, Ross foku, kürklü fok ve yazın gelen balinalar (15 Kasım 2026)
 Object.assign(TURLER, {
   yengecYiyenFok: {

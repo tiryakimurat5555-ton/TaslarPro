@@ -363,6 +363,15 @@ function hayvanModeli(b) {
       if (b.tur === 'halkaliFok') for (let i = 0; i < 6; i++) parca(g, new THREE.TorusGeometry(0.06 * s, 0.015 * s, 3, 6), '#c8c0b0', ((i % 2) - 0.5) * 0.3 * s, 0.6 * s, (-0.4 + i * 0.16) * s, Math.PI / 2, 0, 0); // halkalar
       if (b.tur === 'weddellFoku' || b.tur === 'leoparFoku') for (let i = 0; i < 7; i++) parca(g, new THREE.SphereGeometry(0.06 * s, 4, 3), b.tur === 'leoparFoku' ? '#2a2c30' : '#c8ccd2', ((i % 3) - 1) * 0.2 * s, 0.58 * s, (-0.55 + i * 0.17) * s); // benekler
       if (b.tur === 'leoparFoku') parca(g, new THREE.BoxGeometry(0.3 * s, 0.12 * s, 0.25 * s), '#d8d8d4', 0, 0.36 * s, -1.15 * s); // iri, sürüngen gibi baş ve geniş ağız
+      if (b.tur === 'gronlandFoku' && b.evre !== 'yavru') parca(g, new THREE.TorusGeometry(0.28 * s, 0.05 * s, 3, 10, Math.PI), '#2a2a2e', 0, 0.6 * s, -0.05 * s, Math.PI / 2, 0, 0); // sırttaki kara lir deseni
+      if (b.tur === 'gronlandFoku' && b.evre === 'yavru') fg.material = mat('#f4f4f2'); // kar beyazı yavru tüyü (ortak malzemeye dokunmadan)
+      if (b.tur === 'kapucinFok') {
+        for (let i = 0; i < 8; i++) parca(g, new THREE.SphereGeometry(0.07 * s, 4, 3), '#2a2a30', ((i % 3) - 1) * 0.22 * s, 0.56 * s, (-0.6 + i * 0.16) * s); // düzensiz kara lekeler
+        if (b.cinsiyet === 'erkek' && b.evre === 'yetiskin') {
+          parca(g, new THREE.SphereGeometry(0.17 * s, 6, 5), '#1a1a1e', 0, 0.62 * s, -0.92 * s); // alnındaki kara kapüşon kesesi
+          parca(g, new THREE.SphereGeometry(0.09 * s, 6, 5), '#c83a3a', 0, 0.38 * s, -1.25 * s); // burun deliğinden çıkan kırmızı balon
+        }
+      }
       if (b.tur === 'yengecYiyenFok') for (let i = 0; i < 3; i++) parca(g, new THREE.BoxGeometry(0.04 * s, 0.03 * s, 0.4 * s), '#8a7e72', (-0.12 + i * 0.12) * s, 0.62 * s, 0.1 * s, 0, 0.3, 0); // sırtta eski yara izleri
       if (b.tur === 'rossFoku') {
         parca(g, new THREE.BoxGeometry(0.3 * s, 0.4 * s, 0.1 * s), '#c8ccd0', 0, 0.42 * s, -0.75 * s); // açık renk, kalın boğaz
@@ -439,6 +448,12 @@ function hayvanModeli(b) {
       parca(g, new THREE.BoxGeometry(0.42 * s, 0.32 * s, 0.32 * s), r, 0, 0.42 * s, -0.55 * s); // geniş, küt baş
       parca(g, new THREE.BoxGeometry(0.2 * s, 0.14 * s, 0.08 * s), '#2a2622', 0, 0.42 * s, -0.73 * s); // burun
       for (const yan of [-1, 1]) parca(g, new THREE.BoxGeometry(0.08 * s, 0.12 * s, 0.05 * s), r, yan * 0.14 * s, 0.62 * s, -0.5 * s); // küçük kulak
+      if (b.tur === 'kurtPorsugu') {
+        for (const yan of [-1, 1]) parca(g, new THREE.BoxGeometry(0.05 * s, 0.12 * s, 0.7 * s), '#c8a878', yan * 0.36 * s, 0.42 * s, 0.05 * s); // yanlardaki açık şerit
+        const pk = parca(g, new THREE.CylinderGeometry(0.06 * s, 0.09 * s, 0.4 * s, 5), r, 0, 0.42 * s, 0.6 * s, 1.0); // gür kuyruk
+        pk.userData.kuyruk = true;
+        parca(g, new THREE.BoxGeometry(0.3 * s, 0.1 * s, 0.1 * s), '#c8b8a0', 0, 0.55 * s, -0.66 * s); // açık renkli alın
+      }
       if (b.tur === 'porsuk') {
         parca(g, new THREE.BoxGeometry(0.08 * s, 0.05 * s, 0.34 * s), '#f4f2ec', 0, 0.59 * s, -0.56 * s); // alnın ortasındaki beyaz şerit
         for (const yan of [-1, 1]) parca(g, new THREE.BoxGeometry(0.07 * s, 0.06 * s, 0.34 * s), '#141414', yan * 0.09 * s, 0.585 * s, -0.56 * s); // gözlerden geçen kara şeritler
@@ -503,6 +518,11 @@ function hayvanModeli(b) {
       parca(g, new THREE.BoxGeometry(0.2 * s, 0.05 * s, 0.4 * s), r, 0.5 * s, 0.25 * s, -0.6 * s, 0, -0.5, -0.3);
       const kuyruk = parca(g, new THREE.BoxGeometry(0.9 * s, 0.05 * s, 0.35 * s), r, 0, 0.4 * s, 1.65 * s);
       kuyruk.userData.kuyruk = true;
+      if (b.tur === 'gronlandBalinasi') {
+        bg.scale.set(1.0, 0.9, 2.3); // tıknaz, sırt yüzgeçsiz gövde
+        parca(g, new THREE.SphereGeometry(0.45 * s, 7, 5), r, 0, 0.55 * s, -1.25 * s); // devasa, yay biçimli baş
+        parca(g, new THREE.BoxGeometry(0.4 * s, 0.15 * s, 0.3 * s), '#f2f2ee', 0, 0.2 * s, -1.6 * s); // beyaz çene ucu
+      }
       if (b.tur === 'kamburBalina') {
         for (const yan of [-1, 1]) parca(g, new THREE.BoxGeometry(0.08 * s, 0.05 * s, 1.1 * s), '#e8ecee', yan * 0.75 * s, 0.25 * s, -0.4 * s, 0, yan * 0.9, yan * 0.3); // uzun, beyaz göğüs yüzgeçleri
         parca(g, new THREE.BoxGeometry(0.05 * s, 0.15 * s, 0.25 * s), r, 0, 0.82 * s, 0.6 * s); // küçük sırt yüzgeci
