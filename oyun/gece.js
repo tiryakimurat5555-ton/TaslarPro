@@ -37,6 +37,11 @@ export const GOZ = {
   leoparFoku: { renk: 'kırmızımsı', boy: 'buz kenarında, tek bir çift', ipucu: 'iri, tek başına bir fok' },
   orka: { renk: null, boy: 'suda', ipucu: 'balina' },
   filFoku: { renk: 'kırmızımsı', boy: 'yere çok yakın, iri gövdeler', ipucu: 'dev, sürü hâlinde fok' },
+  kirmiziKanguru: { renk: 'kırmızımsı turuncu', boy: 'insan boyunda, birçok çift', ipucu: 'zıplayan, sürü hâlinde otçul' },
+  koala: { renk: 'kırmızı', boy: 'ağacın dallarında, yerden yüksekte', ipucu: 'ağaçta yaşayan bir keseli' },
+  emu: { renk: null, boy: 'insan boyunda', ipucu: 'iri, uçamayan bir kuş' },
+  vombat: { renk: 'kırmızımsı', boy: 'yere çok yakın', ipucu: 'tıknaz, kazıcı bir keseli' },
+  dingo: { renk: 'sarımsı yeşil', boy: 'diz hizasında, birkaç çift', ipucu: 'sürü hâlindeki köpekgiller' },
 };
 const MENZIL = 45;
 

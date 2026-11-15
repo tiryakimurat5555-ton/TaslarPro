@@ -38,7 +38,7 @@ import * as Kr from './oyun/kirlilik.js';
 import { KUCUKLER, KUCUK_SIRASI, GRUPLAR, MAGARA_ODALARI, UZAK_ALANLAR, odaListesi, aktifOda, bolumAdi, KUCUK_SESLI, bulunabilirler } from './oyun/kucukler.js';
 import * as Efekt from './oyun/efekt.js';
 import { sahneKur } from './oyun/sahne.js';
-import { TURLER, TUR_SIRASI, YERLER, DAVRANISLAR, EVRELER, BOLGE_ADLARI, ARAC, OZEL_BIREYLER, GECITLER, ISTASYON, nehirY, GOLET, GALERI, KAYALIK, NEHIR_YARI, KUTUP, KUTUP_SIRASI, ANTARKTIKA_SIRASI, TEPELER, CALILIK, dereX, DERE_UST } from './oyun/veri.js';
+import { TURLER, TUR_SIRASI, YERLER, DAVRANISLAR, EVRELER, BOLGE_ADLARI, ARAC, OZEL_BIREYLER, GECITLER, ISTASYON, nehirY, GOLET, GALERI, KAYALIK, NEHIR_YARI, KUTUP, KUTUP_SIRASI, ANTARKTIKA_SIRASI, AVUSTRALYA_SIRASI, TEPELER, CALILIK, dereX, DERE_UST } from './oyun/veri.js';
 import * as Kt from './oyun/kutup.js';
 import { useJestler } from './oyun/jestler.js';
 import { Liste, useMenuYigini, altMenu, sayfali, RENK, GORUNUM } from './oyun/SesliListe.js';
@@ -227,6 +227,19 @@ function kutupOrtami(d) {
   const o = d.oyuncu;
   const h = {};
   const yakin = (m, menzil) => Math.pow(sinirla01(1 - Math.max(0, m) / menzil), 1.5);
+  if (Kt.avustralyaMi(o)) {
+    // Avustralya çalılığı: gündüz ağustos böcekleri ve kuşlar, gece çekirge ve kurbağalar; billabong yaklaştıkça su kıyısı katmanı, yağmurda yağmur
+    const su = Kt.enYakinSu(o.x, o.y, k.dk);
+    const wb = 0.9 * (Kt.yuzey(o.x, o.y, k.dk) === 'su' ? 1 : yakin(Math.hypot(su.x - o.x, su.y - o.y), 80));
+    if (wb > 0.01) h.ortam_billabong = wb;
+    const hv = M.kutupHavasi(k);
+    if (hv && hv.tur === 'yagmurlu') h.ortam_yagmur = 0.8;
+    const ev = M.evreSimdi(k);
+    h[ev === 'gece' || ev === 'aksam' ? 'ortam_calilik_gece' : 'ortam_calilik_gunduz'] = Math.max(0.25, 1 - 0.7 * wb) * (h.ortam_yagmur ? 0.55 : 1);
+    const guc = Object.values(h).reduce((t, v) => t + v * v, 0);
+    if (guc > 1) for (const a of Object.keys(h)) h[a] /= Math.sqrt(guc);
+    return h;
+  }
   const l = Kt.yerel(o);
   const yuzey = Kt.yuzey(o.x, o.y, k.dk);
   let baskin = 0;
@@ -411,6 +424,7 @@ const kucuk = (s) => s.toLocaleLowerCase('tr-TR');
 
 // ---------------- Yenilikler (en yeniler üstte): Murat denerken neyin nerede olduğunu bulsun diye ----------------
 const YENILIKLER = [
+  { baslik: 'Yeni harita: Avustralya çalılığı', metin: 'Queensland iç kesiminde, savandan ayrı, serbestçe dolaşılan yeni bir harita. Kırmızı kanguru, koala, emu, vombat ve dingo yaşıyor; her birinin kendi sesi var. Kızıl topraklı otlak, billabong denen su gölü, kuru dere yatağı, okaliptüs ormanı, kızıl kumtaşı kayalar, spinifex çalılığı ve termit kuleleri. Yazı yağışlı, kışı kurak; toz fırtınaları çıkar. Kangurular öğle sıcağında gölgede yatar, koalalar ağaçta uyur, dingolar uluyarak avlanır. 12 küçük canlı (kookaburra, ornitorenk, ekidna, dikenli iblis), 5 bitki, üç araştırma ve bir gizem eklendi. Çalılığın gündüz, gece ve billabong sesleri var. İtibarın 60 olunca açılır.', nerede: 'Araştırma merkezi, Saha gezileri: Avustralya çalılığı, yola çık. Yardım, Avustralya çalılığı.' },
   { baslik: 'Yeni harita: Antarktika', metin: 'Adélie Kıyısı\'nda, savandan ve Kuzey Kutbu\'ndan ayrı, serbestçe dolaşılan yeni bir harita. İmparator pengueni, Adélie pengueni, Weddell foku, leopar foku, fil foku ve orka yaşıyor; her birinin kendi sesi var. Mevsimler kuzeyin tersi: imparator penguenler kışın karanlıkta deniz buzunda ürer ve fırtınada birbirine sokulur, Adélie penguenleri yazın kayalık burunda taş yuvalar kurar. Leopar fokları buz kenarında penguen bekler, orkalar dalga yaparak fokları buzdan düşürür. Buz sahanlığı, kıta buz örtüsü, kızıl üs binaları ve güney ışıkları görünür. 12 küçük canlı, 5 bitki ve alg, üç araştırma ve bir gizem eklendi. İtibarın 70 olunca açılır.', nerede: 'Araştırma merkezi, Saha gezileri: Antarktika, yola çık. Yardım, Antarktika.' },
   { baslik: 'Harita büyüdü: altı yeni bölge', metin: 'Araştırma alanı her yöne yaklaşık 300 metreye genişledi; eskisinin iki buçuk katı. Dış halkada altı yeni bölge var. Granit tepeler: dev kaya yığınları, babun sürüsü ve bir leopar; tepedeki Gözcü Kayası\'ndan dürbün çok daha uzağı görür. Sık çalılık: dikenli çalılar görüşü kısaltır, iki gergedan saklanır. Kum dere: yağışlı mevsimde akar, kurakta bekâr erkek filler kumu kazıp su kuyusu açar, başka hayvanlar da bu kuyulardan içer. Baobab düzlüğü: dev baobablar, zürafalar, kabuk soyan filler. Güney ovası: zebralar, ceylanlar ve iki çita kardeş; göçmen sürüler buradan geçer. Kuzey otlakları. On yeni küçük canlı (klipspringer, kara kartal, gerenuk, akbaba beç tavuğu, meyve yarasası, bufalo dokumacısı, karınca aslanı, kum boası, kori toyu, yer sincabı) ve iki yeni bitki (baobab, mür ağacı). Üç yeni nadir davranış: kum kuyusu kazma, kuyudan içme, baobab kabuğu soyma.', nerede: 'Menüde Yerler: Granit tepeler, Gözcü Kayası, Sık çalılık, Kum dere yatağı, Baobab düzlüğü, Güney ovası, Kuzey otlakları. Yardım, Savan, zaman ve yerler.' },
   { baslik: 'Kulak ver ve sese dön', metin: 'Yeni alet: Kulak ver. Çift dokununca durup dinlersin; çevrendeki en yakın altı sürünün ya da hayvanın sesi, önünden başlayıp saat yönünde, her biri bulunduğu yönden ve uzaklıktan sırayla duyulur. Ardından ne duyduğun aynı sırayla söylenir. Böylece çevreni görmeden, yalnız kulağınla tanırsın. Bir ses duyduktan sonra menüdeki Son duyduğun sese dön satırı seni o sesin geldiği yöne çevirir; kulak verdikten sonra Dinlediğin seslerden birine dön ile istediğin hayvana yönelirsin.', nerede: 'İki parmakla sağa ya da sola kaydırıp Kulak ver aletini seç; ana menü; VoiceOver kipinde üstteki düğmeler.' },
@@ -630,6 +644,18 @@ const YARDIM = [
       'Dönüş: ana menüde ve Yerler listesinde Savana dön satırı var. Uçak kulübenin yanından kalkar; kulübeden uzaksan önce oraya yürürsün.',
       'Deniz buzunu ölç: buzun üstündeyken Doğa menüsünde. Buz matkabıyla buzun kalınlığını ölçersin; buz sonbaharın sonunda donar, kışın kalınlaşır, ilkbaharda incelir, polinyanın kenarında çok incedir. Ölçümler Kutup raporunda.',
       'Kutup araştırmaları merkezde: Grönland kıyısının memelileri, Deniz buzunun yıllık döngüsü, Buzun ve tundranın avcıları, Kısa tundra yazı. Kutup kuşlarının, lemmingin ve sakallı fokun sesleri çevrede duyulur; sesini duyduğun canlıyı aramak onu bulmayı kolaylaştırır.',
+    ],
+  },
+  {
+    id: 'avustralya',
+    baslik: 'Avustralya çalılığı',
+    satirlar: [
+      'Avustralya gezisi: Araştırma merkezi, Saha gezileri bölümünde. Bilimsel itibarın 60 olunca açılır. İstasyondayken Avustralya çalılığı, yola çık satırını seç; uçak, izin ve konaklama 3.000 lira tutar, yolculuk 5,5 oyun saati sürer. Queensland iç kesimindeki saha istasyonuna inersin.',
+      'Ayrı, serbestçe dolaşılan bir harita. İstasyonun çevresi kızıl topraklı açık otlak. Doğuda billabong denen bir su gölü ve batıya uzanan kuru dere yatağı, kuzeyde okaliptüs ormanı, batıda kızıl kumtaşı kayalar, güneydoğuda spinifex çalılığı, doğuda termit kuleleri var. Billabonga giremezsin.',
+      'Mevsimler: 8 gün yağışlı yaz (muson; dere yatağı yer yer akar, otlar yeşerir), 4 gün sonbahar, 8 gün kurak kış (bütün hayvanlar billabonga toplanır), 4 gün ilkbahar. Hava açık, bulutlu, yağmurlu, kavurucu sıcak ya da toz fırtınası olabilir; toz fırtınasında ve yağmurda görüş azalır.',
+      'Hayvanlar: kırmızı kanguru, koala, emu, vombat ve dingo. Kangurular öğle sıcağında gölgede yatar, akşamüstü suya iner; erkekler arada boks yapar. Koalalar günün çoğunu okaliptüs dallarında uyuyarak geçirir. Emular uzun yürüyüşler yapar, dişiler davul gibi ses çıkarır. Vombatlar gündüz kumtaşı kayalıktaki ininde kalır, gece otlar. Dingolar sürüyle kanguru avlar ve uluyarak haberleşir.',
+      'Küçük canlılar (kookaburra, kakadu, ornitorenk, ekidna, goanna, dikenli iblis gibi), 5 bitki, merkezde üç Avustralya araştırması ve bir gizem var. Billabonga yaklaştıkça kurbağa ve su kuşu sesleri artar.',
+      'Dönüş: ana menüde ve Yerler listesinde Savana dön satırı var. Uçak istasyonun yanındaki toprak pistten kalkar.',
     ],
   },
   {
@@ -1802,12 +1828,12 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     const kutupDonSatiri = () => ({
       id: 'kutupDon',
       etiket: K.kulubedeMi(d)
-        ? `Savana dön: uçakla ${String((M.oyuncuGuneyde(k) ? K.ANTARKTIKA_GEZI : K.KUTUP_GEZI).donus / 60).replace('.', ',')} saat`
-        : M.oyuncuGuneyde(k) ? `Üsse git, oradan savana dönülür: ${yerTarifi(K.US_KAPI)}` : `Kulübeye git, oradan savana dönülür: ${yerTarifi(K.KULUBE_KAPI)}`,
+        ? `Savana dön: uçakla ${String((M.oyuncuAvustralyada(k) ? K.AVUSTRALYA_GEZI : M.oyuncuGuneyde(k) ? K.ANTARKTIKA_GEZI : K.KUTUP_GEZI).donus / 60).replace('.', ',')} saat`
+        : M.oyuncuAvustralyada(k) ? `İstasyona git, oradan savana dönülür: ${yerTarifi(K.AV_KAPI)}` : M.oyuncuGuneyde(k) ? `Üsse git, oradan savana dönülür: ${yerTarifi(K.US_KAPI)}` : `Kulübeye git, oradan savana dönülür: ${yerTarifi(K.KULUBE_KAPI)}`,
       sec: () => {
         if (!K.kulubedeMi(d)) {
           menu.kapat();
-          M.yerGit(d, M.oyuncuGuneyde(k) ? 'a_us' : 'k_kulube');
+          M.yerGit(d, M.oyuncuAvustralyada(k) ? 'v_istasyon' : M.oyuncuGuneyde(k) ? 'a_us' : 'k_kulube');
           return 'sessiz';
         }
         const h = K.kutuptanHazirla(d);
@@ -1817,7 +1843,8 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         }
         menu.kapat();
         const guney = M.oyuncuGuneyde(k);
-        dinlenBaslat(k.dk + (guney ? K.ANTARKTIKA_GEZI : K.KUTUP_GEZI).donus, { metin: guney ? 'Uçak üssün yanındaki buz pistinden kalktı; savandaki istasyona dönüyorsun.' : 'Uçak kulübenin yanındaki pistten kalktı; savandaki istasyona dönüyorsun.', bitince: () => K.kutuptanDon(d) });
+        const avus = M.oyuncuAvustralyada(k);
+        dinlenBaslat(k.dk + (avus ? K.AVUSTRALYA_GEZI : guney ? K.ANTARKTIKA_GEZI : K.KUTUP_GEZI).donus, { metin: avus ? 'Küçük uçak istasyonun yanındaki toprak pistten kalktı; savandaki istasyona dönüyorsun.' : guney ? 'Uçak üssün yanındaki buz pistinden kalktı; savandaki istasyona dönüyorsun.' : 'Uçak kulübenin yanındaki pistten kalktı; savandaki istasyona dönüyorsun.', bitince: () => K.kutuptanDon(d) });
         return 'sessiz';
       },
     });
@@ -2019,7 +2046,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     }
     if (u === 'doga' && M.oyuncuKutupta(k)) {
       const ogeler = [
-        altMenu('kutupEko', `Kutup raporu: ${Kt.MEVSIM_ADI[M.kutupMevsimi(k)]}, ${Kt.havaSozu(M.kutupHavasi(k), k.dk).split(',')[0].toLocaleLowerCase('tr-TR')}`, menu.ac),
+        altMenu('kutupEko', `${M.oyuncuAvustralyada(k) ? 'Çalılık raporu' : 'Kutup raporu'}: ${Kt.MEVSIM_ADI[M.kutupMevsimi(k)]}, ${Kt.havaSozu(M.kutupHavasi(k), k.dk).split(',')[0].toLocaleLowerCase('tr-TR')}`, menu.ac),
         ...(Kt.yuzey(d.oyuncu.x, d.oyuncu.y, k.dk) === 'buz' ? [{ id: 'buzOlc', etiket: 'Deniz buzunu ölç', ipucu: 'Buz matkabıyla delik açıp buzun kalınlığını ölçersin. Farklı günlerde ve mevsimlerde ölçmek merkezdeki deniz buzu araştırmasını ilerletir.', sec: yap(() => K.buzOlc(d)) }] : []),
         { id: 'ara', etiket: 'Küçük canlı ara', ipucu: 'Kuş, böcek, balık ve küçük memelileri arar.', sec: kapatVe(() => K.kucukAra(d)) },
         { id: 'izAra', etiket: 'İzleri incele', ipucu: 'Karda ve çamurda yakındaki ayak izlerini okur.', sec: yap(() => Iz.izAra(d)) },
@@ -2031,6 +2058,18 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       return liste(u, `Doğa: ${Kt.ETKIN.baslik}`, ogeler);
     }
     if (u === 'kutupEko') {
+      if (M.oyuncuAvustralyada(k)) {
+        const tk = Kt.kutupTakvim(M.gunNo(k.dk));
+        const sayilar = AVUSTRALYA_SIRASI.filter((t) => k.arsiv.turler[t]).map((t) => `${kucuk(M.SOZ[t])} ${k.hayvanlar.filter((b) => !b.olu && b.tur === t).length}`);
+        const ogeler = [
+          bilgi('mev', `${M.BuyukHarf(Kt.MEVSIM_ADI[tk.mevsim])}, ${tk.mevsimGunu}. gün (${tk.uzunluk} günlük mevsim). ${Kt.isikSozu(k.dk)}`),
+          bilgi('hava', Kt.havaSozu(M.kutupHavasi(k), k.dk)),
+          bilgi('su', tk.mevsim === 'kis' ? 'Kurak mevsim: dere yatağı kuru, bütün çalılığın suyu billabongda. Hayvanlar akşamüstü ve gece suya iniyor.' : tk.mevsim === 'yaz' ? 'Muson: öğleden sonraları sağanak; dere yatağı yer yer akıyor, otlar gür.' : 'Geçiş mevsimi: yağmurlar seyrek, otlar sararıyor; billabong hâlâ dolu.'),
+          bilgi('takvim', 'Çalılığın yılı: 8 gün yağışlı yaz, 4 gün sonbahar, 8 gün kurak kış, 4 gün ilkbahar. Güney yarıkürede olduğu için savanın kutup takvimine göre kayıktır.'),
+        ];
+        if (sayilar.length) ogeler.push(bilgi('nufus', `Kaydedilen türlerin bölgedeki sayıları: ${sayilar.join(', ')}.`));
+        return liste(u, 'Çalılık raporu', ogeler);
+      }
       const guney = M.oyuncuGuneyde(k);
       const tk = Kt.kutupTakvim(M.gunNo(k.dk));
       const bk = Kt.buzKenari(k.dk);
@@ -2686,6 +2725,24 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
             },
           });
         if (M.oyuncuKutupta(k)) ogeler.splice(1, 0, kutupDonSatiri());
+        const durA = K.kutupDurumu(k, 'avustralya');
+        ogeler.splice(1, 0, bilgi('bavus', K.kutupSatiri(k, 'avustralya'), 'Queensland iç kesiminde serbestçe dolaşılan ayrı bir harita: kırmızı kanguru, koala, emu, vombat ve dingo. Ortada bir billabong, kuzeyde okaliptüs ormanı, batıda kızıl kumtaşı kayalar; yazı yağışlı, kışı kurak.'));
+        if (durA.acik && !M.oyuncuKutupta(k))
+          ogeler.splice(2, 0, {
+            id: 'gitavus',
+            etiket: 'Avustralya çalılığı: yola çık',
+            ipucu: 'İstasyondan uçakla gidilir. Yolda zaman akar; savandaki hayvanlar yaşamaya devam eder.',
+            sec: () => {
+              const h = K.avustralyaHazirla(d);
+              if (h) {
+                Ses.hemen(h);
+                return 'sessiz';
+              }
+              menu.kapat();
+              dinlenBaslat(k.dk + K.AVUSTRALYA_GEZI.yol, { metin: `Avustralya'ya uçuyorsun. Uçak, izin ve konaklama için ${Mz.liraSozu(K.AVUSTRALYA_GEZI.ucret)} ödendi.`, bitince: () => K.avustralyayaVar(d) });
+              return 'sessiz';
+            },
+          });
         const durG = K.kutupDurumu(k, true);
         ogeler.splice(1, 0, bilgi('bant', K.kutupSatiri(k, true), 'Antarktika\'nın Adélie Kıyısı\'nda serbestçe dolaşılan ayrı bir harita: imparator ve Adélie penguenleri, Weddell foku, leopar foku, fil foku ve orkalar. Mevsimler kuzeyin tersidir; kışın imparator penguenler deniz buzunun üstünde ürer.'));
         if (durG.acik && !M.oyuncuKutupta(k))

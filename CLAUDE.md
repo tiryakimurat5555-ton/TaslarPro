@@ -549,7 +549,21 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   nunataklar, koloni izi, üs modülleri, masa buzdağları); karVeIsik ortak (güney ışıkları güneyde). Sesler 6 tür konumlu (UC_B), ortam_antarktika,
   ortam_penguen (koloni katmanı), k_guneyDevPetreli, k_guneyKutupKarabatagi. Testler: bot, dayanıklılık 150/150, menu-tara Antarktika ve savanda
   iki kipte sorun 0 (/tmp/claude-0/ant-kayit.json), /tmp/claude-0/kr/ant1.js, görüntüler scratchpad ant-goruntu.cjs. Telefonda doğrulanmadı.
-  Sıradaki: Avustralya çalılığı (ayrı harita).
+- AVUSTRALYA ÇALILIĞI (15 Kasım 2026, Murat "sıradaki haritaya geç"; sayılar ÖNERİ): AVUSTRALYA {x 6000, y 0, r 230}; kutup.js AVUS (haritaYap
+  kancaları: sicak, aurora false, buzYok, yuzey, enYakinSu, gunIsigi, isikSozu, havaUret (acik/bulutlu/yagmurlu/sicak/toz), havaSozu, besin);
+  kutup altyapısını kullanır (oyuncuKutupta Avustralya'yı da kapsar; Kt.avustralyaMi, M.oyuncuAvustralyada). Kayma 12 (yaz yağışlı, kış kurak).
+  BILLABONG (60,40) r18 tek su (yuzey 'su'), kuru dere dereY(lx) batıya, KUMTASI (-125,-70), SPINIFEX (120,-140), AV_TERMIT (145,-20), OKALIPTUS_Y 85
+  kuzeyi, istasyon (0,-40). Bölgeler avUs, billabong, kuruDere, okaliptus, kumtasi, spinifex, avTermit, avOtlak; YERLER v_*. Hava k.kutup.havaA,
+  mevsimA. TURLER 5 (kutup: true, avustralya: true; AVUSTRALYA_SIRASI; KUTUP_SIRASI bunları dışlar): kirmiziKanguru (sekil kanguru), koala, emu, vombat,
+  dingo (sekil kurt, yırtıcı, AV_STRATEJI). mantik avustralyaPlanSec: koala 'agac' (sahnede 3,2 m yukarıda; agactaUyuyor/yaprakYiyor), vombat 'in'
+  gündüz / 'kaz' / otla, kanguru 'golge' sıcak öğlen, akşamüstü 'icme', 'boks'; emu gez/icme/'davul' (dişi davulCaliyor); dingo uluma + icme, açken
+  genel av. kesif AVUSTRALYA_GEZI (itibar 60, 3.000, 330 dk), AV_KAPI, avustralyaHazirla/avustralyayaVar, kutupHazirla(d, 'avustralya'). Merkez 3
+  araştırma (avustralyaFaunasi, calilikDavranislari, billabongYasami), gizem billabongGolgesi (ornitorenk). kucukler AVUSTRALYA_CANLILARI 12,
+  BITKILER + 5 (avustralya: true). betimleme avustralya dalları; App kutupOrtami Avustralya katmanları (ortam_calilik_gunduz/gece, ortam_billabong,
+  yağmurda ortam_yagmur), Çalılık raporu. Sahne avGrup (kızıl zemin + mevsimle yeşeren ot katmanı, billabong + nilüferler, kum dere + yağışta su,
+  okaliptüsler, mulga, spinifex, kumtaşı, termit kuleleri, mesalar, istasyon), yağmur damlaları, toz fırtınasında kızıl gök. Sesler kanguru, koala,
+  emu, vombat, dingo (konumlu), k_kookaburra, k_kakadu, 3 ortam döngüsü. Testler: bot, dayanıklılık, menu-tara Avustralya iki kipte (/tmp/claude-0/av-kayit.json)
+  ve savanda sorun 0, /tmp/claude-0/kr/av1.js, görüntüler scratchpad av-goruntu.cjs. Telefonda doğrulanmadı.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

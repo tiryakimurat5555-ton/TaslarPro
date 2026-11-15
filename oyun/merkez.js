@@ -2,14 +2,14 @@
 // Saf mantık: bütçe ve dengeli ekonomi (karar 22, 62, 91), ekipman (89, 88), tesisler (21, 79, 80), personel (54, 81),
 // basit araştırma ekranı ve analizler (45), hibe teklifleri ve dinamik görevler (61, 62, 90), mesajlar (82),
 // kamera tuzakları (41, 93) ve GPS tasmaları (11, 84). Sayılar öneridir; Murat onaylamadı.
-import { TURLER, TUR_SIRASI, DAVRANISLAR, ISTASYON, YARICAP, GOLET, nehirY, NEHIR_YARI, TUZ_YALAGI, KUTUP_SIRASI, ANTARKTIKA_SIRASI } from './veri.js';
+import { TURLER, TUR_SIRASI, DAVRANISLAR, ISTASYON, YARICAP, GOLET, nehirY, NEHIR_YARI, TUZ_YALAGI, KUTUP_SIRASI, ANTARKTIKA_SIRASI, AVUSTRALYA_SIRASI } from './veri.js';
 import * as M from './mantik.js';
 import * as Kt from './kutup.js';
 import * as E from './ekosistem.js';
 import * as K from './kesif.js';
 import * as G from './genisleme.js';
 import * as S from './su.js';
-import { KUCUKLER, KUTUP_KUCUKLERI, ANTARKTIKA_KUCUKLERI } from './kucukler.js';
+import { KUCUKLER, KUTUP_KUCUKLERI, ANTARKTIKA_KUCUKLERI, AVUSTRALYA_KUCUKLERI } from './kucukler.js';
 
 const lira = (n) => `${Math.round(n).toLocaleString('tr-TR')} lira`;
 export const liraSozu = lira;
@@ -251,7 +251,7 @@ export const ARASTIRMALAR = [
     id: 'kutupFaunasi',
     ad: 'Grönland kıyısının memelileri',
     kosulMetni: 'Kuzey Kutbu\'nda 9 büyük türü kaydet ve kutup türlerinden 6 bireyi tanımla',
-    ilerleme: (k) => [Math.min(9, KUTUP_SIRASI.filter((t) => k.arsiv.turler[t]).length) + Math.min(6, k.hayvanlar.filter((b) => b.no > 0 && TURLER[b.tur] && TURLER[b.tur].kutup && !TURLER[b.tur].guney).length), 15],
+    ilerleme: (k) => [Math.min(9, KUTUP_SIRASI.filter((t) => k.arsiv.turler[t]).length) + Math.min(6, k.hayvanlar.filter((b) => b.no > 0 && TURLER[b.tur] && TURLER[b.tur].kutup && !TURLER[b.tur].guney && !TURLER[b.tur].avustralya).length), 15],
     odul: { itibar: 15, fon: 6000 },
     sonuc: 'Kıyının memeli topluluğu belgelendi: deniz buzuna bağlı türler (kutup ayısı, halkalı fok, mors) ile tundra türleri (ren geyiği, misk öküzü, kurt, tilki, tavşan) birbirine besin zinciriyle bağlı. Fok azalırsa ayılar karaya, kuş yuvalarına yöneliyor.',
   },
@@ -275,9 +275,34 @@ export const ARASTIRMALAR = [
     id: 'tundraYazi',
     ad: 'Kısa tundra yazı',
     kosulMetni: '6 kutup bitkisini incele ve 10 kutup küçük canlısını bul',
-    ilerleme: (k) => [Math.min(6, E.BITKI_SIRASI.filter((id) => E.BITKILER[id].kutup && !E.BITKILER[id].guney && (k.arsiv.bitkiler || {})[id]).length) + Math.min(10, KUTUP_KUCUKLERI.filter((id) => (k.arsiv.kucukler || {})[id]).length), 16],
+    ilerleme: (k) => [Math.min(6, E.BITKI_SIRASI.filter((id) => E.BITKILER[id].kutup && !E.BITKILER[id].guney && !E.BITKILER[id].avustralya && (k.arsiv.bitkiler || {})[id]).length) + Math.min(10, KUTUP_KUCUKLERI.filter((id) => (k.arsiv.kucukler || {})[id]).length), 16],
     odul: { itibar: 14, fon: 5000 },
     sonuc: 'Tundranın bütün yaşamının birkaç haftalık yaza sıkıştığı gösterildi: bitkiler kar kalkar kalkmaz çiçek açıyor, kuşlar gece yarısı güneşinde yavrularını büyütüyor, lemmingler kar altında kışı geçiriyor.',
+  },
+  // Avustralya çalılığı araştırmaları
+  {
+    id: 'avustralyaFaunasi',
+    ad: 'Keseliler ve çalılığın büyük hayvanları',
+    kosulMetni: 'Avustralya çalılığında 5 büyük türü kaydet ve oradaki türlerden 4 bireyi tanımla',
+    ilerleme: (k) => [Math.min(5, AVUSTRALYA_SIRASI.filter((t) => k.arsiv.turler[t]).length) + Math.min(4, k.hayvanlar.filter((b) => b.no > 0 && TURLER[b.tur] && TURLER[b.tur].avustralya).length), 9],
+    odul: { itibar: 16, fon: 7000 },
+    sonuc: 'Çalılığın büyük hayvan topluluğu belgelendi: kanguru, koala ve vombat gibi keseliler, uçamayan emu ve tek büyük yırtıcı dingo. Dingonun kanguru sayısını dengede tuttuğu, dingonun olmadığı yerlerde kanguru sürülerinin otlağı tükettiği biliniyor.',
+  },
+  {
+    id: 'calilikDavranislari',
+    ad: 'Sıcağa ve kuraklığa uyum',
+    kosulMetni: 'Dört davranışı gözle: kanguruların gölgede serinlemesi, koalanın ağaçta uyuması, emunun davul sesi, vombatın in kazması',
+    ilerleme: (k) => [[['kirmiziKanguru', 'golgedeYatiyor'], ['koala', 'agactaUyuyor'], ['emu', 'davulCaliyor'], ['vombat', 'yuvaKaziyor']].filter(([t, dv]) => davranisVar(k, t, dv)).length, 4],
+    odul: { itibar: 16, fon: 5000 },
+    sonuc: 'Çalılık hayvanlarının su ve enerji tasarrufunun belgelendi: kangurular öğle sıcağını gölgede ön kollarını yalayarak geçiriyor, koalalar az besleyici yaprakla yaşamak için günün çoğunu uyuyor, vombatlar gündüzü serin inlerde geçiriyor.',
+  },
+  {
+    id: 'billabongYasami',
+    ad: 'Billabong ve çalılığın küçük canlıları',
+    kosulMetni: '4 Avustralya bitkisini incele ve 6 Avustralya küçük canlısını bul',
+    ilerleme: (k) => [Math.min(4, E.BITKI_SIRASI.filter((id) => E.BITKILER[id].avustralya && (k.arsiv.bitkiler || {})[id]).length) + Math.min(6, AVUSTRALYA_KUCUKLERI.filter((id) => (k.arsiv.kucukler || {})[id]).length), 10],
+    odul: { itibar: 15, fon: 5000 },
+    sonuc: 'Kurak mevsimde bütün çalılığın yaşamının birkaç su gölünün çevresinde toplandığı belgelendi. Billabong kıyısındaki okaliptüsler kuşlara yuva, su da yumurtlayan memeli ornitorenke yaşam alanı oluyor.',
   },
   // Antarktika araştırmaları
   {

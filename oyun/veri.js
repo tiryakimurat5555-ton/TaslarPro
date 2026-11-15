@@ -25,6 +25,8 @@ export const KAYALIK = { x: -115, y: 45, r: 32 };
 export const KUTUP = { x: 0, y: 6000, r: 230 };
 // Antarktika haritası (Adélie Kıyısı): savanın çok güneyinde, Kuzey Kutbu ile aynı kurallarla işleyen ama mevsimleri ters üçüncü ana harita (kutup.js GUNEY)
 export const ANTARKTIKA = { x: 0, y: -6000, r: 230 };
+// Avustralya çalılığı (Queensland iç kesimi): savanın çok doğusunda, kendi mevsimi ve havası olan dördüncü ana harita (kutup.js AVUS)
+export const AVUSTRALYA = { x: 6000, y: 0, r: 230 };
 export const MAGARA = { x: -128, y: 64 };
 
 // ---------- Dış halkanın bölgeleri (15 Kasım 2026, harita genişlemesi) ----------
@@ -122,6 +124,15 @@ export const BOLGE_ADLARI = {
   kusYari: 'Kuş yarları',
   polinya: 'Polinya',
   // Antarktika
+  avUs: 'Saha istasyonu',
+  billabong: 'Billabong',
+  kuruDere: 'Kuru dere yatağı',
+  okaliptus: 'Okaliptüs ormanı',
+  kumtasi: 'Kızıl kumtaşı kayalık',
+  spinifex: 'Spinifex çalılığı',
+  avTermit: 'Termit tepeleri',
+  avOtlak: 'Açık otlak',
+  // Antarktika
   antUs: 'Araştırma üssü',
   buzOrtusu: 'Kıta buz örtüsü',
   kayaBurnu: 'Kayalık burun',
@@ -210,6 +221,13 @@ export const DAVRANISLAR = {
   penguenPususu: { fiil: 'buz kenarının altında, penguenlerin suya girdiği yerde pusuya yatmış', ad: 'Penguen pususu', nadir: true },
   dalgaYapiyor: { fiil: 'ailesiyle yan yana hızla yüzüp bir dalga yaratıyor; buz parçasının üstündeki foku suya düşürmeye çalışıyor', ad: 'Dalga yaparak avlanma', nadir: true },
   bogaKavgasi: { fiil: 'göğsünü kaldırıp rakibine kükrüyor; iki erkek boyunlarını birbirine çarpıyor', ad: 'Erkeklerin kumsal kavgası', nadir: true },
+  // Avustralya
+  boksYapiyor: { fiil: 'kuyruğuna yaslanıp rakibiyle ön ayaklarıyla güreşiyor, arka ayaklarıyla tekme savuruyor', ad: 'Kanguru boksu', nadir: true },
+  golgedeYatiyor: { fiil: 'öğle sıcağında bir ağacın gölgesine uzanmış, ön kollarını yalayarak serinliyor', ad: 'Gölgede serinleme' },
+  agactaUyuyor: { fiil: 'bir okaliptüs dalının çatalına sıkışmış, uyuyor; günün çoğunu böyle geçirir', ad: 'Ağaçta uyuma' },
+  yaprakYiyor: { fiil: 'okaliptüs yapraklarını tek tek koklayıp seçerek yiyor', ad: 'Okaliptüs yaprağı yeme' },
+  davulCaliyor: { fiil: 'göğsündeki keseyi şişirip uzaklara yayılan alçak, davul gibi gümbürtüler çıkarıyor', ad: 'Davul sesi', nadir: true },
+  yuvaKaziyor: { fiil: 'güçlü pençeleriyle toprağı kazıp inini genişletiyor', ad: 'İn kazma', nadir: true },
   bedenDiliUyari: { fiil: 'kuyruğunu dikip başını kaldırarak sürüye tehlikeyi bildiriyor', ad: 'Beden diliyle uyarı' },
 };
 
@@ -443,8 +461,43 @@ Object.assign(TURLER, {
     tarif: 'Dünyanın en büyük foku: erkekleri dört tonu aşar. Erkeklerin hortum gibi sarkan burnu, gürültülü kükremelerini yükseltir. Yazın kumsallara çıkıp tüy değiştirir ve sırt sırta yatar; erkekler kumsal için kanlı kavgalar yapar. Bin metreden derine dalabilir.',
   },
 });
+// ---------- Avustralya çalılığı türleri (kutup: true harita altyapısını kullanır, avustralya: true; habitatlar AVUSTRALYA merkezine göre) ----------
+const AX = 6000;
+Object.assign(TURLER, {
+  kirmiziKanguru: {
+    ad: 'Kırmızı Kanguru', bilimsel: 'Osphranter rufus', kisa: 'KNG', sinif: 'Memeli', ses: 'kanguru', sekil: 'kanguru', boy: 1.35, renk: '#b4643c', kutup: true, avustralya: true,
+    hiz: 13, aktif: 'karma', kacis: 32, sesSik: 160, sesTuru: 'alarm',
+    habitat: { x: AX + 0, y: -110, r: 90 }, grup: [5, 9], erkekOran: 0.3,
+    tarif: 'Dünyanın en büyük keseli hayvanı; erkekleri insan boyunu aşar. Arka ayaklarıyla saatte 50 kilometreye kadar sıçrar, kuyruğunu denge için kullanır. Sıcağın en yüksek olduğu saatlerde gölgede yatar, ön kollarını yalayarak serinler. Yavru, ilk aylarını annesinin kesesinde geçirir.',
+  },
+  koala: {
+    ad: 'Koala', bilimsel: 'Phascolarctos cinereus', kisa: 'KOA', sinif: 'Memeli', ses: 'koala', sekil: 'koala', boy: 0.6, renk: '#9a9894', kutup: true, avustralya: true,
+    hiz: 3, aktif: 'gece', kacis: 7, sesSik: 260, sesTuru: 'bolge',
+    habitat: { x: AX + 20, y: 135, r: 65 }, grup: [1, 2], erkekOran: 0.5,
+    tarif: 'Neredeyse yalnızca okaliptüs yaprağıyla beslenen keseli bir hayvan. Yapraklar az besleyici ve zehirli olduğu için günde 18-20 saat ağaçta uyuyarak enerji biriktirir. Erkekler üreme döneminde domuz homurtusunu andıran şaşırtıcı derecede derin bir sesle böğürür.',
+  },
+  emu: {
+    ad: 'Emu', bilimsel: 'Dromaius novaehollandiae', kisa: 'EMU', sinif: 'Kuş', ses: 'emu', sekil: 'emu', boy: 1.6, renk: '#5c4c3c', kutup: true, avustralya: true,
+    hiz: 13, aktif: 'gunduz', kacis: 34, sesSik: 200, sesTuru: 'iletisim',
+    habitat: { x: AX + 120, y: -140, r: 70 }, grup: [2, 5], erkekOran: 0.5,
+    tarif: 'Uçamayan, insan boyunda bir kuş. Saatte 50 kilometreyle koşar. Dişi boğazındaki keseyle kilometrelerce duyulan davul gibi sesler çıkarır. Yumurtaları erkek kuluçkaya yatırır ve yaklaşık iki ay hiç yemeden yuvada bekler; yavruları da o büyütür.',
+  },
+  vombat: {
+    ad: 'Vombat', bilimsel: 'Vombatus ursinus', kisa: 'VMB', sinif: 'Memeli', ses: 'vombat', sekil: 'vombat', boy: 0.7, renk: '#7a6a5a', kutup: true, avustralya: true,
+    hiz: 6, aktif: 'gece', kacis: 12, sesSik: 260, sesTuru: 'alarm',
+    habitat: { x: AX - 120, y: -60, r: 50 }, grup: [1, 2], erkekOran: 0.5,
+    tarif: 'Tıknaz, kısa bacaklı, kazıcı bir keseli. Gündüzü kazdığı uzun tünellerde geçirir, gece otlar. Kesesi arkaya doğru açılır, kazarken içine toprak dolmaz. Dışkısı küp biçimindedir; bunları kayaların üstüne bırakarak bölgesini işaretler.',
+  },
+  dingo: {
+    ad: 'Dingo', bilimsel: 'Canis dingo', kisa: 'DNG', sinif: 'Memeli', ses: 'dingo', sekil: 'kurt', boy: 0.72, renk: '#c88c48', kutup: true, avustralya: true,
+    hiz: 12, aktif: 'karma', kacis: 40, yirtici: true, avlar: ['kirmiziKanguru', 'vombat', 'emu'], sesSik: 90, sesTuru: 'bolge',
+    habitat: { x: AX - 60, y: 20, r: 120 }, grup: [3, 5], erkekOran: 0.5,
+    tarif: 'Avustralya\'nın en büyük kara yırtıcısı; binlerce yıl önce insanlarla kıtaya gelmiş vahşi bir köpek. Havlamaz; uluyarak iletişim kurar. Sürüyle kangurulara bayırlarda pusu kurar, yorulana kadar kovalar.',
+  },
+});
 export const TUR_SIRASI = Object.keys(TURLER).filter((t) => !TURLER[t].kutup);
-export const KUTUP_SIRASI = Object.keys(TURLER).filter((t) => TURLER[t].kutup && !TURLER[t].guney);
+export const KUTUP_SIRASI = Object.keys(TURLER).filter((t) => TURLER[t].kutup && !TURLER[t].guney && !TURLER[t].avustralya);
+export const AVUSTRALYA_SIRASI = Object.keys(TURLER).filter((t) => TURLER[t].avustralya);
 export const ANTARKTIKA_SIRASI = Object.keys(TURLER).filter((t) => TURLER[t].guney);
 
 export const KISILIKLER = {

@@ -7,12 +7,12 @@
 // Her harita aynı arayüzü sunar (haritaYap). Konum alan işlevler (yuzey, bolge, sudaMi...) noktanın hangi haritada olduğunu kendisi bulur;
 // yalnız zaman alan işlevlerin (isik, evre, buzKenari, kutupTakvim...) üst düzey sürümleri Kuzey içindir: Antarktika için harita(p).isik(dk).
 // Saf modül: yalnızca veri.js ve ekosistem.js'i kullanır. Sayılar ÖNERİDİR.
-import { KUTUP, ANTARKTIKA } from './veri.js';
+import { KUTUP, ANTARKTIKA, AVUSTRALYA } from './veri.js';
 import { YIL_GUN } from './ekosistem.js';
 
 function haritaYap(c) {
   const M = c.merkez;
-  const H = { ad: c.ad, baslik: c.baslik, MERKEZ: M, kayma: c.kayma || 0 };
+  const H = { ad: c.ad, baslik: c.baslik, MERKEZ: M, kayma: c.kayma || 0, sicak: !!c.sicak, aurora: c.aurora !== false };
   H.icinde = (x, y) => Number.isFinite(y) && Math.abs(y - M.y) < 600 && Math.abs(x - M.x) < 600;
   H.noktaMi = (p) => !!p && H.icinde(p.x, p.y);
   H.yerel = (p) => ({ x: p.x - M.x, y: p.y - M.y });
@@ -38,6 +38,7 @@ function haritaYap(c) {
   // Gün ışığı süresi (saat): yazın 24, kışın 0 (Antarktika kıyısında kışın da öğleye doğru kısa bir alacakaranlık olur)
   H.gunIsigiSaat = (dk) => {
     const f = H.yilKonumu(dk);
+    if (c.gunIsigi) return c.gunIsigi(f);
     if (f < 8) return 24;
     if (f < 12) return 24 * (1 - (f - 8) / 4);
     if (f < 20) return 0;
@@ -67,6 +68,7 @@ function haritaYap(c) {
     return 'gece';
   };
   H.isikSozu = (dk) => {
+    if (c.isikSozu) return c.isikSozu(H, dk);
     const t = H.kutupTakvim(Math.floor(dk / 1440) + 1);
     const L = H.gunIsigiSaat(dk);
     const l = H.isik(dk);
@@ -79,6 +81,7 @@ function haritaYap(c) {
   };
   // ---------- Deniz buzu ----------
   H.buzKenari = (dk) => {
+    if (c.buzYok) return 9999;
     const f = H.yilKonumu(dk);
     let acik;
     if (f < 8) acik = 45 + (f / 8) * 120;
@@ -91,6 +94,7 @@ function haritaYap(c) {
   H.yuzey = (x, y, dk) => {
     const lx = x - M.x;
     const ly = y - M.y;
+    if (c.yuzey) return c.yuzey(H, lx, ly, dk);
     if (ly <= H.kiyiY(lx)) return 'kara';
     if (H.polinyadaMi(lx, ly)) return 'su';
     return ly > H.buzKenari(dk) ? 'buz' : 'su';
@@ -98,6 +102,7 @@ function haritaYap(c) {
   H.sudaMi = (x, y, dk) => H.yuzey(x, y, dk) === 'su';
   H.karadaMi = (x, y) => y - M.y <= H.kiyiY(x - M.x);
   H.enYakinSu = (x, y, dk, delik) => {
+    if (c.enYakinSu) return c.enYakinSu(H, x, y, dk);
     const lx = x - M.x;
     const aday = [];
     const bk = H.buzKenari(dk);
@@ -116,6 +121,7 @@ function haritaYap(c) {
   H.istasyonBolgesi = c.istasyonBolgesi;
   // ---------- Hava ----------
   H.havaUret = (gun, rng) => {
+    if (c.havaUret) return c.havaUret(H, gun, rng);
     const t = H.kutupTakvim(gun);
     const [a, b] = c.SICAKLIK[t.mevsim];
     const sicaklik = Math.round(a + rng() * (b - a));
@@ -134,9 +140,10 @@ function haritaYap(c) {
   };
   H.tipideMi = tipideMi;
   H.gorusCarpani = gorusCarpani;
-  H.havaSozu = (h, dk) => havaSozuGenel(h, dk, c.ad);
+  H.havaSozu = (h, dk) => (c.havaSozu ? c.havaSozu(h, dk) : havaSozuGenel(h, dk, c.ad));
   // Kutup haritasında tek tip "otçul besin" değeri (bitki örtüsü mevsime göre)
   H.tundraBesin = (dk, h) => {
+    if (c.besin) return c.besin(H, dk, h);
     const t = H.kutupTakvim(Math.floor(dk / 1440) + 1).mevsim;
     const taban = { yaz: 0.9, sonbahar: 0.6, kis: 0.3, ilkbahar: 0.38 }[t];
     return taban * (tipideMi(h, dk) ? 0.5 : 1);
@@ -167,6 +174,8 @@ export function gorusCarpani(h, dk) {
   if (tipideMi(h, dk)) return 0.32;
   if (h.tur === 'sis') return 0.55;
   if (h.tur === 'kar') return 0.75;
+  if (h.tur === 'yagmurlu') return 0.75;
+  if (h.tur === 'toz') return 0.45;
   return 1;
 }
 function havaSozuGenel(h, dk, ad) {
@@ -278,16 +287,108 @@ export const GUNEY = haritaYap({
   TIPI_SANSI: { yaz: 0.06, sonbahar: 0.22, kis: 0.3, ilkbahar: 0.22 },
 });
 
-export const HARITALAR = { kuzey: KUZEY, guney: GUNEY };
+// =====================================================================
+// AVUSTRALYA ÇALILIĞI: Queensland iç kesimi (AVUSTRALYA merkezi, x +6000). Deniz ve buz yok: açık otlak, ortada bir billabong
+// (eski nehir kolundan kalmış su gölü) ve batıya uzanan kuru dere yatağı, kuzeyde okaliptüs ormanı, batıda kızıl kumtaşı kayalık,
+// güneydoğuda spinifex çalılığı, doğuda termit tepeleri. Güney yarıküre: mevsimler savanın kutup takvimine göre 12 gün kayık.
+// Kutup altyapısını (ayrı harita, kendi takvimi ve havası) kullanır; buz, tipi ve kutup ışıkları yoktur.
+// =====================================================================
+const BILLABONG = { lx: 60, ly: 40, r: 18 };
+const dereY = (lx) => 40 + 9 * Math.sin(lx / 32) + 5 * Math.sin(lx / 11);
+const KUMTASI = { lx: -125, ly: -70, r: 38 };
+const SPINIFEX = { lx: 120, ly: -140, r: 75 };
+const AV_TERMIT = { lx: 145, ly: -20, r: 30 };
+const OKALIPTUS_Y = 85; // bunun kuzeyi okaliptüs ormanı
+const ISTASYON_A = { lx: 0, ly: -40, r: 9 };
+export const AVUS = haritaYap({
+  ad: 'avustralya',
+  baslik: 'Avustralya çalılığı',
+  merkez: AVUSTRALYA,
+  kayma: 12,
+  sicak: true,
+  aurora: false,
+  buzYok: true,
+  kiyiY: () => 9999,
+  buzTaban: 0,
+  ISTASYON_K: ISTASYON_A,
+  BUZUL: { lx0: -9999, lx1: -9998 },
+  POLINYA: BILLABONG,
+  ozel: { BILLABONG, KUMTASI, SPINIFEX, AV_TERMIT, OKALIPTUS_Y, dereY },
+  MEVSIM_ADI: { yaz: 'Avustralya yazı (yağışlı)', sonbahar: 'sonbahar', kis: 'Avustralya kışı (kurak)', ilkbahar: 'ilkbahar' },
+  BOLGE_ADLARI_K: { avUs: 'Saha istasyonu', billabong: 'Billabong', kuruDere: 'Kuru dere yatağı', okaliptus: 'Okaliptüs ormanı', kumtasi: 'Kızıl kumtaşı kayalık', spinifex: 'Spinifex çalılığı', avTermit: 'Termit tepeleri', avOtlak: 'Açık otlak' },
+  istasyonBolgesi: 'avUs',
+  bolge(H, lx, ly) {
+    if (Math.hypot(lx - ISTASYON_A.lx, ly - ISTASYON_A.ly) < ISTASYON_A.r + 12) return 'avUs';
+    if (Math.hypot(lx - BILLABONG.lx, ly - BILLABONG.ly) < BILLABONG.r + 8) return 'billabong';
+    if (lx < BILLABONG.lx - 10 && Math.abs(ly - dereY(lx)) < 7) return 'kuruDere';
+    if (Math.hypot(lx - KUMTASI.lx, ly - KUMTASI.ly) < KUMTASI.r) return 'kumtasi';
+    if (Math.hypot(lx - AV_TERMIT.lx, ly - AV_TERMIT.ly) < AV_TERMIT.r) return 'avTermit';
+    if (Math.hypot(lx - SPINIFEX.lx, ly - SPINIFEX.ly) < SPINIFEX.r) return 'spinifex';
+    if (ly > OKALIPTUS_Y) return 'okaliptus';
+    return 'avOtlak';
+  },
+  yuzey: (H, lx, ly) => (Math.hypot(lx - BILLABONG.lx, ly - BILLABONG.ly) < BILLABONG.r ? 'su' : 'kara'),
+  enYakinSu: (H, x, y) => {
+    const m = H.dunya(BILLABONG.lx, BILLABONG.ly);
+    const a = Math.atan2(x - m.x, y - m.y);
+    return { x: m.x + Math.sin(a) * (BILLABONG.r - 1), y: m.y + Math.cos(a) * (BILLABONG.r - 1) };
+  },
+  gunIsigi: (f) => (f < 8 ? 13.5 : f < 12 ? 13.5 - ((f - 8) / 4) * 3 : f < 20 ? 10.5 : 10.5 + ((f - 20) / 4) * 3),
+  isikSozu: (H, dk) => {
+    const l = H.isik(dk);
+    const s = (((dk % 1440) + 1440) % 1440) / 60;
+    if (l >= 0.5) return s > 11 && s < 15 ? 'Güneş tepede; çalılık sıcaktan titreşiyor, gölgeler kısa.' : 'Güneşli bir gündüz.';
+    if (l >= 0.12) return s < 12 ? 'Şafak: ufuk kızıla dönüyor, kuşların sabah korosu başlıyor.' : 'Akşam: güneş kızıl toprağı turuncuya boyayarak batıyor.';
+    return 'Gece: güney yarıkürenin yıldızları ve Samanyolu bütün gökyüzünü kaplıyor.';
+  },
+  havaUret: (H, gun, rng) => {
+    const t = H.kutupTakvim(gun);
+    const [a, b] = { yaz: [27, 39], sonbahar: [20, 31], kis: [9, 23], ilkbahar: [18, 32] }[t.mevsim];
+    const sicaklik = Math.round(a + rng() * (b - a));
+    const r = rng();
+    let tur = 'acik';
+    if (t.mevsim === 'yaz' && r < 0.35) tur = 'yagmurlu';
+    else if (t.mevsim !== 'kis' && r < 0.08) tur = 'yagmurlu';
+    else if ((t.mevsim === 'kis' || t.mevsim === 'ilkbahar') && r < 0.18) tur = 'toz';
+    else if (r < 0.45) tur = 'bulutlu';
+    else if (sicaklik >= 35) tur = 'sicak';
+    return { gun, tur, sicaklik, ruzgarYon: rng() < 0.6 ? Math.PI * 1.5 + (rng() - 0.5) * 0.8 : rng() * Math.PI * 2, ruzgarHiz: tur === 'toz' ? 3 : 0.4 + rng() * 1.5 };
+  },
+  havaSozu: (h) => {
+    if (!h) return '';
+    const r = h.ruzgarHiz > 2.5 ? 'sert' : h.ruzgarHiz > 1.2 ? 'orta' : 'hafif';
+    const t = { acik: 'Hava açık', bulutlu: 'Gökyüzü bulutlu', yagmurlu: 'Muson yağmuru yağıyor; kuru dere yatağında su sesleri', sicak: 'Kavurucu sıcak; hava titreşiyor', toz: 'Batıdan kızıl bir toz fırtınası esiyor; görüş azalmış' }[h.tur] || 'Hava açık';
+    return `${t}, ${h.sicaklik} derece, ${r} rüzgâr.`;
+  },
+  besin: (H, dk, h) => {
+    const m = H.kutupTakvim(Math.floor(dk / 1440) + 1).mevsim;
+    return { yaz: 0.95, sonbahar: 0.75, kis: 0.5, ilkbahar: 0.6 }[m] * (h && h.tur === 'yagmurlu' ? 1.1 : 1);
+  },
+  YERLER: [
+    { id: 'v_istasyon', ad: 'Saha istasyonu', lx: 0, ly: -26, tarif: 'Okaliptüs direkli, oluklu sac çatılı küçük bir araştırma barakası; yanında yağmur suyu tankı ve rüzgâr gülü.' },
+    { id: 'v_billabong', ad: 'Billabong', lx: BILLABONG.lx - BILLABONG.r - 6, ly: BILLABONG.ly - 8, tarif: 'Eski bir dere kolundan kalmış, kurak mevsimde de kurumayan bir su gölü. Kıyısında nehir kırmızı okaliptüsleri var; kanguru, emu ve dingo içmeye gelir.' },
+    { id: 'v_dere', ad: 'Kuru dere yatağı', lx: -60, ly: dereY(-60) - 9, tarif: 'Yalnız muson yağmurlarında akan kumlu bir dere yatağı. Kıyıları dev nehir okaliptüsleriyle sıralı.' },
+    { id: 'v_okaliptus', ad: 'Okaliptüs ormanı', lx: 10, ly: 115, tarif: 'Beyaz ve gri gövdeli okaliptüslerin seyrek ormanı. Koalalar dalların çatalında uyur; yaprakların kâfuru andıran kokusu her yere sinmiş.' },
+    { id: 'v_kumtasi', ad: 'Kızıl kumtaşı kayalık', lx: KUMTASI.lx + KUMTASI.r + 6, ly: KUMTASI.ly, tarif: 'Rüzgârın oyduğu kızıl kumtaşı kayalar. Vombatların inleri ve dingoların gözcü yerleri burada.' },
+    { id: 'v_spinifex', ad: 'Spinifex çalılığı', lx: SPINIFEX.lx - 40, ly: SPINIFEX.ly + 30, tarif: 'Dikenli, tepecikler hâlinde büyüyen spinifex otlarıyla kaplı kurak bir düzlük. Emular burada dolaşır.' },
+    { id: 'v_termit', ad: 'Termit tepeleri', lx: AV_TERMIT.lx - AV_TERMIT.r - 6, ly: AV_TERMIT.ly, tarif: 'İnsan boyunu aşan kızıl termit kuleleri. Kulelerin hepsi kuzey-güney doğrultusunda yassı; öğle güneşinden korunmak için.' },
+    { id: 'v_otlak', ad: 'Açık otlak', lx: 0, ly: -110, tarif: 'Mitchell otu ve seyrek akasyalarla kaplı geniş bir düzlük. Kırmızı kanguru sürüleri burada otlar.' },
+  ],
+  SICAKLIK: { yaz: [27, 39], sonbahar: [20, 31], kis: [9, 23], ilkbahar: [18, 32] },
+  TIPI_SANSI: { yaz: 0, sonbahar: 0, kis: 0, ilkbahar: 0 },
+});
+
+export const HARITALAR = { kuzey: KUZEY, guney: GUNEY, avustralya: AVUS };
 // Noktanın kutup haritası (yoksa null)
-export const haritaBul = (p) => (p ? (KUZEY.noktaMi(p) ? KUZEY : GUNEY.noktaMi(p) ? GUNEY : null) : null);
+export const haritaBul = (p) => (p ? (KUZEY.noktaMi(p) ? KUZEY : GUNEY.noktaMi(p) ? GUNEY : AVUS.noktaMi(p) ? AVUS : null) : null);
 // Noktanın kutup haritası; kutupta değilse Kuzey (eski çağrılar için)
 export const harita = (p) => haritaBul(p) || KUZEY;
 
 // ---------- Geriye uyumlu üst düzey adlar ----------
 // Konum alanlar noktanın haritasını kendisi bulur; yalnız zaman alanlar Kuzey içindir.
 export const KUTUP_SINIR = KUTUP.y - 600;
-export const kutuptaMi = (x, y) => KUZEY.icinde(x, y) || GUNEY.icinde(x, y);
+export const kutuptaMi = (x, y) => KUZEY.icinde(x, y) || GUNEY.icinde(x, y) || AVUS.icinde(x, y);
+export const avustralyaMi = (p) => AVUS.noktaMi(p);
 export const kutupNoktaMi = (p) => !!p && kutuptaMi(p.x, p.y);
 export const guneyMi = (p) => GUNEY.noktaMi(p);
 export const yerel = (p) => harita(p).yerel(p);
@@ -342,9 +443,9 @@ export const yuzey = (x, y, dk) => harita({ x, y }).yuzey(x, y, dk);
 export const sudaMi = (x, y, dk) => yuzey(x, y, dk) === 'su';
 export const karadaMi = (x, y) => harita({ x, y }).karadaMi(x, y);
 export const enYakinSu = (x, y, dk, delik) => harita({ x, y }).enYakinSu(x, y, dk, delik);
-export const BOLGE_ADLARI_K = { ...KUZEY.BOLGE_ADLARI_K, ...GUNEY.BOLGE_ADLARI_K };
+export const BOLGE_ADLARI_K = { ...KUZEY.BOLGE_ADLARI_K, ...GUNEY.BOLGE_ADLARI_K, ...AVUS.BOLGE_ADLARI_K };
 export const bolge = (x, y, dk) => harita({ x, y }).bolge(x, y, dk);
-export const TUM_KUTUP_YERLER = [...KUZEY.KUTUP_YERLER, ...GUNEY.KUTUP_YERLER];
-export const kutupYeriHarita = (y) => (GUNEY.KUTUP_YERLER.includes(y) ? GUNEY : KUZEY);
+export const TUM_KUTUP_YERLER = [...KUZEY.KUTUP_YERLER, ...GUNEY.KUTUP_YERLER, ...AVUS.KUTUP_YERLER];
+export const kutupYeriHarita = (y) => (GUNEY.KUTUP_YERLER.includes(y) ? GUNEY : AVUS.KUTUP_YERLER.includes(y) ? AVUS : KUZEY);
 export const yerKonumu = (y) => kutupYeriHarita(y).yerKonumu(y);
 export const buzKalinligi = (x, y, dk, isinma = 0) => harita({ x, y }).buzKalinligi(x, y, dk, isinma);

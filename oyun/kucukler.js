@@ -310,6 +310,26 @@ for (const [id, c] of Object.entries(ANTARKTIKA_CANLILARI)) {
   KUCUK_SIRASI.push(id);
 }
 export const ANTARKTIKA_KUCUKLERI = Object.keys(ANTARKTIKA_CANLILARI);
+// ---------- Avustralya çalılığı küçük canlıları ----------
+const AVUSTRALYA_CANLILARI = {
+  kookaburra: { ad: 'Gülen kookaburra', bilimsel: 'Dacelo novaeguineae', grup: 'Kuş', yer: ['okaliptus', 'kuruDere', 'avUs', 'billabong'], zaman: 'her', sik: 6, ses: 'Şafakta ve akşamüstü ailece söylediği, kahkahayı andıran yüksek koro.', tarif: 'Dünyanın en büyük yalıçapkını. Suya dalmaz; dalda bekleyip yere atlar, kertenkele ve yılan yakalar. Aile bireyleri birlikte "güler"; bu koro bölgelerinin sınırını ilan eder.' },
+  kakadu: { ad: 'Sarı tepeli kakadu', bilimsel: 'Cacatua galerita', grup: 'Kuş', yer: ['okaliptus', 'billabong', 'kuruDere'], zaman: 'gunduz', sik: 5, ses: 'Kulak tırmalayan, cırlak çığlıklar.', tarif: 'Bembeyaz, sarı tepeli büyük bir papağan. Sürüler hâlinde yaşar; sürü yerde beslenirken birkaç kuş ağaçta nöbet tutar ve tehlikede çığlık atar. Yetmiş yıldan uzun yaşayabilir.' },
+  galah: { ad: 'Galah', bilimsel: 'Eolophus roseicapilla', grup: 'Kuş', yer: ['avOtlak', 'avUs', 'billabong'], zaman: 'gunduz', sik: 6, tarif: 'Pembe göğüslü, gri sırtlı bir kakadu. Akşamları billabong başında yüzlercesi toplanır; yağmurda baş aşağı sallanarak yıkanır.' },
+  ornitorenk: { ad: 'Ornitorenk', bilimsel: 'Ornithorhynchus anatinus', grup: 'Memeli', yer: ['billabong'], zaman: 'alaca', sik: 1, nadir: true, tarif: 'Ördek gagalı, kunduz kuyruklu, yumurtlayan bir memeli. Su altında gözlerini ve kulaklarını kapatır; gagasındaki duyargalarla avının kaslarındaki elektriği algılar. Erkeğin arka ayağında zehirli bir mahmuz vardır.' },
+  ekidna: { ad: 'Kısa gagalı ekidna', bilimsel: 'Tachyglossus aculeatus', grup: 'Memeli', yer: ['avTermit', 'kumtasi', 'spinifex'], zaman: 'her', sik: 2, nadir: true, tarif: 'Dikenli, yumurtlayan bir memeli. Termit tepelerini güçlü pençeleriyle açıp yapışkan uzun diliyle termit toplar. Tehlikede toprağı kazıp gömülür, yalnızca dikenlerini dışarıda bırakır.' },
+  kumGoanna: { ad: 'Kum goannası', bilimsel: 'Varanus gouldii', grup: 'Sürüngen', yer: ['spinifex', 'avOtlak', 'avTermit'], zaman: 'gunduz', sik: 3, tarif: 'Bir buçuk metreye varan bir varan. Tehlikede arka ayakları üstüne kalkıp tıslar. Termit tepelerine yumurtlar; termitler yumurtaları sıcak ve nemli tutar.' },
+  sakalliEjder: { ad: 'Sakallı ejder', bilimsel: 'Pogona vitticeps', grup: 'Sürüngen', yer: ['avOtlak', 'kumtasi', 'spinifex'], zaman: 'gunduz', sik: 4, tarif: 'Tehdit edilince boğazındaki dikenli keseyi şişirip kararan bir kertenkele. Sabahları kayaların üstünde güneşlenir; birbirine kolunu sallayarak "selam" verir.' },
+  dikenliIblis: { ad: 'Dikenli iblis', bilimsel: 'Moloch horridus', grup: 'Sürüngen', yer: ['spinifex'], zaman: 'gunduz', sik: 1, nadir: true, tarif: 'Baştan aşağı dikenli küçük bir kertenkele. Derisindeki ince oluklar çiğ ve ıslak kumdaki suyu kılcal yolla ağzına taşır. Yalnızca karınca yer; günde binlercesini.' },
+  kafesKurbagasi: { ad: 'Su tutan kurbağa', bilimsel: 'Cyclorana platycephala', grup: 'Amfibi', yer: ['kuruDere', 'billabong'], zaman: 'gece', sik: 3, yagmur: true, tarif: 'Kurak mevsimi toprağın altında, kendi derisinden ördüğü bir kozanın içinde, mesanesinde biriktirdiği suyla yıllarca geçirebilen bir kurbağa. İlk sağanakla yüzeye çıkar.' },
+  kirmiziSirtliOrumcek: { ad: 'Kırmızı sırtlı örümcek', bilimsel: 'Latrodectus hasselti', grup: 'Örümcek ve akrep', yer: ['avUs', 'kumtasi'], zaman: 'her', sik: 2, tarif: 'Karadul akrabası, sırtında kırmızı bir şerit olan küçük bir örümcek. Kuru ve kuytu yerlerde, taşların ve barakaların altında ağ kurar. Zehirlidir; dokunma.' },
+  bogaKarincasi: { ad: 'Boğa karıncası', bilimsel: 'Myrmecia gulosa', grup: 'Böcek', yer: ['avOtlak', 'okaliptus', 'kuruDere'], zaman: 'gunduz', sik: 3, tarif: 'İki santimetreyi aşan, iri gözlü, uzun çeneli bir karınca. Görüşü çok iyidir; yuvasına yaklaşanı izleyip saldırır, iğnesi çok acıtır.' },
+  cevikValabi: { ad: 'Çevik valabi', bilimsel: 'Notamacropus agilis', grup: 'Memeli', yer: ['kuruDere', 'okaliptus', 'billabong'], zaman: 'alaca', sik: 3, tarif: 'Kırmızı kangurudan çok küçük, kumral bir valabi. Dere kıyılarının sık otlarında yaşar; tehlikede arka ayaklarını yere vurarak yakınındakileri uyarır.' },
+};
+for (const [id, c] of Object.entries(AVUSTRALYA_CANLILARI)) {
+  KUCUKLER[id] = { ...c, kutup: true, avustralya: true };
+  KUCUK_SIRASI.push(id);
+}
+export const AVUSTRALYA_KUCUKLERI = Object.keys(AVUSTRALYA_CANLILARI);
 
 // Dış halkanın küçük canlıları (15 Kasım 2026, harita genişlemesi): yalnız yeni bölgelerde bulunur
 const DIS_CANLILAR = {
@@ -333,4 +353,4 @@ const BOLGE_BENZER = { tepeler: 'kayalik', calilik: 'agaclik', baobab: 'otlak', 
 export const alanCanlilari = (alan) => KUCUK_SIRASI.filter((id) => KUCUKLER[id].alan === alan);
 
 // Aşama 17: gerçek sesi olan küçük canlılar (assets/efekt/k_<id>_0..4, 3B). App uzaktan duyulan çağrılarda ve bulununca çalar.
-export const KUCUK_SESLI = ['devekusu', 'tacliTurna', 'yerBoynuzgagasi', 'goAway', 'becTavugu', 'alacaYalicapkini', 'misirKazi', 'maviTurako', 'vervet', 'agustosBocegi', 'kayaHyraksi', 'cuceFiravunfaresi', 'puhu', 'cobanaldatan', 'galago', 'agacDamani', 'bogaKurbagasi', 'kamisKurbagasi', 'karaSirtliCakal', 'pabucGaga', 'turako', 'kolobus', 'papirusGonolegi', 'sykesMaymunu', 'sakalliFok', 'karBaykusu', 'kutupSumrusu', 'ucParmakliMarti', 'kucukAlk', 'kralEider', 'karKirazkusu', 'kuzgun', 'lemming', 'guneyDevPetreli', 'guneyKutupKarabatagi'];
+export const KUCUK_SESLI = ['devekusu', 'tacliTurna', 'yerBoynuzgagasi', 'goAway', 'becTavugu', 'alacaYalicapkini', 'misirKazi', 'maviTurako', 'vervet', 'agustosBocegi', 'kayaHyraksi', 'cuceFiravunfaresi', 'puhu', 'cobanaldatan', 'galago', 'agacDamani', 'bogaKurbagasi', 'kamisKurbagasi', 'karaSirtliCakal', 'pabucGaga', 'turako', 'kolobus', 'papirusGonolegi', 'sykesMaymunu', 'sakalliFok', 'karBaykusu', 'kutupSumrusu', 'ucParmakliMarti', 'kucukAlk', 'kralEider', 'karKirazkusu', 'kuzgun', 'lemming', 'guneyDevPetreli', 'guneyKutupKarabatagi', 'kookaburra', 'kakadu'];

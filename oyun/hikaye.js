@@ -196,7 +196,7 @@ export const GIZEMLER = {
   kutupSes: {
     ad: 'Buzun altındaki şarkı',
     giris: 'Kulübedeki su altı mikrofonu geceleri buzun altından gelen, inen sarmal ıslıklar kaydediyor. Saatlerce süren, hiç duyulmamış bir şarkı gibi. Bir balina mı, buzun kendi sesi mi?',
-    baslat: (k) => M.oyuncuKutupta(k) && !M.oyuncuGuneyde(k) && ['kis', 'ilkbahar'].includes(M.kutupMevsimi(k)),
+    baslat: (k) => M.oyuncuKutupta(k) && !M.oyuncuGuneyde(k) && !M.oyuncuAvustralyada(k) && ['kis', 'ilkbahar'].includes(M.kutupMevsimi(k)),
     adimlar: [
       { metin: 'Donmuş denize, deniz buzunun üstüne çık. Yerler menüsünde Deniz buzu var.', tamam: (d) => M.oyuncuKutupta(d.k) && !M.oyuncuGuneyde(d.k) && Kt.yuzey(d.oyuncu.x, d.oyuncu.y, d.k.dk) === 'buz', sonra: 'Buzun üstünde, ayaklarının altından gelen titrek ıslığı neredeyse hissediyorsun. Ses buzdaki açıklıklara yakın yerde daha güçlü.' },
       { metin: 'Buzun kalınlığını ölç; ses buzun inceldiği yerlerden yükseliyor (Doğa menüsü, Deniz buzunu ölç).', tamam: (d, g) => ((d.k.kutup && d.k.kutup.buz) || []).some((b) => b.dk >= g.bas), sonra: 'Buz kalınlığı sesin geçmesine izin veriyor; şarkı buzun kenarındaki açık suya, polinyaya doğru güçleniyor.' },
@@ -215,6 +215,17 @@ export const GIZEMLER = {
       { metin: 'Denizde penguenlerin besinini bul: buz kenarında ya da polinyada küçük canlı ara.', tamam: (d) => !!(d.k.arsiv.kucukler || {}).antKrili },
     ],
     cozum: 'Adélie penguenleri neredeyse yalnızca krille beslenir; kril de kışı deniz buzunun altındaki alglerle geçirir. Geçen kış deniz buzu az ve kısa ömürlü olunca kril azaldı, penguenler yavrularını besleyecek kadar yiyecek bulamadı. Koloninin küçülmesi buzun azalmasının bir işareti.',
+    odul: { itibar: 12, fon: 3000 },
+  },
+  billabongGolgesi: {
+    ad: 'Billabongdaki halkalar',
+    giris: 'İstasyonun defterine göre alacakaranlıkta billabongun yüzeyinde küçük halkalar beliriyor, bir şey hızla dalıp çıkıyor. Ne balık ne kuş gibi. Peki ne?',
+    baslat: (k) => M.oyuncuAvustralyada(k),
+    adimlar: [
+      { metin: 'Şafakta ya da akşam karanlığında billabonga git. Yerler menüsünde Billabong var.', tamam: (d) => M.oyuncuAvustralyada(d.k) && Kt.bolge(d.oyuncu.x, d.oyuncu.y, d.k.dk) === 'billabong' && ['safak', 'aksam'].includes(M.evreSimdi(d.k)), sonra: 'Suyun yüzünde gerçekten küçük halkalar var; ardından bir ses: su altından bir şey yüzeye çıkıp soluk alıyor.' },
+      { metin: 'Kıyıda sessizce bekleyip küçük canlı ara (Doğa menüsü, Küçük canlı ara).', tamam: (d) => !!(d.k.arsiv.kucukler || {}).ornitorenk },
+    ],
+    cozum: 'Halkaların sahibi ornitorenk: ördek gagalı, yumurtlayan bir memeli. Su altında gözlerini ve kulaklarını kapatıp gagasıyla avının kaslarındaki küçük elektrik akımlarını algılar. Alacakaranlıkta beslendiği için çok az insan görür.',
     odul: { itibar: 12, fon: 3000 },
   },
   kacak: {

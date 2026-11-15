@@ -525,6 +525,42 @@ export const BITKILER = {
     tohum: [false, false, false, false],
     analiz: 'Yılda yalnızca birkaç milimetre büyüyor; çapından kayanın buzdan ne zaman kurtulduğu hesaplanabiliyor. Antarktika kayalarında yüzlerce yaşında likenler var.',
   },
+  // ---- Avustralya çalılığı (avustralya: true; mevsimleri güney takvimine göre) ----
+  nehirOkaliptusu: {
+    ad: 'Nehir kırmızı okaliptüsü', bilimsel: 'Eucalyptus camaldulensis', bicim: 'ağaç', bolge: ['kuruDere', 'billabong', 'okaliptus'], ozellik: 'su', kutup: true, avustralya: true,
+    tarif: 'Dere yataklarını sıralayan, beyaz ve gri benekli gövdeli dev bir okaliptüs. Kökleri derin yeraltı suyuna ulaşır; taşkınlarda haftalarca suda kalabilir.',
+    evre: ['muson yağmurlarıyla yeni yapraklar sürmüş', 'kabuğunu şeritler hâlinde döküyor', 'kuraklıkta yaprakları sarkık, gölgesi hayvanlarla dolu', 'kremsi çiçekler açmış; kuşlar ve yarasalar nektarını içiyor'],
+    tohum: [false, true, false, false],
+    analiz: 'Kovukları papağanların, kookaburraların ve yarasaların yuvası. Dere boyundaki bu ağaçlar olmasa billabong kıyısı yazın kavrulurdu.',
+  },
+  spinifex: {
+    ad: 'Spinifex', bilimsel: 'Triodia', bicim: 'ot', bolge: ['spinifex', 'avTermit'], ozellik: 'besin', kutup: true, avustralya: true,
+    tarif: 'Tepecikler hâlinde büyüyen, iğne gibi sert yapraklı bir çöl otu. Kum ve rüzgârı tutar; içi kertenkelelere ve küçük keselilere sığınak olur.',
+    evre: ['yağmurla yeşermiş, başaklanmış', 'tohumlarını döküyor', 'kuru ve reçineli; yangına çok yatkın', 'kuru tepeciklerin dibinden yeni sürgünler'],
+    tohum: [false, true, false, false],
+    analiz: 'Yapraklarındaki reçine Aborjin halklarının yapıştırıcısıydı. Spinifex yangından sonra köklerinden hızla yeniden sürer.',
+  },
+  mitchellOtu: {
+    ad: 'Mitchell otu', bilimsel: 'Astrebla lappacea', bicim: 'ot', bolge: ['avOtlak', 'avUs'], ozellik: 'besin', kutup: true, avustralya: true,
+    tarif: 'İç kesimlerin kurağa dayanıklı, besleyici yem otu. Kanguru sürülerinin başlıca besini.',
+    evre: ['yemyeşil ve gür; kangurular yavrularını büyütüyor', 'başakları olgunlaşmış', 'saman rengi, kuru ama yine de besleyici', 'kök boğazından taze sürgünler'],
+    tohum: [false, true, false, false],
+    analiz: 'Kurakta kuruyup "ayakta saman" olur, besin değerini kaybetmez; bu sayede otlak kuraklıkta da hayvanları besler.',
+  },
+  mulga: {
+    ad: 'Mulga akasyası', bilimsel: 'Acacia aneura', bicim: 'ağaç', bolge: ['avOtlak', 'kumtasi', 'spinifex'], ozellik: 'besin', kutup: true, avustralya: true,
+    tarif: 'Yaprakları yağmuru gövdeye doğru akıtan, huni gibi dallı küçük bir akasya. Kuraklıkta hayvanların yaprak yediği son ağaçtır.',
+    evre: ['yağmur suyunu köklerine topluyor', 'kanatlı tohumlu baklalar sarkıyor', 'gri yapraklarıyla kuraklığa dayanıyor', 'altın sarısı çiçek başakları açmış'],
+    tohum: [false, true, false, false],
+    analiz: 'Kökleri havadaki azotu bağlayan bakterilerle yaşar; mulga altındaki toprak çevresinden daha verimli ölçülür.',
+  },
+  nilufer: {
+    ad: 'Mavi nilüfer', bilimsel: 'Nymphaea violacea', bicim: 'su bitkisi', bolge: ['billabong'], ozellik: 'su', kutup: true, avustralya: true,
+    tarif: 'Billabongun yüzeyini kaplayan yuvarlak yapraklı, mor-mavi çiçekli bir nilüfer. Jakanalar yapraklarının üstünde yürür.',
+    evre: ['su yüzeyi çiçeklerle kaplı', 'tohum kapsülleri suya gömülüyor', 'su çekildi; yumru kökleriyle çamurda bekliyor', 'ilk yapraklar suyun yüzüne çıkıyor'],
+    tohum: [false, true, false, false],
+    analiz: 'Yaprakları suyu gölgeleyip sıcağı azaltıyor; billabongun yazın balıklar için yaşanabilir kalmasına yardım ediyor.',
+  },
   antBuzAlgi: {
     ad: 'Deniz buzu diatomları', bilimsel: 'Fragilariopsis cylindrus', bicim: 'alg', bolge: ['antBuz', 'antPolinya'], ozellik: 'besin', kutup: true, guney: true,
     tarif: 'Deniz buzunun alt yüzünü kahverengiye boyayan tek hücreli algler. Kışın krillerin başlıca besini.',
@@ -543,7 +579,7 @@ export const KUTUP_EVRE_ADI = { yE: 'kutup yazı', yG: 'sonbahar', kE: 'kutup k�
 export const OZELLIK_ADI = { besin: 'önemli bir besin bitkisi', su: 'suyu temizleyen bir bitki', zehirli: 'zehirli', 'şifalı': 'şifalı' };
 export function bitkiEvresi(id, gun, eko) {
   if (BITKILER[id].kutup) {
-    const i = kutupEvreNo(gun + (BITKILER[id].guney ? 12 : 0)); // güney yarıkürede mevsimler tersine
+    const i = kutupEvreNo(gun + (BITKILER[id].guney || BITKILER[id].avustralya ? 12 : 0)); // güney yarıkürede mevsimler tersine
 
     return { anahtar: ['yE', 'yG', 'kE', 'kG'][i], mevsim: ['yaz', 'sonbahar', 'kis', 'ilkbahar'][i], metin: BITKILER[id].evre[i], tohum: BITKILER[id].tohum[i] };
   }
@@ -624,6 +660,11 @@ export const YASAM = {
   leoparFoku: { yavru: 1, genc: 4, yasli: 20, omur: 26 },
   orka: { yavru: 2, genc: 10, yasli: 45, omur: 60 },
   filFoku: { yavru: 1, genc: 4, yasli: 16, omur: 20 },
+  kirmiziKanguru: { yavru: 0.5, genc: 2, yasli: 12, omur: 16 },
+  koala: { yavru: 0.6, genc: 2, yasli: 11, omur: 14 },
+  emu: { yavru: 0.5, genc: 2, yasli: 12, omur: 16 },
+  vombat: { yavru: 0.7, genc: 2, yasli: 13, omur: 17 },
+  dingo: { yavru: 0.5, genc: 1, yasli: 8, omur: 11 },
 };
 export const yilGun = (yil) => yil * YIL_GUN;
 export function evreBul(tur, yasGun) {
