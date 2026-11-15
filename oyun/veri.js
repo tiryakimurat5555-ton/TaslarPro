@@ -29,6 +29,8 @@ export const ANTARKTIKA = { x: 0, y: -6000, r: 230 };
 export const AVUSTRALYA = { x: 6000, y: 0, r: 230 };
 // Hindistan ormanı (Kanha, Orta Hindistan): savanın çok batısında, sal ormanı, çayır ve göl; beşinci ana harita (kutup.js HIND)
 export const HINDISTAN = { x: -6000, y: 0, r: 230 };
+// Moğol bozkırı (Hustai, Orta Moğolistan): savanın çok kuzeybatısında, uçsuz bucaksız bozkır, kayalık dağ, pınar ve kum tepeleri; altıncı ana harita (kutup.js MOGOL)
+export const MOGOLISTAN = { x: -6000, y: 6000, r: 230 };
 export const MAGARA = { x: -128, y: 64 };
 
 // ---------- Dış halkanın bölgeleri (15 Kasım 2026, harita genişlemesi) ----------
@@ -133,6 +135,13 @@ export const BOLGE_ADLARI = {
   talab: 'Göl kıyısı',
   dadar: 'Kayalık yayla (dadar)',
   hnDere: 'Dere yatağı',
+  // Moğol bozkırı
+  mgUs: 'Ger kampı',
+  bozkir: 'Açık bozkır',
+  mgDag: 'Kayalık dağ',
+  pinar: 'Pınar ve sazlık',
+  kumul: 'Kum tepeleri',
+  mgDere: 'Kuru dere yatağı',
   avUs: 'Saha istasyonu',
   billabong: 'Billabong',
   kuruDere: 'Kuru dere yatağı',
@@ -236,6 +245,12 @@ export const DAVRANISLAR = {
   dallardaBesleniyor: { fiil: 'ağacın dallarında yaprak ve meyve yiyor; yere düşürdükleri yaprakları altında bekleyen geyikler topluyor', ad: 'Ağaçta beslenme' },
   sudaOtluyor: { fiil: 'göle karnına kadar girmiş, su bitkilerini yiyor', ad: 'Suda otlama', nadir: true },
   kokuIsaretliyor: { fiil: 'ağaç gövdesine yanağını sürtüp pençeleriyle kabuğu tırmalıyor; bölgesini işaretliyor', ad: 'Bölge işaretleme', nadir: true },
+  // Moğol bozkırı
+  tozBanyosu: { fiil: 'yere yatıp sırt üstü yuvarlanıyor; toz banyosuyla tüylerindeki sinekleri ve parazitleri atıyor', ad: 'Toz banyosu' },
+  karKaziyor: { fiil: 'ön toynağıyla karı kazıp altındaki kuru otlara ulaşıyor', ad: 'Kar kazıp otlama', nadir: true },
+  haremKoruyor: { fiil: 'kulaklarını geri yatırıp başını yere eğmiş; kısraklarını bir araya topluyor, yaklaşan genç aygırı uzaklaştırıyor', ad: 'Harem koruma', nadir: true },
+  boynuzCarpisiyor: { fiil: 'rakibiyle karşılıklı şaha kalkıp kıvrık boynuzlarını gürültüyle çarpıştırıyor; ses vadide yankılanıyor', ad: 'Boynuz çarpışması', nadir: true },
+  kayadaBekliyor: { fiil: 'kayalığın kenarında, rengi taşlarla neredeyse aynı, kımıldamadan aşağıyı izliyor', ad: 'Kayalıkta gözetleme' },
   // Avustralya
   boksYapiyor: { fiil: 'kuyruğuna yaslanıp rakibiyle ön ayaklarıyla güreşiyor, arka ayaklarıyla tekme savuruyor', ad: 'Kanguru boksu', nadir: true },
   golgedeYatiyor: { fiil: 'öğle sıcağında bir ağacın gölgesine uzanmış, ön kollarını yalayarak serinliyor', ad: 'Gölgede serinleme' },
@@ -550,9 +565,51 @@ Object.assign(TURLER, {
     tarif: 'Gri tüylü, siyah yüzlü, uzun kuyruklu bir maymun. Gününün çoğunu ağaçlarda yaprak, çiçek ve meyve yiyerek geçirir. Ağaçtan çevreyi iyi görür; kaplanı ya da leoparı fark edince yüksek sesle alarm verir, bunu duyan geyikler de kaçar.',
   },
 });
+// ---------- Moğol bozkırı türleri (kutup: true harita altyapısı, mogol: true; habitatlar MOGOLISTAN merkezine göre) ----------
+const MX = -6000;
+const MY = 6000;
+Object.assign(TURLER, {
+  takhi: {
+    ad: 'Przewalski Atı (Takhi)', bilimsel: 'Equus ferus przewalskii', kisa: 'TKH', sinif: 'Memeli', ses: 'takhi', sekil: 'zebra', boy: 0.95, renk: '#b88a52', kutup: true, mogol: true,
+    hiz: 13, aktif: 'karma', kacis: 45, sesSik: 110, sesTuru: 'iletisim',
+    habitat: { x: MX + 20, y: MY + 10, r: 110 }, grup: [6, 10], erkekOran: 0.25,
+    tarif: 'Yeryüzünde kalan tek gerçek yaban atı. Kısa ve tıknaz, kum renginde; yelesi dik, bacakları dizden aşağı koyu. Doğada tükenmişti; hayvanat bahçelerinde yaşayan son bireylerden üretilip 1990\'larda bu bozkıra geri bırakıldı. Bir aygır, birkaç kısrak ve taylardan oluşan haremler hâlinde yaşar.',
+  },
+  karLeopari: {
+    ad: 'Kar Leoparı', bilimsel: 'Panthera uncia', kisa: 'KLP', sinif: 'Memeli', ses: 'karleopari', sekil: 'kedi', boy: 0.95, renk: '#c8c4b8', kutup: true, mogol: true,
+    hiz: 13, aktif: 'karma', kacis: 60, yirtici: true, avlar: ['argali', 'dzeren'], sesSik: 220, sesTuru: 'bolge',
+    habitat: { x: MX - 125, y: MY + 115, r: 55 }, grup: [1, 1], erkekOran: 0.5,
+    tarif: '"Dağların hayaleti": dumanlı gri, koyu halka benekli tüyleri kayalarla neredeyse aynı renkte. Kalın, gövdesi kadar uzun kuyruğunu denge için kullanır, uyurken burnuna sarar. Kükreyemez; çok ürkek ve yalnızdır, dağ keçilerini ve yaban koyunlarını yamaçtan atlayarak yakalar.',
+  },
+  saiga: {
+    ad: 'Saiga Antilobu', bilimsel: 'Saiga tatarica mongolica', kisa: 'SAG', sinif: 'Memeli', ses: 'saiga', sekil: 'ceylan', boy: 0.85, renk: '#c8a878', kutup: true, mogol: true,
+    hiz: 14, aktif: 'gunduz', kacis: 55, sesSik: 160, sesTuru: 'alarm',
+    habitat: { x: MX + 110, y: MY - 90, r: 90 }, grup: [8, 14], erkekOran: 0.3,
+    tarif: 'Hortum gibi sarkık, şişkin burnu olan tuhaf görünüşlü bir antilop. Burnu yazın tozu süzer, kışın soğuk havayı ısıtır. Erkeklerin balmumu renginde kısa boynuzları vardır. Çok hızlı koşar; dişiler ilkbaharda aynı günlerde topluca doğurur.',
+  },
+  mogolKurdu: {
+    ad: 'Moğol Kurdu', bilimsel: 'Canis lupus chanco', kisa: 'MKR', sinif: 'Memeli', ses: 'mogolkurdu', sekil: 'kurt', boy: 0.85, renk: '#a8987a', kutup: true, mogol: true,
+    hiz: 13, aktif: 'karma', kacis: 55, yirtici: true, avlar: ['dzeren', 'saiga', 'takhi', 'argali'], sesSik: 100, sesTuru: 'bolge',
+    habitat: { x: MX - 40, y: MY - 40, r: 140 }, grup: [3, 5], erkekOran: 0.5,
+    tarif: 'Bozkırın kurdu: açık kahverengi-gri, kışın kalın tüylü. Sürüyle ceylanları ve antilopları kilometrelerce kovalar, zayıf ve yaşlı olanı ayırır. Göçebe çobanların hikâyelerinde hem korkulan hem saygı duyulan hayvandır.',
+  },
+  dzeren: {
+    ad: 'Moğol Ceylanı (Dzeren)', bilimsel: 'Procapra gutturosa', kisa: 'DZR', sinif: 'Memeli', ses: 'dzeren', sekil: 'ceylan', boy: 0.8, renk: '#d0ae7a', kutup: true, mogol: true,
+    hiz: 15, aktif: 'gunduz', kacis: 60, sesSik: 160, sesTuru: 'alarm',
+    habitat: { x: MX + 60, y: MY + 40, r: 120 }, grup: [10, 16], erkekOran: 0.35,
+    tarif: 'Bozkırda on binlerce bireylik sürüler hâlinde göç eden açık sarı bir ceylan; arkasında beyaz bir kuyruk lekesi var. Saatte 60 kilometreyi aşan hızıyla kurtlardan kaçar. Erkeklerin boğazı kur döneminde guatr gibi şişer.',
+  },
+  argali: {
+    ad: 'Argali (Yaban Koyunu)', bilimsel: 'Ovis ammon', kisa: 'ARG', sinif: 'Memeli', ses: 'argali', sekil: 'ceylan', boy: 1.15, renk: '#8a6a4a', kutup: true, mogol: true,
+    hiz: 11, aktif: 'gunduz', kacis: 55, sesSik: 200, sesTuru: 'iletisim',
+    habitat: { x: MX - 110, y: MY + 95, r: 60 }, grup: [4, 8], erkekOran: 0.4,
+    tarif: 'Dünyanın en iri yaban koyunu. Erkeklerin kocaman, sarmal kıvrık boynuzları tek başına 20 kilogramı bulur. Kayalık yamaçlarda yaşar; sonbaharda erkekler şaha kalkıp boynuzlarını çarpıştırarak dövüşür, sesi vadide yankılanır.',
+  },
+});
 export const TUR_SIRASI = Object.keys(TURLER).filter((t) => !TURLER[t].kutup);
-export const KUTUP_SIRASI = Object.keys(TURLER).filter((t) => TURLER[t].kutup && !TURLER[t].guney && !TURLER[t].avustralya && !TURLER[t].hindistan);
+export const KUTUP_SIRASI = Object.keys(TURLER).filter((t) => TURLER[t].kutup && !TURLER[t].guney && !TURLER[t].avustralya && !TURLER[t].hindistan && !TURLER[t].mogol);
 export const HINDISTAN_SIRASI = Object.keys(TURLER).filter((t) => TURLER[t].hindistan);
+export const MOGOL_SIRASI = Object.keys(TURLER).filter((t) => TURLER[t].mogol);
 export const AVUSTRALYA_SIRASI = Object.keys(TURLER).filter((t) => TURLER[t].avustralya);
 export const ANTARKTIKA_SIRASI = Object.keys(TURLER).filter((t) => TURLER[t].guney);
 

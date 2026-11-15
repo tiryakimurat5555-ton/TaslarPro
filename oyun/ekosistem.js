@@ -547,6 +547,28 @@ export const BITKILER = {
     tohum: [false, true, false, false],
     analiz: 'Çiçeklerin şeker oranı çok yüksek; kavurucu yazın başında ormanın en önemli besin kaynaklarından biri.',
   },
+  // ---- Moğol bozkırı (mogol: true; mevsimler bozkır yazı, sonbahar, sert kış, rüzgârlı ilkbahar) ----
+  tuyluOt: {
+    ad: 'Tüylü sorguç otu', bilimsel: 'Stipa krylovii', bicim: 'ot', bolge: ['bozkir', 'mgUs', 'mgDere'], ozellik: 'besin', kutup: true, mogol: true,
+    tarif: 'Bozkırın asıl otu: ince, sert yapraklı tutamlar hâlinde büyür, rüzgârda gümüşi dalgalar yapar. Atların, ceylanların ve antilopların başlıca besini.',
+    evre: ['yemyeşil ve boylu; tüylü uzun kılçıkları rüzgârda savruluyor', 'sararmış; tohumlarını rüzgâra bırakıyor', 'kuru ve karın altında; hayvanlar karı kazıp onu yiyor', 'yeni yeşil sürgünler kuru tutamların arasından çıkıyor'],
+    tohum: [true, true, false, false],
+    analiz: 'Kuru otun bile besin değeri yüksek; kurumuş hâliyle de kışın bütün otçulları taşıyor. Aşırı otlatılan yerlerde yerini acı otlara bırakıyor.',
+  },
+  bozkirPelini: {
+    ad: 'Bozkır pelini', bilimsel: 'Artemisia frigida', bicim: 'çalı', bolge: ['bozkir', 'kumul', 'mgDag'], ozellik: 'ilac', kutup: true, mogol: true,
+    tarif: 'Gümüşi yapraklı, keskin kokulu küçük bir çalı. Ezince ortalığa bir ilaç kokusu yayılır. Göçebeler onu gerlerinde tütsü olarak yakar.',
+    evre: ['gümüşi yaprakları gür', 'küçük sarı çiçekleri açmış', 'kurumuş, karın altında kokusunu koruyor', 'yeniden sürüyor'],
+    tohum: [false, true, false, false],
+    analiz: 'Yapraklarındaki acı maddeler böcekleri uzak tutuyor. Kışın aç kalan otçullar ondan da yiyor; bazı hayvanlarda bağırsak parazitlerini azaltıyor olabilir.',
+  },
+  sibiryaKayisisi: {
+    ad: 'Sibirya kayısısı', bilimsel: 'Prunus sibirica', bicim: 'çalı', bolge: ['mgDag', 'mgDere'], ozellik: 'besin', kutup: true, mogol: true,
+    tarif: 'Kayalık yamaçlarda büyüyen, soğuğa çok dayanıklı küçük bir kayısı ağacı. İlkbaharda yaprak açmadan pembe-beyaz çiçeklerle örtülür.',
+    evre: ['küçük, ekşi meyveleri olgunlaşıyor', 'yaprakları kızıla döndü', 'çıplak dalları karla kaplı', 'yapraksız dallarında pembe-beyaz çiçekler'],
+    tohum: [true, false, false, false],
+    analiz: 'Meyvelerini kemirgenler ve kuşlar taşıyıp saklıyor; yamaçtaki kayısıların çoğu unutulmuş saklama yerlerinden çıkmış.',
+  },
   // ---- Avustralya çalılığı (avustralya: true; mevsimleri güney takvimine göre) ----
   nehirOkaliptusu: {
     ad: 'Nehir kırmızı okaliptüsü', bilimsel: 'Eucalyptus camaldulensis', bicim: 'ağaç', bolge: ['kuruDere', 'billabong', 'okaliptus'], ozellik: 'su', kutup: true, avustralya: true,
@@ -693,6 +715,12 @@ export const YASAM = {
   sambar: { yavru: 0.6, genc: 2, yasli: 12, omur: 16 },
   gaur: { yavru: 1, genc: 3, yasli: 16, omur: 22 },
   langur: { yavru: 0.8, genc: 3, yasli: 15, omur: 20 },
+  takhi: { yavru: 1, genc: 3, yasli: 18, omur: 25 },
+  karLeopari: { yavru: 1, genc: 2, yasli: 12, omur: 16 },
+  saiga: { yavru: 0.5, genc: 1, yasli: 7, omur: 10 },
+  mogolKurdu: { yavru: 0.6, genc: 1.5, yasli: 9, omur: 13 },
+  dzeren: { yavru: 0.5, genc: 1.5, yasli: 9, omur: 12 },
+  argali: { yavru: 0.8, genc: 3, yasli: 10, omur: 14 },
 };
 export const yilGun = (yil) => yil * YIL_GUN;
 export function evreBul(tur, yasGun) {

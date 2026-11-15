@@ -7,7 +7,7 @@
 // Her harita aynı arayüzü sunar (haritaYap). Konum alan işlevler (yuzey, bolge, sudaMi...) noktanın hangi haritada olduğunu kendisi bulur;
 // yalnız zaman alan işlevlerin (isik, evre, buzKenari, kutupTakvim...) üst düzey sürümleri Kuzey içindir: Antarktika için harita(p).isik(dk).
 // Saf modül: yalnızca veri.js ve ekosistem.js'i kullanır. Sayılar ÖNERİDİR.
-import { KUTUP, ANTARKTIKA, AVUSTRALYA, HINDISTAN } from './veri.js';
+import { KUTUP, ANTARKTIKA, AVUSTRALYA, HINDISTAN, MOGOLISTAN } from './veri.js';
 import { YIL_GUN } from './ekosistem.js';
 
 function haritaYap(c) {
@@ -465,18 +465,110 @@ export const HIND = haritaYap({
   TIPI_SANSI: { yaz: 0, sonbahar: 0, kis: 0, ilkbahar: 0 },
 });
 
-export const HARITALAR = { kuzey: KUZEY, guney: GUNEY, avustralya: AVUS, hindistan: HIND };
+// =====================================================================
+// MOĞOL BOZKIRI: Hustai (Orta Moğolistan). Ortada ger kampı ve uçsuz bucaksız bozkır, kuzeydoğuda pınar ve sazlık (tek su), batıya
+// uzanan kuru dere yatağı, kuzeybatıda kayalık dağ (kar leoparı ve argali), güneydoğuda Gobi'nin kenarındaki kum tepeleri.
+// Mevsimler: kısa yeşil yaz, sonbahar, sert kış (−30 dereceye iner, kar fırtınası "buran"), rüzgârlı ilkbahar (toz fırtınası, doğumlar).
+// Kayma yok. Buz ve kutup ışığı yoktur; kışın kar yağar (sicak bayrağı burada "kutup buzu yok" demektir).
+// =====================================================================
+const PINAR = { lx: 60, ly: 40, r: 12 };
+const mgDereY = (lx) => 34 + 9 * Math.sin(lx / 40) + 3 * Math.sin(lx / 11 + 2);
+const DAG = { lx: -120, ly: 110, r: 75 };
+const KUMUL = { lx: 130, ly: -120, r: 58 };
+const ISTASYON_M = { lx: 0, ly: -40, r: 9 };
+export const MOGOL = haritaYap({
+  ad: 'mogol',
+  baslik: 'Moğol bozkırı',
+  merkez: MOGOLISTAN,
+  kayma: 0,
+  sicak: true,
+  aurora: false,
+  buzYok: true,
+  kiyiY: () => 9999,
+  buzTaban: 0,
+  ISTASYON_K: ISTASYON_M,
+  BUZUL: { lx0: -9999, lx1: -9998 },
+  POLINYA: PINAR,
+  ozel: { PINAR, DAG, KUMUL, mgDereY },
+  MEVSIM_ADI: { yaz: 'bozkır yazı', sonbahar: 'sonbahar', kis: 'sert Moğol kışı', ilkbahar: 'rüzgârlı ilkbahar' },
+  BOLGE_ADLARI_K: { mgUs: 'Ger kampı', bozkir: 'Açık bozkır', mgDag: 'Kayalık dağ', pinar: 'Pınar ve sazlık', kumul: 'Kum tepeleri', mgDere: 'Kuru dere yatağı' },
+  istasyonBolgesi: 'mgUs',
+  bolge(H, lx, ly) {
+    if (Math.hypot(lx - ISTASYON_M.lx, ly - ISTASYON_M.ly) < ISTASYON_M.r + 12) return 'mgUs';
+    if (Math.hypot(lx - PINAR.lx, ly - PINAR.ly) < PINAR.r + 10) return 'pinar';
+    if (Math.hypot(lx - DAG.lx, ly - DAG.ly) < DAG.r) return 'mgDag';
+    if (lx < PINAR.lx - 12 && Math.abs(ly - mgDereY(lx)) < 6) return 'mgDere';
+    if (Math.hypot(lx - KUMUL.lx, ly - KUMUL.ly) < KUMUL.r) return 'kumul';
+    return 'bozkir';
+  },
+  yuzey: (H, lx, ly) => (Math.hypot(lx - PINAR.lx, ly - PINAR.ly) < PINAR.r ? 'su' : 'kara'),
+  enYakinSu: (H, x, y) => {
+    const m = H.dunya(PINAR.lx, PINAR.ly);
+    const a = Math.atan2(x - m.x, y - m.y);
+    return { x: m.x + Math.sin(a) * (PINAR.r - 1), y: m.y + Math.cos(a) * (PINAR.r - 1) };
+  },
+  gunIsigi: (f) => (f < 8 ? 16 : f < 12 ? 16 - ((f - 8) / 4) * 7 : f < 20 ? 9 : 9 + ((f - 20) / 4) * 7),
+  isikSozu: (H, dk) => {
+    const l = H.isik(dk);
+    const s = (((dk % 1440) + 1440) % 1440) / 60;
+    const kis = H.kutupTakvim(Math.floor(dk / 1440) + 1).mevsim === 'kis';
+    if (l >= 0.5) return s > 11 && s < 15 ? (kis ? 'Güneş alçak ama gökyüzü masmavi; karın üstünde göz alıcı bir parıltı var.' : 'Güneş tepede; bozkırın üstünde koca, masmavi bir gökyüzü. Moğollar ona "Sonsuz Mavi Gök" der.') : 'Açık, aydınlık bir gündüz; ufuk çok uzakta.';
+    if (l >= 0.12) return s < 12 ? 'Şafak: ufuk pembeleşiyor, tarlakuşları ötmeye başlıyor; hava çok soğuk.' : 'Akşam: güneş bozkırın sonsuz düzlüğünde batıyor, gölgeler yüzlerce metre uzuyor.';
+    return 'Gece: hiç ışık yok; gökyüzü yıldızlarla dolu, Samanyolu ufuktan ufka uzanıyor.';
+  },
+  havaUret: (H, gun, rng) => {
+    const t = H.kutupTakvim(gun);
+    const [a, b] = { yaz: [14, 28], sonbahar: [-4, 12], kis: [-32, -12], ilkbahar: [-6, 12] }[t.mevsim];
+    const sicaklik = Math.round(a + rng() * (b - a));
+    const r = rng();
+    let tur = 'acik';
+    if (t.mevsim === 'yaz' && r < 0.22) tur = 'yagmurlu';
+    else if (t.mevsim === 'kis' && r < 0.14) tur = 'tipi';
+    else if (t.mevsim !== 'yaz' && r < 0.32) tur = 'kar';
+    else if (t.mevsim === 'ilkbahar' && r < 0.55) tur = 'toz';
+    else if (r < 0.62) tur = 'bulutlu';
+    const h = { gun, tur, sicaklik, ruzgarYon: rng() < 0.65 ? Math.PI * 1.75 + (rng() - 0.5) * 0.7 : rng() * Math.PI * 2, ruzgarHiz: tur === 'tipi' ? 3.4 : tur === 'toz' ? 3 : 0.8 + rng() * 1.8 };
+    if (tur === 'tipi') {
+      const bas = Math.floor(rng() * 16) * 60;
+      h.tipi = { bas, bit: bas + 240 + Math.floor(rng() * 300) };
+    }
+    return h;
+  },
+  havaSozu: (h) => {
+    if (!h) return '';
+    const r = h.ruzgarHiz > 2.5 ? 'sert' : h.ruzgarHiz > 1.2 ? 'orta' : 'hafif';
+    const t = { acik: 'Hava açık', bulutlu: 'Gökyüzü bulutlu', yagmurlu: 'Kısa, sert bir yaz sağanağı yağıyor', kar: 'İnce, kuru kar yağıyor', tipi: 'Buran: rüzgâr karı yatay savuruyor, birkaç metre ötesi görünmüyor', toz: 'Gobi\'den gelen toz fırtınası; gökyüzü sarıya döndü' }[h.tur] || 'Hava açık';
+    return `${t}, ${h.sicaklik} derece, ${r} rüzgâr.`;
+  },
+  besin: (H, dk) => {
+    const m = H.kutupTakvim(Math.floor(dk / 1440) + 1).mevsim;
+    return { yaz: 1, sonbahar: 0.75, kis: 0.4, ilkbahar: 0.55 }[m];
+  },
+  YERLER: [
+    { id: 'm_ger', ad: 'Ger kampı', lx: 0, ly: -26, tarif: 'Keçe kaplı, yuvarlak beyaz çadırlardan (ger) oluşan araştırma kampı. Ortadaki gerin sobası gece gündüz yanar; dışarıda güneş paneli ve bir rüzgâr türbini var.' },
+    { id: 'm_bozkir', ad: 'Açık bozkır', lx: 40, ly: -100, tarif: 'Ufka kadar uzanan, ağaçsız, otlu düzlük. Ceylan sürüleri ve yaban atı haremleri burada otlar; kurtlar onları buradan izler.' },
+    { id: 'm_pinar', ad: 'Pınar ve sazlık', lx: PINAR.lx - PINAR.r - 6, ly: PINAR.ly - 6, tarif: 'Bozkırın ortasında yıl boyu akan küçük bir pınar ve çevresinde sazlık. Bütün hayvanlar su içmeye buraya gelir; kışın donar, yalnızca kaynağın ağzı açık kalır.' },
+    { id: 'm_dere', ad: 'Kuru dere yatağı', lx: -40, ly: mgDereY(-40) - 8, tarif: 'Yazın birkaç gün akan, sonra kuruyan çakıllı bir dere yatağı. İzleri okumak için iyi bir yer.' },
+    { id: 'm_dag', ad: 'Kayalık dağın eteği', lx: DAG.lx + DAG.r * 0.7, ly: DAG.ly - DAG.r * 0.7, tarif: 'Granit kayalıkların başladığı yer. Yukarıda argali yaban koyunları ve onları izleyen kar leoparı yaşar; leopar kayalarla aynı renkte, görmek çok zordur.' },
+    { id: 'm_kumul', ad: 'Kum tepeleri', lx: KUMUL.lx - KUMUL.r - 4, ly: KUMUL.ly + 10, tarif: 'Gobi Çölü\'nün kuzey kenarındaki kum tepeleri. Rüzgâr kumu sürekli yeniden şekillendirir; saiga antilopları çevresinde dolaşır.' },
+  ],
+  SICAKLIK: { yaz: [14, 28], sonbahar: [-4, 12], kis: [-32, -12], ilkbahar: [-6, 12] },
+  TIPI_SANSI: { yaz: 0, sonbahar: 0, kis: 0.14, ilkbahar: 0 },
+});
+
+export const HARITALAR = { kuzey: KUZEY, guney: GUNEY, avustralya: AVUS, hindistan: HIND, mogol: MOGOL };
 // Noktanın kutup haritası (yoksa null)
-export const haritaBul = (p) => (p ? (KUZEY.noktaMi(p) ? KUZEY : GUNEY.noktaMi(p) ? GUNEY : AVUS.noktaMi(p) ? AVUS : HIND.noktaMi(p) ? HIND : null) : null);
+export const haritaBul = (p) => (p ? (KUZEY.noktaMi(p) ? KUZEY : GUNEY.noktaMi(p) ? GUNEY : AVUS.noktaMi(p) ? AVUS : HIND.noktaMi(p) ? HIND : MOGOL.noktaMi(p) ? MOGOL : null) : null);
 // Noktanın kutup haritası; kutupta değilse Kuzey (eski çağrılar için)
 export const harita = (p) => haritaBul(p) || KUZEY;
 
 // ---------- Geriye uyumlu üst düzey adlar ----------
 // Konum alanlar noktanın haritasını kendisi bulur; yalnız zaman alanlar Kuzey içindir.
 export const KUTUP_SINIR = KUTUP.y - 600;
-export const kutuptaMi = (x, y) => KUZEY.icinde(x, y) || GUNEY.icinde(x, y) || AVUS.icinde(x, y) || HIND.icinde(x, y);
+export const kutuptaMi = (x, y) => KUZEY.icinde(x, y) || GUNEY.icinde(x, y) || AVUS.icinde(x, y) || HIND.icinde(x, y) || MOGOL.icinde(x, y);
 export const avustralyaMi = (p) => AVUS.noktaMi(p);
 export const hindistanMi = (p) => HIND.noktaMi(p);
+export const mogolMu = (p) => MOGOL.noktaMi(p);
 // Sıcak haritalar (Avustralya, Hindistan): kar, buz ve kutup ışığı yok
 export const sicakMi = (p) => !!(haritaBul(p) && haritaBul(p).sicak);
 export const kutupNoktaMi = (p) => !!p && kutuptaMi(p.x, p.y);
@@ -533,9 +625,9 @@ export const yuzey = (x, y, dk) => harita({ x, y }).yuzey(x, y, dk);
 export const sudaMi = (x, y, dk) => yuzey(x, y, dk) === 'su';
 export const karadaMi = (x, y) => harita({ x, y }).karadaMi(x, y);
 export const enYakinSu = (x, y, dk, delik) => harita({ x, y }).enYakinSu(x, y, dk, delik);
-export const BOLGE_ADLARI_K = { ...KUZEY.BOLGE_ADLARI_K, ...GUNEY.BOLGE_ADLARI_K, ...AVUS.BOLGE_ADLARI_K, ...HIND.BOLGE_ADLARI_K };
+export const BOLGE_ADLARI_K = { ...KUZEY.BOLGE_ADLARI_K, ...GUNEY.BOLGE_ADLARI_K, ...AVUS.BOLGE_ADLARI_K, ...HIND.BOLGE_ADLARI_K, ...MOGOL.BOLGE_ADLARI_K };
 export const bolge = (x, y, dk) => harita({ x, y }).bolge(x, y, dk);
-export const TUM_KUTUP_YERLER = [...KUZEY.KUTUP_YERLER, ...GUNEY.KUTUP_YERLER, ...AVUS.KUTUP_YERLER, ...HIND.KUTUP_YERLER];
-export const kutupYeriHarita = (y) => (GUNEY.KUTUP_YERLER.includes(y) ? GUNEY : AVUS.KUTUP_YERLER.includes(y) ? AVUS : HIND.KUTUP_YERLER.includes(y) ? HIND : KUZEY);
+export const TUM_KUTUP_YERLER = [...KUZEY.KUTUP_YERLER, ...GUNEY.KUTUP_YERLER, ...AVUS.KUTUP_YERLER, ...HIND.KUTUP_YERLER, ...MOGOL.KUTUP_YERLER];
+export const kutupYeriHarita = (y) => (GUNEY.KUTUP_YERLER.includes(y) ? GUNEY : AVUS.KUTUP_YERLER.includes(y) ? AVUS : HIND.KUTUP_YERLER.includes(y) ? HIND : MOGOL.KUTUP_YERLER.includes(y) ? MOGOL : KUZEY);
 export const yerKonumu = (y) => kutupYeriHarita(y).yerKonumu(y);
 export const buzKalinligi = (x, y, dk, isinma = 0) => harita({ x, y }).buzKalinligi(x, y, dk, isinma);

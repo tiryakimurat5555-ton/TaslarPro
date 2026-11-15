@@ -1,7 +1,7 @@
 // ==== VAHŞİ YAŞAM: KEŞİF (brif Aşama 6) ====
 // Küçük canlıları arama (karar 48, 94, 95), mağara ekosistemi (karar 98), yarasaların akşam çıkışı,
 // kaçak avcıların tel tuzakları ve izleri (karar 60: sınırlı kapsam; oyuncu bulur, söker, bildirir, hayvanı kurtarır).
-import { TURLER, MAGARA, ISTASYON, YARICAP, nehirY, NEHIR_YARI, KUTUP, KUTUP_SIRASI, ANTARKTIKA_SIRASI, AVUSTRALYA_SIRASI, HINDISTAN_SIRASI } from './veri.js';
+import { TURLER, MAGARA, ISTASYON, YARICAP, nehirY, NEHIR_YARI, KUTUP, KUTUP_SIRASI, ANTARKTIKA_SIRASI, AVUSTRALYA_SIRASI, HINDISTAN_SIRASI, MOGOL_SIRASI } from './veri.js';
 import * as Kt from './kutup.js';
 import * as M from './mantik.js';
 import * as E from './ekosistem.js';
@@ -240,11 +240,14 @@ export const AV_KAPI = Kt.AVUS.dunya(Kt.AVUS.ISTASYON_K.lx, Kt.AVUS.ISTASYON_K.l
 // Hindistan ormanı: Kanha'daki orman dinlenme evi
 export const HINDISTAN_GEZI = { ad: 'Hindistan ormanı, Kanha', itibar: 65, ucret: 3200, yol: 300, donus: 300 };
 export const HN_KAPI = Kt.HIND.dunya(Kt.HIND.ISTASYON_K.lx, Kt.HIND.ISTASYON_K.ly + 15);
-// guney: false (Kuzey Kutbu), true (Antarktika), 'avustralya' ya da 'hindistan'
-const geziBul = (guney) => (guney === 'hindistan' ? HINDISTAN_GEZI : guney === 'avustralya' ? AVUSTRALYA_GEZI : guney ? ANTARKTIKA_GEZI : KUTUP_GEZI);
+// Moğol bozkırı: Hustai'deki ger kampı
+export const MOGOL_GEZI = { ad: 'Moğol bozkırı, Hustai', itibar: 75, ucret: 3600, yol: 330, donus: 330 };
+export const MG_KAPI = Kt.MOGOL.dunya(Kt.MOGOL.ISTASYON_K.lx, Kt.MOGOL.ISTASYON_K.ly + 15);
+// guney: false (Kuzey Kutbu), true (Antarktika), 'avustralya', 'hindistan' ya da 'mogol'
+const geziBul = (guney) => (guney === 'mogol' ? MOGOL_GEZI : guney === 'hindistan' ? HINDISTAN_GEZI : guney === 'avustralya' ? AVUSTRALYA_GEZI : guney ? ANTARKTIKA_GEZI : KUTUP_GEZI);
 export function kutupDurumu(k, guney = false) {
   const g = geziBul(guney);
-  if (k.itibar < g.itibar) return { acik: false, neden: guney === 'hindistan' ? 'Hindistan araştırma iznine bilimsel itibarın henüz yetmiyor.' : guney === 'avustralya' ? 'Avustralya araştırma iznine bilimsel itibarın henüz yetmiyor.' : guney ? 'Antarktika araştırma iznine bilimsel itibarın henüz yetmiyor.' : 'Kutup araştırma iznine bilimsel itibarın henüz yetmiyor.' };
+  if (k.itibar < g.itibar) return { acik: false, neden: guney === 'mogol' ? 'Moğolistan araştırma iznine bilimsel itibarın henüz yetmiyor.' : guney === 'hindistan' ? 'Hindistan araştırma iznine bilimsel itibarın henüz yetmiyor.' : guney === 'avustralya' ? 'Avustralya araştırma iznine bilimsel itibarın henüz yetmiyor.' : guney ? 'Antarktika araştırma iznine bilimsel itibarın henüz yetmiyor.' : 'Kutup araştırma iznine bilimsel itibarın henüz yetmiyor.' };
   return { acik: true, neden: '' };
 }
 export function kutupHazirla(d, guney = false) {
@@ -305,6 +308,26 @@ export function antarktikayaVar(d) {
   M.olay(d, 'kutup', m, 3, { gelis: true });
   return m;
 }
+export const mogolHazirla = (d) => kutupHazirla(d, 'mogol');
+export function mogolaVar(d) {
+  const k = d.k;
+  if (!k.kutup || typeof k.kutup !== 'object') k.kutup = {};
+  const ilk = !k.kutup.mgZiyaret;
+  k.kutup.mgZiyaret = true;
+  k.kutup.gelis = k.dk;
+  k.kutup.mgGezi = (k.kutup.mgGezi || 0) + 1;
+  k.teknede = false;
+  Object.assign(d.oyuncu, { x: MG_KAPI.x, y: MG_KAPI.y, yon: 0 });
+  Kt.etkinAyarla(d.oyuncu);
+  const mev = Kt.MOGOL.MEVSIM_ADI[M.kutupMevsimi(k)];
+  M.arsivOlay(d, 'Saha gezisi: Moğol bozkırı.');
+  const tanitim = ilk
+    ? 'Orta Moğolistan\'da, Hustai bozkırındaki ger kampına geldin. Çevrende ufka kadar ağaçsız bir bozkır uzanıyor. Kuzeydoğuda tek su kaynağı olan pınar ve sazlığı, batıya uzanan kuru dere yatağı, kuzeybatıda kayalık bir dağ, güneydoğuda Gobi\'nin kenarındaki kum tepeleri var. Mevsimler: kısa yeşil yaz, sonbahar, −30 dereceye inen sert kış ve rüzgârlı ilkbahar. Araç yok; yürüyerek araştırırsın. Sürüler çok ürkektir, uzaktan dürbünle izle; kar leoparını dağda, kayaların arasında ara. '
+    : 'Hustai\'deki ger kampına döndün. ';
+  const m = `${tanitim}Şimdi ${mev}. ${Kt.MOGOL.isikSozu(k.dk)} ${Kt.MOGOL.havaSozu(M.kutupHavasi(k), k.dk)}`;
+  M.olay(d, 'kutup', m, 3, { gelis: true });
+  return m;
+}
 export const hindistanHazirla = (d) => kutupHazirla(d, 'hindistan');
 export function hindistanaVar(d) {
   const k = d.k;
@@ -346,10 +369,11 @@ export function avustralyayaVar(d) {
   return m;
 }
 // Dönüş kapısı oyuncunun bulunduğu haritaya göre: kuzeyde kulübe, güneyde üs, Avustralya'da saha istasyonu
-export const donusKapisi = (d) => (M.oyuncuHindistanda(d.k) ? HN_KAPI : M.oyuncuAvustralyada(d.k) ? AV_KAPI : M.oyuncuGuneyde(d.k) ? US_KAPI : KULUBE_KAPI);
+export const donusKapisi = (d) => (M.oyuncuMogolda(d.k) ? MG_KAPI : M.oyuncuHindistanda(d.k) ? HN_KAPI : M.oyuncuAvustralyada(d.k) ? AV_KAPI : M.oyuncuGuneyde(d.k) ? US_KAPI : KULUBE_KAPI);
 export const kulubedeMi = (d) => M.oyuncuKutupta(d.k) && Math.hypot(d.oyuncu.x - donusKapisi(d).x, d.oyuncu.y - donusKapisi(d).y) < 30;
 export function kutuptanHazirla(d) {
   if (!M.oyuncuKutupta(d.k)) return 'Saha gezisinde değilsin.';
+  if (!kulubedeMi(d) && M.oyuncuMogolda(d.k)) return 'Dönüş aracı ger kampının önünden kalkar. Önce ger kampına dön.';
   if (!kulubedeMi(d) && M.oyuncuHindistanda(d.k)) return 'Dönüş aracı dinlenme evinin önünden kalkar. Önce dinlenme evine dön.';
   if (!kulubedeMi(d) && M.oyuncuAvustralyada(d.k)) return 'Dönüş uçağı istasyonun yanındaki toprak pistten kalkar. Önce istasyona dön.';
   if (!kulubedeMi(d)) return M.oyuncuGuneyde(d.k) ? 'Dönüş uçağı üssün yanındaki buz pistinden kalkar. Önce üsse dön.' : 'Dönüş uçağı kulübenin yanındaki pistten kalkar. Önce kulübeye dön.';
@@ -408,6 +432,11 @@ export function buzSatirlari(k) {
 export function kutupSatiri(k, guney = false) {
   const dur = kutupDurumu(k);
   const kayitli = KUTUP_SIRASI.filter((t) => k.arsiv.turler[t]).length;
+  if (guney === 'mogol') {
+    const dur5 = kutupDurumu(k, 'mogol');
+    const kay5 = MOGOL_SIRASI.filter((t) => k.arsiv.turler[t]).length;
+    return `Moğol bozkırı: ${dur5.acik ? `uçak ve arazi aracıyla 5,5 saat, yol, izin ve konaklama ${MOGOL_GEZI.ucret.toLocaleString('tr-TR')} lira` : `kilitli (itibar ${MOGOL_GEZI.itibar} gerekir)`}. Kaydedilen Moğolistan türü ${kay5} / ${MOGOL_SIRASI.length}.`;
+  }
   if (guney === 'hindistan') {
     const dur4 = kutupDurumu(k, 'hindistan');
     const kay4 = HINDISTAN_SIRASI.filter((t) => k.arsiv.turler[t]).length;

@@ -349,6 +349,24 @@ for (const [id, c] of Object.entries(HINDISTAN_CANLILARI)) {
   KUCUK_SIRASI.push(id);
 }
 export const HINDISTAN_KUCUKLERI = Object.keys(HINDISTAN_CANLILARI).filter((id) => HINDISTAN_CANLILARI[id]);
+// ---------- Moğol bozkırı (Hustai) küçük canlıları ----------
+const MOGOL_CANLILARI = {
+  tarbagan: { ad: 'Tarbagan (Moğol dağ sıçanı)', bilimsel: 'Marmota sibirica', grup: 'Memeli', yer: ['bozkir', 'mgDere', 'mgUs'], zaman: 'gunduz', sik: 6, kmevsim: ['yaz', 'sonbahar', 'ilkbahar'], ses: 'Tehlikede yuvasının ağzında dikilip keskin, tiz bir ıslık çalar.', tarif: 'Yuvalarının başında arka ayakları üstünde dikilip çevreyi gözleyen iri, tombul bir kemirgen. Kışın altı ay boyunca yuvasında kış uykusuna yatar. Kurtların, tilkilerin ve kartalların başlıca avı.' },
+  telliTurna: { ad: 'Telli turna', bilimsel: 'Grus virgo', grup: 'Kuş', yer: ['pinar', 'bozkir'], zaman: 'gunduz', sik: 4, kmevsim: ['yaz', 'ilkbahar'], ses: 'Boru gibi, çınlayan "krrrooo" çağrıları; çiftler düet yapar.', tarif: 'Dünyanın en küçük turnası: gri, başı ve boynu siyah, gözünün arkasında beyaz uzun tüy telleri var. Yazı bozkırda geçirir, sonbaharda Himalayaları aşarak Hindistan\'a göç eder.' },
+  bozkirKartali: { ad: 'Bozkır kartalı', bilimsel: 'Aquila nipalensis', grup: 'Kuş', yer: ['bozkir', 'mgDag', 'kumul'], zaman: 'gunduz', sik: 3, nadir: true, tarif: 'Koyu kahverengi, iri bir kartal; yuvasını ağaç olmadığı için yere ya da alçak bir kayaya yapar. Tarbagan ve gelengi avlar.' },
+  bagirtlak: { ad: 'Bağırtlak (Pallas kum tavuğu)', bilimsel: 'Syrrhaptes paradoxus', grup: 'Kuş', yer: ['kumul', 'bozkir'], zaman: 'gunduz', sik: 3, tarif: 'Kum renginde, sivri kuyruklu, güvercin büyüklüğünde bir kuş. Erkek göğüs tüylerini pınarda ıslatıp kilometrelerce uzaktaki yavrularına su taşır.' },
+  mogolTarlaKusu: { ad: 'Moğol tarlakuşu', bilimsel: 'Melanocorypha mongolica', grup: 'Kuş', yer: ['bozkir', 'mgUs'], zaman: 'gunduz', sik: 5, kmevsim: ['yaz', 'ilkbahar'], tarif: 'Göğsünde siyah bir bant, kanatlarında beyaz lekeler olan bir tarlakuşu. Havada asılı kalıp uzun, coşkulu bir şarkı söyler.' },
+  pika: { ad: 'Dağ pikası', bilimsel: 'Ochotona pallasi', grup: 'Memeli', yer: ['mgDag'], zaman: 'gunduz', sik: 4, tarif: 'Tavşanın küçük, kulakları yuvarlak bir akrabası. Yazın otları kayaların altına yığarak kışlık "ot yığını" yapar; kış uykusuna yatmaz.' },
+  gobiJerboasi: { ad: 'Uzun kulaklı jerboa', bilimsel: 'Euchoreutes naso', grup: 'Memeli', yer: ['kumul'], zaman: 'gece', sik: 2, nadir: true, tarif: 'Gövdesinden büyük kulakları ve kanguru gibi zıplayan uzun arka bacakları olan minik bir kemirgen. Geceleri kumda böcek avlar.' },
+  manul: { ad: 'Manul (Pallas kedisi)', bilimsel: 'Otocolobus manul', grup: 'Memeli', yer: ['mgDag', 'mgDere'], zaman: 'alaca', sik: 1, nadir: true, tarif: 'Ev kedisi büyüklüğünde ama çok kalın tüylü, yassı yüzlü, yuvarlak gözbebekli bir yaban kedisi. Kayaların arasında pika ve tarbagan pusuya yatar; dünyanın en somurtkan görünüşlü kedisi diye bilinir.' },
+  korsakTilkisi: { ad: 'Korsak tilkisi', bilimsel: 'Vulpes corsac', grup: 'Memeli', yer: ['bozkir', 'kumul'], zaman: 'gece', sik: 2, tarif: 'Bozkırın küçük, gri-sarı tilkisi; tarbaganların terk ettiği yuvalarda yaşar. Kışın tüyleri kalınlaşıp gümüşileşir.' },
+  bozkirEngeregi: { ad: 'Halys engereği', bilimsel: 'Gloydius halys', grup: 'Sürüngen', yer: ['mgDag', 'mgDere'], zaman: 'gunduz', sik: 2, kmevsim: ['yaz', 'sonbahar'], tarif: 'Başının iki yanında ısıya duyarlı çukurları olan zehirli küçük bir engerek. Sıcak taşların üstünde güneşlenir; kışı kaya yarıklarında birlikte geçirirler.' },
+};
+for (const [id, c] of Object.entries(MOGOL_CANLILARI)) {
+  KUCUKLER[id] = { ...c, kutup: true, mogol: true };
+  KUCUK_SIRASI.push(id);
+}
+export const MOGOL_KUCUKLERI = Object.keys(MOGOL_CANLILARI);
 
 // Dış halkanın küçük canlıları (15 Kasım 2026, harita genişlemesi): yalnız yeni bölgelerde bulunur
 const DIS_CANLILAR = {
@@ -372,4 +390,4 @@ const BOLGE_BENZER = { tepeler: 'kayalik', calilik: 'agaclik', baobab: 'otlak', 
 export const alanCanlilari = (alan) => KUCUK_SIRASI.filter((id) => KUCUKLER[id].alan === alan);
 
 // Aşama 17: gerçek sesi olan küçük canlılar (assets/efekt/k_<id>_0..4, 3B). App uzaktan duyulan çağrılarda ve bulununca çalar.
-export const KUCUK_SESLI = ['devekusu', 'tacliTurna', 'yerBoynuzgagasi', 'goAway', 'becTavugu', 'alacaYalicapkini', 'misirKazi', 'maviTurako', 'vervet', 'agustosBocegi', 'kayaHyraksi', 'cuceFiravunfaresi', 'puhu', 'cobanaldatan', 'galago', 'agacDamani', 'bogaKurbagasi', 'kamisKurbagasi', 'karaSirtliCakal', 'pabucGaga', 'turako', 'kolobus', 'papirusGonolegi', 'sykesMaymunu', 'sakalliFok', 'karBaykusu', 'kutupSumrusu', 'ucParmakliMarti', 'kucukAlk', 'kralEider', 'karKirazkusu', 'kuzgun', 'lemming', 'guneyDevPetreli', 'guneyKutupKarabatagi', 'kookaburra', 'kakadu', 'tavusKusu', 'hintKukusu'];
+export const KUCUK_SESLI = ['devekusu', 'tacliTurna', 'yerBoynuzgagasi', 'goAway', 'becTavugu', 'alacaYalicapkini', 'misirKazi', 'maviTurako', 'vervet', 'agustosBocegi', 'kayaHyraksi', 'cuceFiravunfaresi', 'puhu', 'cobanaldatan', 'galago', 'agacDamani', 'bogaKurbagasi', 'kamisKurbagasi', 'karaSirtliCakal', 'pabucGaga', 'turako', 'kolobus', 'papirusGonolegi', 'sykesMaymunu', 'sakalliFok', 'karBaykusu', 'kutupSumrusu', 'ucParmakliMarti', 'kucukAlk', 'kralEider', 'karKirazkusu', 'kuzgun', 'lemming', 'guneyDevPetreli', 'guneyKutupKarabatagi', 'kookaburra', 'kakadu', 'tavusKusu', 'hintKukusu', 'tarbagan', 'telliTurna'];

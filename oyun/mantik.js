@@ -4,7 +4,7 @@
 // Kalıcı her şey araştırmacı nesnesinde (k) durur; d yalnızca o anki oturumun geçici durumunu tutar.
 import {
   YARICAP, ISTASYON, ARAC_YERI, OYUN_DK_SN, BASLANGIC_SAATI, GOLET, NEHIR_YARI, nehirY, GECITLER, KAYALIK, MAGARA, YERLER,
-  BOLGE_ADLARI, DAVRANISLAR, GALERI, TERMITLER, SES_TURLERI, TURLER, TUR_SIRASI, KISILIKLER, EVRELER, EKIPMAN, ARAC, ARACLAR, YURUME, TUZ_YALAGI, MINERAL_TURLERI, OZEL_BIREYLER, KUTUP, KUTUP_SIRASI, ANTARKTIKA, ANTARKTIKA_SIRASI, AVUSTRALYA_SIRASI, HINDISTAN_SIRASI,
+  BOLGE_ADLARI, DAVRANISLAR, GALERI, TERMITLER, SES_TURLERI, TURLER, TUR_SIRASI, KISILIKLER, EVRELER, EKIPMAN, ARAC, ARACLAR, YURUME, TUZ_YALAGI, MINERAL_TURLERI, OZEL_BIREYLER, KUTUP, KUTUP_SIRASI, ANTARKTIKA, ANTARKTIKA_SIRASI, AVUSTRALYA_SIRASI, HINDISTAN_SIRASI, MOGOL_SIRASI,
   TEPELER, GOZCU_KAYASI, CALILIK, BAOBAB, OVA, OVA_SINIR, AGACLIK_UST, DERE_YARI, DERE_UST, dereX, dereYatagindaMi, EK_HABITAT } from './veri.js';
 import * as Kt from './kutup.js';
 import * as E from './ekosistem.js';
@@ -38,6 +38,7 @@ export const SOZ = {
   gnu: 'Gnu', cita: 'Çita', impala: 'İmpala', yabanKopegi: 'Yaban köpeği', babun: 'Babun',
   kutupAyisi: 'Kutup ayısı', halkaliFok: 'Halkalı fok', mors: 'Mors', beluga: 'Beluga', renGeyigi: 'Ren geyiği', miskOkuzu: 'Misk öküzü',
   kutupKurdu: 'Kutup kurdu', kutupTilkisi: 'Kutup tilkisi', kutupTavsani: 'Kutup tavşanı',
+  takhi: 'Yaban atı', karLeopari: 'Kar leoparı', saiga: 'Saiga', mogolKurdu: 'Moğol kurdu', dzeren: 'Moğol ceylanı', argali: 'Argali',
   kaplan: 'Kaplan', hintFili: 'Hint fili', cital: 'Benekli geyik', sambar: 'Sambar geyiği', gaur: 'Gaur', langur: 'Langur',
   kirmiziKanguru: 'Kırmızı kanguru', koala: 'Koala', emu: 'Emu', vombat: 'Vombat', dingo: 'Dingo',
   imparatorPengueni: 'İmparator pengueni', adeliPengueni: 'Adélie pengueni', weddellFoku: 'Weddell foku', leoparFoku: 'Leopar foku', orka: 'Orka', filFoku: 'Fil foku',
@@ -57,11 +58,12 @@ export const alanIcindeMi = (p, pay = 0) => {
 };
 export const oyuncuAvustralyada = (k) => !!(k && k.oyuncu && Kt.avustralyaMi(k.oyuncu));
 export const oyuncuHindistanda = (k) => !!(k && k.oyuncu && Kt.hindistanMi(k.oyuncu));
+export const oyuncuMogolda = (k) => !!(k && k.oyuncu && Kt.mogolMu(k.oyuncu));
 export const oyuncuSicakta = (k) => !!(k && k.oyuncu && Kt.sicakMi(k.oyuncu));
 export const kutupHavasi = (k, p) => {
   if (!k || !k.kutup) return null;
   const H = Kt.haritaBul(p || k.oyuncu) || Kt.KUZEY;
-  return (H.ad === 'guney' ? k.kutup.havaG : H.ad === 'avustralya' ? k.kutup.havaA : H.ad === 'hindistan' ? k.kutup.havaH : k.kutup.hava) || null;
+  return (H.ad === 'guney' ? k.kutup.havaG : H.ad === 'avustralya' ? k.kutup.havaA : H.ad === 'hindistan' ? k.kutup.havaH : H.ad === 'mogol' ? k.kutup.havaM : k.kutup.hava) || null;
 };
 // O anki gün evresi: oyuncu kutuptaysa kutup ışığına göre
 export const evreSimdi = (k) => (oyuncuKutupta(k) ? Kt.harita(k.oyuncu).evre(k.dk) : gunEvresi(k.dk));
@@ -519,6 +521,8 @@ export function dunyaOlustur(k) {
   if (!k.kutup.mevsimA) k.kutup.mevsimA = Kt.AVUS.kutupTakvim(gunNo(k.dk)).mevsim;
   if (!k.kutup.havaH || k.kutup.havaH.gun !== gunNo(k.dk) || !Number.isFinite(k.kutup.havaH.sicaklik)) k.kutup.havaH = Kt.HIND.havaUret(gunNo(k.dk), tohumluUretec(gunNo(k.dk) * 43 + 17));
   if (!k.kutup.mevsimH) k.kutup.mevsimH = Kt.HIND.kutupTakvim(gunNo(k.dk)).mevsim;
+  if (!k.kutup.havaM || k.kutup.havaM.gun !== gunNo(k.dk) || !Number.isFinite(k.kutup.havaM.sicaklik)) k.kutup.havaM = Kt.MOGOL.havaUret(gunNo(k.dk), tohumluUretec(gunNo(k.dk) * 47 + 19));
+  if (!k.kutup.mevsimM) k.kutup.mevsimM = Kt.MOGOL.kutupTakvim(gunNo(k.dk)).mevsim;
   const d = {
     k,
     rng: tohumluUretec((Date.now() & 0xffff) + 13),
@@ -1010,7 +1014,7 @@ function planSec(d, g) {
 // kutup ayısı karada, buzda ve (yüzerek) suda
 function kutupUygunMu(t, x, y) {
   const H = Kt.haritaBul({ x, y });
-  if (!H || H.ad !== (t.hindistan ? 'hindistan' : t.avustralya ? 'avustralya' : t.guney ? 'guney' : 'kuzey')) return false; // her tür kendi haritasında
+  if (!H || H.ad !== (t.mogol ? 'mogol' : t.hindistan ? 'hindistan' : t.avustralya ? 'avustralya' : t.guney ? 'guney' : 'kuzey')) return false; // her tür kendi haritasında
   const lx = x - H.MERKEZ.x;
   const ly = y - H.MERKEZ.y;
   if (Math.hypot(lx, ly) > H.MERKEZ.r - 6) return false;
@@ -1061,6 +1065,103 @@ function kutupSuNoktasi(d, g, mx, my, r) {
 }
 // ---- Antarktika davranışları (penguenler, leopar foku, orka). Weddell foku halkalı fok, fil foku mors gibi davranır. ----
 // Bir noktaya en yakın açık su: buz kenarının hemen dışı
+// ---- Moğol bozkırı davranışları (kurt ve kar leoparı genel yırtıcı kurallarıyla avlanır; burada dağ ve bozkır yerleşimi, su, kar kazma, uluma) ----
+// Dağ türleri (kar leoparı, argali) kayalık dağdan, bozkır türleri dağdan uzak durur
+function mogolNokta(d, g, H, dagda) {
+  for (let i = 0; i < 12; i++) {
+    let lx;
+    let ly;
+    if (dagda) {
+      const a = d.rng() * Math.PI * 2;
+      const rr = Math.sqrt(d.rng()) * (H.DAG.r - 8);
+      lx = H.DAG.lx + Math.sin(a) * rr;
+      ly = H.DAG.ly + Math.cos(a) * rr;
+    } else {
+      const h = TURLER[g.tur].habitat;
+      lx = h.x - H.MERKEZ.x + arasi(d.rng, -h.r, h.r);
+      ly = h.y - H.MERKEZ.y + arasi(d.rng, -h.r, h.r);
+      if (Math.hypot(lx - H.DAG.lx, ly - H.DAG.ly) < H.DAG.r + 6) continue;
+    }
+    const p = kutupNokta(d, g.tur, H.MERKEZ.x + lx, H.MERKEZ.y + ly, 6, ['kara']);
+    if (p) return p;
+  }
+  return yakinNokta(d, g, 12);
+}
+function mogolPlanSec(d, g, H, mevsim, tipi, r, sure) {
+  const k = d.k;
+  const dk = k.dk;
+  const saat = gunDakikasi(dk) / 60;
+  const hv = kutupHavasi(k, g);
+  const t = TURLER[g.tur];
+  const dagTuru = g.tur === 'karLeopari' || g.tur === 'argali';
+  const su = () => {
+    g.plan = 'icme';
+    g.hedef = H.enYakinSu(g.x, g.y, dk);
+    g.planBitis = sure(30, 60);
+  };
+  if (tipi && r < 0.8) {
+    // Buranda sürüler sırtını rüzgâra verip birbirine sokulur
+    g.plan = 'dinlen';
+    g.planBitis = sure(30, 60);
+    return true;
+  }
+  if (t.yirtici && (g.aclik || 0) > 0.55) return false; // genel av kuralları
+  if (g.tur === 'karLeopari') {
+    g.plan = H.evre(dk) === 'gunduz' && r < 0.7 ? 'kayada' : 'gez';
+    g.hedef = mogolNokta(d, g, H, true);
+    g.planBitis = sure(50, 120);
+    return true;
+  }
+  if (g.tur === 'mogolKurdu') {
+    if (H.evre(dk) !== 'gunduz' && r < 0.12) {
+      g.plan = 'dinlen';
+      g.planBitis = sure(10, 20);
+      const u = uyeler(d, g);
+      u.forEach((b) => (b.ozel = { davranis: 'ulumaKorosu', bitis: d.zaman + 14 }));
+      if (u[0] && mesafe(d.oyuncu, u[0]) < 400 && oyuncuMogolda(k))
+        olay(d, 'iletisim', mesafe(d.oyuncu, u[0]) <= durbunMenzili(dk, k) ? `Moğol kurtları birlikte uluyor. Uluma sürüyü bir araya toplar ve başka sürülere bu bozkırın dolu olduğunu bildirir. ${BuyukHarf(yerTarifi(d.oyuncu, u[0]))}.` : `Bozkırın uzağından kurt ulumaları geliyor. ${BuyukHarf(yerTarifi(d.oyuncu, u[0]))}.`, 3, { id: u[0].id, ses: true, duyma: 400 });
+      return true;
+    }
+    if (r < 0.25 && mevsim !== 'kis') {
+      su();
+      return true;
+    }
+    return false;
+  }
+  // Otçullar: kışın su donar, karı yerler; yazın öğleden sonra pınara gelirler
+  if (mevsim !== 'kis' && ((saat > 14 && saat < 18 && r < 0.35) || (hv && hv.sicaklik >= 25 && r < 0.3))) {
+    su();
+    return true;
+  }
+  if (g.tur === 'takhi' && r < 0.12 && !(hv && (hv.tur === 'kar' || hv.tur === 'yagmurlu'))) {
+    g.plan = 'toz';
+    g.hedef = yakinNokta(d, g, 6);
+    g.planBitis = sure(15, 30);
+    return true;
+  }
+  if (g.tur === 'argali' && mevsim === 'sonbahar' && r < 0.25) {
+    g.plan = 'boynuz'; // kur dönemi: erkekler boynuz çarpıştırır
+    g.hedef = mogolNokta(d, g, H, true);
+    g.planBitis = sure(25, 45);
+    return true;
+  }
+  g.plan = r < 0.65 ? 'otla' : r < 0.85 ? 'gez' : 'dinlen';
+  g.hedef = g.plan === 'dinlen' ? null : mogolNokta(d, g, H, dagTuru);
+  g.planBitis = sure(40, 100);
+  return true;
+}
+// Yaban atı aygırı: başka bir harem 40 m'ye yaklaşınca kısraklarını toplar
+function mogolGrupAdim(d, g, u, dt) {
+  const k = d.k;
+  if (g.tur !== 'takhi' || !u.length) return;
+  if (g.haremSon && d.zaman - g.haremSon < 60) return;
+  const kurt = k.hayvanlar.find((b) => !b.olu && b.tur === 'mogolKurdu' && mesafe(b, u[0]) < 50);
+  if (!kurt || d.rng() > dt * 0.4) return;
+  g.haremSon = d.zaman;
+  const aygir = u.find((b) => b.cinsiyet === 'erkek' && b.evre === 'yetiskin');
+  if (aygir) aygir.ozel = { davranis: 'haremKoruyor', bitis: d.zaman + 12 };
+  if (oyuncuMogolda(k) && mesafe(d.oyuncu, u[0]) < 250) olay(d, 'iletisim', `Yaban atları kurtları fark etti: aygır kişneyip kısraklarını ve tayları bir araya topluyor, kurtlarla sürünün arasına geçiyor. ${BuyukHarf(yerTarifi(d.oyuncu, u[0]))}.`, 4, { id: u[0].id, ses: true, duyma: 250 });
+}
 // ---- Hindistan ormanı davranışları (kaplan genel yırtıcı kurallarıyla avlanır; burada sıcakta suya girme, işaretleme; geyik/langur alarmı) ----
 function hindistanPlanSec(d, g, H, mevsim, r, sure) {
   const k = d.k;
@@ -1449,6 +1550,7 @@ function kutupPlanSec(d, g) {
   if (t.guney && antarktikaPlanSec(d, g, H, mevsim, tipi, r, sure)) return;
   if (t.avustralya && avustralyaPlanSec(d, g, H, mevsim, r, sure)) return;
   if (t.hindistan && hindistanPlanSec(d, g, H, mevsim, r, sure)) return;
+  if (t.mogol && mogolPlanSec(d, g, H, mevsim, tipi, r, sure)) return;
   if (g.tur === 'halkaliFok' || t.fok) {
     const delik = fokDeligi(d, g);
     if (delik) {
@@ -1609,6 +1711,7 @@ function kutupGrupAdim(d, g, u, dt, dtDk) {
   if (t.guney) antarktikaGrupAdim(d, g, u, dt);
   if (t.avustralya) avustralyaGrupAdim(d, g, u, dt);
   if (t.hindistan) hindistanGrupAdim(d, g, u, dt);
+  if (t.mogol) mogolGrupAdim(d, g, u, dt);
   if (g.plan === 'fare' && g.hedef && mesafe(g, g.hedef) < 1.5 && d.rng() < dt * 0.02) g.aclik = Math.max(0, g.aclik - 0.2);
   if (g.plan === 'pusu' && g.tur === 'kutupAyisi' && g.pusuGrup) {
     const fg = k.gruplar.find((x) => x.id === g.pusuGrup);
@@ -1671,6 +1774,14 @@ function kutupDavranis(d, b, g, hareketli) {
       return hareketli ? 'yuruyor' : 'otluyor';
     case 'sudaOtla':
       return hareketli ? 'yuruyor' : 'sudaOtluyor';
+    // Moğol bozkırı
+    case 'kayada':
+      return hareketli ? 'yuruyor' : Kt.harita(g).evre(d.k.dk) === 'gunduz' && (b.id + Math.floor(d.zaman / 30)) % 2 ? 'uyuyor' : 'kayadaBekliyor';
+    case 'toz':
+      return hareketli ? 'yuruyor' : 'tozBanyosu';
+    case 'boynuz':
+      if (hareketli) return 'yuruyor';
+      return b.cinsiyet === 'erkek' && b.evre === 'yetiskin' ? 'boynuzCarpisiyor' : 'otluyor';
     // Avustralya
     case 'agac': {
       if (hareketli) return 'yuruyor';
@@ -1698,6 +1809,7 @@ function kutupDavranis(d, b, g, hareketli) {
       return g.dalga && g.dalga > d.zaman ? 'dalgaYapiyor' : 'yuzuyor';
     case 'otla':
       if (b.tur === 'renGeyigi' && Kt.KUZEY.kutupTakvim(gunNo(d.k.dk)).mevsim !== 'yaz' && !hareketli) return 'karEseliyor';
+      if (TURLER[b.tur].mogol && !TURLER[b.tur].yirtici && !hareketli && Kt.MOGOL.kutupTakvim(gunNo(d.k.dk)).mevsim === 'kis') return 'karKaziyor';
       return null;
     case 'gez':
       if (TURLER[b.tur].suCanlisi && Kt.yuzey(b.x, b.y, d.k.dk) === 'su') return 'yuzuyor';
@@ -1709,7 +1821,7 @@ function kutupDavranis(d, b, g, hareketli) {
 // Kutup nüfusu: eski kayıtlarda ve yeni oyunlarda eksik türler kurulur (fok ve ren geyiği iki grup)
 function kutupNufusKur(k) {
   const rng = tohumluUretec(6061);
-  [...KUTUP_SIRASI, ...ANTARKTIKA_SIRASI, ...AVUSTRALYA_SIRASI, ...HINDISTAN_SIRASI].forEach((tur) => {
+  [...KUTUP_SIRASI, ...ANTARKTIKA_SIRASI, ...AVUSTRALYA_SIRASI, ...HINDISTAN_SIRASI, ...MOGOL_SIRASI].forEach((tur) => {
     const n = ['halkaliFok', 'renGeyigi'].includes(tur) ? 2 : 1;
     const var_ = k.gruplar.filter((g) => g.tur === tur).length;
     for (let i = var_; i < n; i++) turGrubuKur(k, rng, tur);
@@ -1725,6 +1837,21 @@ function kutupGunluk(d) {
   k.kutup.havaG = Kt.GUNEY.havaUret(gun, d.rng);
   k.kutup.havaA = Kt.AVUS.havaUret(gun, d.rng);
   k.kutup.havaH = Kt.HIND.havaUret(gun, d.rng);
+  k.kutup.havaM = Kt.MOGOL.havaUret(gun, d.rng);
+  const mvM = Kt.MOGOL.kutupTakvim(gun).mevsim;
+  if (k.kutup.mevsimM !== mvM) {
+    k.kutup.mevsimM = mvM;
+    if (oyuncuMogolda(k)) {
+      const m = {
+        yaz: 'Bozkır yazı: otlar yeşerdi, kısa ama sert sağanaklar yağıyor. Taylar ve ceylan yavruları büyüyor; tarbagan sıçanları yuvalarının başında ıslık çalıyor.',
+        sonbahar: 'Sonbahar: bozkır sarardı, geceler donuyor. Argali erkekleri kur dönemine girdi; dağda boynuz çarpışmaları duyulabilir.',
+        kis: 'Sert Moğol kışı başladı: sıcaklık −30 dereceye iniyor, pınarın çoğu donuyor. Hayvanlar karı ön ayaklarıyla kazıp altındaki kuru otu yiyor. Kar fırtınasına (buran) dikkat.',
+        ilkbahar: 'Rüzgârlı ilkbahar: kar eriyor, Gobi\'den toz fırtınaları geliyor. Saiga ve ceylan dişileri doğuruyor; kurtlar yeni doğan yavruların peşinde.',
+      }[mvM];
+      mesajEkle(k, `Moğolistan mevsimi: ${m}`, 'ekosistem');
+      olay(d, 'mevsim', m, 3, { mevsim: mvM });
+    }
+  }
   const mvH = Kt.HIND.kutupTakvim(gun).mevsim;
   if (k.kutup.mevsimH !== mvH) {
     k.kutup.mevsimH = mvH;
@@ -1917,6 +2044,8 @@ export const DUYULAR = {
   beluga: { koku: 0.3, gorme: 0.9, isitme: 1.6 }, renGeyigi: { koku: 1.3, gorme: 1, isitme: 1.1 }, miskOkuzu: { koku: 1.2, gorme: 0.9, isitme: 1 },
   kutupKurdu: { koku: 1.5, gorme: 1.1, isitme: 1.3 }, kutupTilkisi: { koku: 1.4, gorme: 1, isitme: 1.6 }, kutupTavsani: { koku: 1, gorme: 1.2, isitme: 1.3 },
   imparatorPengueni: { koku: 0.4, gorme: 1, isitme: 1 }, adeliPengueni: { koku: 0.4, gorme: 1, isitme: 1 }, weddellFoku: { koku: 1, gorme: 0.9, isitme: 1.2 },
+  takhi: { koku: 1.2, gorme: 1.2, isitme: 1.3 }, karLeopari: { koku: 1, gorme: 1.5, isitme: 1.3 }, saiga: { koku: 1.1, gorme: 1.3, isitme: 1.2 },
+  mogolKurdu: { koku: 1.5, gorme: 1.1, isitme: 1.4 }, dzeren: { koku: 1, gorme: 1.5, isitme: 1.2 }, argali: { koku: 1, gorme: 1.5, isitme: 1.1 },
   kaplan: { koku: 1.2, gorme: 1.3, isitme: 1.3 }, hintFili: { koku: 1.6, gorme: 0.6, isitme: 1.4 }, cital: { koku: 1.1, gorme: 1.2, isitme: 1.3 },
   sambar: { koku: 1.3, gorme: 0.9, isitme: 1.4 }, gaur: { koku: 1.2, gorme: 0.8, isitme: 1 }, langur: { koku: 0.6, gorme: 1.5, isitme: 1.1 },
   kirmiziKanguru: { koku: 0.8, gorme: 1.2, isitme: 1.4 }, koala: { koku: 0.8, gorme: 0.6, isitme: 1 }, emu: { koku: 0.4, gorme: 1.5, isitme: 1 },
@@ -2055,6 +2184,8 @@ export const AV_STRATEJI = {
   kutupKurdu: { ad: 'sürüyle kilometrelerce takip, sürüyü koşturup zayıfı ayırma', sure: 30, yardimci: 3 },
   kutupTilkisi: { ad: 'karın altındaki lemmingleri sesinden bulup kara dalma; küçük avları kısa bir koşuyla yakalama', sure: 6, yardimci: 0 },
   leoparFoku: { ad: 'buz kenarının altında pusu; suya giren ya da sudan çıkan penguene ani atılış', sure: 6, yardimci: 0 },
+  karLeopari: { ad: 'kayalıkta pusu: yamacın üstünden avın birkaç metre yakınına sokulur, sonra dik yamaçtan aşağı atılarak yakalar', sure: 8, yardimci: 0 },
+  mogolKurdu: { ad: 'sürüyle açık bozkırda uzun takip: sürüyü koşturup yavaş kalanı ayırır, dönüşümlü kovalar', sure: 30, yardimci: 2 },
   kaplan: { ad: 'tek başına sinsi yaklaşma: uzun otların ve gölgenin içinden avın birkaç metre yakınına sokulur, sonra ani bir atılışla yakalar', sure: 9, yardimci: 0 },
   dingo: { ad: 'sürüyle sıra sıra kovalama: biri kanguruyu ötekilerin beklediği yere sürer, kurban yorulana kadar dönüşümlü koşarlar', sure: 24, yardimci: 2 },
   orka: { ad: 'aile hâlinde ortak av: buz parçası üstündeki foku dalga yaparak suya düşürme, penguenleri açık suda kovalama', sure: 20, yardimci: 2 },
@@ -2297,7 +2428,7 @@ function kalitim(d, y, anne, baba) {
 }
 
 // Doğum: gebeliğin sonunda (Aşama 21)
-export const GEBE_GUN = { aslan: 3, leopar: 3, sirtlan: 3, cita: 3, yabanKopegi: 2, fil: 7, zurafa: 5, zebra: 4, gnu: 3, impala: 3, ceylan: 2, domuz: 2, suAygiri: 4, gergedan: 6, manda: 4, babun: 3, kutupAyisi: 6, halkaliFok: 5, mors: 7, beluga: 7, renGeyigi: 4, miskOkuzu: 4, kutupKurdu: 2, kutupTilkisi: 2, kutupTavsani: 2, imparatorPengueni: 3, adeliPengueni: 2, weddellFoku: 5, leoparFoku: 5, orka: 7, filFoku: 6, kaplan: 3, hintFili: 7, cital: 3, sambar: 3, gaur: 4, langur: 2, kirmiziKanguru: 3, koala: 3, emu: 3, vombat: 3, dingo: 2 };
+export const GEBE_GUN = { aslan: 3, leopar: 3, sirtlan: 3, cita: 3, yabanKopegi: 2, fil: 7, zurafa: 5, zebra: 4, gnu: 3, impala: 3, ceylan: 2, domuz: 2, suAygiri: 4, gergedan: 6, manda: 4, babun: 3, kutupAyisi: 6, halkaliFok: 5, mors: 7, beluga: 7, renGeyigi: 4, miskOkuzu: 4, kutupKurdu: 2, kutupTilkisi: 2, kutupTavsani: 2, imparatorPengueni: 3, adeliPengueni: 2, weddellFoku: 5, leoparFoku: 5, orka: 7, filFoku: 6, takhi: 5, karLeopari: 3, saiga: 3, mogolKurdu: 2, dzeren: 3, argali: 4, kaplan: 3, hintFili: 7, cital: 3, sambar: 3, gaur: 4, langur: 2, kirmiziKanguru: 3, koala: 3, emu: 3, vombat: 3, dingo: 2 };
 function dogumYap(d, g, anne, baba) {
   const k = d.k;
   const y = bireyOlustur(k, d.rng, g.tur, g, 'yavru', d.rng() < 0.5 ? 'erkek' : 'disi', anne.x + 0.8, anne.y + 0.8, anne.id);
@@ -2365,7 +2496,7 @@ function gunlukDogumlar(d) {
     const kucukGrup = u.length < t.grup[1];
     // Otçullar çoğunlukla yağışlı mevsimde, otlar gürken gebe kalır ve doğurur (karar 43)
     // Kutup türleri ilkbaharda ve yazın doğurur (karar 20)
-    const yagisli = t.kutup ? (t.hindistan ? ['sonbahar', 'kis'] : t.avustralya ? ['yaz', 'sonbahar'] : g.tur === 'imparatorPengueni' ? ['kis', 'ilkbahar'] : ['ilkbahar', 'yaz']).includes(Kt.harita(g).kutupTakvim(gunNo(k.dk)).mevsim) : E.takvim(gunNo(k.dk)).mevsim === 'yagisli';
+    const yagisli = t.kutup ? (t.mogol ? ['ilkbahar', 'yaz'] : t.hindistan ? ['sonbahar', 'kis'] : t.avustralya ? ['yaz', 'sonbahar'] : g.tur === 'imparatorPengueni' ? ['kis', 'ilkbahar'] : ['ilkbahar', 'yaz']).includes(Kt.harita(g).kutupTakvim(gunNo(k.dk)).mevsim) : E.takvim(gunNo(k.dk)).mevsim === 'yagisli';
     let sans = t.yirtici ? 0.1 : ['fil', 'gergedan', 'zurafa', 'mors', 'beluga', 'orka', 'filFoku'].includes(g.tur) ? 0.06 : ['piton', 'timsah', 'kartal'].includes(g.tur) ? 0 : kucukGrup ? 0.5 : 0.3;
     if (!t.yirtici && !yagisli) sans *= 0.15;
     // Büyük otçul sürülerinde yağmurlarla birden çok dişi aynı günlerde gebe kalır (gnu, zebra, impala...)
@@ -2400,7 +2531,7 @@ function gunlukDogumlar(d) {
 
 // ---------- Ekosistem: sağlık, yaşam döngüsü, göç (Aşama 5) ----------
 // Yırtıcıların acıkma süresi (oyun dakikası): büyük av birkaç gün doyurur, timsah haftalarca aç kalabilir
-const ACLIK_SURESI = { aslan: 4300, leopar: 7000, sirtlan: 3600, timsah: 12000, cita: 5000, yabanKopegi: 4500, kutupAyisi: 8000, kutupKurdu: 5000, kutupTilkisi: 2600, leoparFoku: 5000, orka: 6000, dingo: 4200, kaplan: 5200 };
+const ACLIK_SURESI = { aslan: 4300, leopar: 7000, sirtlan: 3600, timsah: 12000, cita: 5000, yabanKopegi: 4500, kutupAyisi: 8000, kutupKurdu: 5000, kutupTilkisi: 2600, leoparFoku: 5000, orka: 6000, dingo: 4200, kaplan: 5200, karLeopari: 6000, mogolKurdu: 4600 };
 // Otlayan bir bireyin saatlik tüketimi (zebra = 1)
 const TUKETIM = { fil: 3, manda: 1.5, zebra: 1, ceylan: 0.4, domuz: 0.5, gergedan: 2, suAygiri: 2, zurafa: 1.5, gnu: 1.1, impala: 0.5, babun: 0.3 };
 
@@ -4014,15 +4145,15 @@ export function konumOzeti(d) {
     const H = Kt.harita(o);
     const guney = H.ad === 'guney';
     const kul = H.dunya(H.ISTASYON_K.lx, H.ISTASYON_K.ly);
-    const istAd = H.ad === 'hindistan' ? 'Orman dinlenme evi' : H.ad === 'avustralya' ? 'Saha istasyonu' : guney ? 'Araştırma üssü' : 'Araştırma kulübesi';
-    m += mesafe(o, kul) > H.ISTASYON_K.r + 2 ? ` ${istAd} ${yerTarifi(o, kul)}.` : H.ad === 'hindistan' ? ' Dinlenme evindesin.' : H.ad === 'avustralya' ? ' Saha istasyonundasın.' : guney ? ' Araştırma üssündesin.' : ' Kulübedesin.';
+    const istAd = H.ad === 'mogol' ? 'Ger kampı' : H.ad === 'hindistan' ? 'Orman dinlenme evi' : H.ad === 'avustralya' ? 'Saha istasyonu' : guney ? 'Araştırma üssü' : 'Araştırma kulübesi';
+    m += mesafe(o, kul) > H.ISTASYON_K.r + 2 ? ` ${istAd} ${yerTarifi(o, kul)}.` : H.ad === 'mogol' ? ' Ger kampındasın.' : H.ad === 'hindistan' ? ' Dinlenme evindesin.' : H.ad === 'avustralya' ? ' Saha istasyonundasın.' : guney ? ' Araştırma üssündesin.' : ' Kulübedesin.';
     const lx = o.x - H.MERKEZ.x;
     const ly = o.y - H.MERKEZ.y;
     const ky = H.kiyiY(lx);
     const KUTUP = H.MERKEZ;
     if (H.sicak) {
       const su = H.enYakinSu(o.x, o.y, k.dk);
-      if (Kt.yuzey(o.x, o.y, k.dk) !== 'su' && mesafe(o, su) < 120) m += ` ${H.ad === 'hindistan' ? 'Göl' : 'Billabong'} ${yerTarifi(o, su)}.`;
+      if (Kt.yuzey(o.x, o.y, k.dk) !== 'su' && mesafe(o, su) < 120) m += ` ${H.ad === 'mogol' ? 'Pınar' : H.ad === 'hindistan' ? 'Göl' : 'Billabong'} ${yerTarifi(o, su)}.`;
     } else if (ly <= ky) m += ` Deniz kuzeyinde, kıyıya ${metreSozu(ky - ly)}.`;
     else {
       const bk = H.buzKenari(k.dk);
@@ -4124,7 +4255,8 @@ export function turListesi(k) {
   const guney = k.kutup && (k.kutup.guneyZiyaret || ANTARKTIKA_SIRASI.some((t) => k.arsiv.turler[t]));
   const avus = k.kutup && (k.kutup.avZiyaret || AVUSTRALYA_SIRASI.some((t) => k.arsiv.turler[t]));
   const hind = k.kutup && (k.kutup.hnZiyaret || HINDISTAN_SIRASI.some((t) => k.arsiv.turler[t]));
-  return [...TUR_SIRASI, ...(kutup ? KUTUP_SIRASI : []), ...(guney ? ANTARKTIKA_SIRASI : []), ...(avus ? AVUSTRALYA_SIRASI : []), ...(hind ? HINDISTAN_SIRASI : [])].map((tur) => ({ tur, t: TURLER[tur], kayit: k.arsiv.turler[tur] || null }));
+  const mogol = k.kutup && (k.kutup.mgZiyaret || MOGOL_SIRASI.some((t) => k.arsiv.turler[t]));
+  return [...TUR_SIRASI, ...(kutup ? KUTUP_SIRASI : []), ...(guney ? ANTARKTIKA_SIRASI : []), ...(avus ? AVUSTRALYA_SIRASI : []), ...(hind ? HINDISTAN_SIRASI : []), ...(mogol ? MOGOL_SIRASI : [])].map((tur) => ({ tur, t: TURLER[tur], kayit: k.arsiv.turler[tur] || null }));
 }
 export function taninanBireyler(k, tur) {
   const tum = [...k.hayvanlar, ...((k.disari && k.disari.hayvanlar) || []), ...((k.rehab || []).map((r) => r.b))];
@@ -4348,7 +4480,16 @@ export function zeminTuru(d, p) {
     const bg = Kt.bolge(o.x, o.y, k.dk);
     if (bg === 'kusYari') return 'kaya';
     if (bg === 'buzul') return 'buz';
-    if (bg === 'kutupIstasyon' || bg === 'antUs' || bg === 'avUs' || bg === 'kuruDere' || bg === 'hnUs' || bg === 'hnDere') return 'toprak';
+    if (bg === 'kutupIstasyon' || bg === 'antUs' || bg === 'avUs' || bg === 'kuruDere' || bg === 'hnUs' || bg === 'hnDere' || bg === 'mgUs') return 'toprak';
+    if (Kt.mogolMu(o)) {
+      const mev = Kt.MOGOL.kutupTakvim(gunNo(k.dk)).mevsim;
+      const hv = kutupHavasi(k, o);
+      if (mev === 'kis' || (hv && (hv.tur === 'kar' || hv.tur === 'tipi'))) return bg === 'mgDag' ? 'kaya' : 'kar';
+      if (bg === 'mgDag' || bg === 'mgDere') return 'kaya';
+      if (bg === 'kumul') return 'toprak';
+      if (bg === 'pinar') return 'camur';
+      return hv && hv.tur === 'yagmurlu' ? 'camur' : 'ot';
+    }
     if (Kt.hindistanMi(o)) {
       if (bg === 'dadar') return 'kaya';
       if (bg === 'salOrmani' || bg === 'bambuluk') return 'yaprak';
@@ -4424,6 +4565,7 @@ export const KOSU_SESI = {
   aslan: 'kosu_pati', leopar: 'kosu_pati', cita: 'kosu_pati', sirtlan: 'kosu_pati', yabanKopegi: 'kosu_pati', babun: 'kosu_pati',
   renGeyigi: 'kosu_toynak', miskOkuzu: 'kosu_agir', kutupAyisi: 'kosu_agir', kutupKurdu: 'kosu_pati', kutupTilkisi: 'kosu_pati', kutupTavsani: 'kosu_hafif',
   filFoku: 'kosu_agir',
+  takhi: 'kosu_toynak', karLeopari: 'kosu_pati', saiga: 'kosu_hafif', mogolKurdu: 'kosu_pati', dzeren: 'kosu_hafif', argali: 'kosu_toynak',
   kaplan: 'kosu_pati', hintFili: 'kosu_agir', cital: 'kosu_hafif', sambar: 'kosu_toynak', gaur: 'kosu_agir', langur: 'kosu_pati',
   kirmiziKanguru: 'kosu_hafif', emu: 'kosu_toynak', vombat: 'kosu_hafif', dingo: 'kosu_pati',
 };

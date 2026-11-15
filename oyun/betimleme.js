@@ -163,7 +163,20 @@ function kutupZemin(d) {
   const mev = M.kutupMevsimi(k);
   const karli = mev === 'kis' || mev === 'ilkbahar' || (mev === 'sonbahar' && Kt.kutupTakvim(M.gunNo(k.dk)).mevsimGunu > 2);
   const tundra = karli ? 'karla örtülü, rüzgârın sertleştirdiği bir kar yüzeyi; yer yer taşlar çıkıyor' : 'yosun, liken ve cüce söğütlerle kaplı taşlık bir tundra; aralarda kutup çiçekleri';
+  const mgKar = mev === 'kis';
   switch (b) {
+    case 'mgUs':
+      return `Ger kampındasın: keçe kaplı, yuvarlak beyaz çadırlar; ortadakinin bacasından duman tütüyor. Yanında güneş paneli ve bir rüzgâr türbini${mgKar ? ', her şey karla örtülü' : ''}.`;
+    case 'bozkir':
+      return mgKar ? 'Açık bozkırdasın: ufka kadar dümdüz, kar örtülü bir düzlük; rüzgârın süpürdüğü yerlerde kuru ot tutamları çıkıyor.' : mev === 'yaz' ? 'Açık bozkırdasın: ufka kadar uzanan yeşil, kısa otlu bir düzlük; rüzgârda gümüşi dalgalanan sorguç otları, kekik ve pelin kokusu.' : 'Açık bozkırdasın: sararmış kısa otlar ve ufka kadar uzanan sonsuz bir düzlük; tek bir ağaç yok.';
+    case 'mgDag':
+      return `Kayalık dağdasın: iri granit bloklar, dik yamaçlar ve kaya yarıkları${mgKar ? '; kuytularda kar birikmiş' : ''}. Aşağıda bozkır uzanıyor.`;
+    case 'pinar':
+      return mgKar ? 'Pınarın başındasın: sazlık donmuş; yalnızca kaynağın ağzında buharı tüten küçük bir su açıklığı kalmış.' : 'Pınarın başındasın: soğuk, berrak bir kaynak ve çevresinde sazlık; yer yumuşak ve çamurlu, toynak izleriyle dolu.';
+    case 'kumul':
+      return 'Kum tepelerindesin: rüzgârın şekillendirdiği sarı kumullar ve aralarda seyrek, sert çalılar. Gobi Çölü buradan güneye uzanıyor.';
+    case 'mgDere':
+      return 'Kuru dere yatağındasın: çakıllar ve kum; kenarlarında birkaç cılız söğüt. Yağmurdan sonra kısa bir süre akar.';
     case 'hnUs':
       return 'Orman dinlenme evinin önündesin: taş duvarlı, kiremit çatılı eski bir yapı, geniş bir veranda; avluda bir mahua ağacı.';
     case 'maidan':
@@ -236,7 +249,7 @@ function kutupOn(d) {
     const x = o.x + Math.sin(o.yon) * m;
     const y = o.y + Math.cos(o.yon) * m;
     const yz = Kt.yuzey(x, y, k.dk);
-    if (yz === 'su' && simdi !== 'su') return Kt.hindistanMi(o) ? `Önünde, ${M.metreSozu(m)} ileride gölün suyu var.` : Kt.avustralyaMi(o) ? `Önünde, ${M.metreSozu(m)} ileride billabongun suyu var.` : `Önünde, ${M.metreSozu(m)} ileride açık su var; buzun kenarı.`;
+    if (yz === 'su' && simdi !== 'su') return Kt.mogolMu(o) ? `Önünde, ${M.metreSozu(m)} ileride pınarın suyu var.` : Kt.hindistanMi(o) ? `Önünde, ${M.metreSozu(m)} ileride gölün suyu var.` : Kt.avustralyaMi(o) ? `Önünde, ${M.metreSozu(m)} ileride billabongun suyu var.` : `Önünde, ${M.metreSozu(m)} ileride açık su var; buzun kenarı.`;
     if (yz === 'buz' && simdi === 'kara') return `Önünde, ${M.metreSozu(m)} ileride kıyı bitiyor, deniz buzu başlıyor.`;
     const MK = Kt.harita(o).MERKEZ;
     if (Math.hypot(x - MK.x, y - MK.y) > MK.r - 3) return `Önünde, ${M.metreSozu(m)} ileride araştırma alanının sınırı var.`;
@@ -266,6 +279,12 @@ function kutupSes(d) {
   const ortam = [];
   const h = M.kutupHavasi(k);
   const su = Kt.enYakinSu(o.x, o.y, k.dk);
+  if (Kt.mogolMu(o)) {
+    ortam.push(Kt.tipideMi(h, k.dk) ? 'buranın uğultusu' : M.evreSimdi(k) === 'gece' ? 'rüzgârın otlardaki hışırtısı ve derin bir sessizlik' : M.kutupMevsimi(k) === 'kis' ? 'rüzgârın karın üstündeki ıslığı' : 'tarlakuşlarının şarkısı ve rüzgârın otlardaki hışırtısı');
+    if (M.mesafe(o, su) < 60 && M.kutupMevsimi(k) !== 'kis') ortam.push('pınarın şırıltısı ve sazlıktaki kuşlar');
+    if (h && h.tur === 'toz') ortam.push('rüzgârın savurduğu kumun hışırtısı');
+    return `Duyduğun sesler: ${[...parca, ...ortam].join(', ')}.`;
+  }
   if (Kt.hindistanMi(o)) {
     ortam.push(M.evreSimdi(k) === 'gece' ? 'cırcır böcekleri ve uzaktan bir baykuş' : 'tavus kuşları, koel kuşunun ısrarlı ötüşü ve ağustos böcekleri');
     if (M.mesafe(o, su) < 60) ortam.push('gölde kurbağalar ve su kuşları');

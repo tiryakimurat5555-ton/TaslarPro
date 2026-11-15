@@ -2,14 +2,14 @@
 // Saf mantık: bütçe ve dengeli ekonomi (karar 22, 62, 91), ekipman (89, 88), tesisler (21, 79, 80), personel (54, 81),
 // basit araştırma ekranı ve analizler (45), hibe teklifleri ve dinamik görevler (61, 62, 90), mesajlar (82),
 // kamera tuzakları (41, 93) ve GPS tasmaları (11, 84). Sayılar öneridir; Murat onaylamadı.
-import { TURLER, TUR_SIRASI, DAVRANISLAR, ISTASYON, YARICAP, GOLET, nehirY, NEHIR_YARI, TUZ_YALAGI, KUTUP_SIRASI, ANTARKTIKA_SIRASI, AVUSTRALYA_SIRASI, HINDISTAN_SIRASI } from './veri.js';
+import { TURLER, TUR_SIRASI, DAVRANISLAR, ISTASYON, YARICAP, GOLET, nehirY, NEHIR_YARI, TUZ_YALAGI, KUTUP_SIRASI, ANTARKTIKA_SIRASI, AVUSTRALYA_SIRASI, HINDISTAN_SIRASI, MOGOL_SIRASI } from './veri.js';
 import * as M from './mantik.js';
 import * as Kt from './kutup.js';
 import * as E from './ekosistem.js';
 import * as K from './kesif.js';
 import * as G from './genisleme.js';
 import * as S from './su.js';
-import { KUCUKLER, KUTUP_KUCUKLERI, ANTARKTIKA_KUCUKLERI, AVUSTRALYA_KUCUKLERI, HINDISTAN_KUCUKLERI } from './kucukler.js';
+import { KUCUKLER, KUTUP_KUCUKLERI, ANTARKTIKA_KUCUKLERI, AVUSTRALYA_KUCUKLERI, HINDISTAN_KUCUKLERI, MOGOL_KUCUKLERI } from './kucukler.js';
 
 const lira = (n) => `${Math.round(n).toLocaleString('tr-TR')} lira`;
 export const liraSozu = lira;
@@ -251,7 +251,7 @@ export const ARASTIRMALAR = [
     id: 'kutupFaunasi',
     ad: 'Grönland kıyısının memelileri',
     kosulMetni: 'Kuzey Kutbu\'nda 9 büyük türü kaydet ve kutup türlerinden 6 bireyi tanımla',
-    ilerleme: (k) => [Math.min(9, KUTUP_SIRASI.filter((t) => k.arsiv.turler[t]).length) + Math.min(6, k.hayvanlar.filter((b) => b.no > 0 && TURLER[b.tur] && TURLER[b.tur].kutup && !TURLER[b.tur].guney && !TURLER[b.tur].avustralya && !TURLER[b.tur].hindistan).length), 15],
+    ilerleme: (k) => [Math.min(9, KUTUP_SIRASI.filter((t) => k.arsiv.turler[t]).length) + Math.min(6, k.hayvanlar.filter((b) => b.no > 0 && TURLER[b.tur] && TURLER[b.tur].kutup && !TURLER[b.tur].guney && !TURLER[b.tur].avustralya && !TURLER[b.tur].hindistan && !TURLER[b.tur].mogol).length), 15],
     odul: { itibar: 15, fon: 6000 },
     sonuc: 'Kıyının memeli topluluğu belgelendi: deniz buzuna bağlı türler (kutup ayısı, halkalı fok, mors) ile tundra türleri (ren geyiği, misk öküzü, kurt, tilki, tavşan) birbirine besin zinciriyle bağlı. Fok azalırsa ayılar karaya, kuş yuvalarına yöneliyor.',
   },
@@ -275,9 +275,34 @@ export const ARASTIRMALAR = [
     id: 'tundraYazi',
     ad: 'Kısa tundra yazı',
     kosulMetni: '6 kutup bitkisini incele ve 10 kutup küçük canlısını bul',
-    ilerleme: (k) => [Math.min(6, E.BITKI_SIRASI.filter((id) => E.BITKILER[id].kutup && !E.BITKILER[id].guney && !E.BITKILER[id].avustralya && !E.BITKILER[id].hindistan && (k.arsiv.bitkiler || {})[id]).length) + Math.min(10, KUTUP_KUCUKLERI.filter((id) => (k.arsiv.kucukler || {})[id]).length), 16],
+    ilerleme: (k) => [Math.min(6, E.BITKI_SIRASI.filter((id) => E.BITKILER[id].kutup && !E.BITKILER[id].guney && !E.BITKILER[id].avustralya && !E.BITKILER[id].hindistan && !E.BITKILER[id].mogol && (k.arsiv.bitkiler || {})[id]).length) + Math.min(10, KUTUP_KUCUKLERI.filter((id) => (k.arsiv.kucukler || {})[id]).length), 16],
     odul: { itibar: 14, fon: 5000 },
     sonuc: 'Tundranın bütün yaşamının birkaç haftalık yaza sıkıştığı gösterildi: bitkiler kar kalkar kalkmaz çiçek açıyor, kuşlar gece yarısı güneşinde yavrularını büyütüyor, lemmingler kar altında kışı geçiriyor.',
+  },
+  // Moğol bozkırı araştırmaları
+  {
+    id: 'bozkirFaunasi',
+    ad: 'Hustai bozkırının büyük memelileri',
+    kosulMetni: 'Moğol bozkırında 6 büyük türü kaydet ve oradaki türlerden 4 bireyi tanımla',
+    ilerleme: (k) => [Math.min(6, MOGOL_SIRASI.filter((t) => k.arsiv.turler[t]).length) + Math.min(4, k.hayvanlar.filter((b) => b.no > 0 && TURLER[b.tur] && TURLER[b.tur].mogol).length), 10],
+    odul: { itibar: 18, fon: 8000 },
+    sonuc: 'Bozkırın büyük memeli topluluğu belgelendi: geri dönen yaban atları, kalabalık ceylan ve saiga sürüleri, onları izleyen kurtlar ve dağda argali ile kar leoparı. Doğada tükenmiş bir türün, yaban atının, yeniden kendi başına yaşayabildiği görüldü.',
+  },
+  {
+    id: 'bozkirKisi',
+    ad: 'Bozkırda hayatta kalmak',
+    kosulMetni: 'Dört davranışı gözle: kar kazıp otlama, yaban atının toz banyosu, aygırın haremini koruması, argali erkeklerinin boynuz çarpışması',
+    ilerleme: (k) => [[['takhi', 'karKaziyor', 'dzeren'], ['takhi', 'tozBanyosu'], ['takhi', 'haremKoruyor'], ['argali', 'boynuzCarpisiyor']].filter(([t, dv, t2]) => davranisVar(k, t, dv) || (t2 && davranisVar(k, t2, dv))).length, 4],
+    odul: { itibar: 18, fon: 6000 },
+    sonuc: 'Bozkırın sert koşullarına uyum belgelendi: otçullar karı kazıp kuru otu buluyor, atlar toz banyosuyla parazitlerden kurtuluyor, aygır haremini kurtlara karşı koruyor. Argali erkeklerinin sonbahar dövüşleri haftalarca sürüyor.',
+  },
+  {
+    id: 'bozkirOtlari',
+    ad: 'Otların ve tarbaganların bozkırı',
+    kosulMetni: '3 Moğolistan bitkisini incele ve 5 Moğolistan küçük canlısını bul',
+    ilerleme: (k) => [Math.min(3, E.BITKI_SIRASI.filter((id) => E.BITKILER[id].mogol && (k.arsiv.bitkiler || {})[id]).length) + Math.min(5, MOGOL_KUCUKLERI.filter((id) => (k.arsiv.kucukler || {})[id]).length), 8],
+    odul: { itibar: 14, fon: 5000 },
+    sonuc: 'Bozkırın küçük dünyası belgelendi: tarbaganların kazdığı yuvalar tilkilere ve kuşlara barınak oluyor, toprağı havalandırıyor; sorguç otları kışın bile besleyici kalıyor. Bozkır, aşırı otlatılmazsa çok dayanıklı bir ekosistem.',
   },
   // Hindistan ormanı araştırmaları
   {
@@ -1046,6 +1071,7 @@ function numuneSonucu(d, n) {
     return m + G.dnaAnalizi(d, b);
   }
   const b = E.BITKILER[v.bitki];
+  if (!b) return 'Numune bozulmuş; analiz edilemedi.'; // bozuk kayıttan gelen tanımsız numune
   const a = k.arsiv.bitkiler[v.bitki];
   if (a) a.analiz = true;
   return `${b.ad}, ${v.parca}: ${b.analiz} Bitki ${E.OZELLIK_ADI[b.ozellik]}.`;

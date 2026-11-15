@@ -38,7 +38,7 @@ import * as Kr from './oyun/kirlilik.js';
 import { KUCUKLER, KUCUK_SIRASI, GRUPLAR, MAGARA_ODALARI, UZAK_ALANLAR, odaListesi, aktifOda, bolumAdi, KUCUK_SESLI, bulunabilirler } from './oyun/kucukler.js';
 import * as Efekt from './oyun/efekt.js';
 import { sahneKur } from './oyun/sahne.js';
-import { TURLER, TUR_SIRASI, YERLER, DAVRANISLAR, EVRELER, BOLGE_ADLARI, ARAC, OZEL_BIREYLER, GECITLER, ISTASYON, nehirY, GOLET, GALERI, KAYALIK, NEHIR_YARI, KUTUP, KUTUP_SIRASI, ANTARKTIKA_SIRASI, AVUSTRALYA_SIRASI, HINDISTAN_SIRASI, TEPELER, CALILIK, dereX, DERE_UST } from './oyun/veri.js';
+import { TURLER, TUR_SIRASI, YERLER, DAVRANISLAR, EVRELER, BOLGE_ADLARI, ARAC, OZEL_BIREYLER, GECITLER, ISTASYON, nehirY, GOLET, GALERI, KAYALIK, NEHIR_YARI, KUTUP, KUTUP_SIRASI, ANTARKTIKA_SIRASI, AVUSTRALYA_SIRASI, HINDISTAN_SIRASI, MOGOL_SIRASI, TEPELER, CALILIK, dereX, DERE_UST } from './oyun/veri.js';
 import * as Kt from './oyun/kutup.js';
 import { useJestler } from './oyun/jestler.js';
 import { Liste, useMenuYigini, altMenu, sayfali, RENK, GORUNUM } from './oyun/SesliListe.js';
@@ -227,6 +227,26 @@ function kutupOrtami(d) {
   const o = d.oyuncu;
   const h = {};
   const yakin = (m, menzil) => Math.pow(sinirla01(1 - Math.max(0, m) / menzil), 1.5);
+  if (Kt.mogolMu(o)) {
+    // Moğol bozkırı: gündüz rüzgâr ve tarlakuşları, gece rüzgâr ve sessizlik; kışın karlı rüzgâr, buranda fırtına; dağa yaklaştıkça kayalık katmanı
+    const hv = M.kutupHavasi(k);
+    if (Kt.tipideMi(hv, k.dk)) {
+      h.ortam_tipi = 1;
+      return h;
+    }
+    const kis = M.kutupMevsimi(k) === 'kis';
+    const lx = o.x - Kt.MOGOL.MERKEZ.x;
+    const ly = o.y - Kt.MOGOL.MERKEZ.y;
+    const dg = 0.7 * yakin(Math.hypot(lx - Kt.MOGOL.DAG.lx, ly - Kt.MOGOL.DAG.ly) - Kt.MOGOL.DAG.r * 0.6, 70);
+    if (dg > 0.01) h.ortam_kayalik = dg;
+    if (hv && (hv.tur === 'yagmurlu')) h.ortam_yagmur = 0.75;
+    if (hv && hv.tur === 'toz') h.ortam_tipi = 0.55;
+    const ev = M.evreSimdi(k);
+    h[kis ? 'ortam_kutup' : ev === 'gece' || ev === 'aksam' ? 'ortam_bozkir_gece' : 'ortam_bozkir_gunduz'] = Math.max(0.3, 1 - 0.6 * dg) * (h.ortam_yagmur || h.ortam_tipi ? 0.6 : 1);
+    const guc = Object.values(h).reduce((t, v) => t + v * v, 0);
+    if (guc > 1) for (const a of Object.keys(h)) h[a] /= Math.sqrt(guc);
+    return h;
+  }
   if (Kt.hindistanMi(o)) {
     // Hindistan ormanı: gündüz kuşlar ve böcekler, gece cırcırlar; göl yaklaştıkça göl katmanı, yağmurda yağmur
     const su = Kt.enYakinSu(o.x, o.y, k.dk);
@@ -437,6 +457,7 @@ const kucuk = (s) => s.toLocaleLowerCase('tr-TR');
 
 // ---------------- Yenilikler (en yeniler üstte): Murat denerken neyin nerede olduğunu bulsun diye ----------------
 const YENILIKLER = [
+  { baslik: 'Yeni harita: Moğol bozkırı', metin: 'Orta Moğolistan\'da, Hustai bozkırında serbestçe dolaşılan yeni bir harita. Przewalski atı (takhi), kar leoparı, saiga antilobu, Moğol kurdu, Moğol ceylanı ve argali yaban koyunu yaşıyor; her birinin kendi sesi var. Kışı −30 dereceye inen sert bir kış, kar fırtınası (buran) ve ilkbaharda toz fırtınaları var.', nerede: 'Merkez > Saha gezileri > Moğol bozkırı: yola çık (itibar 75). Yardım > Moğol bozkırı.' },
   { baslik: 'Yeni harita: Hindistan ormanı', metin: 'Orta Hindistan\'da, Kanha ormanında serbestçe dolaşılan yeni bir harita. Bengal kaplanı, Hint fili, benekli geyik, sambar geyiği, gaur ve gri langur yaşıyor; her birinin kendi sesi var. Geniş bir çayır, nilüferli göl, sal ve bambu ormanları, kayalık yayla. Mevsimler muson, muson sonrası, serin kış ve kavurucu yaz. Kaplan yaklaşınca benekli geyikler ve langurlar alarm verir; sesin geldiği yön kaplanın yönüdür. Kaplan sıcakta göle girer, langurların düşürdüğü yaprakları geyikler toplar. 10 küçük canlı (tavus kuşu, ateş böceği, dev sincap), 3 bitki, üç araştırma ve bir gizem eklendi. İtibarın 65 olunca açılır.', nerede: 'Araştırma merkezi, Saha gezileri: Hindistan ormanı, yola çık. Yardım, Hindistan ormanı.' },
   { baslik: 'Yeni harita: Avustralya çalılığı', metin: 'Queensland iç kesiminde, savandan ayrı, serbestçe dolaşılan yeni bir harita. Kırmızı kanguru, koala, emu, vombat ve dingo yaşıyor; her birinin kendi sesi var. Kızıl topraklı otlak, billabong denen su gölü, kuru dere yatağı, okaliptüs ormanı, kızıl kumtaşı kayalar, spinifex çalılığı ve termit kuleleri. Yazı yağışlı, kışı kurak; toz fırtınaları çıkar. Kangurular öğle sıcağında gölgede yatar, koalalar ağaçta uyur, dingolar uluyarak avlanır. 12 küçük canlı (kookaburra, ornitorenk, ekidna, dikenli iblis), 5 bitki, üç araştırma ve bir gizem eklendi. Çalılığın gündüz, gece ve billabong sesleri var. İtibarın 60 olunca açılır.', nerede: 'Araştırma merkezi, Saha gezileri: Avustralya çalılığı, yola çık. Yardım, Avustralya çalılığı.' },
   { baslik: 'Yeni harita: Antarktika', metin: 'Adélie Kıyısı\'nda, savandan ve Kuzey Kutbu\'ndan ayrı, serbestçe dolaşılan yeni bir harita. İmparator pengueni, Adélie pengueni, Weddell foku, leopar foku, fil foku ve orka yaşıyor; her birinin kendi sesi var. Mevsimler kuzeyin tersi: imparator penguenler kışın karanlıkta deniz buzunda ürer ve fırtınada birbirine sokulur, Adélie penguenleri yazın kayalık burunda taş yuvalar kurar. Leopar fokları buz kenarında penguen bekler, orkalar dalga yaparak fokları buzdan düşürür. Buz sahanlığı, kıta buz örtüsü, kızıl üs binaları ve güney ışıkları görünür. 12 küçük canlı, 5 bitki ve alg, üç araştırma ve bir gizem eklendi. İtibarın 70 olunca açılır.', nerede: 'Araştırma merkezi, Saha gezileri: Antarktika, yola çık. Yardım, Antarktika.' },
@@ -658,6 +679,18 @@ const YARDIM = [
       'Dönüş: ana menüde ve Yerler listesinde Savana dön satırı var. Uçak kulübenin yanından kalkar; kulübeden uzaksan önce oraya yürürsün.',
       'Deniz buzunu ölç: buzun üstündeyken Doğa menüsünde. Buz matkabıyla buzun kalınlığını ölçersin; buz sonbaharın sonunda donar, kışın kalınlaşır, ilkbaharda incelir, polinyanın kenarında çok incedir. Ölçümler Kutup raporunda.',
       'Kutup araştırmaları merkezde: Grönland kıyısının memelileri, Deniz buzunun yıllık döngüsü, Buzun ve tundranın avcıları, Kısa tundra yazı. Kutup kuşlarının, lemmingin ve sakallı fokun sesleri çevrede duyulur; sesini duyduğun canlıyı aramak onu bulmayı kolaylaştırır.',
+    ],
+  },
+  {
+    id: 'mogol',
+    baslik: 'Moğol bozkırı',
+    satirlar: [
+      'Moğolistan gezisi: Araştırma merkezi, Saha gezileri bölümünde. Bilimsel itibarın 75 olunca açılır. İstasyondayken Moğol bozkırı, yola çık satırını seç; yol, izin ve konaklama 3.600 lira tutar, yolculuk 5,5 oyun saati sürer.',
+      'Ayrı, serbestçe dolaşılan bir harita. Ger kampının çevresinde ufka kadar ağaçsız bir bozkır var. Kuzeydoğuda tek su kaynağı olan pınar ve sazlık, batıya uzanan kuru dere yatağı, kuzeybatıda kayalık dağ, güneydoğuda Gobi\'nin kenarındaki kum tepeleri.',
+      'Mevsimler: 8 gün kısa yeşil yaz, 4 gün sonbahar (argali erkeklerinin boynuz dövüşleri), 8 gün sert kış (−30 derece, kar, bazen birkaç saat süren buran fırtınası; hayvanlar karı kazıp kuru otu yer), 4 gün rüzgârlı ilkbahar (toz fırtınaları, doğumlar).',
+      'Hayvanlar: Przewalski atı (takhi), kar leoparı, saiga antilobu, Moğol kurdu, Moğol ceylanı ve argali. Yaban atları haremler hâlinde yaşar, toz banyosu yapar; kurt yaklaşınca aygır kısraklarını toplar. Kar leoparı ve argali kayalık dağdadır; leopar kayalarla aynı renktedir, sabırla ara. Kurtlar geceleri birlikte uluyabilir.',
+      'Bozkırda saklanacak yer yok; sürüler çok ürkektir ve uzaktan kaçar. Dürbünle uzaktan izle, rüzgârı arkana alma.',
+      'Küçük canlılar (tarbagan, telli turna, bozkır kartalı, bağırtlak, tarlakuşu, pika, jerboa, manul, korsak tilkisi, engerek), 3 bitki, merkezde üç Moğolistan araştırması ve bir gizem var. Dönüş: ana menüde ve Yerler listesinde Savana dön satırı.',
     ],
   },
   {
@@ -1854,12 +1887,12 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     const kutupDonSatiri = () => ({
       id: 'kutupDon',
       etiket: K.kulubedeMi(d)
-        ? `Savana dön: yolculuk ${String((M.oyuncuHindistanda(k) ? K.HINDISTAN_GEZI : M.oyuncuAvustralyada(k) ? K.AVUSTRALYA_GEZI : M.oyuncuGuneyde(k) ? K.ANTARKTIKA_GEZI : K.KUTUP_GEZI).donus / 60).replace('.', ',')} saat`
-        : M.oyuncuHindistanda(k) ? `Dinlenme evine git, oradan savana dönülür: ${yerTarifi(K.HN_KAPI)}` : M.oyuncuAvustralyada(k) ? `İstasyona git, oradan savana dönülür: ${yerTarifi(K.AV_KAPI)}` : M.oyuncuGuneyde(k) ? `Üsse git, oradan savana dönülür: ${yerTarifi(K.US_KAPI)}` : `Kulübeye git, oradan savana dönülür: ${yerTarifi(K.KULUBE_KAPI)}`,
+        ? `Savana dön: yolculuk ${String((M.oyuncuMogolda(k) ? K.MOGOL_GEZI : M.oyuncuHindistanda(k) ? K.HINDISTAN_GEZI : M.oyuncuAvustralyada(k) ? K.AVUSTRALYA_GEZI : M.oyuncuGuneyde(k) ? K.ANTARKTIKA_GEZI : K.KUTUP_GEZI).donus / 60).replace('.', ',')} saat`
+        : M.oyuncuMogolda(k) ? `Ger kampına git, oradan savana dönülür: ${yerTarifi(K.MG_KAPI)}` : M.oyuncuHindistanda(k) ? `Dinlenme evine git, oradan savana dönülür: ${yerTarifi(K.HN_KAPI)}` : M.oyuncuAvustralyada(k) ? `İstasyona git, oradan savana dönülür: ${yerTarifi(K.AV_KAPI)}` : M.oyuncuGuneyde(k) ? `Üsse git, oradan savana dönülür: ${yerTarifi(K.US_KAPI)}` : `Kulübeye git, oradan savana dönülür: ${yerTarifi(K.KULUBE_KAPI)}`,
       sec: () => {
         if (!K.kulubedeMi(d)) {
           menu.kapat();
-          M.yerGit(d, M.oyuncuHindistanda(k) ? 'h_ev' : M.oyuncuAvustralyada(k) ? 'v_istasyon' : M.oyuncuGuneyde(k) ? 'a_us' : 'k_kulube');
+          M.yerGit(d, M.oyuncuMogolda(k) ? 'm_ger' : M.oyuncuHindistanda(k) ? 'h_ev' : M.oyuncuAvustralyada(k) ? 'v_istasyon' : M.oyuncuGuneyde(k) ? 'a_us' : 'k_kulube');
           return 'sessiz';
         }
         const h = K.kutuptanHazirla(d);
@@ -1871,7 +1904,8 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         const guney = M.oyuncuGuneyde(k);
         const avus = M.oyuncuAvustralyada(k);
         const hind = M.oyuncuHindistanda(k);
-        dinlenBaslat(k.dk + (hind ? K.HINDISTAN_GEZI : avus ? K.AVUSTRALYA_GEZI : guney ? K.ANTARKTIKA_GEZI : K.KUTUP_GEZI).donus, { metin: hind ? 'Cip ormandan çıktı; havaalanından savandaki istasyona dönüyorsun.' : avus ? 'Küçük uçak istasyonun yanındaki toprak pistten kalktı; savandaki istasyona dönüyorsun.' : guney ? 'Uçak üssün yanındaki buz pistinden kalktı; savandaki istasyona dönüyorsun.' : 'Uçak kulübenin yanındaki pistten kalktı; savandaki istasyona dönüyorsun.', bitince: () => K.kutuptanDon(d) });
+        const mog = M.oyuncuMogolda(k);
+        dinlenBaslat(k.dk + (mog ? K.MOGOL_GEZI : hind ? K.HINDISTAN_GEZI : avus ? K.AVUSTRALYA_GEZI : guney ? K.ANTARKTIKA_GEZI : K.KUTUP_GEZI).donus, { metin: mog ? 'Arazi aracı bozkırda saatlerce yol aldı; havaalanından savandaki istasyona dönüyorsun.' : hind ? 'Cip ormandan çıktı; havaalanından savandaki istasyona dönüyorsun.' : avus ? 'Küçük uçak istasyonun yanındaki toprak pistten kalktı; savandaki istasyona dönüyorsun.' : guney ? 'Uçak üssün yanındaki buz pistinden kalktı; savandaki istasyona dönüyorsun.' : 'Uçak kulübenin yanındaki pistten kalktı; savandaki istasyona dönüyorsun.', bitince: () => K.kutuptanDon(d) });
         return 'sessiz';
       },
     });
@@ -2073,7 +2107,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     }
     if (u === 'doga' && M.oyuncuKutupta(k)) {
       const ogeler = [
-        altMenu('kutupEko', `${M.oyuncuHindistanda(k) ? 'Orman raporu' : M.oyuncuAvustralyada(k) ? 'Çalılık raporu' : 'Kutup raporu'}: ${Kt.MEVSIM_ADI[M.kutupMevsimi(k)]}, ${Kt.havaSozu(M.kutupHavasi(k), k.dk).split(',')[0].toLocaleLowerCase('tr-TR')}`, menu.ac),
+        altMenu('kutupEko', `${M.oyuncuMogolda(k) ? 'Bozkır raporu' : M.oyuncuHindistanda(k) ? 'Orman raporu' : M.oyuncuAvustralyada(k) ? 'Çalılık raporu' : 'Kutup raporu'}: ${Kt.MEVSIM_ADI[M.kutupMevsimi(k)]}, ${Kt.havaSozu(M.kutupHavasi(k), k.dk).split(',')[0].toLocaleLowerCase('tr-TR')}`, menu.ac),
         ...(Kt.yuzey(d.oyuncu.x, d.oyuncu.y, k.dk) === 'buz' ? [{ id: 'buzOlc', etiket: 'Deniz buzunu ölç', ipucu: 'Buz matkabıyla delik açıp buzun kalınlığını ölçersin. Farklı günlerde ve mevsimlerde ölçmek merkezdeki deniz buzu araştırmasını ilerletir.', sec: yap(() => K.buzOlc(d)) }] : []),
         { id: 'ara', etiket: 'Küçük canlı ara', ipucu: 'Kuş, böcek, balık ve küçük memelileri arar.', sec: kapatVe(() => K.kucukAra(d)) },
         { id: 'izAra', etiket: 'İzleri incele', ipucu: 'Karda ve çamurda yakındaki ayak izlerini okur.', sec: yap(() => Iz.izAra(d)) },
@@ -2085,6 +2119,19 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       return liste(u, `Doğa: ${Kt.ETKIN.baslik}`, ogeler);
     }
     if (u === 'kutupEko') {
+      if (M.oyuncuMogolda(k)) {
+        const tk = Kt.kutupTakvim(M.gunNo(k.dk));
+        const sayilar = MOGOL_SIRASI.filter((t) => k.arsiv.turler[t]).map((t) => `${kucuk(M.SOZ[t])} ${k.hayvanlar.filter((b) => !b.olu && b.tur === t).length}`);
+        const ogeler = [
+          bilgi('mev', `${M.BuyukHarf(Kt.MEVSIM_ADI[tk.mevsim])}, ${tk.mevsimGunu}. gün (${tk.uzunluk} günlük mevsim). ${Kt.isikSozu(k.dk)}`),
+          bilgi('hava', Kt.havaSozu(M.kutupHavasi(k), k.dk)),
+          bilgi('su', tk.mevsim === 'kis' ? 'Kış: pınarın çoğu donmuş; hayvanlar su yerine kar yiyor ve karı ön ayaklarıyla kazıp altındaki kuru otu buluyor. Uzun ve karlı kışlar (dzud) sürüleri zayıflatır.' : tk.mevsim === 'yaz' ? 'Yaz: otlar yeşil ve besleyici; öğleden sonraları sürüler pınara iniyor. Yavrular hızla büyüyor.' : tk.mevsim === 'ilkbahar' ? 'İlkbahar: kar eriyor, sert rüzgârlar ve toz fırtınaları var. Saiga ve ceylanlar doğuruyor; kurtlar yavruların peşinde.' : 'Sonbahar: otlar sarardı, geceler donuyor. Argali erkekleri dağda kur dövüşü yapıyor.'),
+          bilgi('takvim', 'Bozkırın yılı: 8 gün yaz, 4 gün sonbahar, 8 gün sert kış, 4 gün ilkbahar.'),
+          bilgi('ipucu', 'Bozkırda saklanacak yer yok: sürüler seni yüzlerce metreden görür. Uzaktan dürbünle izle. Kar leoparını dağda, argalilerin yakınında, kayaların kenarında ara.'),
+        ];
+        if (sayilar.length) ogeler.push(bilgi('nufus', `Kaydedilen türlerin bölgedeki sayıları: ${sayilar.join(', ')}.`));
+        return liste(u, 'Bozkır raporu', ogeler);
+      }
       if (M.oyuncuHindistanda(k)) {
         const tk = Kt.kutupTakvim(M.gunNo(k.dk));
         const sayilar = HINDISTAN_SIRASI.filter((t) => k.arsiv.turler[t]).map((t) => `${kucuk(M.SOZ[t])} ${k.hayvanlar.filter((b) => !b.olu && b.tur === t).length}`);
@@ -2765,6 +2812,24 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
             },
           });
         if (M.oyuncuKutupta(k)) ogeler.splice(1, 0, kutupDonSatiri());
+        const durM = K.kutupDurumu(k, 'mogol');
+        ogeler.splice(1, 0, bilgi('bmogol', K.kutupSatiri(k, 'mogol'), 'Orta Moğolistan\'da, Hustai bozkırında serbestçe dolaşılan ayrı bir harita: Przewalski atı, kar leoparı, saiga, Moğol kurdu, Moğol ceylanı ve argali. Ufka kadar bozkır, bir pınar, kayalık dağ ve kum tepeleri; kışı çok sert.'));
+        if (durM.acik && !M.oyuncuKutupta(k))
+          ogeler.splice(2, 0, {
+            id: 'gitmogol',
+            etiket: 'Moğol bozkırı: yola çık',
+            ipucu: 'İstasyondan uçak ve arazi aracıyla gidilir. Yolda zaman akar; savandaki hayvanlar yaşamaya devam eder.',
+            sec: () => {
+              const h = K.mogolHazirla(d);
+              if (h) {
+                Ses.hemen(h);
+                return 'sessiz';
+              }
+              menu.kapat();
+              dinlenBaslat(k.dk + K.MOGOL_GEZI.yol, { metin: `Moğolistan'a yola çıktın. Yol, izin ve konaklama için ${Mz.liraSozu(K.MOGOL_GEZI.ucret)} ödendi.`, bitince: () => K.mogolaVar(d) });
+              return 'sessiz';
+            },
+          });
         const durH = K.kutupDurumu(k, 'hindistan');
         ogeler.splice(1, 0, bilgi('bhind', K.kutupSatiri(k, 'hindistan'), 'Orta Hindistan\'da, Kanha ormanında serbestçe dolaşılan ayrı bir harita: Bengal kaplanı, Hint fili, benekli geyik, sambar, gaur ve langur. Ortada geniş bir çayır, doğuda göl, kuzeyde sal ormanı, batıda bambu; mevsimler muson, muson sonrası, serin kış ve kavurucu yaz.'));
         if (durH.acik && !M.oyuncuKutupta(k))

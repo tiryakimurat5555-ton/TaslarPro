@@ -578,6 +578,24 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   (akış R1AN6H1CX2wNrRrpqPLB) kaplan, hintfili, cital, sambar, gaur, langur (konumlu, UC_B), k_tavusKusu, k_hintKukusu, ortam_hint_gunduz/gece.
   Testler: bot, dayanıklılık 100/100, menu-tara Hindistan iki kipte 258 sayfa sorun 0 (/tmp/claude-0/hn-kayit.json), /tmp/claude-0/kr/hn1.js
   (4 günde kaplan 2 gaur avladı), görüntüler scratchpad hn-goruntu.cjs. Telefonda doğrulanmadı.
+- MOĞOL BOZKIRI (15 Kasım 2026, Murat "Devam" → seçtiği "Moğol bozkırı"; sayılar ÖNERİ): MOGOLISTAN {x -6000, y 6000, r 230}; kutup.js MOGOL
+  (haritaYap; kayma 0; sicak: true burada "kutup buzu yok" demek; mevsimler bozkır yazı / sonbahar / sert kış (−32..−12) / rüzgârlı ilkbahar; hava acik/bulutlu/
+  yagmurlu (yaz)/kar/tipi (kış "buran", Kt.tipideMi ile sis ve kar)/toz (ilkbahar); k.kutup.havaM, mevsimM). PINAR (60,40) r12 tek su (kışın sahnede donar),
+  mgDereY kuru dere, DAG (-120,110) r75 kayalık dağ, KUMUL (130,-120) r58, ger kampı (0,-40). Bölgeler mgUs, bozkir, mgDag, pinar, kumul, mgDere; YERLER m_*.
+  Kt.mogolMu, M.oyuncuMogolda. TURLER 6 (mogol: true; MOGOL_SIRASI; KUTUP_SIRASI dışlar): takhi (zebra biçimi çizgisiz, koyu bacak, beyaz burun; 'toz' →
+  tozBanyosu; mogolGrupAdim: kurt 50 m'de aygır haremKoruyor + olay), karLeopari (kedi + halka benek + kalın kuyruk; hep dağda, 'kayada' → kayadaBekliyor/uyuyor;
+  avlar argali/dzeren), saiga (ceylan biçimi + şişkin burun), mogolKurdu (kurt; gece uluma korosu olay), dzeren, argali (ceylan biçimi + sarmal boynuz, dağda;
+  sonbaharda 'boynuz' → boynuzCarpisiyor). mogolPlanSec: buranda sokulma, otçullar yazın öğleden sonra pınara, kışın otlarken karKaziyor (yırtıcı hariç),
+  dağ türleri mogolNokta(dagda) ile dağda, bozkır türleri dağdan uzak. Doğum ilkbahar/yaz. kesif MOGOL_GEZI (itibar 75, 3.600, 330 dk), MG_KAPI, mogolaVar
+  (k.kutup.mgZiyaret). kucukler MOGOL_CANLILARI 10 (tarbagan, telliTurna, bozkirKartali, bagirtlak, mogolTarlaKusu, pika, gobiJerboasi, manul, korsakTilkisi,
+  bozkirEngeregi), BITKILER tuyluOt, bozkirPelini, sibiryaKayisisi; merkez 3 araştırma (bozkirFaunasi, bozkirKisi, bozkirOtlari); gizem karHayaleti. zeminTuru
+  kışın/karda 'kar', dağda 'kaya'. Sahne mgGrup (zemin mevsimle yeşil/sarı/karlı, ot tutamları (kışın gizli), pınar + sazlık, kuru dere + söğütler, dağ
+  blokları + kar başlıkları, kumullar, ufuk tepeleri, 4 ger + baca + güneş paneli + rüzgâr türbini, ovoo taş yığını); gökte kar/buran/toz. App kutupOrtami:
+  buranda ortam_tipi, kışın ortam_kutup, yoksa ortam_bozkir_gunduz/gece; dağa yaklaşınca ortam_kayalik, tozda ortam_tipi 0,55. Sesler (akış R1AN6H1CX2wNrRrpqPLB)
+  takhi, karleopari, saiga, mogolkurdu, dzeren, argali (konumlu, UC_B), k_tarbagan, k_telliTurna, ortam_bozkir_gunduz/gece (gece kaydı çok kısıktı, -52 LUFS'ten
+  yükseltildi; hışırtılı olabilir). Bozuk numune analizinde çökme düzeltildi (merkez numuneSonucu tanımsız bitki). Testler: bot, dayanıklılık, menu-tara Moğolistan
+  iki kipte 259 sayfa sorun 0 (/tmp/claude-0/mg-kayit.json), /tmp/claude-0/kr/mg1.js (4 gün: kurt 2 tay, leopar 1 ceylan) ve mg2.js (kış: karKaziyor),
+  görüntüler scratchpad mg-goruntu.cjs. Telefonda doğrulanmadı.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

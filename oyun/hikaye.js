@@ -228,6 +228,17 @@ export const GIZEMLER = {
     cozum: 'Alarmların sahibi bir kaplan. Kaplan sesini çıkarmadan dolaşır ama geyikler ve langurlar onu görünce alarm verir. Araştırmacılar ve rehberler kaplanı çoğu zaman görmeden önce bu alarm seslerinden bulur.',
     odul: { itibar: 12, fon: 3000 },
   },
+  karHayaleti: {
+    ad: 'Kayalıktaki hayalet',
+    giris: 'Ger kampının yaşlı çobanı, kışın dağın eteğinde kayaların üstünde iri, yuvarlak izler gördüğünü ama izlerin sahibini hiç görmediğini anlatıyor. "Dağın hayaleti" diyor ona. Kim olabilir?',
+    baslat: (k) => M.oyuncuMogolda(k),
+    adimlar: [
+      { metin: 'Kayalık dağa çık. Yerler menüsünde Kayalık dağın eteği var.', tamam: (d) => M.oyuncuMogolda(d.k) && Kt.bolge(d.oyuncu.x, d.oyuncu.y, d.k.dk) === 'mgDag', sonra: 'Kayalarda yuvarlak, dört parmaklı, pençesiz izler ve kalın bir kuyruğun karda bıraktığı sürüklenme izi var. Yukarıda argali yaban koyunları otluyor.' },
+      { metin: 'Kar leoparını bul ve gözle. Argalilerin yakınında, kayaların kenarında kımıldamadan bekler; dürbünle sabırla tara.', tamam: (d) => !!d.k.arsiv.turler.karLeopari },
+    ],
+    cozum: 'Dağın hayaleti bir kar leoparı. Tüylerinin dumanlı gri rengi ve benekleri onu kayaların arasında neredeyse görünmez yapar. Çok ürkektir; araştırmacılar onu çoğu zaman yalnızca izlerinden ve kamera tuzaklarından tanır.',
+    odul: { itibar: 12, fon: 3000 },
+  },
   billabongGolgesi: {
     ad: 'Billabongdaki halkalar',
     giris: 'İstasyonun defterine göre alacakaranlıkta billabongun yüzeyinde küçük halkalar beliriyor, bir şey hızla dalıp çıkıyor. Ne balık ne kuş gibi. Peki ne?',
