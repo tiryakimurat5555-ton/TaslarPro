@@ -1204,6 +1204,28 @@ export const kutupMevsimi = (k) => Kt.kutupTakvim(gunNo(k.dk)).mevsim;
 export const kucukMevsimi = (k) => (oyuncuKutupta(k) ? kutupMevsimi(k) : E.takvim(gunNo(k.dk)).mevsim);
 export const kucukYagmur = (k) => !oyuncuKutupta(k) && !!(k.eko && (k.eko.yagmurVar || k.eko.yagisBugun > 4));
 
+// ---------- Konumlu ses: ses yolunda engel ----------
+// Oyuncuyla ses kaynağı arasındaki düz çizgi bir kayanın, ağacın, binanın ya da termit tepesinin içinden geçiyorsa ses boğuk gelir.
+// Kaynağın kendi dibindeki engel sayılmaz (ağaçta tüneyen kartal, kayanın üstündeki leopar). Mağaradayken dışarıdaki her ses boğuktur.
+export function sesEngeli(d, a, b) {
+  if (d.k && d.k.magara) return true;
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  const L2 = dx * dx + dy * dy;
+  if (L2 < 9) return false;
+  const L = Math.sqrt(L2);
+  for (const e of d.engeller) {
+    if (!(e.r >= 0.6)) continue;
+    const t = ((e.x - a.x) * dx + (e.y - a.y) * dy) / L2;
+    if (t <= 0 || t >= 1) continue;
+    if ((1 - t) * L < e.r + 1.5 || t * L < e.r + 0.8) continue;
+    const px = a.x + t * dx - e.x;
+    const py = a.y + t * dy - e.y;
+    if (px * px + py * py < e.r * e.r * 0.8) return true;
+  }
+  return false;
+}
+
 // ---------- Hareket yardımcıları ----------
 function engelleItele(d, o, pay, nehirSerbest, goletSerbest) {
   for (const e of d.engeller) {

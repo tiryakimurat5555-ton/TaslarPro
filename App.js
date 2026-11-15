@@ -335,6 +335,7 @@ const kucuk = (s) => s.toLocaleLowerCase('tr-TR');
 
 // ---------------- Yenilikler (en yeniler üstte): Murat denerken neyin nerede olduğunu bulsun diye ----------------
 const YENILIKLER = [
+  { baslik: 'Yeni 3 boyutlu ses motoru', metin: 'Hayvan ve canlı sesleri artık tek bir kayıttan, çalarken gerçek zamanlı yönlendiriliyor. Önceden her ses beş sabit yönden birine yerleşiyordu; şimdi sesin yönü kesintisiz. Ses çalarken hayvan yürürse ya da sen dönersen ses de başının çevresinde kayıyor. Arkandan gelen ses boğuk duyulur. Arada kaya, ağaç ya da bina varsa ses boğuklaşır ve kısılır; mağaradayken dışarıdaki sesler boğuk gelir. Uzaklaştıkça ses kısılır. Bu değişiklik oyunun dosya sayısını da yarıya indirdi.', nerede: 'Sahada her yerde; kulaklıkla dinle.' },
   { baslik: 'Kutup araştırmaları, deniz buzu ölçümü ve kutup sesleri', metin: 'Merkezde dört kutup araştırması var. Deniz buzunun üstündeyken buzun kalınlığını ölçebilirsin. Kutup kuşlarının, lemmingin ve sakallı fokun sesleri artık çevrede duyuluyor. Kışın ya da ilkbaharda kutuptayken yeni bir gizem başlayabilir: Buzun altındaki şarkı. Kuzey ışıkları gökyüzünde daha belirgin.', nerede: 'Kutupta Doğa menüsü: Deniz buzunu ölç ve Kutup raporu. Merkez, Araştırmalar. Merkez, Gizemler.' },
   { baslik: 'Yeni bölge: Kuzey Kutbu', metin: 'Kuzeydoğu Grönland kıyısında, savandan ayrı, serbestçe dolaşılan büyük bir harita. Kutup ayısı, halkalı fok, mors, beluga, ren geyiği, misk öküzü, kutup kurdu, kutup tilkisi ve kutup tavşanı yaşıyor; her birinin kendi sesi var. Yazın güneş batmaz, kışın hiç doğmaz; deniz mevsime göre donup çözülür, tipi çıkar, kış gecelerinde kuzey ışıkları görünür. 21 kutup küçük canlısı ve 6 kutup bitkisi, karda ve buzda adım sesleri, rüzgâr, buz, deniz ve kuş yarı ortam sesleri eklendi. İtibarın 50 olunca açılır.', nerede: 'Araştırma merkezi, Saha gezileri: Kuzey Kutbu, yola çık. Yardım, Kuzey Kutbu.' },
   { baslik: 'Zaman artık atlanmıyor', metin: 'Tasarımdaki zaman kuralına uymak için Dinlen menüsü ve Deneme araçlarındaki zamanı ileri alma kaldırıldı. Zaman yalnız oyun açıkken, gerçek akışıyla geçer. Saha kampı hayvanlardan saklanman ve dronunu şarj etmen için duruyor; fırtınada yırtılırsa onarana kadar seni saklamaz. Saha gezilerinin ücreti artık yakıt değil alan izni ve konaklama; araç yakıtı sınırsız.', nerede: 'ana menü; Durum, ayarlar, yardım ve kayıt, Deneme araçları.' },
@@ -896,6 +897,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
   const dRef = useRef(null);
   if (!dRef.current) {
     dRef.current = M.dunyaOlustur(arastirmaci);
+    { const dd = dRef.current; Efekt.engelAyarla((a, b) => M.sesEngeli(dd, a, b)); }
     Mz.baslat(dRef.current);
   }
   const d = dRef.current;
@@ -943,7 +945,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
   };
 
   useEffect(() => {
-    Efekt.onYukle(['adim_ot_0', 'adim_ot_1', 'adim_ot_2', 'adim_ot_3', 'donus_tik', 'hedef_onde', 'sonar_2', 'odak', 'etkinles', 'altin', 'seviye', 'hata', 'carpma', 'sinir', 'menu_odak', 'menu_sec', 'menu_geri', 'menu_sinir', 'deklansor', 'durbun_odak']);
+    Efekt.onYukle(['adim_ot_0', 'adim_ot_1', 'adim_ot_2', 'adim_ot_3', 'donus_tik', 'hedef_onde', 'sonar_L', 'sonar_R', 'odak', 'etkinles', 'altin', 'seviye', 'hata', 'carpma', 'sinir', 'menu_odak', 'menu_sec', 'menu_geri', 'menu_sinir', 'deklansor', 'durbun_odak']);
     ortamSec();
     let silici;
     setAltyazi('');

@@ -501,6 +501,16 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
 - EAS UPDATE VARLIK SINIRI (14 Kasım 2026): bir güncellemede en çok 1000 varlık (asset). Kutup küçük canlı sesleriyle 1045 olunca yayın düştü.
   Vahşi Topraklar'ın kullanılmayan 65 sesi (akrep, ayi, kurt, tilki, dustu 3B; silah, iksir, ıska vb.) arsiv/vahsi-topraklar/assets/efekt'e taşındı
   → 980. Yeni ses eklerken sayıyı denetle (`ls assets/efekt | wc -l` + diğer varlıklar < 1000); 3B ses 10 dosya tutar.
+- KONUMLU SES MOTORU (15 Kasım 2026, Murat bir 3B ses yazısını verip "vahşi yaşama uyarla" dedi): eski biçim ses başına 10 dosyaydı
+  (5 sabit yön × önde/arkada, ad_0..4, ad_0a..4a). Yeni: ses başına 4 dosya ad_L / ad_R (yalnız sol / yalnız sağ kulak, ortadaki
+  eski dosyanın kaynağının 1,25 katı) ve boğuk ad_La / ad_Ra (alçak geçiren + yankı). araclar/konumlu-donustur.py eskiyi çevirdi (87 ses;
+  varlık 979 → 457); sesleri-isle.sh UC sesleri artık bu biçimde üretir. efekt.js yonlu(taban, kim, hedef, ses, duyma): kulaklar() eşit güçlü pan
+  (KULAK_AYRIM 0,88: uzak kulağa da biraz ses), uzaklık (3/m)^0,85, arkadaysa (|açı| > 90°+0,2) ya da arada engel varsa boğuk çift + engelde ×0,72;
+  ikisiniCal iki kulağı birlikte başa sarıp başlatır; calanKonumlu çalan sesleri 80 ms'de bir yeniden hesaplar (hayvan yürür, oyuncu döner,
+  ses kayar). Engel: mantik sesEngeli(d, a, b) (d.engeller r ≥ 0,6, kaynağın dibindeki engel sayılmaz; mağaradayken hep boğuk), App
+  Efekt.engelAyarla. k_/h_/kosu_ sesleri konuşma sırasında da çalar. Tanı globalThis.__konumluDurum; tarayıcı scratchpad konumlu-dene.cjs.
+  Expo Go'daki expo-audio'da pan, süzgeç, HRTF yok (sdk-58 kaynağı denetlendi; react-native-audio-api Expo Go'da yok): gerçek HRTF,
+  gerçek zamanlı süzgeç ve yankı ancak özel derlemeyle (development build) mümkün. Telefonda doğrulanmadı.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)
