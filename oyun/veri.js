@@ -253,6 +253,8 @@ export const DAVRANISLAR = {
   boynuzCarpisiyor: { fiil: 'rakibiyle karşılıklı şaha kalkıp kıvrık boynuzlarını gürültüyle çarpıştırıyor; ses vadide yankılanıyor', ad: 'Boynuz çarpışması', nadir: true },
   kokEseliyor: { fiil: 'burnuyla toprağı sürüp kök ve yumru arıyor; arkasında sürülmüş gibi bir toprak şeridi kalıyor', ad: 'Toprağı eşeleme' },
   bogurme: { fiil: 'başını kaldırıp derin, yankılanan bir böğürmeyle dişileri çağırıyor, rakiplerine meydan okuyor', ad: 'Kur böğürmesi', nadir: true },
+  termitEmiyor: { fiil: 'pençeleriyle bir termit yuvasını yarıp dudaklarını boru gibi uzatarak termitleri gürültüyle emiyor; sesi uzaktan duyuluyor', ad: 'Termit emme', nadir: true },
+  sirtindaYavru: { fiil: 'yavrusu sırtındaki uzun tüylere tutunmuş, onu taşıyarak ilerliyor', ad: 'Yavruyu sırtında taşıma', nadir: true },
   fareAvliyor: { fiil: 'kulaklarını dikip otların arasını dinliyor, sonra kavis çizerek havaya sıçrayıp ön ayaklarıyla bir fareyi bastırıyor', ad: 'Fare avlama', nadir: true },
   kayadaBekliyor: { fiil: 'kayalığın kenarında, rengi taşlarla neredeyse aynı, kımıldamadan aşağıyı izliyor', ad: 'Kayalıkta gözetleme' },
   // Avustralya
@@ -534,7 +536,7 @@ const HX = -6000;
 Object.assign(TURLER, {
   kaplan: {
     ad: 'Bengal Kaplanı', bilimsel: 'Panthera tigris tigris', kisa: 'KPL', sinif: 'Memeli', ses: 'kaplan', sekil: 'kedi', boy: 1.3, renk: '#d0782c', kutup: true, hindistan: true,
-    hiz: 12, aktif: 'karma', kacis: 30, tehlikeli: true, yirtici: true, avlar: ['cital', 'sambar', 'gaur'], sesSik: 160, sesTuru: 'bolge',
+    hiz: 12, aktif: 'karma', kacis: 30, tehlikeli: true, yirtici: true, avlar: ['cital', 'sambar', 'gaur', 'barasingha', 'hintYabanDomuzu', 'nilgay'], sesSik: 160, sesTuru: 'bolge',
     habitat: { x: HX - 20, y: 40, r: 140 }, grup: [1, 2], erkekOran: 0.4,
     tarif: 'Dünyanın en büyük kedilerinden biri. Tek başına yaşar ve avlanır; çizgileri parmak izi gibi her bireyde farklıdır. Sinsice yaklaşıp son birkaç metrede atılır. Sıcakta suya girmeyi sever. Ormandaki varlığını en çok geyiklerin ve maymunların alarm çağrıları ele verir.',
   },
@@ -567,6 +569,75 @@ Object.assign(TURLER, {
     hiz: 8, aktif: 'gunduz', kacis: 20, sesSik: 90, sesTuru: 'alarm',
     habitat: { x: HX + 10, y: -20, r: 90 }, grup: [8, 14], erkekOran: 0.25,
     tarif: 'Gri tüylü, siyah yüzlü, uzun kuyruklu bir maymun. Gününün çoğunu ağaçlarda yaprak, çiçek ve meyve yiyerek geçirir. Ağaçtan çevreyi iyi görür; kaplanı ya da leoparı fark edince yüksek sesle alarm verir, bunu duyan geyikler de kaçar.',
+  },
+});
+// Orta Hindistan ormanlarında (Kanha, Bandhavgarh) gerçekten yaşayan öbür büyük ve orta boy memeliler (15 Kasım 2026, Murat "orada gerçekten yaşayan tüm hayvanlar")
+Object.assign(TURLER, {
+  hintLeopari: {
+    ad: 'Hint Leoparı', bilimsel: 'Panthera pardus fusca', kisa: 'HLP', sinif: 'Memeli', ses: 'hintleopari', sekil: 'kedi', boy: 0.95, renk: '#c8963c', kutup: true, hindistan: true,
+    hiz: 12, aktif: 'gece', kacis: 40, tehlikeli: true, yirtici: true, avlar: ['cital', 'langur', 'muntjak', 'hintYabanDomuzu', 'dortBoynuzlu', 'rhesus'], sesSik: 220, sesTuru: 'bolge',
+    habitat: { x: HX - 115, y: -120, r: 70 }, grup: [1, 1], erkekOran: 0.5,
+    tarif: 'Kaplandan küçük, gül biçimli kara beneklerle örtülü güçlü bir kedi. Kaplanın bölgesinde ondan uzak durur; kayalık yaylalarda ve ormanın kenarında yaşar, gündüzü kayaların arasında ya da bir ağaç dalında geçirir. Geceleri testere sesini andıran hırıltılı bir çağrı çıkarır.',
+  },
+  tembelAyi: {
+    ad: 'Tembel Ayı', bilimsel: 'Melursus ursinus', kisa: 'TAY', sinif: 'Memeli', ses: 'tembelayi', sekil: 'ayi', boy: 0.75, renk: '#1e1a18', kutup: true, hindistan: true,
+    hiz: 7, aktif: 'gece', kacis: 35, tehlikeli: true, sesSik: 160, sesTuru: 'iletisim',
+    habitat: { x: HX - 30, y: 130, r: 70 }, grup: [1, 2], erkekOran: 0.5,
+    tarif: 'Uzun, dağınık siyah tüylü, göğsünde beyaz "V" lekesi olan bir ayı. Uzun pençeleriyle termit yuvalarını yarar, dudaklarını boru gibi uzatıp termitleri gürültüyle emer; mahua çiçeklerini ve meyveleri de çok sever. Anne yavrularını sırtında taşır. Ürkünce saldırabilir; ormanın en tehlikeli hayvanlarından sayılır.',
+  },
+  hintYabanKopegi: {
+    ad: 'Hint Yaban Köpeği (Dhole)', bilimsel: 'Cuon alpinus', kisa: 'DHL', sinif: 'Memeli', ses: 'dhole', sekil: 'kurt', boy: 0.6, renk: '#b8582a', kutup: true, hindistan: true,
+    hiz: 13, aktif: 'gunduz', kacis: 35, yirtici: true, avlar: ['cital', 'sambar', 'muntjak', 'hintYabanDomuzu', 'barasingha'], sesSik: 120, sesTuru: 'iletisim',
+    habitat: { x: HX + 10, y: 10, r: 150 }, grup: [5, 10], erkekOran: 0.6,
+    tarif: 'Kızıl tüylü, kara kuyruklu, kurttan küçük bir yaban köpeği. Kalabalık sürüler hâlinde gündüz avlanır; birbirleriyle ıslığa benzeyen seslerle haberleşir. Sürü, kendisinden çok büyük bir sambarı bile kovalayarak yorar ve yakalar. Nesli tehlikede.',
+  },
+  cizgiliSirtlan: {
+    ad: 'Çizgili Sırtlan', bilimsel: 'Hyaena hyaena', kisa: 'CSR', sinif: 'Memeli', ses: 'cizgilisirtlan', sekil: 'sirtlan', boy: 0.75, renk: '#a89c84', kutup: true, hindistan: true,
+    hiz: 8, aktif: 'gece', kacis: 40, yirtici: true, lesci: true, avlar: ['muntjak'], sesSik: 260, sesTuru: 'iletisim',
+    habitat: { x: HX - 120, y: -60, r: 90 }, grup: [1, 1], erkekOran: 0.5,
+    tarif: 'Gri-kum renkli, gövdesi koyu çizgili, sırtı boyunca dik bir yelesi olan bir sırtlan. Çoğunlukla yalnız ve gece gezer; kaplanların ve leoparların artıklarını, kemikleri bile güçlü çenesiyle kırıp yer. Korkunca yelesini kabartıp olduğundan iri görünür.',
+  },
+  altinCakal: {
+    ad: 'Altın Çakal', bilimsel: 'Canis aureus', kisa: 'CKL', sinif: 'Memeli', ses: 'altincakal', sekil: 'kurt', boy: 0.5, renk: '#b8945c', kutup: true, hindistan: true,
+    hiz: 11, aktif: 'karma', kacis: 35, yirtici: true, lesci: true, avlar: ['dortBoynuzlu', 'muntjak'], sesSik: 140, sesTuru: 'bolge',
+    habitat: { x: HX + 40, y: -60, r: 120 }, grup: [2, 3], erkekOran: 0.5,
+    tarif: 'Altın-sarı tüylü, kurttan küçük bir yaban köpeği. Çiftler hâlinde yaşar; kemirgen, kuş, meyve ve leş, ne bulursa yer. Alacakaranlıkta çiftler ve komşu aileler birlikte uzun, tiz ulumalar çıkarır.',
+  },
+  barasingha: {
+    ad: 'Bataklık Geyiği (Barasingha)', bilimsel: 'Rucervus duvaucelii branderi', kisa: 'BRS', sinif: 'Memeli', ses: 'barasingha', sekil: 'geyik', boy: 1.05, renk: '#a8783a', kutup: true, hindistan: true,
+    hiz: 11, aktif: 'karma', kacis: 35, sesSik: 200, sesTuru: 'iletisim',
+    habitat: { x: HX + 30, y: -130, r: 60 }, grup: [8, 15], erkekOran: 0.35,
+    tarif: '"On iki boynuzlu" anlamına gelen adını erkeğin çok dallı boynuzundan alır. Kanha\'nın sert zeminli çayırlarına uyum sağlamış bir alt türdür; bir zaman 66 bireye kadar azalmış, korumayla yeniden çoğalmıştır. Kış başında erkekler çayırda böğürerek dişiler için yarışır.',
+  },
+  nilgay: {
+    ad: 'Nilgay (Mavi Boğa)', bilimsel: 'Boselaphus tragocamelus', kisa: 'NLG', sinif: 'Memeli', ses: 'nilgay', sekil: 'ceylan', boy: 1.4, renk: '#8a7a6a', kutup: true, hindistan: true,
+    hiz: 11, aktif: 'gunduz', kacis: 45, sesSik: 220, sesTuru: 'alarm',
+    habitat: { x: HX + 120, y: -60, r: 70 }, grup: [3, 8], erkekOran: 0.4,
+    tarif: 'Asya\'nın en iri antilobu. Erkeği mavimsi gri, kısa boynuzlu ve boynunda bir püskül var; dişiler ve yavrular kahverengidir. Açık, kurak ormanlarda ve çayırların kenarında dolaşır, suya pek bağımlı değildir.',
+  },
+  muntjak: {
+    ad: 'Havlayan Geyik (Muntjak)', bilimsel: 'Muntiacus vaginalis', kisa: 'MNT', sinif: 'Memeli', ses: 'muntjak', sekil: 'geyik', boy: 0.55, renk: '#a8602a', kutup: true, hindistan: true,
+    hiz: 12, aktif: 'karma', kacis: 30, sesSik: 160, sesTuru: 'alarm',
+    habitat: { x: HX + 60, y: 130, r: 70 }, grup: [1, 2], erkekOran: 0.5,
+    tarif: 'Küçük, kızıl, yalnız yaşayan bir geyik. Erkeğin kısa boynuzlarının yanında köpek dişi gibi iki küçük sivri dişi var. Sık ormanın içinde yaşar; bir yırtıcı görünce köpek gibi uzun uzun havlar, adını da buradan alır.',
+  },
+  hintYabanDomuzu: {
+    ad: 'Hint Yaban Domuzu', bilimsel: 'Sus scrofa cristatus', kisa: 'HYD', sinif: 'Memeli', ses: 'yabandomuzu', sekil: 'domuz', boy: 0.95, renk: '#3e3630', kutup: true, hindistan: true,
+    hiz: 10, aktif: 'karma', kacis: 35, tehlikeli: true, sesSik: 140, sesTuru: 'iletisim',
+    habitat: { x: HX - 40, y: 60, r: 100 }, grup: [4, 10], erkekOran: 0.3,
+    tarif: 'Sırtı boyunca uzun kıllı bir yelesi olan yaban domuzu. Kalabalık gruplar hâlinde dolaşır, burnuyla toprağı sürer, kök ve yumru arar; çayırda ve göl kıyısında çamura yatar. Kaplanın ve yaban köpeklerinin sık avıdır.',
+  },
+  dortBoynuzlu: {
+    ad: 'Dört Boynuzlu Antilop (Chousingha)', bilimsel: 'Tetracerus quadricornis', kisa: 'DBA', sinif: 'Memeli', ses: 'dortboynuzlu', sekil: 'ceylan', boy: 0.5, renk: '#a07040', kutup: true, hindistan: true,
+    hiz: 12, aktif: 'karma', kacis: 30, sesSik: 260, sesTuru: 'alarm',
+    habitat: { x: HX - 150, y: -40, r: 60 }, grup: [1, 2], erkekOran: 0.5,
+    tarif: 'Dünyada dört boynuzlu tek yabani memeli: erkeğin iki kısa boynuzunun önünde iki küçük boynuz daha var. Küçük, ürkek ve yalnızdır; suya yakın, çalılık ve kayalık yamaçlarda saklanır.',
+  },
+  rhesus: {
+    ad: 'Rhesus Makağı', bilimsel: 'Macaca mulatta', kisa: 'RHS', sinif: 'Memeli', ses: 'rhesus', sekil: 'dortayak', boy: 0.5, renk: '#a88a5c', kutup: true, hindistan: true,
+    hiz: 7, aktif: 'gunduz', kacis: 20, sesSik: 90, sesTuru: 'iletisim',
+    habitat: { x: HX + 50, y: 30, r: 60 }, grup: [8, 15], erkekOran: 0.3,
+    tarif: 'Kısa kuyruklu, pembe yüzlü, kahverengi-gri bir maymun. Kalabalık, gürültülü ve sıkı bir sıralamaya sahip gruplar hâlinde yaşar; göl kıyısındaki ağaçlarda dolaşır, yerde de rahattır. Langurlardan daha çok yerde beslenir.',
   },
 });
 // ---------- Moğol bozkırı türleri (kutup: true harita altyapısı, mogol: true; habitatlar MOGOLISTAN merkezine göre) ----------

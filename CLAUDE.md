@@ -605,6 +605,16 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   merkez araştırması bozkirOrmanDag. Sesler (akış R1AN6H1CX2wNrRrpqPLB) 8 tür konumlu (UC_B) + 2 küçük canlı; assets/efekt 630.
   Yeni türde doldurulacak tablolar: veri TURLER (+avlar), mantik SOZ/DUYULAR/GEBE_GUN/ACLIK_SURESI/AV_STRATEJI/KOSU_SESI + xPlanSec, ekosistem YASAM,
   gece GOZ, yonetim IUCN, sahne modeli, sesleri-isle.sh UC_B. Test /tmp/claude-0/kr/mg1.js, mg4.js (plan sayımı). Telefonda doğrulanmadı.
+  HİNDİSTAN YAPILDI (15 Kasım 2026): TURLER + 11 (veri.js ayrı Object.assign bloğu): hintLeopari (kedi + benekler; gündüz dadarda 'kayada'), tembelAyi
+  (ayi + göğüste beyaz V, soluk burun; gündüz 'in', gece 'termit' → termitEmiyor, yavrulu dişi yürürken sirtindaYavru), hintYabanKopegi (kurt + kara kuyruk;
+  gündüz avlanır, gece dinlenir, AV_STRATEJI 3 yardımcı), cizgiliSirtlan (sirtlan biçimi + enine çizgi ve yele; yirtici+lesci, ACLIK 9000, gündüz in),
+  altinCakal (kurt; 'fare' → fareAvliyor, lesci; akşam koro olayı hindistanGrupAdim'de), barasingha (geyik + çok dallı boynuz; kışın 'bogur'),
+  nilgay (ceylan biçimi, erkek mavi-gri, püskül, kısa boynuz), muntjak (geyik, kısa boynuz), hintYabanDomuzu (domuz, ses yabandomuzu, gece 'esele'),
+  dortBoynuzlu (ceylan, erkekte 4 boynuz), rhesus (dortayak'ta ayrı model, pembe yüz; 'dallar' sahnede 4,5 m yukarıda). Kaplan avları + barasingha,
+  hintYabanDomuzu, nilgay. Alarm: cital/langur/muntjak/rhesus kaplana ya da leopara 45 m'de. HINDISTAN_CANLILARI + 24 (34; tepeliYilanKartali:
+  yilanKartali savanda var). KUCUK_SESLI asyaKoeli, hintAgustosBocegi. Merkez araştırması kanhaYirticilari. assets/efekt 678.
+  Robustluk: merkez numuneAdi bozuk bitki numunesinde çökmüyor. Test /tmp/claude-0/kr/hn1.js (5 günde nüfus dengede; leopar, yaban köpeği avladı).
+  SIRADAKİ: Avustralya, Antarktika, Kuzey Kutbu, Savan.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

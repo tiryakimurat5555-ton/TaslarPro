@@ -330,6 +330,14 @@ export const ARASTIRMALAR = [
     sonuc: 'Langurlar ağaçtan çevreyi gözlüyor, geyikler yerde koku ve sesle dinliyor; ikisi birbirinin alarmını anlıyor. Langurların yere düşürdüğü yapraklar da geyikleri besliyor. Bu ortaklık kaplanın sürpriz saldırı şansını azaltıyor.',
   },
   {
+    id: 'kanhaYirticilari',
+    ad: 'Kaplanın gölgesindeki yırtıcılar',
+    kosulMetni: 'Leopar, tembel ayı, yaban köpeği, çizgili sırtlan ve altın çakalı kaydet; tembel ayının termit emmesini, çakalın fare avını ve barasingha erkeğinin böğürmesini gözle',
+    ilerleme: (k) => [['hintLeopari', 'tembelAyi', 'hintYabanKopegi', 'cizgiliSirtlan', 'altinCakal'].filter((t) => k.arsiv.turler[t]).length + [['tembelAyi', 'termitEmiyor'], ['altinCakal', 'fareAvliyor'], ['barasingha', 'bogurme']].filter(([t, dv]) => davranisVar(k, t, dv)).length, 8],
+    odul: { itibar: 18, fon: 7000 },
+    sonuc: 'Kanha\'da kaplanın yanında beş yırtıcının daha yaşadığı ve her birinin kendine ayrı bir yol bulduğu gösterildi: leopar kayalıklara ve ağaçlara çekiliyor, yaban köpekleri kaplanın uyuduğu gündüz avlanıyor, tembel ayı termitlerle, çakal farelerle, sırtlan artıklarla geçiniyor.',
+  },
+  {
     id: 'salOrmaniYasami',
     ad: 'Sal ormanı ve çayırın küçük dünyası',
     kosulMetni: '3 Hindistan bitkisini incele ve 5 Hindistan küçük canlısını bul',
@@ -976,7 +984,7 @@ export function bitkiNumunesi(d, id) {
 // ---------- Laboratuvar ----------
 export const numuneKapasitesi = (k) => (tesisVar(k, 'gelismisLab') ? 2 : 1);
 export const numuneAdi = (n) =>
-  n.tip === 'toprak' ? `${n.veri.kutup ? M.kucukHarf(Kt.BOLGE_ADLARI_K[n.veri.bolge] || 'kutup') : BOLGE_TOPRAK[n.veri.bolge] || 'savan'} toprağı` : n.tip === 'kil' ? `${n.veri.kod || kucuk2(M.SOZ[n.veri.tur])} ${kilAdi(n.veri.tur)}` : n.tip === 'su' ? `${n.kaynak} suyu` : n.tip === 'diski' ? `${n.veri.kod || kucuk2(M.SOZ[n.veri.tur])} dışkısı` : n.tip === 'les' ? `${kucuk2(M.SOZ[n.veri.tur])} leşi dokusu` : `${kucuk2(E.BITKILER[n.veri.bitki].ad)} ${n.veri.parca}`;
+  n.tip === 'toprak' ? `${n.veri.kutup ? M.kucukHarf(Kt.BOLGE_ADLARI_K[n.veri.bolge] || 'kutup') : BOLGE_TOPRAK[n.veri.bolge] || 'savan'} toprağı` : n.tip === 'kil' ? `${n.veri.kod || kucuk2(M.SOZ[n.veri.tur])} ${kilAdi(n.veri.tur)}` : n.tip === 'su' ? `${n.kaynak} suyu` : n.tip === 'diski' ? `${n.veri.kod || kucuk2(M.SOZ[n.veri.tur])} dışkısı` : n.tip === 'les' ? `${kucuk2(M.SOZ[n.veri.tur])} leşi dokusu` : `${kucuk2((E.BITKILER[n.veri && n.veri.bitki] || { ad: 'bitki' }).ad)} ${(n.veri && n.veri.parca) || 'örneği'}`;
 export function numuneMetni(k, n) {
   const ad = `${M.BuyukHarf(numuneAdi(n))}, ${n.gun}. gün, ${n.bolge}`;
   if (n.durum === 'kutuda') return `${ad}: numune kutunda, istasyona götür`;
