@@ -525,6 +525,28 @@ export const BITKILER = {
     tohum: [false, false, false, false],
     analiz: 'Yılda yalnızca birkaç milimetre büyüyor; çapından kayanın buzdan ne zaman kurtulduğu hesaplanabiliyor. Antarktika kayalarında yüzlerce yaşında likenler var.',
   },
+  // ---- Hindistan ormanı (hindistan: true; mevsimler muson, muson sonrası, serin kış, kavurucu yaz) ----
+  sal: {
+    ad: 'Sal ağacı', bilimsel: 'Shorea robusta', bicim: 'ağaç', bolge: ['salOrmani', 'hnUs', 'maidan'], ozellik: 'besin', kutup: true, hindistan: true,
+    tarif: 'Uzun, düz gövdeli, iri yapraklı bir orman ağacı. Orta Hindistan ormanlarının çoğunu oluşturur. Yaprakları köylülerin tabağı olur.',
+    evre: ['muson yağmurlarıyla yemyeşil', 'kanatlı tohumları rüzgârla dönerek düşüyor', 'yaprakları sertleşmiş, gölgesi serin', 'yapraklarını döküp yenilerini sürüyor; kremsi çiçek salkımları açmış'],
+    tohum: [true, false, false, false],
+    analiz: 'Sal tohumları muson başlarken düşer ve hemen çimlenir; kuru toprakta birkaç gün içinde canlılığını yitirir. Bu yüzden ormanın yenilenmesi musonun zamanında gelmesine bağlı.',
+  },
+  bambu: {
+    ad: 'Kalın bambu', bilimsel: 'Dendrocalamus strictus', bicim: 'ot', bolge: ['bambuluk', 'hnDere'], ozellik: 'besin', kutup: true, hindistan: true,
+    tarif: 'Sık kümeler hâlinde büyüyen, ağaç boyuna ulaşan bir ot. Filler ve gaurlar sürgünlerini yer.',
+    evre: ['muson yağmurlarıyla yeni sürgünler günde yarım metre uzuyor', 'yeni sürgünler sertleşiyor', 'kuru yapraklar dökülüyor', 'gövdeler sararmış, rüzgârda gıcırdıyor'],
+    tohum: [false, false, false, false],
+    analiz: 'Bu bambu onlarca yılda bir, bütün bölgede aynı anda çiçek açıp tohum verir ve sonra kurur. O yıllarda tohumla beslenen fareler patlar.',
+  },
+  mahua: {
+    ad: 'Mahua', bilimsel: 'Madhuca longifolia', bicim: 'ağaç', bolge: ['maidan', 'hnUs', 'salOrmani'], ozellik: 'besin', kutup: true, hindistan: true,
+    tarif: 'Çayırların kenarında, tatlı kokulu etli çiçekler açan bir ağaç. Çiçekleri yere döküldüğünde ayılar, geyikler, maymunlar ve insanlar toplamaya gelir.',
+    evre: ['yeşil ve gür', 'meyveleri olgunlaşıyor', 'yapraklarını döküyor', 'gece boyunca krem rengi çiçeklerini yere döküyor; altı geyiklerle dolu'],
+    tohum: [false, true, false, false],
+    analiz: 'Çiçeklerin şeker oranı çok yüksek; kavurucu yazın başında ormanın en önemli besin kaynaklarından biri.',
+  },
   // ---- Avustralya çalılığı (avustralya: true; mevsimleri güney takvimine göre) ----
   nehirOkaliptusu: {
     ad: 'Nehir kırmızı okaliptüsü', bilimsel: 'Eucalyptus camaldulensis', bicim: 'ağaç', bolge: ['kuruDere', 'billabong', 'okaliptus'], ozellik: 'su', kutup: true, avustralya: true,
@@ -579,7 +601,7 @@ export const KUTUP_EVRE_ADI = { yE: 'kutup yazı', yG: 'sonbahar', kE: 'kutup k�
 export const OZELLIK_ADI = { besin: 'önemli bir besin bitkisi', su: 'suyu temizleyen bir bitki', zehirli: 'zehirli', 'şifalı': 'şifalı' };
 export function bitkiEvresi(id, gun, eko) {
   if (BITKILER[id].kutup) {
-    const i = kutupEvreNo(gun + (BITKILER[id].guney || BITKILER[id].avustralya ? 12 : 0)); // güney yarıkürede mevsimler tersine
+    const i = kutupEvreNo(gun + (BITKILER[id].guney || BITKILER[id].avustralya ? 12 : 0)); // Hindistan kaymasız // güney yarıkürede mevsimler tersine
 
     return { anahtar: ['yE', 'yG', 'kE', 'kG'][i], mevsim: ['yaz', 'sonbahar', 'kis', 'ilkbahar'][i], metin: BITKILER[id].evre[i], tohum: BITKILER[id].tohum[i] };
   }
@@ -665,6 +687,12 @@ export const YASAM = {
   emu: { yavru: 0.5, genc: 2, yasli: 12, omur: 16 },
   vombat: { yavru: 0.7, genc: 2, yasli: 13, omur: 17 },
   dingo: { yavru: 0.5, genc: 1, yasli: 8, omur: 11 },
+  kaplan: { yavru: 1, genc: 2.5, yasli: 12, omur: 16 },
+  hintFili: { yavru: 2, genc: 10, yasli: 45, omur: 60 },
+  cital: { yavru: 0.5, genc: 1.5, yasli: 9, omur: 12 },
+  sambar: { yavru: 0.6, genc: 2, yasli: 12, omur: 16 },
+  gaur: { yavru: 1, genc: 3, yasli: 16, omur: 22 },
+  langur: { yavru: 0.8, genc: 3, yasli: 15, omur: 20 },
 };
 export const yilGun = (yil) => yil * YIL_GUN;
 export function evreBul(tur, yasGun) {

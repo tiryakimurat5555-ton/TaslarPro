@@ -27,6 +27,8 @@ export const KUTUP = { x: 0, y: 6000, r: 230 };
 export const ANTARKTIKA = { x: 0, y: -6000, r: 230 };
 // Avustralya çalılığı (Queensland iç kesimi): savanın çok doğusunda, kendi mevsimi ve havası olan dördüncü ana harita (kutup.js AVUS)
 export const AVUSTRALYA = { x: 6000, y: 0, r: 230 };
+// Hindistan ormanı (Kanha, Orta Hindistan): savanın çok batısında, sal ormanı, çayır ve göl; beşinci ana harita (kutup.js HIND)
+export const HINDISTAN = { x: -6000, y: 0, r: 230 };
 export const MAGARA = { x: -128, y: 64 };
 
 // ---------- Dış halkanın bölgeleri (15 Kasım 2026, harita genişlemesi) ----------
@@ -124,6 +126,13 @@ export const BOLGE_ADLARI = {
   kusYari: 'Kuş yarları',
   polinya: 'Polinya',
   // Antarktika
+  hnUs: 'Orman dinlenme evi',
+  maidan: 'Çayır (maidan)',
+  salOrmani: 'Sal ormanı',
+  bambuluk: 'Bambu ormanı',
+  talab: 'Göl kıyısı',
+  dadar: 'Kayalık yayla (dadar)',
+  hnDere: 'Dere yatağı',
   avUs: 'Saha istasyonu',
   billabong: 'Billabong',
   kuruDere: 'Kuru dere yatağı',
@@ -221,6 +230,12 @@ export const DAVRANISLAR = {
   penguenPususu: { fiil: 'buz kenarının altında, penguenlerin suya girdiği yerde pusuya yatmış', ad: 'Penguen pususu', nadir: true },
   dalgaYapiyor: { fiil: 'ailesiyle yan yana hızla yüzüp bir dalga yaratıyor; buz parçasının üstündeki foku suya düşürmeye çalışıyor', ad: 'Dalga yaparak avlanma', nadir: true },
   bogaKavgasi: { fiil: 'göğsünü kaldırıp rakibine kükrüyor; iki erkek boyunlarını birbirine çarpıyor', ad: 'Erkeklerin kumsal kavgası', nadir: true },
+  // Hindistan
+  suyaYatmis: { fiil: 'öğle sıcağında göle girmiş, yalnızca başı sudan çıkıyor; serinliyor', ad: 'Suda serinleme', nadir: true },
+  alarmVeriyor: { fiil: 'kaplanı fark etmiş; başını kaldırıp tiz bir alarm havlaması çıkarıyor, kuyruğunu dikmiş', ad: 'Kaplan alarmı', nadir: true },
+  dallardaBesleniyor: { fiil: 'ağacın dallarında yaprak ve meyve yiyor; yere düşürdükleri yaprakları altında bekleyen geyikler topluyor', ad: 'Ağaçta beslenme' },
+  sudaOtluyor: { fiil: 'göle karnına kadar girmiş, su bitkilerini yiyor', ad: 'Suda otlama', nadir: true },
+  kokuIsaretliyor: { fiil: 'ağaç gövdesine yanağını sürtüp pençeleriyle kabuğu tırmalıyor; bölgesini işaretliyor', ad: 'Bölge işaretleme', nadir: true },
   // Avustralya
   boksYapiyor: { fiil: 'kuyruğuna yaslanıp rakibiyle ön ayaklarıyla güreşiyor, arka ayaklarıyla tekme savuruyor', ad: 'Kanguru boksu', nadir: true },
   golgedeYatiyor: { fiil: 'öğle sıcağında bir ağacın gölgesine uzanmış, ön kollarını yalayarak serinliyor', ad: 'Gölgede serinleme' },
@@ -495,8 +510,49 @@ Object.assign(TURLER, {
     tarif: 'Avustralya\'nın en büyük kara yırtıcısı; binlerce yıl önce insanlarla kıtaya gelmiş vahşi bir köpek. Havlamaz; uluyarak iletişim kurar. Sürüyle kangurulara bayırlarda pusu kurar, yorulana kadar kovalar.',
   },
 });
+// ---------- Hindistan ormanı türleri (kutup: true harita altyapısı, hindistan: true; habitatlar HINDISTAN merkezine göre) ----------
+const HX = -6000;
+Object.assign(TURLER, {
+  kaplan: {
+    ad: 'Bengal Kaplanı', bilimsel: 'Panthera tigris tigris', kisa: 'KPL', sinif: 'Memeli', ses: 'kaplan', sekil: 'kedi', boy: 1.3, renk: '#d0782c', kutup: true, hindistan: true,
+    hiz: 12, aktif: 'karma', kacis: 30, tehlikeli: true, yirtici: true, avlar: ['cital', 'sambar', 'gaur'], sesSik: 160, sesTuru: 'bolge',
+    habitat: { x: HX - 20, y: 40, r: 140 }, grup: [1, 2], erkekOran: 0.4,
+    tarif: 'Dünyanın en büyük kedilerinden biri. Tek başına yaşar ve avlanır; çizgileri parmak izi gibi her bireyde farklıdır. Sinsice yaklaşıp son birkaç metrede atılır. Sıcakta suya girmeyi sever. Ormandaki varlığını en çok geyiklerin ve maymunların alarm çağrıları ele verir.',
+  },
+  hintFili: {
+    ad: 'Hint Fili', bilimsel: 'Elephas maximus indicus', kisa: 'HFL', sinif: 'Memeli', ses: 'hintfili', sekil: 'fil', boy: 1.15, renk: '#6e6a66', kutup: true, hindistan: true,
+    hiz: 5, aktif: 'karma', kacis: 30, tehlikeli: true, sesSik: 80, sesTuru: 'iletisim',
+    habitat: { x: HX + 40, y: 110, r: 80 }, grup: [4, 7], erkekOran: 0.3,
+    tarif: 'Afrika filinden küçük, kulakları daha küçük ve sırtı kamburdur; dişilerin çoğunun fildişi yoktur. Yaşlı bir dişinin önderliğinde aile hâlinde dolaşır. Günde 150 kilogram bitki yer, bambu ve sal ormanının yollarını açar.',
+  },
+  cital: {
+    ad: 'Benekli Geyik (Çital)', bilimsel: 'Axis axis', kisa: 'CTL', sinif: 'Memeli', ses: 'cital', sekil: 'geyik', boy: 0.85, renk: '#b8743a', kutup: true, hindistan: true,
+    hiz: 12, aktif: 'karma', kacis: 30, sesSik: 160, sesTuru: 'alarm',
+    habitat: { x: HX + 0, y: -100, r: 90 }, grup: [8, 14], erkekOran: 0.35,
+    tarif: 'Kızıl sırtı ömür boyu beyaz benekli kalan zarif bir geyik. Çayırlarda kalabalık sürülerle otlar; langur maymunlarının ağaçtan düşürdüğü yaprak ve meyveleri toplamak için onların altında dolaşır. Kaplanı görünce tiz bir alarm havlaması çıkarır.',
+  },
+  sambar: {
+    ad: 'Sambar Geyiği', bilimsel: 'Rusa unicolor', kisa: 'SMB', sinif: 'Memeli', ses: 'sambar', sekil: 'geyik', boy: 1.15, renk: '#5c4a38', kutup: true, hindistan: true,
+    hiz: 10, aktif: 'gece', kacis: 32, sesSik: 200, sesTuru: 'alarm',
+    habitat: { x: HX + 60, y: 40, r: 70 }, grup: [2, 4], erkekOran: 0.4,
+    tarif: 'Hindistan\'ın en iri geyiği; koyu kahverengi, kaba tüylü. Geceleri ve alacakaranlıkta beslenir, göl kıyısında su bitkileri yemek için suya girer. Tehlikede ayağını yere vurup kornaya benzeyen yüksek bir "dank" sesi çıkarır.',
+  },
+  gaur: {
+    ad: 'Gaur (Hint Bizonu)', bilimsel: 'Bos gaurus', kisa: 'GAR', sinif: 'Memeli', ses: 'gaur', sekil: 'manda', boy: 1.25, renk: '#2e2620', kutup: true, hindistan: true,
+    hiz: 8, aktif: 'karma', kacis: 30, tehlikeli: true, sesSik: 140, sesTuru: 'iletisim',
+    habitat: { x: HX - 80, y: 120, r: 80 }, grup: [5, 9], erkekOran: 0.3,
+    tarif: 'Dünyanın en büyük yabani sığırı; sırtında bir tümsek, bacakları dizden aşağı beyaz "çoraplı". Sal ormanının kenarlarında ve yamaçlarda otlar. Yetişkin bir boğaya kaplan bile nadiren saldırır.',
+  },
+  langur: {
+    ad: 'Gri Langur', bilimsel: 'Semnopithecus entellus', kisa: 'LNG', sinif: 'Memeli', ses: 'langur', sekil: 'dortayak', boy: 0.6, renk: '#b4b0a8', kutup: true, hindistan: true,
+    hiz: 8, aktif: 'gunduz', kacis: 20, sesSik: 90, sesTuru: 'alarm',
+    habitat: { x: HX + 10, y: -20, r: 90 }, grup: [8, 14], erkekOran: 0.25,
+    tarif: 'Gri tüylü, siyah yüzlü, uzun kuyruklu bir maymun. Gününün çoğunu ağaçlarda yaprak, çiçek ve meyve yiyerek geçirir. Ağaçtan çevreyi iyi görür; kaplanı ya da leoparı fark edince yüksek sesle alarm verir, bunu duyan geyikler de kaçar.',
+  },
+});
 export const TUR_SIRASI = Object.keys(TURLER).filter((t) => !TURLER[t].kutup);
-export const KUTUP_SIRASI = Object.keys(TURLER).filter((t) => TURLER[t].kutup && !TURLER[t].guney && !TURLER[t].avustralya);
+export const KUTUP_SIRASI = Object.keys(TURLER).filter((t) => TURLER[t].kutup && !TURLER[t].guney && !TURLER[t].avustralya && !TURLER[t].hindistan);
+export const HINDISTAN_SIRASI = Object.keys(TURLER).filter((t) => TURLER[t].hindistan);
 export const AVUSTRALYA_SIRASI = Object.keys(TURLER).filter((t) => TURLER[t].avustralya);
 export const ANTARKTIKA_SIRASI = Object.keys(TURLER).filter((t) => TURLER[t].guney);
 

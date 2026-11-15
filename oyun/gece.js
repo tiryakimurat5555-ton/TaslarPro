@@ -42,6 +42,12 @@ export const GOZ = {
   emu: { renk: null, boy: 'insan boyunda', ipucu: 'iri, uçamayan bir kuş' },
   vombat: { renk: 'kırmızımsı', boy: 'yere çok yakın', ipucu: 'tıknaz, kazıcı bir keseli' },
   dingo: { renk: 'sarımsı yeşil', boy: 'diz hizasında, birkaç çift', ipucu: 'sürü hâlindeki köpekgiller' },
+  kaplan: { renk: 'parlak yeşil', boy: 'diz-bel hizasında, tek bir iri çift', ipucu: 'çok iri bir kedi' },
+  hintFili: { renk: 'soluk kırmızı', boy: 'çok yüksekte, birkaç çift', ipucu: 'dev bir otçul' },
+  cital: { renk: 'parlak beyaz-yeşil', boy: 'omuz hizasında, kalabalık bir sürü', ipucu: 'sürü hâlinde geyik' },
+  sambar: { renk: 'turuncu', boy: 'insan boyunda, birkaç çift', ipucu: 'iri bir geyik' },
+  gaur: { renk: 'mavimsi', boy: 'insan boyunda, kalabalık', ipucu: 'iri, sürü hâlinde sığır' },
+  langur: { renk: null, boy: 'ağaçların dallarında', ipucu: 'maymun; gözleri pek parlamaz' },
 };
 const MENZIL = 45;
 

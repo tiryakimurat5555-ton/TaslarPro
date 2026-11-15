@@ -564,6 +564,20 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   okaliptüsler, mulga, spinifex, kumtaşı, termit kuleleri, mesalar, istasyon), yağmur damlaları, toz fırtınasında kızıl gök. Sesler kanguru, koala,
   emu, vombat, dingo (konumlu), k_kookaburra, k_kakadu, 3 ortam döngüsü. Testler: bot, dayanıklılık, menu-tara Avustralya iki kipte (/tmp/claude-0/av-kayit.json)
   ve savanda sorun 0, /tmp/claude-0/kr/av1.js, görüntüler scratchpad av-goruntu.cjs. Telefonda doğrulanmadı.
+- HİNDİSTAN ORMANI (15 Kasım 2026, Murat "Devam" → seçtiği "Hindistan ormanı"; sayılar ÖNERİ): HINDISTAN {x -6000, y 0, r 230}; kutup.js HIND
+  (haritaYap; kayma 0: yaz = muson, sonbahar = muson sonrası, kis = serin kış, ilkbahar = kavurucu yaz; hava yagmurlu/sis/sicak/bulutlu/acik, k.kutup.havaH,
+  mevsimH). TALAB göl (70,30) r22 (tek su), hnDereY dere yatağı, DADAR kayalık yayla (-115,-130) r52, SAL_Y 75 kuzeyi sal ormanı, BAMBU_X -120 batısı bambu,
+  istasyon "Orman dinlenme evi" (0,-40). Bölgeler hnUs, maidan, salOrmani, bambuluk, talab, dadar, hnDere; YERLER h_*. Kt.hindistanMi, sicakMi;
+  M.oyuncuHindistanda, oyuncuSicakta. TURLER 6 (hindistan: true; HINDISTAN_SIRASI): kaplan (kedi + çizgiler; suYat sıcak öğlen 'suyaYatmis', isaret
+  'kokuIsaretliyor', av cital/sambar/gaur), hintFili (küçük kulak, kambur, dişide fildişi yok), cital (geyik + beyaz benek; boynuz yalnız erkekte), sambar
+  (gece 'sudaOtluyor'), gaur (manda + tümsek + beyaz çorap), langur (yeni 'dortayak' langur biçimi; 'dallardaBesleniyor' sahnede 4,5 m yukarıda;
+  cital 'langurAlti'). Alarm: kaplana 45 m'de cital/langur 'alarmVeriyor' + olay 'iletisim'. kesif HINDISTAN_GEZI (itibar 65, 3.200, 300 dk), HN_KAPI,
+  hindistanaVar (k.kutup.hnZiyaret). kucukler HINDISTAN_CANLILARI 10 (hintAtesBocegi: savandaki atesBocegi ile aynı kimliği ezmesin), BITKILER sal,
+  bambu, mahua; merkez 3 araştırma; gizem kaplanIzi. Sahne hnGrup (çayır mevsimle sararır, göl + nilüfer, dere (musonda su), sal ağaçları, bambu
+  kümeleri, dadar yaylası + kayalar, ufuk tepeleri, kiremit çatılı dinlenme evi + gözetleme kulesi); gök/yağmur avusta dalıyla, sis ku.sis. Sesler
+  (akış R1AN6H1CX2wNrRrpqPLB) kaplan, hintfili, cital, sambar, gaur, langur (konumlu, UC_B), k_tavusKusu, k_hintKukusu, ortam_hint_gunduz/gece.
+  Testler: bot, dayanıklılık 100/100, menu-tara Hindistan iki kipte 258 sayfa sorun 0 (/tmp/claude-0/hn-kayit.json), /tmp/claude-0/kr/hn1.js
+  (4 günde kaplan 2 gaur avladı), görüntüler scratchpad hn-goruntu.cjs. Telefonda doğrulanmadı.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

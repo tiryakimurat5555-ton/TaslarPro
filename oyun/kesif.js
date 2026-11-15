@@ -1,7 +1,7 @@
 // ==== VAHŞİ YAŞAM: KEŞİF (brif Aşama 6) ====
 // Küçük canlıları arama (karar 48, 94, 95), mağara ekosistemi (karar 98), yarasaların akşam çıkışı,
 // kaçak avcıların tel tuzakları ve izleri (karar 60: sınırlı kapsam; oyuncu bulur, söker, bildirir, hayvanı kurtarır).
-import { TURLER, MAGARA, ISTASYON, YARICAP, nehirY, NEHIR_YARI, KUTUP, KUTUP_SIRASI, ANTARKTIKA_SIRASI, AVUSTRALYA_SIRASI } from './veri.js';
+import { TURLER, MAGARA, ISTASYON, YARICAP, nehirY, NEHIR_YARI, KUTUP, KUTUP_SIRASI, ANTARKTIKA_SIRASI, AVUSTRALYA_SIRASI, HINDISTAN_SIRASI } from './veri.js';
 import * as Kt from './kutup.js';
 import * as M from './mantik.js';
 import * as E from './ekosistem.js';
@@ -72,7 +72,7 @@ export function kucukAra(d) {
   if (!oda && evre === 'gece' && !(k.ekipman.geceDurbunu || k.ekipman.termal)) basari = 0.5;
   basari += M.zorlukCarpani(k, 'kesif', [0.12, 0, -0.1]);
   if (!liste.length || d.rng() > basari) {
-    const m = alan ? 'Dürbünle ve sabırla çevreni taradın ama bu kez bir şey göremedin. Başka bir noktada ya da başka bir saatte dene.' : oda ? 'Fenerinle kayaların çatlaklarına baktın ama bu kez bir şey göremedin.' : M.oyuncuKutupta(k) && !M.oyuncuAvustralyada(k) ? 'Karın, taşların ve kıyının çevresine baktın ama bu kez bir şey göremedin. Başka bir yerde ya da başka bir saatte dene.' : evre === 'gece' ? 'Karanlıkta otların arasına baktın; yalnızca cırcır böceklerini duyuyorsun.' : 'Otların ve taşların arasına baktın ama bu kez bir şey göremedin. Başka bir yerde ya da başka bir saatte dene.';
+    const m = alan ? 'Dürbünle ve sabırla çevreni taradın ama bu kez bir şey göremedin. Başka bir noktada ya da başka bir saatte dene.' : oda ? 'Fenerinle kayaların çatlaklarına baktın ama bu kez bir şey göremedin.' : M.oyuncuKutupta(k) && !M.oyuncuSicakta(k) ? 'Karın, taşların ve kıyının çevresine baktın ama bu kez bir şey göremedin. Başka bir yerde ya da başka bir saatte dene.' : evre === 'gece' ? 'Karanlıkta otların arasına baktın; yalnızca cırcır böceklerini duyuyorsun.' : 'Otların ve taşların arasına baktın ama bu kez bir şey göremedin. Başka bir yerde ya da başka bir saatte dene.';
     M.olay(d, 'kucuk', m, 2);
     return m;
   }
@@ -237,11 +237,14 @@ export const US_KAPI = Kt.GUNEY.dunya(Kt.GUNEY.ISTASYON_K.lx, Kt.GUNEY.ISTASYON_
 // Avustralya çalılığı: Queensland iç kesimindeki saha istasyonu (aynı ayrı harita altyapısı)
 export const AVUSTRALYA_GEZI = { ad: 'Avustralya çalılığı, Queensland', itibar: 60, ucret: 3000, yol: 330, donus: 330 };
 export const AV_KAPI = Kt.AVUS.dunya(Kt.AVUS.ISTASYON_K.lx, Kt.AVUS.ISTASYON_K.ly + 15); // istasyonun kuzeyindeki açıklık
-// guney: false (Kuzey Kutbu), true (Antarktika) ya da 'avustralya'
-const geziBul = (guney) => (guney === 'avustralya' ? AVUSTRALYA_GEZI : guney ? ANTARKTIKA_GEZI : KUTUP_GEZI);
+// Hindistan ormanı: Kanha'daki orman dinlenme evi
+export const HINDISTAN_GEZI = { ad: 'Hindistan ormanı, Kanha', itibar: 65, ucret: 3200, yol: 300, donus: 300 };
+export const HN_KAPI = Kt.HIND.dunya(Kt.HIND.ISTASYON_K.lx, Kt.HIND.ISTASYON_K.ly + 15);
+// guney: false (Kuzey Kutbu), true (Antarktika), 'avustralya' ya da 'hindistan'
+const geziBul = (guney) => (guney === 'hindistan' ? HINDISTAN_GEZI : guney === 'avustralya' ? AVUSTRALYA_GEZI : guney ? ANTARKTIKA_GEZI : KUTUP_GEZI);
 export function kutupDurumu(k, guney = false) {
   const g = geziBul(guney);
-  if (k.itibar < g.itibar) return { acik: false, neden: guney === 'avustralya' ? 'Avustralya araştırma iznine bilimsel itibarın henüz yetmiyor.' : guney ? 'Antarktika araştırma iznine bilimsel itibarın henüz yetmiyor.' : 'Kutup araştırma iznine bilimsel itibarın henüz yetmiyor.' };
+  if (k.itibar < g.itibar) return { acik: false, neden: guney === 'hindistan' ? 'Hindistan araştırma iznine bilimsel itibarın henüz yetmiyor.' : guney === 'avustralya' ? 'Avustralya araştırma iznine bilimsel itibarın henüz yetmiyor.' : guney ? 'Antarktika araştırma iznine bilimsel itibarın henüz yetmiyor.' : 'Kutup araştırma iznine bilimsel itibarın henüz yetmiyor.' };
   return { acik: true, neden: '' };
 }
 export function kutupHazirla(d, guney = false) {
@@ -302,6 +305,26 @@ export function antarktikayaVar(d) {
   M.olay(d, 'kutup', m, 3, { gelis: true });
   return m;
 }
+export const hindistanHazirla = (d) => kutupHazirla(d, 'hindistan');
+export function hindistanaVar(d) {
+  const k = d.k;
+  if (!k.kutup || typeof k.kutup !== 'object') k.kutup = {};
+  const ilk = !k.kutup.hnZiyaret;
+  k.kutup.hnZiyaret = true;
+  k.kutup.gelis = k.dk;
+  k.kutup.hnGezi = (k.kutup.hnGezi || 0) + 1;
+  k.teknede = false;
+  Object.assign(d.oyuncu, { x: HN_KAPI.x, y: HN_KAPI.y, yon: 0 });
+  Kt.etkinAyarla(d.oyuncu);
+  const mev = Kt.HIND.MEVSIM_ADI[M.kutupMevsimi(k)];
+  M.arsivOlay(d, 'Saha gezisi: Hindistan ormanı.');
+  const tanitim = ilk
+    ? 'Orta Hindistan\'da, Kanha ormanındaki eski orman dinlenme evine geldin. Önünde geniş bir çayır (maidan) var. Doğuda nilüferli bir göl ve batıya uzanan dere yatağı, kuzeyde uzun gövdeli sal ağaçlarının ormanı, batıda bambu ormanı, güneybatıda kayalık bir yayla var. Mevsimler: muson, muson sonrası, serin kış ve kavurucu yaz. Araç yok; yürüyerek araştırırsın. Kaplana, file ve gaura yaklaşma; benekli geyiklerin ve langurların alarm seslerine kulak ver, kaplanın yerini onlar ele verir. '
+    : 'Kanha\'daki orman dinlenme evine döndün. ';
+  const m = `${tanitim}Şimdi ${mev}. ${Kt.HIND.isikSozu(k.dk)} ${Kt.HIND.havaSozu(M.kutupHavasi(k), k.dk)}`;
+  M.olay(d, 'kutup', m, 3, { gelis: true });
+  return m;
+}
 export const avustralyaHazirla = (d) => kutupHazirla(d, 'avustralya');
 export function avustralyayaVar(d) {
   const k = d.k;
@@ -323,10 +346,11 @@ export function avustralyayaVar(d) {
   return m;
 }
 // Dönüş kapısı oyuncunun bulunduğu haritaya göre: kuzeyde kulübe, güneyde üs, Avustralya'da saha istasyonu
-export const donusKapisi = (d) => (M.oyuncuAvustralyada(d.k) ? AV_KAPI : M.oyuncuGuneyde(d.k) ? US_KAPI : KULUBE_KAPI);
+export const donusKapisi = (d) => (M.oyuncuHindistanda(d.k) ? HN_KAPI : M.oyuncuAvustralyada(d.k) ? AV_KAPI : M.oyuncuGuneyde(d.k) ? US_KAPI : KULUBE_KAPI);
 export const kulubedeMi = (d) => M.oyuncuKutupta(d.k) && Math.hypot(d.oyuncu.x - donusKapisi(d).x, d.oyuncu.y - donusKapisi(d).y) < 30;
 export function kutuptanHazirla(d) {
   if (!M.oyuncuKutupta(d.k)) return 'Saha gezisinde değilsin.';
+  if (!kulubedeMi(d) && M.oyuncuHindistanda(d.k)) return 'Dönüş aracı dinlenme evinin önünden kalkar. Önce dinlenme evine dön.';
   if (!kulubedeMi(d) && M.oyuncuAvustralyada(d.k)) return 'Dönüş uçağı istasyonun yanındaki toprak pistten kalkar. Önce istasyona dön.';
   if (!kulubedeMi(d)) return M.oyuncuGuneyde(d.k) ? 'Dönüş uçağı üssün yanındaki buz pistinden kalkar. Önce üsse dön.' : 'Dönüş uçağı kulübenin yanındaki pistten kalkar. Önce kulübeye dön.';
   d.rota = null;
@@ -384,6 +408,11 @@ export function buzSatirlari(k) {
 export function kutupSatiri(k, guney = false) {
   const dur = kutupDurumu(k);
   const kayitli = KUTUP_SIRASI.filter((t) => k.arsiv.turler[t]).length;
+  if (guney === 'hindistan') {
+    const dur4 = kutupDurumu(k, 'hindistan');
+    const kay4 = HINDISTAN_SIRASI.filter((t) => k.arsiv.turler[t]).length;
+    return `Hindistan ormanı: ${dur4.acik ? `uçak ve kara yoluyla 5 saat, yol, izin ve konaklama ${HINDISTAN_GEZI.ucret.toLocaleString('tr-TR')} lira` : `kilitli (itibar ${HINDISTAN_GEZI.itibar} gerekir)`}. Kaydedilen Hindistan türü ${kay4} / ${HINDISTAN_SIRASI.length}.`;
+  }
   if (guney === 'avustralya') {
     const dur3 = kutupDurumu(k, 'avustralya');
     const kay3 = AVUSTRALYA_SIRASI.filter((t) => k.arsiv.turler[t]).length;

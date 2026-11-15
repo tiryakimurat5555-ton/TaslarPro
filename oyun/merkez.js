@@ -2,14 +2,14 @@
 // Saf mantık: bütçe ve dengeli ekonomi (karar 22, 62, 91), ekipman (89, 88), tesisler (21, 79, 80), personel (54, 81),
 // basit araştırma ekranı ve analizler (45), hibe teklifleri ve dinamik görevler (61, 62, 90), mesajlar (82),
 // kamera tuzakları (41, 93) ve GPS tasmaları (11, 84). Sayılar öneridir; Murat onaylamadı.
-import { TURLER, TUR_SIRASI, DAVRANISLAR, ISTASYON, YARICAP, GOLET, nehirY, NEHIR_YARI, TUZ_YALAGI, KUTUP_SIRASI, ANTARKTIKA_SIRASI, AVUSTRALYA_SIRASI } from './veri.js';
+import { TURLER, TUR_SIRASI, DAVRANISLAR, ISTASYON, YARICAP, GOLET, nehirY, NEHIR_YARI, TUZ_YALAGI, KUTUP_SIRASI, ANTARKTIKA_SIRASI, AVUSTRALYA_SIRASI, HINDISTAN_SIRASI } from './veri.js';
 import * as M from './mantik.js';
 import * as Kt from './kutup.js';
 import * as E from './ekosistem.js';
 import * as K from './kesif.js';
 import * as G from './genisleme.js';
 import * as S from './su.js';
-import { KUCUKLER, KUTUP_KUCUKLERI, ANTARKTIKA_KUCUKLERI, AVUSTRALYA_KUCUKLERI } from './kucukler.js';
+import { KUCUKLER, KUTUP_KUCUKLERI, ANTARKTIKA_KUCUKLERI, AVUSTRALYA_KUCUKLERI, HINDISTAN_KUCUKLERI } from './kucukler.js';
 
 const lira = (n) => `${Math.round(n).toLocaleString('tr-TR')} lira`;
 export const liraSozu = lira;
@@ -251,7 +251,7 @@ export const ARASTIRMALAR = [
     id: 'kutupFaunasi',
     ad: 'Grönland kıyısının memelileri',
     kosulMetni: 'Kuzey Kutbu\'nda 9 büyük türü kaydet ve kutup türlerinden 6 bireyi tanımla',
-    ilerleme: (k) => [Math.min(9, KUTUP_SIRASI.filter((t) => k.arsiv.turler[t]).length) + Math.min(6, k.hayvanlar.filter((b) => b.no > 0 && TURLER[b.tur] && TURLER[b.tur].kutup && !TURLER[b.tur].guney && !TURLER[b.tur].avustralya).length), 15],
+    ilerleme: (k) => [Math.min(9, KUTUP_SIRASI.filter((t) => k.arsiv.turler[t]).length) + Math.min(6, k.hayvanlar.filter((b) => b.no > 0 && TURLER[b.tur] && TURLER[b.tur].kutup && !TURLER[b.tur].guney && !TURLER[b.tur].avustralya && !TURLER[b.tur].hindistan).length), 15],
     odul: { itibar: 15, fon: 6000 },
     sonuc: 'Kıyının memeli topluluğu belgelendi: deniz buzuna bağlı türler (kutup ayısı, halkalı fok, mors) ile tundra türleri (ren geyiği, misk öküzü, kurt, tilki, tavşan) birbirine besin zinciriyle bağlı. Fok azalırsa ayılar karaya, kuş yuvalarına yöneliyor.',
   },
@@ -275,9 +275,34 @@ export const ARASTIRMALAR = [
     id: 'tundraYazi',
     ad: 'Kısa tundra yazı',
     kosulMetni: '6 kutup bitkisini incele ve 10 kutup küçük canlısını bul',
-    ilerleme: (k) => [Math.min(6, E.BITKI_SIRASI.filter((id) => E.BITKILER[id].kutup && !E.BITKILER[id].guney && !E.BITKILER[id].avustralya && (k.arsiv.bitkiler || {})[id]).length) + Math.min(10, KUTUP_KUCUKLERI.filter((id) => (k.arsiv.kucukler || {})[id]).length), 16],
+    ilerleme: (k) => [Math.min(6, E.BITKI_SIRASI.filter((id) => E.BITKILER[id].kutup && !E.BITKILER[id].guney && !E.BITKILER[id].avustralya && !E.BITKILER[id].hindistan && (k.arsiv.bitkiler || {})[id]).length) + Math.min(10, KUTUP_KUCUKLERI.filter((id) => (k.arsiv.kucukler || {})[id]).length), 16],
     odul: { itibar: 14, fon: 5000 },
     sonuc: 'Tundranın bütün yaşamının birkaç haftalık yaza sıkıştığı gösterildi: bitkiler kar kalkar kalkmaz çiçek açıyor, kuşlar gece yarısı güneşinde yavrularını büyütüyor, lemmingler kar altında kışı geçiriyor.',
+  },
+  // Hindistan ormanı araştırmaları
+  {
+    id: 'kanhaFaunasi',
+    ad: 'Kanha ormanının büyük memelileri',
+    kosulMetni: 'Hindistan ormanında 6 büyük türü kaydet ve oradaki türlerden 4 bireyi tanımla',
+    ilerleme: (k) => [Math.min(6, HINDISTAN_SIRASI.filter((t) => k.arsiv.turler[t]).length) + Math.min(4, k.hayvanlar.filter((b) => b.no > 0 && TURLER[b.tur] && TURLER[b.tur].hindistan).length), 10],
+    odul: { itibar: 18, fon: 8000 },
+    sonuc: 'Kanha\'nın büyük memeli topluluğu belgelendi: kaplan, onun avları benekli geyik, sambar ve gaur, ormanın yollarını açan filler ve ağaçlardaki langurlar. Bir kaplanın yaşaması için yüzlerce geyiğin yaşadığı geniş bir orman gerekir.',
+  },
+  {
+    id: 'ormanAlarmlari',
+    ad: 'Ormanın alarm ağı',
+    kosulMetni: 'Dört davranışı gözle: geyik ya da langurun kaplan alarmı, langurların ağaçta beslenmesi, kaplanın suda serinlemesi, kaplanın bölge işaretlemesi',
+    ilerleme: (k) => [[['cital', 'alarmVeriyor', 'langur'], ['langur', 'dallardaBesleniyor'], ['kaplan', 'suyaYatmis'], ['kaplan', 'kokuIsaretliyor']].filter(([t, dv, t2]) => davranisVar(k, t, dv) || (t2 && davranisVar(k, t2, dv))).length, 4],
+    odul: { itibar: 18, fon: 6000 },
+    sonuc: 'Langurlar ağaçtan çevreyi gözlüyor, geyikler yerde koku ve sesle dinliyor; ikisi birbirinin alarmını anlıyor. Langurların yere düşürdüğü yapraklar da geyikleri besliyor. Bu ortaklık kaplanın sürpriz saldırı şansını azaltıyor.',
+  },
+  {
+    id: 'salOrmaniYasami',
+    ad: 'Sal ormanı ve çayırın küçük dünyası',
+    kosulMetni: '3 Hindistan bitkisini incele ve 5 Hindistan küçük canlısını bul',
+    ilerleme: (k) => [Math.min(3, E.BITKI_SIRASI.filter((id) => E.BITKILER[id].hindistan && (k.arsiv.bitkiler || {})[id]).length) + Math.min(5, HINDISTAN_KUCUKLERI.filter((id) => (k.arsiv.kucukler || {})[id]).length), 8],
+    odul: { itibar: 14, fon: 5000 },
+    sonuc: 'Ormanın yaşamının musona göre atıldığı belgelendi: sal tohumları muson başında düşüp hemen çimleniyor, ateş böcekleri muson öncesi gecelerde parlıyor, kavurucu yazda bütün hayvanlar mahua çiçeklerine ve göle toplanıyor.',
   },
   // Avustralya çalılığı araştırmaları
   {

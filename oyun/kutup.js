@@ -7,7 +7,7 @@
 // Her harita aynı arayüzü sunar (haritaYap). Konum alan işlevler (yuzey, bolge, sudaMi...) noktanın hangi haritada olduğunu kendisi bulur;
 // yalnız zaman alan işlevlerin (isik, evre, buzKenari, kutupTakvim...) üst düzey sürümleri Kuzey içindir: Antarktika için harita(p).isik(dk).
 // Saf modül: yalnızca veri.js ve ekosistem.js'i kullanır. Sayılar ÖNERİDİR.
-import { KUTUP, ANTARKTIKA, AVUSTRALYA } from './veri.js';
+import { KUTUP, ANTARKTIKA, AVUSTRALYA, HINDISTAN } from './veri.js';
 import { YIL_GUN } from './ekosistem.js';
 
 function haritaYap(c) {
@@ -378,17 +378,107 @@ export const AVUS = haritaYap({
   TIPI_SANSI: { yaz: 0, sonbahar: 0, kis: 0, ilkbahar: 0 },
 });
 
-export const HARITALAR = { kuzey: KUZEY, guney: GUNEY, avustralya: AVUS };
+// =====================================================================
+// HİNDİSTAN ORMANI: Kanha (Orta Hindistan). Ortada geniş bir çayır (maidan) ve orman dinlenme evi, doğuda bir göl (talab) ve batıya
+// uzanan dere yatağı, kuzeyde sal ormanı, batıda bambu ormanı, güneybatıda kayalık yayla (dadar). Mevsimler: muson (yağışlı),
+// muson sonrası, serin kış, kavurucu yaz. Kayma yok. Buz, kar ve kutup ışığı yoktur.
+// =====================================================================
+const TALAB = { lx: 70, ly: 30, r: 22 };
+const hnDereY = (lx) => 26 + 10 * Math.sin(lx / 36) + 4 * Math.sin(lx / 13 + 1);
+const DADAR = { lx: -115, ly: -130, r: 52 };
+const SAL_Y = 75; // bunun kuzeyi sal ormanı
+const BAMBU_X = -120; // bunun batısı (dadarın kuzeyi) bambu ormanı
+const ISTASYON_H = { lx: 0, ly: -40, r: 9 };
+export const HIND = haritaYap({
+  ad: 'hindistan',
+  baslik: 'Hindistan ormanı',
+  merkez: HINDISTAN,
+  kayma: 0,
+  sicak: true,
+  aurora: false,
+  buzYok: true,
+  kiyiY: () => 9999,
+  buzTaban: 0,
+  ISTASYON_K: ISTASYON_H,
+  BUZUL: { lx0: -9999, lx1: -9998 },
+  POLINYA: TALAB,
+  ozel: { TALAB, DADAR, SAL_Y, BAMBU_X, hnDereY },
+  MEVSIM_ADI: { yaz: 'muson', sonbahar: 'muson sonrası', kis: 'serin kış', ilkbahar: 'kavurucu yaz' },
+  BOLGE_ADLARI_K: { hnUs: 'Orman dinlenme evi', maidan: 'Çayır (maidan)', salOrmani: 'Sal ormanı', bambuluk: 'Bambu ormanı', talab: 'Göl kıyısı', dadar: 'Kayalık yayla (dadar)', hnDere: 'Dere yatağı' },
+  istasyonBolgesi: 'hnUs',
+  bolge(H, lx, ly) {
+    if (Math.hypot(lx - ISTASYON_H.lx, ly - ISTASYON_H.ly) < ISTASYON_H.r + 12) return 'hnUs';
+    if (Math.hypot(lx - TALAB.lx, ly - TALAB.ly) < TALAB.r + 8) return 'talab';
+    if (lx < TALAB.lx - 12 && Math.abs(ly - hnDereY(lx)) < 7) return 'hnDere';
+    if (Math.hypot(lx - DADAR.lx, ly - DADAR.ly) < DADAR.r) return 'dadar';
+    if (ly > SAL_Y) return 'salOrmani';
+    if (lx < BAMBU_X) return 'bambuluk';
+    return 'maidan';
+  },
+  yuzey: (H, lx, ly) => (Math.hypot(lx - TALAB.lx, ly - TALAB.ly) < TALAB.r ? 'su' : 'kara'),
+  enYakinSu: (H, x, y) => {
+    const m = H.dunya(TALAB.lx, TALAB.ly);
+    const a = Math.atan2(x - m.x, y - m.y);
+    return { x: m.x + Math.sin(a) * (TALAB.r - 1), y: m.y + Math.cos(a) * (TALAB.r - 1) };
+  },
+  gunIsigi: (f) => (f < 8 ? 13 : f < 12 ? 12 : f < 20 ? 11 : 12.5),
+  isikSozu: (H, dk) => {
+    const l = H.isik(dk);
+    const s = (((dk % 1440) + 1440) % 1440) / 60;
+    if (l >= 0.5) return s > 11 && s < 15 ? 'Güneş tepede; sal ağaçlarının altı serin ve gölgeli, çayır ışıl ışıl.' : 'Güneşli bir gündüz; ışık ağaçların arasından süzülüyor.';
+    if (l >= 0.12) return s < 12 ? 'Şafak: çayırın üstünde ince bir sis, tavus kuşları ve horoz sesli yaban tavukları ötüyor.' : 'Akşam: güneş sal ağaçlarının arkasında batıyor, ormana turuncu bir ışık vuruyor.';
+    return 'Gece: orman karanlık; ateş böcekleri ve yıldızlar.';
+  },
+  havaUret: (H, gun, rng) => {
+    const t = H.kutupTakvim(gun);
+    const [a, b] = { yaz: [25, 32], sonbahar: [22, 30], kis: [8, 24], ilkbahar: [33, 44] }[t.mevsim];
+    const sicaklik = Math.round(a + rng() * (b - a));
+    const r = rng();
+    let tur = 'acik';
+    if (t.mevsim === 'yaz' && r < 0.6) tur = 'yagmurlu';
+    else if (t.mevsim === 'sonbahar' && r < 0.2) tur = 'yagmurlu';
+    else if (t.mevsim === 'kis' && r < 0.25) tur = 'sis';
+    else if (r < 0.4) tur = 'bulutlu';
+    else if (sicaklik >= 38) tur = 'sicak';
+    return { gun, tur, sicaklik, ruzgarYon: rng() < 0.6 ? Math.PI * 1.2 + (rng() - 0.5) * 0.8 : rng() * Math.PI * 2, ruzgarHiz: 0.4 + rng() * 1.4 };
+  },
+  havaSozu: (h) => {
+    if (!h) return '';
+    const r = h.ruzgarHiz > 2.5 ? 'sert' : h.ruzgarHiz > 1.2 ? 'orta' : 'hafif';
+    const t = { acik: 'Hava açık', bulutlu: 'Gökyüzü bulutlu', yagmurlu: 'Muson yağmuru bardaktan boşanırcasına yağıyor', sicak: 'Kavurucu sıcak; yapraklar kuru, hava titreşiyor', sis: 'Çayırın üstünde sabah sisi' }[h.tur] || 'Hava açık';
+    return `${t}, ${h.sicaklik} derece, ${r} rüzgâr.`;
+  },
+  besin: (H, dk, h) => {
+    const m = H.kutupTakvim(Math.floor(dk / 1440) + 1).mevsim;
+    return { yaz: 1, sonbahar: 0.9, kis: 0.7, ilkbahar: 0.5 }[m];
+  },
+  YERLER: [
+    { id: 'h_ev', ad: 'Orman dinlenme evi', lx: 0, ly: -26, tarif: 'Taş duvarlı, kiremit çatılı eski bir orman dinlenme evi; verandası çayıra bakıyor. Araştırma ekibi burada kalıyor.' },
+    { id: 'h_maidan', ad: 'Çayır (maidan)', lx: 0, ly: -110, tarif: 'Ormanın ortasında açık, geniş bir çayır. Benekli geyik sürüleri burada otlar; kaplan çayırın kenarında, uzun otların içinde bekler.' },
+    { id: 'h_talab', ad: 'Göl (talab)', lx: TALAB.lx - TALAB.r - 6, ly: TALAB.ly - 8, tarif: 'Çayırın doğusunda nilüferli bir göl. Kurak mevsimde bütün hayvanlar buraya gelir; sambar geyikleri su bitkilerini yemek için suya girer.' },
+    { id: 'h_dere', ad: 'Dere yatağı', lx: -50, ly: hnDereY(-50) - 9, tarif: 'Muson dışında kuru olan kumlu bir dere yatağı. Kumda kaplan ve geyik izleri kolay okunur.' },
+    { id: 'h_sal', ad: 'Sal ormanı', lx: 0, ly: 110, tarif: 'Uzun, düz gövdeli sal ağaçlarının ormanı. Gölgeli ve serin; gaur sürüleri ve filler burada dolaşır, langurlar dallarda.' },
+    { id: 'h_bambu', ad: 'Bambu ormanı', lx: BAMBU_X - 30, ly: 0, tarif: 'Sık bambu kümelerinin ormanı. Rüzgârda bambular birbirine sürtünüp gıcırdar; filler burada beslenir.' },
+    { id: 'h_dadar', ad: 'Kayalık yayla (dadar)', lx: DADAR.lx + DADAR.r + 6, ly: DADAR.ly, tarif: 'Ağaçsız, kayalık, düz bir yayla. Buradan çayırın büyük bölümü görülür.' },
+  ],
+  SICAKLIK: { yaz: [25, 32], sonbahar: [22, 30], kis: [8, 24], ilkbahar: [33, 44] },
+  TIPI_SANSI: { yaz: 0, sonbahar: 0, kis: 0, ilkbahar: 0 },
+});
+
+export const HARITALAR = { kuzey: KUZEY, guney: GUNEY, avustralya: AVUS, hindistan: HIND };
 // Noktanın kutup haritası (yoksa null)
-export const haritaBul = (p) => (p ? (KUZEY.noktaMi(p) ? KUZEY : GUNEY.noktaMi(p) ? GUNEY : AVUS.noktaMi(p) ? AVUS : null) : null);
+export const haritaBul = (p) => (p ? (KUZEY.noktaMi(p) ? KUZEY : GUNEY.noktaMi(p) ? GUNEY : AVUS.noktaMi(p) ? AVUS : HIND.noktaMi(p) ? HIND : null) : null);
 // Noktanın kutup haritası; kutupta değilse Kuzey (eski çağrılar için)
 export const harita = (p) => haritaBul(p) || KUZEY;
 
 // ---------- Geriye uyumlu üst düzey adlar ----------
 // Konum alanlar noktanın haritasını kendisi bulur; yalnız zaman alanlar Kuzey içindir.
 export const KUTUP_SINIR = KUTUP.y - 600;
-export const kutuptaMi = (x, y) => KUZEY.icinde(x, y) || GUNEY.icinde(x, y) || AVUS.icinde(x, y);
+export const kutuptaMi = (x, y) => KUZEY.icinde(x, y) || GUNEY.icinde(x, y) || AVUS.icinde(x, y) || HIND.icinde(x, y);
 export const avustralyaMi = (p) => AVUS.noktaMi(p);
+export const hindistanMi = (p) => HIND.noktaMi(p);
+// Sıcak haritalar (Avustralya, Hindistan): kar, buz ve kutup ışığı yok
+export const sicakMi = (p) => !!(haritaBul(p) && haritaBul(p).sicak);
 export const kutupNoktaMi = (p) => !!p && kutuptaMi(p.x, p.y);
 export const guneyMi = (p) => GUNEY.noktaMi(p);
 export const yerel = (p) => harita(p).yerel(p);
@@ -443,9 +533,9 @@ export const yuzey = (x, y, dk) => harita({ x, y }).yuzey(x, y, dk);
 export const sudaMi = (x, y, dk) => yuzey(x, y, dk) === 'su';
 export const karadaMi = (x, y) => harita({ x, y }).karadaMi(x, y);
 export const enYakinSu = (x, y, dk, delik) => harita({ x, y }).enYakinSu(x, y, dk, delik);
-export const BOLGE_ADLARI_K = { ...KUZEY.BOLGE_ADLARI_K, ...GUNEY.BOLGE_ADLARI_K, ...AVUS.BOLGE_ADLARI_K };
+export const BOLGE_ADLARI_K = { ...KUZEY.BOLGE_ADLARI_K, ...GUNEY.BOLGE_ADLARI_K, ...AVUS.BOLGE_ADLARI_K, ...HIND.BOLGE_ADLARI_K };
 export const bolge = (x, y, dk) => harita({ x, y }).bolge(x, y, dk);
-export const TUM_KUTUP_YERLER = [...KUZEY.KUTUP_YERLER, ...GUNEY.KUTUP_YERLER, ...AVUS.KUTUP_YERLER];
-export const kutupYeriHarita = (y) => (GUNEY.KUTUP_YERLER.includes(y) ? GUNEY : AVUS.KUTUP_YERLER.includes(y) ? AVUS : KUZEY);
+export const TUM_KUTUP_YERLER = [...KUZEY.KUTUP_YERLER, ...GUNEY.KUTUP_YERLER, ...AVUS.KUTUP_YERLER, ...HIND.KUTUP_YERLER];
+export const kutupYeriHarita = (y) => (GUNEY.KUTUP_YERLER.includes(y) ? GUNEY : AVUS.KUTUP_YERLER.includes(y) ? AVUS : HIND.KUTUP_YERLER.includes(y) ? HIND : KUZEY);
 export const yerKonumu = (y) => kutupYeriHarita(y).yerKonumu(y);
 export const buzKalinligi = (x, y, dk, isinma = 0) => harita({ x, y }).buzKalinligi(x, y, dk, isinma);

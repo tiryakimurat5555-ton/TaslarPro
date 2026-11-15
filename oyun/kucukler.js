@@ -330,6 +330,25 @@ for (const [id, c] of Object.entries(AVUSTRALYA_CANLILARI)) {
   KUCUK_SIRASI.push(id);
 }
 export const AVUSTRALYA_KUCUKLERI = Object.keys(AVUSTRALYA_CANLILARI);
+// ---------- Hindistan ormanı (Kanha) küçük canlıları ----------
+const HINDISTAN_CANLILARI = {
+  tavusKusu: { ad: 'Tavus kuşu', bilimsel: 'Pavo cristatus', grup: 'Kuş', yer: ['maidan', 'salOrmani', 'hnUs', 'hnDere'], zaman: 'gunduz', sik: 6, ses: 'Muson öncesi yükselen, miyavlamayı andıran yüksek çığlıklar.', tarif: 'Erkeğin yüzlerce gözlü yeşil-mavi kuyruk tüyleri kur sırasında yelpaze gibi açılır ve titretilir. Geceyi yüksek ağaçlarda geçirir; kaplanı görünce yüksek sesle alarm verir.' },
+  kirmiziYabanTavugu: { ad: 'Kırmızı yaban tavuğu', bilimsel: 'Gallus gallus', grup: 'Kuş', yer: ['salOrmani', 'bambuluk', 'hnDere'], zaman: 'gunduz', sik: 5, ses: 'Evcil horozunkinden kısa, kesik kesik bir ötüş.', tarif: 'Evcil tavuğun yabani atası. Erkeğin altın-kızıl boyun tüyleri ve kıvrık yeşil kuyruğu var. Çok ürkektir; bambu ve sal ormanının çalılıklarında yaşar.' },
+  hintKukusu: { ad: 'Koel (Asya guguk kuşu)', bilimsel: 'Eudynamys scolopaceus', grup: 'Kuş', yer: ['salOrmani', 'hnUs', 'maidan'], zaman: 'gunduz', sik: 4, ses: 'Kavurucu yazda giderek yükselen, ısrarlı "ko-el ko-el" sesleri.', tarif: 'Yumurtalarını kargaların yuvasına bırakan bir guguk kuşu. Erkeği simsiyah, gözü kırmızı; sesi Hindistan\'da yazın gelişinin habercisi sayılır.' },
+  akGogusluYalicapkini: { ad: 'Ak göğüslü yalıçapkını', bilimsel: 'Halcyon smyrnensis', grup: 'Kuş', yer: ['talab', 'hnDere', 'maidan'], zaman: 'gunduz', sik: 4, tarif: 'Parlak turkuaz sırtlı, kahve başlı, beyaz göğüslü bir yalıçapkını. Sudan çok uzakta da avlanır; kertenkele ve böcek yakalar.' },
+  bataklikTimsahi: { ad: 'Bataklık timsahı (mugger)', bilimsel: 'Crocodylus palustris', grup: 'Sürüngen', yer: ['talab'], zaman: 'her', sik: 2, nadir: true, tarif: 'Geniş burunlu, kıyıda güneşlenen bir timsah. Kurak mevsimde gölün çamuruna gömülerek bekleyebilir. Sudan içmeye gelen geyikleri pusudan yakalar.' },
+  hintPitonu: { ad: 'Hint pitonu', bilimsel: 'Python molurus', grup: 'Sürüngen', yer: ['bambuluk', 'dadar', 'hnDere'], zaman: 'gece', sik: 1, nadir: true, tarif: 'Beş metreye ulaşabilen, zehirsiz büyük bir yılan. Avını sararak boğar. Kışı kayaların arasında ya da oyuklarda geçirir, güneşli günlerde ısınmak için dışarı çıkar.' },
+  dikenliKirpi: { ad: 'Hint oklu kirpisi', bilimsel: 'Hystrix indica', grup: 'Memeli', yer: ['dadar', 'bambuluk', 'maidan'], zaman: 'gece', sik: 2, tarif: 'Sırtı uzun, siyah-beyaz halkalı oklarla kaplı iri bir kemirgen. Tehlikede oklarını kabartıp geriye doğru saldırır; kaplanların bile yüzüne ok saplandığı görülmüştür.' },
+  sincapHint: { ad: 'Hint dev sincabı', bilimsel: 'Ratufa indica', grup: 'Memeli', yer: ['salOrmani'], zaman: 'gunduz', sik: 2, nadir: true, tarif: 'Kızıl, mor ve krem renkli, bir metreye yakın uzunlukta dev bir sincap. Ağaçtan ağaca altı metre atlayabilir; yere neredeyse hiç inmez.' },
+  hintAtesBocegi: { ad: 'Hint ateş böceği', bilimsel: 'Lampyridae', grup: 'Böcek', yer: ['salOrmani', 'maidan', 'hnDere', 'bambuluk'], zaman: 'gece', sik: 6, kmevsim: ['ilkbahar', 'yaz'], tarif: 'Muson öncesi gecelerde ağaçların çevresinde binlercesi aynı anda yanıp sönebilen böcekler. Işık, karnındaki bir kimyasal tepkimeyle üretilir; her türün yanıp sönme deseni farklıdır.' },
+  dokumaKarincasi: { ad: 'Dokumacı karınca', bilimsel: 'Oecophylla smaragdina', grup: 'Böcek', yer: ['salOrmani', 'bambuluk'], zaman: 'gunduz', sik: 3, tarif: 'Yaprakları larvalarının salgıladığı ipekle birbirine dikerek yuva yapan kızıl karıncalar. Bir ağacı bütünüyle sahiplenip başka böceklerden korurlar.' },
+};
+for (const [id, c] of Object.entries(HINDISTAN_CANLILARI)) {
+  if (!c) continue;
+  KUCUKLER[id] = { ...c, kutup: true, hindistan: true };
+  KUCUK_SIRASI.push(id);
+}
+export const HINDISTAN_KUCUKLERI = Object.keys(HINDISTAN_CANLILARI).filter((id) => HINDISTAN_CANLILARI[id]);
 
 // Dış halkanın küçük canlıları (15 Kasım 2026, harita genişlemesi): yalnız yeni bölgelerde bulunur
 const DIS_CANLILAR = {
@@ -353,4 +372,4 @@ const BOLGE_BENZER = { tepeler: 'kayalik', calilik: 'agaclik', baobab: 'otlak', 
 export const alanCanlilari = (alan) => KUCUK_SIRASI.filter((id) => KUCUKLER[id].alan === alan);
 
 // Aşama 17: gerçek sesi olan küçük canlılar (assets/efekt/k_<id>_0..4, 3B). App uzaktan duyulan çağrılarda ve bulununca çalar.
-export const KUCUK_SESLI = ['devekusu', 'tacliTurna', 'yerBoynuzgagasi', 'goAway', 'becTavugu', 'alacaYalicapkini', 'misirKazi', 'maviTurako', 'vervet', 'agustosBocegi', 'kayaHyraksi', 'cuceFiravunfaresi', 'puhu', 'cobanaldatan', 'galago', 'agacDamani', 'bogaKurbagasi', 'kamisKurbagasi', 'karaSirtliCakal', 'pabucGaga', 'turako', 'kolobus', 'papirusGonolegi', 'sykesMaymunu', 'sakalliFok', 'karBaykusu', 'kutupSumrusu', 'ucParmakliMarti', 'kucukAlk', 'kralEider', 'karKirazkusu', 'kuzgun', 'lemming', 'guneyDevPetreli', 'guneyKutupKarabatagi', 'kookaburra', 'kakadu'];
+export const KUCUK_SESLI = ['devekusu', 'tacliTurna', 'yerBoynuzgagasi', 'goAway', 'becTavugu', 'alacaYalicapkini', 'misirKazi', 'maviTurako', 'vervet', 'agustosBocegi', 'kayaHyraksi', 'cuceFiravunfaresi', 'puhu', 'cobanaldatan', 'galago', 'agacDamani', 'bogaKurbagasi', 'kamisKurbagasi', 'karaSirtliCakal', 'pabucGaga', 'turako', 'kolobus', 'papirusGonolegi', 'sykesMaymunu', 'sakalliFok', 'karBaykusu', 'kutupSumrusu', 'ucParmakliMarti', 'kucukAlk', 'kralEider', 'karKirazkusu', 'kuzgun', 'lemming', 'guneyDevPetreli', 'guneyKutupKarabatagi', 'kookaburra', 'kakadu', 'tavusKusu', 'hintKukusu'];

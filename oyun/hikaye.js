@@ -196,7 +196,7 @@ export const GIZEMLER = {
   kutupSes: {
     ad: 'Buzun altındaki şarkı',
     giris: 'Kulübedeki su altı mikrofonu geceleri buzun altından gelen, inen sarmal ıslıklar kaydediyor. Saatlerce süren, hiç duyulmamış bir şarkı gibi. Bir balina mı, buzun kendi sesi mi?',
-    baslat: (k) => M.oyuncuKutupta(k) && !M.oyuncuGuneyde(k) && !M.oyuncuAvustralyada(k) && ['kis', 'ilkbahar'].includes(M.kutupMevsimi(k)),
+    baslat: (k) => M.oyuncuKutupta(k) && !M.oyuncuGuneyde(k) && !M.oyuncuSicakta(k) && ['kis', 'ilkbahar'].includes(M.kutupMevsimi(k)),
     adimlar: [
       { metin: 'Donmuş denize, deniz buzunun üstüne çık. Yerler menüsünde Deniz buzu var.', tamam: (d) => M.oyuncuKutupta(d.k) && !M.oyuncuGuneyde(d.k) && Kt.yuzey(d.oyuncu.x, d.oyuncu.y, d.k.dk) === 'buz', sonra: 'Buzun üstünde, ayaklarının altından gelen titrek ıslığı neredeyse hissediyorsun. Ses buzdaki açıklıklara yakın yerde daha güçlü.' },
       { metin: 'Buzun kalınlığını ölç; ses buzun inceldiği yerlerden yükseliyor (Doğa menüsü, Deniz buzunu ölç).', tamam: (d, g) => ((d.k.kutup && d.k.kutup.buz) || []).some((b) => b.dk >= g.bas), sonra: 'Buz kalınlığı sesin geçmesine izin veriyor; şarkı buzun kenarındaki açık suya, polinyaya doğru güçleniyor.' },
@@ -215,6 +215,17 @@ export const GIZEMLER = {
       { metin: 'Denizde penguenlerin besinini bul: buz kenarında ya da polinyada küçük canlı ara.', tamam: (d) => !!(d.k.arsiv.kucukler || {}).antKrili },
     ],
     cozum: 'Adélie penguenleri neredeyse yalnızca krille beslenir; kril de kışı deniz buzunun altındaki alglerle geçirir. Geçen kış deniz buzu az ve kısa ömürlü olunca kril azaldı, penguenler yavrularını besleyecek kadar yiyecek bulamadı. Koloninin küçülmesi buzun azalmasının bir işareti.',
+    odul: { itibar: 12, fon: 3000 },
+  },
+  kaplanIzi: {
+    ad: 'Çayırdaki alarm sesleri',
+    giris: 'Dinlenme evinin bekçisi her akşamüstü çayırın kenarından alarm sesleri geldiğini, ama kimsenin bir şey görmediğini anlatıyor. Ormanda görünmeden dolaşan kim?',
+    baslat: (k) => M.oyuncuHindistanda(k),
+    adimlar: [
+      { metin: 'Dere yatağına git ve izleri incele (Doğa menüsü, İzleri incele). Yerler menüsünde Dere yatağı var.', tamam: (d) => M.oyuncuHindistanda(d.k) && Kt.bolge(d.oyuncu.x, d.oyuncu.y, d.k.dk) === 'hnDere', sonra: 'Kumda iri, dört parmaklı, pençe izi olmayan yuvarlak izler var: bir kedi. Bu kadar büyüğü ancak bir kaplan olabilir.' },
+      { metin: 'Kaplanı bul ve gözle. Benekli geyiklerin ve langurların alarm seslerini takip et; kulak ver aleti de yardım eder.', tamam: (d) => !!d.k.arsiv.turler.kaplan },
+    ],
+    cozum: 'Alarmların sahibi bir kaplan. Kaplan sesini çıkarmadan dolaşır ama geyikler ve langurlar onu görünce alarm verir. Araştırmacılar ve rehberler kaplanı çoğu zaman görmeden önce bu alarm seslerinden bulur.',
     odul: { itibar: 12, fon: 3000 },
   },
   billabongGolgesi: {
