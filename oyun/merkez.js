@@ -371,6 +371,8 @@ export const ARASTIRMALAR = [
     ['yellowstone', 'yellowstoneFaunasi', 'Kurtlar ve Yellowstone\'un büyük hayvanları', 'Yellowstone\'da', 'Kurtların 1995\'te geri getirilmesinden sonraki zincirleme etki belgelendi: kurtlar wapiti sayısını azalttı ve onları nehir kıyılarından uzak tuttu; kıyıda söğüt ve kavak yeniden büyüdü, kunduzlar ve kuşlar geri geldi. Ayılar, kuzgunlar ve kartallar kurtların bıraktığı leşlerle besleniyor.'],
     ['borneo', 'borneoFaunasi', 'Borneo ormanının büyük hayvanları', 'Borneo\'da', 'Kinabatangan kıyısındaki orman şeridinin ne kadar çok türü taşıdığı belgelendi: orangutanlar, hortumlu maymunlar, cüce filler ve bulutlu leoparlar aynı dar ormanda yaşıyor. Yağ palmiyesi tarlaları ormanı böldükçe filler ve orangutanlar nehir boyunca kalan şeride sıkışıyor.'],
     ['madagaskar', 'madagaskarFaunasi', 'Madagaskar\'ın eşsiz hayvanları', 'Madagaskar\'da', 'Adanın hayvanlarının dünyanın başka hiçbir yerinde olmadığı belgelendi: lemurlar, fossa ve tenrekler milyonlarca yıl önce adaya gelen birkaç atadan çeşitlenmiş. Ormanlar kesildikçe bu türlerin çoğu tehlikede; radyal kaplumbağa ve ay-ay en kırılganları.'],
+    ['sibirya', 'sibiryaFaunasi', 'Ussuri taygasının büyük hayvanları', 'Ussuri taygasında', 'Ussuri taygasında kuzeyin ve güneyin hayvanlarının bir arada yaşadığı belgelendi: Sibirya\'nın sığını, samuru ve vaşağı ile güneyin kaplanı, leoparı ve Asya kara ayısı aynı ormanı paylaşıyor. Kaplanın sayısının izubr ve yaban domuzuna, onlarınkinin de Kore çamı fıstığı ve meşe palamuduna bağlı olduğu, bu yüzden ormanın kesilmesinin zinciri en tepeden kopardığı görüldü.'],
+    ['kackar', 'kackarFaunasi', 'Kaçkar Dağları\'nın büyük hayvanları', 'Kaçkarlar\'da', 'Kaçkar Dağları\'nın ormandan zirveye kadar katman katman bir yaşam taşıdığı belgelendi: ladin ve kayın ormanında karaca, domuz ve porsuk; orman gülü kuşağında boz ayı; yaylada tilki ve kurt; sarp kayalıklarda yaban keçisi ve çengel boynuzlu dağ keçisi; en tepede sakallı akbaba. Küçük hidroelektrik santrallerinin derelerdeki su samurunu ve alabalığı tehdit ettiği not edildi.'],
   ].map(([h, id, ad, yer, sonuc]) => ({
     id,
     ad,
@@ -404,6 +406,22 @@ export const ARASTIRMALAR = [
     sonuc: 'Borneo hayvanlarının ustalıkları belgelendi: orangutanlar her akşam dallardan yeni bir yuva örüyor, hortumlu maymunlar nehrin en dar yerinden suya atlayıp yüzüyor, güneş ayıları uzun dilleriyle ağaç kovuğundaki balı ve arı larvalarını çıkarıyor.',
   },
   {
+    id: 'sibiryaDavranislari',
+    ad: 'Kaplanın ormanı',
+    kosulMetni: 'Dört davranışı gözle: Amur kaplanının bölgesini işaretlemesi, Ussuri boz ayısının somon avı, Asya kara ayısının ağaca tırmanması ve izubr geyiğinin tuz yalağında toprak yalaması',
+    ilerleme: (k) => [[['amurKaplani', 'kokuIsaretliyor'], ['ussuriBozAyisi', 'somonAvliyor'], ['himalayaAyisi', 'agacaTirmaniyor'], ['izubr', 'topragiYaliyor']].filter(([t, dv]) => davranisVar(k, t, dv)).length, 4],
+    odul: { itibar: 18, fon: 6000 },
+    sonuc: 'Ussuri taygasının bağlantıları belgelendi: kaplan bölgesini ağaçları tırmalayıp işaretleyerek koruyor ve geyiklerin gece geldiği tuz yalağının çevresinde pusuya yatıyor; sonbaharda ırmağa çıkan keta somonu ayıları kış uykusuna hazırlıyor; Asya kara ayısı yazı ve sonbaharı ağaçların tepesinde geçiriyor.',
+  },
+  {
+    id: 'kackarDavranislari',
+    ad: 'Dağın ustaları',
+    kosulMetni: 'Dört davranışı gözle: boz ayının yaban mersini yemesi, yaban keçisi tekelerinin çarpışması, sakallı akbabanın kemik kırması ve kurtların ulumalı korosu',
+    ilerleme: (k) => [[['kkBozAyi', 'yabanMersiniYiyor'], ['yabanKecisi', 'boynuzCarpisiyor'], ['sakalliAkbaba', 'kemikBirakiyor'], ['kkKurt', 'ulumaKorosu']].filter(([t, dv]) => davranisVar(k, t, dv)).length, 4],
+    odul: { itibar: 16, fon: 5000 },
+    sonuc: 'Kaçkar hayvanlarının dağa uyumu belgelendi: boz ayıların yazın büyük ölçüde yaban mersini ve otla beslendiği, yaban keçisi tekelerinin sonbaharda kayalıklarda boynuz boynuza çarpıştığı, sakallı akbabanın kemikleri kayalara bırakıp kırarak iliğini yediği gözlendi.',
+  },
+  {
     id: 'madagaskarDavranislari',
     ad: 'Lemurların günlük yaşamı',
     kosulMetni: 'Dört davranışı gözle: halka kuyruklu lemurların güneşlenmesi ve koku düelloları, sifakanın dans ederek sekmesi, ay-ayın ağaca tıklaması',
@@ -416,6 +434,8 @@ export const ARASTIRMALAR = [
     ['yellowstone', 'yellowstoneEkolojisi', 'Vadinin bitkileri ve küçük canlıları', 'Yellowstone'],
     ['borneo', 'borneoEkolojisi', 'Borneo ormanının bitkileri ve küçük canlıları', 'Borneo'],
     ['madagaskar', 'madagaskarEkolojisi', 'Madagaskar ormanlarının bitkileri ve küçük canlıları', 'Madagaskar'],
+    ['sibirya', 'sibiryaEkolojisi', 'Tayganın bitkileri ve küçük canlıları', 'Sibirya'],
+    ['kackar', 'kackarEkolojisi', 'Kaçkar Dağları\'nın bitkileri ve küçük canlıları', 'Kaçkar'],
   ].map(([h, id, ad, yer]) => ({
     id,
     ad,

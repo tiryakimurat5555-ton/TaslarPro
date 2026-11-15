@@ -43,6 +43,11 @@ export const SOZ = {
   oselo: 'Oselo', aguti: 'Aguti', paka: 'Paka', kirmiziMazama: 'Mazama geyiği', beyazUakari: 'Ak uakari', tukuxi: 'Tukuxi', amazonManati: 'Manati', gozlukluKayman: 'Gözlüklü kayman',
   karaAyi: 'Kara ayı', katirGeyigi: 'Katır geyiği', dagKoyunu: 'Dağ koyunu', karKecisi: 'Dağ keçisi', kuzeySuSamuru: 'Su samuru', kizilVasak: 'Kızıl vaşak',
   domuzKuyrukluMakak: 'Domuz kuyruklu makak', gumusLangur: 'Gümüş langur', suVarani: 'Su varanı', borneoSambari: 'Sambar', fareGeyigi: 'Fare geyiği', binturong: 'Binturong', duzTuyluSamur: 'Su samuru',
+  amurKaplani: 'Amur kaplanı', amurLeopari: 'Amur leoparı', ussuriBozAyisi: 'Boz ayı', himalayaAyisi: 'Asya kara ayısı', sbVasak: 'Vaşak', samur: 'Samur', harza: 'Harza',
+  rakunKopegi: 'Rakun köpeği', sbPorsuk: 'Porsuk', amurKedisi: 'Amur kedisi', sbSuSamuru: 'Su samuru', izubr: 'İzubr geyiği', sikaGeyigi: 'Sika geyiği', sbKaraca: 'Karaca',
+  miskGeyigi: 'Misk geyiği', sbYabanDomuzu: 'Yaban domuzu', sbSigin: 'Sığın', goral: 'Goral',
+  kkBozAyi: 'Boz ayı', kkKurt: 'Kurt', kkVasak: 'Vaşak', yabanKecisi: 'Yaban keçisi', cengelBoynuzlu: 'Çengel boynuzlu dağ keçisi', kkKaraca: 'Karaca', kkYabanDomuzu: 'Yaban domuzu',
+  kkKizilTilki: 'Kızıl tilki', kkPorsuk: 'Porsuk', kayaSansari: 'Kaya sansarı', kkSuSamuru: 'Su samuru', sakalliAkbaba: 'Sakallı akbaba',
   devSican: 'Dev sıçrayan sıçan', darCizgiliMongoz: 'Mongoz', dumerilBoasi: 'Boa', orumcekKaplumbagasi: 'Örümcek kaplumbağası', mirza: 'Dev fare lemuru',
   devekusu: 'Devekuşu', eland: 'Eland', topi: 'Topi', kongoni: 'Kongoni', suAntilopu: 'Su antilobu', grantCeylani: 'Grant ceylanı', karakulak: 'Karakulak', beisaOriks: 'Oriks',
   kutupAyisi: 'Kutup ayısı', halkaliFok: 'Halkalı fok', mors: 'Mors', beluga: 'Beluga', renGeyigi: 'Ren geyiği', miskOkuzu: 'Misk öküzü',
@@ -1978,13 +1983,446 @@ function madagaskarPlanSec(d, g, H, mevsim, r, sure) {
       return false;
   }
 }
-const EK_PLAN = { amazon: amazonPlanSec, yellowstone: yellowstonePlanSec, borneo: borneoPlanSec, madagaskar: madagaskarPlanSec };
+// ---- Sibirya taygası (15 Kasım 2026): kış uykusu, tuz yalağı, palamut ve kozalak, somon avı, kaplanın işaretlemesi ----
+function sibiryaPlanSec(d, g, H, mevsim, r, sure) {
+  const k = d.k;
+  const dk = k.dk;
+  const t = TURLER[g.tur];
+  const lh = { x: t.habitat.x - H.MERKEZ.x, y: t.habitat.y - H.MERKEZ.y };
+  const gunduz = H.evre(dk) === 'gunduz';
+  const kis = mevsim === 'kis';
+  const su = () => {
+    g.plan = 'icme';
+    g.hedef = ekSuNoktasi(d, g, H);
+    g.planBitis = sure(25, 50);
+  };
+  const habitatta = (oran = 0.8) => avNokta(d, g, H, lh.x + arasi(d.rng, -t.habitat.r * oran, t.habitat.r * oran), lh.y + arasi(d.rng, -t.habitat.r * oran, t.habitat.r * oran), 10);
+  const yalak = () => ({ x: H.MERKEZ.x + H.SB_YALAK.lx + arasi(d.rng, -3, 3), y: H.MERKEZ.y + H.SB_YALAK.ly + arasi(d.rng, -3, 3) });
+  const irmak = () => {
+    const lx = lh.x + arasi(d.rng, -50, 50);
+    return { x: H.MERKEZ.x + lx, y: H.MERKEZ.y + H.sbNehirY(lx) + arasi(d.rng, -2, 2) };
+  };
+  const meseYamaci = () => avNokta(d, g, H, arasi(d.rng, -120, 120), arasi(d.rng, -200, -125), 10);
+  // Kış uykusu: ayılar, porsuk ve rakun köpeği (köpekgiller arasında tek)
+  if (kis && ['ussuriBozAyisi', 'himalayaAyisi', 'sbPorsuk', 'rakunKopegi'].includes(g.tur)) {
+    if (!g.in) g.in = g.tur === 'himalayaAyisi' ? ekAgac(d, g, H, lh, 40) : g.tur === 'ussuriBozAyisi' ? avNokta(d, g, H, H.SB_KAYA.lx + arasi(d.rng, -30, 10), H.SB_KAYA.ly + arasi(d.rng, 0, 40), 10) : habitatta(0.5);
+    g.plan = 'in';
+    g.hedef = { x: g.in.x, y: g.in.y };
+    g.planBitis = sure(200, 400);
+    g.aclik = Math.min(g.aclik || 0, 0.3);
+    return true;
+  }
+  if (t.yirtici && (g.aclik || 0) > 0.55) return false;
+  switch (g.tur) {
+    case 'amurKaplani':
+      if (r < 0.15) {
+        g.plan = 'isaret'; // ağaçları tırmalayıp idrarla işaret bırakır
+        g.hedef = habitatta();
+        g.planBitis = sure(15, 30);
+        return true;
+      }
+      if (!gunduz && r < 0.35) {
+        g.plan = 'dv:pusuda'; // geyiklerin gece geldiği tuz yalağının yakınında bekler
+        const y = yalak();
+        g.hedef = avNokta(d, g, H, y.x - H.MERKEZ.x + arasi(d.rng, -10, 10), y.y - H.MERKEZ.y + arasi(d.rng, 8, 14), 4);
+        g.planBitis = sure(60, 120);
+        return true;
+      }
+      if (r < 0.45) {
+        su();
+        return true;
+      }
+      g.plan = r < 0.8 ? 'gez' : 'dinlen'; // bölgesini uzun yürüyüşlerle dolaşır
+      g.hedef = g.plan === 'gez' ? habitatta(1) : null;
+      g.planBitis = sure(60, 140);
+      return true;
+    case 'amurLeopari':
+      if (gunduz) {
+        g.plan = r < 0.6 ? 'kayada' : 'dinlen';
+        g.hedef = g.plan === 'kayada' ? habitatta(0.6) : null;
+        g.planBitis = sure(60, 140);
+        return true;
+      }
+      if (r < 0.15) {
+        su();
+        return true;
+      }
+      g.plan = 'gez';
+      g.hedef = habitatta(1);
+      g.planBitis = sure(40, 90);
+      return true;
+    case 'ussuriBozAyisi':
+      if (mevsim === 'sonbahar' && r < 0.35) {
+        g.plan = 'dv:somonAvliyor';
+        g.hedef = irmak();
+        g.planBitis = sure(40, 90);
+        return true;
+      }
+      if ((mevsim === 'sonbahar' || mevsim === 'ilkbahar') && r < 0.6) {
+        g.plan = 'dv:kozalakKiriyor'; // Kore çamının yere düşen kozalakları (ilkbaharda kar altından kalanlar)
+        g.hedef = avNokta(d, g, H, arasi(d.rng, -120, 40), arasi(d.rng, -60, 90), 10);
+        g.planBitis = sure(40, 90);
+        return true;
+      }
+      if (r < 0.7) {
+        g.plan = 'esele';
+        g.hedef = habitatta();
+        g.planBitis = sure(40, 90);
+        return true;
+      }
+      if (r < 0.8) {
+        su();
+        return true;
+      }
+      g.plan = 'gez';
+      g.hedef = habitatta(1);
+      g.planBitis = sure(40, 90);
+      return true;
+    case 'himalayaAyisi':
+      if (mevsim === 'sonbahar' && r < 0.45) {
+        g.plan = 'dv:palamutYiyor';
+        g.hedef = meseYamaci();
+        g.planBitis = sure(40, 90);
+        return true;
+      }
+      if (r < 0.25) {
+        g.plan = 'dv:agacaTirmaniyor';
+        g.hedef = ekAgac(d, g, H, lh, 40);
+        g.planBitis = sure(15, 30);
+        return true;
+      }
+      if (r < 0.55) {
+        g.plan = 'dallar'; // ağacın tepesinde meyve ve palamut; dalları kırıp "yuva" yapar
+        g.hedef = ekAgac(d, g, H, lh, 50);
+        g.planBitis = sure(40, 90);
+        return true;
+      }
+      if (r < 0.65) {
+        su();
+        return true;
+      }
+      g.plan = r < 0.85 ? 'esele' : 'dinlen';
+      g.hedef = g.plan === 'esele' ? habitatta() : null;
+      g.planBitis = sure(40, 90);
+      return true;
+    case 'sbVasak':
+    case 'amurKedisi':
+      if (gunduz) {
+        g.plan = 'dinlen';
+        g.planBitis = sure(80, 160);
+        return true;
+      }
+      if (r < 0.15) {
+        su();
+        return true;
+      }
+      g.plan = 'gez';
+      g.hedef = habitatta(1);
+      g.planBitis = sure(40, 90);
+      return true;
+    case 'samur':
+      if (r < 0.5) {
+        g.plan = 'fare'; // kışın karın altındaki fareleri dinleyip dalar
+        g.hedef = yakinNokta(d, g, 14);
+        g.planBitis = sure(30, 60);
+        return true;
+      }
+      if (mevsim === 'sonbahar' && r < 0.7) {
+        g.plan = 'dv:kozalakKiriyor';
+        g.hedef = habitatta();
+        g.planBitis = sure(20, 40);
+        return true;
+      }
+      g.plan = r < 0.85 ? 'gez' : 'dinlen';
+      g.hedef = g.plan === 'gez' ? habitatta(1) : null;
+      g.planBitis = sure(30, 70);
+      return true;
+    case 'harza':
+      if (!gunduz) {
+        g.plan = 'dinlen';
+        g.planBitis = sure(80, 160);
+        return true;
+      }
+      g.plan = r < 0.2 ? 'icme' : 'gez';
+      g.hedef = g.plan === 'icme' ? ekSuNoktasi(d, g, H) : habitatta(1);
+      g.planBitis = sure(30, 70);
+      return true;
+    case 'rakunKopegi':
+    case 'sbPorsuk':
+      if (gunduz) {
+        if (!g.in) g.in = habitatta(0.5);
+        g.plan = 'in';
+        g.hedef = { x: g.in.x, y: g.in.y };
+        g.planBitis = sure(80, 160);
+        return true;
+      }
+      if (r < 0.15) {
+        su();
+        return true;
+      }
+      g.plan = g.tur === 'sbPorsuk' ? 'esele' : 'dv:yiyecekAriyor';
+      g.hedef = g.tur === 'rakunKopegi' && r < 0.6 ? ekKiyiNoktasi(d, g, H) : habitatta();
+      g.planBitis = sure(40, 90);
+      return true;
+    case 'sbSuSamuru':
+      if (gunduz && r < 0.35) {
+        g.plan = 'dinlen';
+        g.hedef = ekKiyiNoktasi(d, g, H);
+        g.planBitis = sure(50, 110);
+        return true;
+      }
+      g.plan = r < 0.75 ? 'dv:balikAvliyor' : 'yuz';
+      g.hedef = ekSuyaGir(d, g, H, lh, t.habitat.r);
+      g.planBitis = sure(30, 70);
+      return true;
+    case 'izubr':
+    case 'sikaGeyigi':
+    case 'sbKaraca':
+      if (mevsim === 'sonbahar' && g.tur !== 'sbKaraca' && r < 0.25) {
+        g.plan = 'bogur'; // izubr böğürür, sika erkeği ince bir ıslıkla öter
+        g.hedef = habitatta();
+        g.planBitis = sure(25, 50);
+        return true;
+      }
+      if (!gunduz && r < (kis ? 0.3 : 0.2)) {
+        g.plan = 'dv:topragiYaliyor'; // gece tuz yalağına gelir
+        g.hedef = yalak();
+        g.planBitis = sure(20, 40);
+        return true;
+      }
+      if (g.tur === 'sikaGeyigi' && mevsim === 'sonbahar' && r < 0.45) {
+        g.plan = 'dv:palamutYiyor';
+        g.hedef = meseYamaci();
+        g.planBitis = sure(40, 80);
+        return true;
+      }
+      if (r < 0.4 && !kis) {
+        su();
+        return true;
+      }
+      return false;
+    case 'miskGeyigi':
+    case 'goral':
+      if (r < 0.4) {
+        g.plan = 'kayada';
+        g.hedef = avNokta(d, g, H, H.SB_KAYA.lx + arasi(d.rng, -40, 40), H.SB_KAYA.ly + arasi(d.rng, -40, 40), 8);
+        g.planBitis = sure(50, 110);
+        return true;
+      }
+      if (r < 0.5) {
+        su();
+        return true;
+      }
+      g.plan = 'otla'; // misk geyiği kışın ağaçlardaki likenleri yer
+      g.hedef = habitatta();
+      g.planBitis = sure(40, 90);
+      return true;
+    case 'sbYabanDomuzu':
+      if (mevsim === 'sonbahar' && r < 0.5) {
+        g.plan = 'dv:palamutYiyor';
+        g.hedef = meseYamaci();
+        g.planBitis = sure(40, 90);
+        return true;
+      }
+      if (r < 0.75) {
+        g.plan = 'esele';
+        g.hedef = habitatta();
+        g.planBitis = sure(40, 90);
+        return true;
+      }
+      if (!kis && r < 0.85) {
+        su();
+        return true;
+      }
+      return false;
+    case 'sbSigin':
+      if (mevsim === 'yaz' && r < 0.4) {
+        g.plan = 'sudaOtla'; // yazın ırmakta ve gölde su bitkileri
+        g.hedef = ekSuNoktasi(d, g, H, 3);
+        g.planBitis = sure(40, 90);
+        return true;
+      }
+      return false;
+    default:
+      return false;
+  }
+}
+// ---- Kaçkar Dağları (15 Kasım 2026): kış uykusu, yaban mersini ve arılık, keçilerin kayalığı, kurt uluması, sakallı akbabanın kemiği ----
+function kackarPlanSec(d, g, H, mevsim, r, sure) {
+  const k = d.k;
+  const dk = k.dk;
+  const t = TURLER[g.tur];
+  const lh = { x: t.habitat.x - H.MERKEZ.x, y: t.habitat.y - H.MERKEZ.y };
+  const gunduz = H.evre(dk) === 'gunduz';
+  const kis = mevsim === 'kis';
+  const su = () => {
+    g.plan = 'icme';
+    g.hedef = ekSuNoktasi(d, g, H);
+    g.planBitis = sure(25, 50);
+  };
+  const habitatta = (oran = 0.8) => avNokta(d, g, H, lh.x + arasi(d.rng, -t.habitat.r * oran, t.habitat.r * oran), lh.y + arasi(d.rng, -t.habitat.r * oran, t.habitat.r * oran), 10);
+  const kayalik = () => avNokta(d, g, H, H.KK_KAYA.lx + arasi(d.rng, -45, 45), H.KK_KAYA.ly + arasi(d.rng, -45, 45), 8);
+  if (kis && (g.tur === 'kkBozAyi' || g.tur === 'kkPorsuk')) {
+    if (!g.in) g.in = g.tur === 'kkBozAyi' ? avNokta(d, g, H, arasi(d.rng, -120, -40), arasi(d.rng, -200, -130), 10) : habitatta(0.5);
+    g.plan = 'in';
+    g.hedef = { x: g.in.x, y: g.in.y };
+    g.planBitis = sure(200, 400);
+    g.aclik = Math.min(g.aclik || 0, 0.3);
+    return true;
+  }
+  if (t.yirtici && (g.aclik || 0) > 0.55) return false;
+  switch (g.tur) {
+    case 'kkBozAyi': {
+      if ((mevsim === 'yaz' || mevsim === 'sonbahar') && r < 0.35) {
+        g.plan = 'dv:yabanMersiniYiyor';
+        g.hedef = avNokta(d, g, H, arasi(d.rng, -150, 150), arasi(d.rng, -110, -60), 10);
+        g.planBitis = sure(50, 110);
+        return true;
+      }
+      if (!kis && r < 0.45) {
+        g.plan = 'dv:kovanYokluyor';
+        g.hedef = { x: H.MERKEZ.x + H.KK_ARI.lx + arasi(d.rng, 9, 14), y: H.MERKEZ.y + H.KK_ARI.ly + arasi(d.rng, -6, 6) };
+        g.planBitis = sure(20, 40);
+        const u = uyeler(d, g)[0];
+        if (u && oyuncuEkHaritada(k) && mesafe(d.oyuncu, g.hedef) < 220) olay(d, 'iletisim', `Bir boz ayı bal kokusunu almış, yayla arılığına doğru yürüyor. Kovanlar direklerin tepesinde ve elektrikli çitin içinde; ayı ancak çevresinde dolaşabilir. ${BuyukHarf(yerTarifi(d.oyuncu, g.hedef))}.`, 3, { id: u.id });
+        return true;
+      }
+      if (r < 0.7) {
+        g.plan = 'esele';
+        g.hedef = habitatta();
+        g.planBitis = sure(40, 90);
+        return true;
+      }
+      if (r < 0.8) {
+        su();
+        return true;
+      }
+      g.plan = 'gez';
+      g.hedef = habitatta(1);
+      g.planBitis = sure(40, 90);
+      return true;
+    }
+    case 'kkKurt':
+      if (!gunduz && r < 0.08) {
+        g.plan = 'dinlen';
+        g.planBitis = sure(10, 20);
+        const u = uyeler(d, g);
+        u.forEach((b) => (b.ozel = { davranis: 'ulumaKorosu', bitis: d.zaman + 14 }));
+        if (u[0] && oyuncuEkHaritada(k) && mesafe(d.oyuncu, u[0]) < 450) olay(d, 'iletisim', `Kurtlar uluyor; ses vadide yankılanıyor. ${BuyukHarf(yerTarifi(d.oyuncu, u[0]))}.`, 3, { id: u[0].id, ses: true, duyma: 450 });
+        return true;
+      }
+      if (r < 0.15) {
+        su();
+        return true;
+      }
+      g.plan = r < 0.75 ? 'gez' : 'dinlen';
+      g.hedef = g.plan === 'gez' ? habitatta(1) : null;
+      g.planBitis = sure(50, 110);
+      return true;
+    case 'kkVasak':
+    case 'kayaSansari':
+    case 'kkYabanDomuzu':
+    case 'kkPorsuk':
+      if (gunduz) {
+        g.plan = 'dinlen';
+        g.planBitis = sure(80, 160);
+        return true;
+      }
+      if (r < 0.15) {
+        su();
+        return true;
+      }
+      if (g.tur === 'kkYabanDomuzu' || g.tur === 'kkPorsuk') {
+        g.plan = 'esele';
+        g.hedef = habitatta();
+        g.planBitis = sure(40, 90);
+        return true;
+      }
+      if (g.tur === 'kayaSansari' && r < 0.5) {
+        g.plan = 'dv:yiyecekAriyor';
+        g.hedef = habitatta();
+        g.planBitis = sure(30, 60);
+        return true;
+      }
+      g.plan = 'gez';
+      g.hedef = habitatta(1);
+      g.planBitis = sure(40, 90);
+      return true;
+    case 'kkKizilTilki':
+      if (r < 0.45) {
+        g.plan = 'fare';
+        g.hedef = yakinNokta(d, g, 14);
+        g.planBitis = sure(30, 60);
+        return true;
+      }
+      return false;
+    case 'yabanKecisi':
+    case 'cengelBoynuzlu':
+      if (g.tur === 'yabanKecisi' && (mevsim === 'sonbahar') && r < 0.25) {
+        g.plan = 'boynuz'; // çiftleşme dönemi: tekeler boynuz boynuza çarpışır
+        g.hedef = kayalik();
+        g.planBitis = sure(25, 45);
+        return true;
+      }
+      if (r < 0.1) {
+        su();
+        return true;
+      }
+      if (kis && g.tur === 'yabanKecisi') {
+        g.plan = r < 0.6 ? 'otla' : 'kayada'; // kışın rüzgârın karı süpürdüğü alçak yamaçlara iner
+        g.hedef = avNokta(d, g, H, H.KK_KAYA.lx + arasi(d.rng, -40, 20), H.KK_KAYA.ly + arasi(d.rng, -70, -30), 8);
+        g.planBitis = sure(40, 100);
+        return true;
+      }
+      g.plan = r < 0.6 ? 'otla' : 'kayada';
+      g.hedef = g.tur === 'yabanKecisi' ? kayalik() : habitatta();
+      g.planBitis = sure(40, 100);
+      return true;
+    case 'kkKaraca':
+      if (r < 0.15 && !kis) {
+        su();
+        return true;
+      }
+      return false;
+    case 'kkSuSamuru':
+      if (gunduz && r < 0.4) {
+        g.plan = 'dinlen';
+        g.hedef = ekKiyiNoktasi(d, g, H);
+        g.planBitis = sure(50, 110);
+        return true;
+      }
+      g.plan = r < 0.75 ? 'dv:balikAvliyor' : 'yuz';
+      g.hedef = ekSuNoktasi(d, g, H, 3);
+      g.planBitis = sure(30, 70);
+      return true;
+    case 'sakalliAkbaba':
+      if (!gunduz) {
+        g.plan = 'tunemis';
+        g.hedef = kayalik();
+        g.planBitis = sure(80, 160);
+        return true;
+      }
+      if (r < 0.12) {
+        g.plan = 'dv:kemikBirakiyor';
+        g.hedef = kayalik();
+        g.planBitis = sure(15, 30);
+        return true;
+      }
+      g.plan = r < 0.65 ? 'suzuluyor' : 'tunemis';
+      g.hedef = g.plan === 'suzuluyor' ? habitatta(1) : kayalik();
+      g.planBitis = sure(30, 80);
+      return true;
+    default:
+      return false;
+  }
+}
+const EK_PLAN = { amazon: amazonPlanSec, yellowstone: yellowstonePlanSec, borneo: borneoPlanSec, madagaskar: madagaskarPlanSec, sibirya: sibiryaPlanSec, kackar: kackarPlanSec };
 // Grup başına ek işler: tapir ve hortumlu maymun nehri yüzerek geçer gibi görünür; maymunlar fossa/jaguar yaklaşınca alarm verir
 function ekGrupAdim(d, g, u, dt) {
   const k = d.k;
   if (!u.length) return;
   const H = Kt.harita(g);
-  const alarmVeren = { halkaKuyruk: ['fossa'], sifaka: ['fossa'], kizilAlinliLemur: ['fossa'], uluyanMaymun: ['jaguar'], hortumluMaymun: ['bulutluLeopar'], catalBoynuz: ['griKurt', 'coyote', 'puma'], beyazUakari: ['jaguar'], aguti: ['oselo', 'jaguar'], katirGeyigi: ['griKurt', 'puma', 'coyote', 'kizilVasak'], dagKoyunu: ['puma', 'griKurt'], gumusLangur: ['bulutluLeopar'], domuzKuyrukluMakak: ['bulutluLeopar'], darCizgiliMongoz: ['fossa'] }[g.tur];
+  const alarmVeren = { halkaKuyruk: ['fossa'], sifaka: ['fossa'], kizilAlinliLemur: ['fossa'], uluyanMaymun: ['jaguar'], hortumluMaymun: ['bulutluLeopar'], catalBoynuz: ['griKurt', 'coyote', 'puma'], beyazUakari: ['jaguar'], aguti: ['oselo', 'jaguar'], katirGeyigi: ['griKurt', 'puma', 'coyote', 'kizilVasak'], dagKoyunu: ['puma', 'griKurt'], gumusLangur: ['bulutluLeopar'], domuzKuyrukluMakak: ['bulutluLeopar'], darCizgiliMongoz: ['fossa'], izubr: ['amurKaplani'], sikaGeyigi: ['amurKaplani', 'amurLeopari'], sbKaraca: ['amurKaplani', 'amurLeopari', 'sbVasak'], goral: ['amurLeopari'], yabanKecisi: ['kkKurt', 'kkVasak'], cengelBoynuzlu: ['kkKurt', 'kkVasak'], kkKaraca: ['kkKurt', 'kkVasak'] }[g.tur];
   if (alarmVeren && !(g.ekAlarmSon && d.zaman - g.ekAlarmSon < 90) && d.rng() < dt * 0.5) {
     const av = k.hayvanlar.find((b) => !b.olu && alarmVeren.includes(b.tur) && mesafe(b, u[0]) < 40);
     if (av) {
@@ -2803,7 +3241,7 @@ function kutupGrupAdim(d, g, u, dt, dtDk) {
   }
 }
 // Kutupta bireyin davranışı (gözlemde söylenen); null ise genel kurallar
-const OTLAMAYAN_EK = new Set(['gunesAyisi', 'karaAyi', 'suVarani', 'dumerilBoasi', 'darCizgiliMongoz', 'domuzKuyrukluMakak', 'oselo', 'kizilVasak']);
+const OTLAMAYAN_EK = new Set(['gunesAyisi', 'karaAyi', 'suVarani', 'dumerilBoasi', 'darCizgiliMongoz', 'domuzKuyrukluMakak', 'oselo', 'kizilVasak', 'amurKaplani', 'amurLeopari', 'sbVasak', 'samur', 'harza', 'rakunKopegi', 'sbPorsuk', 'amurKedisi', 'kkKurt', 'kkVasak', 'kkKizilTilki', 'kkPorsuk', 'kayaSansari']);
 function kutupDavranis(d, b, g, hareketli) {
   switch (g.plan) {
     case 'buzda':
@@ -3148,6 +3586,14 @@ export const DUYULAR = {
   fareGeyigi: { koku: 1.3, gorme: 0.9, isitme: 1.4 }, binturong: { koku: 1.4, gorme: 0.9, isitme: 1.1 }, duzTuyluSamur: { koku: 1.1, gorme: 1.2, isitme: 1.2 },
   devSican: { koku: 1.2, gorme: 1, isitme: 1.5 }, darCizgiliMongoz: { koku: 1.5, gorme: 1.1, isitme: 1.2 }, dumerilBoasi: { koku: 1.4, gorme: 0.6, isitme: 0.6 }, orumcekKaplumbagasi: { koku: 0.9, gorme: 0.8, isitme: 0.5 },
   mirza: { koku: 1.1, gorme: 1.3, isitme: 1.5 },
+  amurKaplani: { koku: 1, gorme: 1.5, isitme: 1.6 }, amurLeopari: { koku: 1, gorme: 1.5, isitme: 1.6 }, ussuriBozAyisi: { koku: 1.9, gorme: 0.8, isitme: 1.2 }, himalayaAyisi: { koku: 1.8, gorme: 0.8, isitme: 1.2 },
+  sbVasak: { koku: 0.9, gorme: 1.5, isitme: 1.7 }, samur: { koku: 1.4, gorme: 1.1, isitme: 1.4 }, harza: { koku: 1.3, gorme: 1.3, isitme: 1.3 }, rakunKopegi: { koku: 1.5, gorme: 0.9, isitme: 1.3 },
+  sbPorsuk: { koku: 1.7, gorme: 0.7, isitme: 1.2 }, amurKedisi: { koku: 0.9, gorme: 1.4, isitme: 1.6 }, sbSuSamuru: { koku: 1.1, gorme: 1.1, isitme: 1.2 }, izubr: { koku: 1.5, gorme: 1.1, isitme: 1.5 },
+  sikaGeyigi: { koku: 1.4, gorme: 1.2, isitme: 1.6 }, sbKaraca: { koku: 1.4, gorme: 1.1, isitme: 1.6 }, miskGeyigi: { koku: 1.4, gorme: 1, isitme: 1.6 }, sbYabanDomuzu: { koku: 1.8, gorme: 0.7, isitme: 1.3 },
+  sbSigin: { koku: 1.5, gorme: 0.8, isitme: 1.6 }, goral: { koku: 1.1, gorme: 1.6, isitme: 1.3 },
+  kkBozAyi: { koku: 1.9, gorme: 0.8, isitme: 1.2 }, kkKurt: { koku: 1.6, gorme: 1.2, isitme: 1.5 }, kkVasak: { koku: 0.9, gorme: 1.5, isitme: 1.7 }, yabanKecisi: { koku: 1.2, gorme: 1.7, isitme: 1.3 },
+  cengelBoynuzlu: { koku: 1.3, gorme: 1.6, isitme: 1.4 }, kkKaraca: { koku: 1.4, gorme: 1.1, isitme: 1.6 }, kkYabanDomuzu: { koku: 1.8, gorme: 0.7, isitme: 1.3 }, kkKizilTilki: { koku: 1.4, gorme: 1.2, isitme: 1.7 },
+  kkPorsuk: { koku: 1.7, gorme: 0.7, isitme: 1.2 }, kayaSansari: { koku: 1.3, gorme: 1.2, isitme: 1.4 }, kkSuSamuru: { koku: 1.1, gorme: 1.1, isitme: 1.2 }, sakalliAkbaba: { koku: 0.5, gorme: 2, isitme: 0.8 },
   devekusu: { koku: 0.6, gorme: 1.8, isitme: 1 }, eland: { koku: 1.2, gorme: 1, isitme: 1.3 }, topi: { koku: 1, gorme: 1.3, isitme: 1.1 },
   kongoni: { koku: 1.1, gorme: 1.2, isitme: 1.2 }, suAntilopu: { koku: 1.1, gorme: 1, isitme: 1.2 }, grantCeylani: { koku: 1, gorme: 1.2, isitme: 1.2 },
   karakulak: { koku: 0.9, gorme: 1.4, isitme: 1.6 }, beisaOriks: { koku: 1.1, gorme: 1.2, isitme: 1.1 },
@@ -3314,6 +3760,13 @@ export const AV_STRATEJI = {
   bulutluLeopar: { ad: 'ağaçta pusu: daldan avın üstüne iner ya da ağaçta maymunu kovalar', sure: 6, yardimci: 0 },
   fossa: { ad: 'ağaçtan ağaca lemurları kovalar; esnek bilekleriyle gövdeden aşağı başı önde iner', sure: 8, yardimci: 0 },
   oselo: { ad: 'gece yere yakın sinsice yaklaşma; kemirgeni kısa bir atılışla yakalar, gerekirse suya da girer', sure: 6, yardimci: 0 },
+  amurKaplani: { ad: 'karda iz sürüp sinsice yaklaşma ve kısa, güçlü bir atılış; avı ensesinden ya da boğazından yakalar', sure: 8, yardimci: 0 },
+  amurLeopari: { ad: 'kayalık ve meşe yamacında sinsice yaklaşma; kısa bir atılışla geyiği yakalar, avını kayaların arasına saklar', sure: 7, yardimci: 0 },
+  ussuriBozAyisi: { ad: 'kısa bir atılış; çoğunlukla genç domuz ya da kaplanın avını elinden alma', sure: 7, yardimci: 0 },
+  sbVasak: { ad: 'devrilmiş ağaçların arkasında pusu; derin karda geniş patileriyle birkaç sıçrayışta yakalar', sure: 6, yardimci: 0 },
+  harza: { ad: 'iki üç birey birlikte kovalar; misk geyiğini derin karda yorup yakalar', sure: 16, yardimci: 1 },
+  kkKurt: { ad: 'sürüyle takip: kayalıkta keçileri ayırır, karda domuzu ve karacayı yorar', sure: 25, yardimci: 2 },
+  kkVasak: { ad: 'ormanın kayalık kenarında pusu; birkaç sıçrayışla avın üstüne atılır', sure: 6, yardimci: 0 },
   kizilVasak: { ad: 'çalıların ve kayaların arkasından pusu; birkaç sıçrayışla avın üstüne atılır', sure: 6, yardimci: 0 },
   karakulak: { ad: 'tek başına sinsice yaklaşma ve olağanüstü bir sıçrayış: avın üstüne birkaç metreden atılır, kuşları havada yakalar', sure: 6, yardimci: 0 },
   aslan: { ad: 'pusu ve ortak kuşatma', sure: 13, yardimci: 2 },
@@ -3576,7 +4029,7 @@ function kalitim(d, y, anne, baba) {
 }
 
 // Doğum: gebeliğin sonunda (Aşama 21)
-export const GEBE_GUN = { aslan: 3, leopar: 3, sirtlan: 3, cita: 3, yabanKopegi: 2, fil: 7, zurafa: 5, zebra: 4, gnu: 3, impala: 3, ceylan: 2, domuz: 2, suAygiri: 4, gergedan: 6, manda: 4, babun: 3, kutupAyisi: 6, halkaliFok: 5, mors: 7, beluga: 7, renGeyigi: 4, miskOkuzu: 4, kutupKurdu: 2, kutupTilkisi: 2, kutupTavsani: 2, imparatorPengueni: 3, adeliPengueni: 2, weddellFoku: 5, leoparFoku: 5, orka: 7, filFoku: 6, takhi: 5, karLeopari: 3, kizilGeyik: 4, karaca: 3, yabanDomuzu: 2, vasak: 2, kizilTilki: 2, porsuk: 2, dagKecisi: 3, kulan: 5, saiga: 3, mogolKurdu: 2, dzeren: 3, argali: 4, kaplan: 3, hintFili: 7, cital: 3, sambar: 3, gaur: 4, langur: 2, kirmiziKanguru: 3, koala: 3, emu: 3, vombat: 3, dingo: 2, hintLeopari: 3, tembelAyi: 4, hintYabanKopegi: 2, cizgiliSirtlan: 3, altinCakal: 2, barasingha: 4, nilgay: 4, muntjak: 3, hintYabanDomuzu: 2, dortBoynuzlu: 3, rhesus: 3, bozKanguru: 3, euro: 3, kayaValabisi: 3, bilbi: 2, kuol: 2, perentie: 3, avTilkisi: 2, yabaniDeve: 6, avrupaTavsani: 1, yengecYiyenFok: 5, rossFoku: 5, kurkluFok: 5, minkeBalina: 7, kamburBalina: 7, maviBalina: 7, gronlandBalinasi: 7, gronlandFoku: 5, kapucinFok: 5, kurtPorsugu: 3, jaguar: 3, tapir: 7, kapibara: 3, pekari: 3, uluyanMaymun: 4, pembeYunus: 7, karaKaiman: 4, devSuSamuru: 3, bozAyi: 4, griKurt: 2, bizon: 6, wapiti: 5, sigin: 5, catalBoynuz: 4, puma: 3, coyote: 2, orangutan: 7, hortumluMaymun: 4, borneoFili: 7, bulutluLeopar: 3, gunesAyisi: 3, sakalliDomuz: 2, tuzluSuTimsahi: 4, halkaKuyruk: 3, sifaka: 3, kizilAlinliLemur: 3, fossa: 3, ayAy: 3, radyalKaplumbaga: 5, caliDomuzu: 2, oselo: 3, aguti: 2, paka: 3, kirmiziMazama: 3, beyazUakari: 3, tukuxi: 5, amazonManati: 7, gozlukluKayman: 3, karaAyi: 3, katirGeyigi: 3, dagKoyunu: 3, karKecisi: 3, kuzeySuSamuru: 2, kizilVasak: 2, domuzKuyrukluMakak: 3, gumusLangur: 3, suVarani: 2, borneoSambari: 4, fareGeyigi: 2, binturong: 2, duzTuyluSamur: 2, devSican: 2, darCizgiliMongoz: 2, dumerilBoasi: 3, orumcekKaplumbagasi: 4, mirza: 2, devekusu: 2, eland: 5, topi: 4, kongoni: 4, suAntilopu: 4, grantCeylani: 3, karakulak: 2, beisaOriks: 4 };
+export const GEBE_GUN = { aslan: 3, leopar: 3, sirtlan: 3, cita: 3, yabanKopegi: 2, fil: 7, zurafa: 5, zebra: 4, gnu: 3, impala: 3, ceylan: 2, domuz: 2, suAygiri: 4, gergedan: 6, manda: 4, babun: 3, kutupAyisi: 6, halkaliFok: 5, mors: 7, beluga: 7, renGeyigi: 4, miskOkuzu: 4, kutupKurdu: 2, kutupTilkisi: 2, kutupTavsani: 2, imparatorPengueni: 3, adeliPengueni: 2, weddellFoku: 5, leoparFoku: 5, orka: 7, filFoku: 6, takhi: 5, karLeopari: 3, kizilGeyik: 4, karaca: 3, yabanDomuzu: 2, vasak: 2, kizilTilki: 2, porsuk: 2, dagKecisi: 3, kulan: 5, saiga: 3, mogolKurdu: 2, dzeren: 3, argali: 4, kaplan: 3, hintFili: 7, cital: 3, sambar: 3, gaur: 4, langur: 2, kirmiziKanguru: 3, koala: 3, emu: 3, vombat: 3, dingo: 2, hintLeopari: 3, tembelAyi: 4, hintYabanKopegi: 2, cizgiliSirtlan: 3, altinCakal: 2, barasingha: 4, nilgay: 4, muntjak: 3, hintYabanDomuzu: 2, dortBoynuzlu: 3, rhesus: 3, bozKanguru: 3, euro: 3, kayaValabisi: 3, bilbi: 2, kuol: 2, perentie: 3, avTilkisi: 2, yabaniDeve: 6, avrupaTavsani: 1, yengecYiyenFok: 5, rossFoku: 5, kurkluFok: 5, minkeBalina: 7, kamburBalina: 7, maviBalina: 7, gronlandBalinasi: 7, gronlandFoku: 5, kapucinFok: 5, kurtPorsugu: 3, jaguar: 3, tapir: 7, kapibara: 3, pekari: 3, uluyanMaymun: 4, pembeYunus: 7, karaKaiman: 4, devSuSamuru: 3, bozAyi: 4, griKurt: 2, bizon: 6, wapiti: 5, sigin: 5, catalBoynuz: 4, puma: 3, coyote: 2, orangutan: 7, hortumluMaymun: 4, borneoFili: 7, bulutluLeopar: 3, gunesAyisi: 3, sakalliDomuz: 2, tuzluSuTimsahi: 4, halkaKuyruk: 3, sifaka: 3, kizilAlinliLemur: 3, fossa: 3, ayAy: 3, radyalKaplumbaga: 5, caliDomuzu: 2, oselo: 3, aguti: 2, paka: 3, kirmiziMazama: 3, beyazUakari: 3, tukuxi: 5, amazonManati: 7, gozlukluKayman: 3, karaAyi: 3, katirGeyigi: 3, dagKoyunu: 3, karKecisi: 3, kuzeySuSamuru: 2, kizilVasak: 2, domuzKuyrukluMakak: 3, gumusLangur: 3, suVarani: 2, borneoSambari: 4, fareGeyigi: 2, binturong: 2, duzTuyluSamur: 2, devSican: 2, darCizgiliMongoz: 2, dumerilBoasi: 3, orumcekKaplumbagasi: 4, mirza: 2, devekusu: 2, eland: 5, topi: 4, kongoni: 4, suAntilopu: 4, grantCeylani: 3, karakulak: 2, beisaOriks: 4, amurKaplani: 3, amurLeopari: 3, ussuriBozAyisi: 6, himalayaAyisi: 6, sbVasak: 2, samur: 3, harza: 3, rakunKopegi: 2, sbPorsuk: 3, amurKedisi: 2, sbSuSamuru: 2, izubr: 5, sikaGeyigi: 5, sbKaraca: 4, miskGeyigi: 4, sbYabanDomuzu: 3, sbSigin: 5, goral: 4, kkBozAyi: 6, kkKurt: 2, kkVasak: 2, yabanKecisi: 4, cengelBoynuzlu: 4, kkKaraca: 4, kkYabanDomuzu: 3, kkKizilTilki: 2, kkPorsuk: 3, kayaSansari: 3, kkSuSamuru: 2, sakalliAkbaba: 3 };
 function dogumYap(d, g, anne, baba) {
   const k = d.k;
   const y = bireyOlustur(k, d.rng, g.tur, g, 'yavru', d.rng() < 0.5 ? 'erkek' : 'disi', anne.x + 0.8, anne.y + 0.8, anne.id);
@@ -3679,7 +4132,7 @@ function gunlukDogumlar(d) {
 
 // ---------- Ekosistem: sağlık, yaşam döngüsü, göç (Aşama 5) ----------
 // Yırtıcıların acıkma süresi (oyun dakikası): büyük av birkaç gün doyurur, timsah haftalarca aç kalabilir
-const ACLIK_SURESI = { aslan: 4300, leopar: 7000, sirtlan: 3600, timsah: 12000, cita: 5000, yabanKopegi: 4500, kutupAyisi: 8000, kutupKurdu: 5000, kutupTilkisi: 2600, leoparFoku: 5000, orka: 6000, dingo: 4200, kaplan: 5200, karLeopari: 6000, mogolKurdu: 4600, vasak: 5000, hintLeopari: 6000, hintYabanKopegi: 4200, cizgiliSirtlan: 9000, altinCakal: 3600, kuol: 3000, avTilkisi: 3200, kurtPorsugu: 6000, karakulak: 4800, jaguar: 5500, bozAyi: 7000, griKurt: 4600, puma: 6000, coyote: 3600, bulutluLeopar: 5000, fossa: 4800, oselo: 3800, kizilVasak: 4000 };
+const ACLIK_SURESI = { aslan: 4300, leopar: 7000, sirtlan: 3600, timsah: 12000, cita: 5000, yabanKopegi: 4500, kutupAyisi: 8000, kutupKurdu: 5000, kutupTilkisi: 2600, leoparFoku: 5000, orka: 6000, dingo: 4200, kaplan: 5200, karLeopari: 6000, mogolKurdu: 4600, vasak: 5000, hintLeopari: 6000, hintYabanKopegi: 4200, cizgiliSirtlan: 9000, altinCakal: 3600, kuol: 3000, avTilkisi: 3200, kurtPorsugu: 6000, karakulak: 4800, jaguar: 5500, bozAyi: 7000, griKurt: 4600, puma: 6000, coyote: 3600, bulutluLeopar: 5000, fossa: 4800, oselo: 3800, kizilVasak: 4000, amurKaplani: 6000, amurLeopari: 6000, ussuriBozAyisi: 7000, sbVasak: 5000, harza: 3600, kkKurt: 4600, kkVasak: 5000 };
 // Otlayan bir bireyin saatlik tüketimi (zebra = 1)
 const TUKETIM = { fil: 3, manda: 1.5, zebra: 1, ceylan: 0.4, domuz: 0.5, gergedan: 2, suAygiri: 2, zurafa: 1.5, gnu: 1.1, impala: 0.5, babun: 0.3, devekusu: 0.4, eland: 1.2, topi: 0.7, kongoni: 0.7, suAntilopu: 0.8, grantCeylani: 0.4, beisaOriks: 0.6 };
 
@@ -5733,6 +6186,10 @@ export const KOSU_SESI = {
   karaAyi: 'kosu_agir', katirGeyigi: 'kosu_toynak', dagKoyunu: 'kosu_toynak', karKecisi: 'kosu_hafif', kuzeySuSamuru: 'kosu_pati', kizilVasak: 'kosu_pati',
   domuzKuyrukluMakak: 'kosu_pati', gumusLangur: 'kosu_pati', suVarani: 'kosu_agir', borneoSambari: 'kosu_toynak', fareGeyigi: 'kosu_hafif', binturong: 'kosu_pati', duzTuyluSamur: 'kosu_pati',
   devSican: 'kosu_hafif', darCizgiliMongoz: 'kosu_pati', mirza: 'kosu_pati',
+  amurKaplani: 'kosu_pati', amurLeopari: 'kosu_pati', ussuriBozAyisi: 'kosu_agir', himalayaAyisi: 'kosu_agir', sbVasak: 'kosu_pati', samur: 'kosu_pati', harza: 'kosu_pati', rakunKopegi: 'kosu_pati',
+  sbPorsuk: 'kosu_pati', amurKedisi: 'kosu_pati', sbSuSamuru: 'kosu_pati', izubr: 'kosu_toynak', sikaGeyigi: 'kosu_hafif', sbKaraca: 'kosu_hafif', miskGeyigi: 'kosu_hafif', sbYabanDomuzu: 'kosu_hafif',
+  sbSigin: 'kosu_toynak', goral: 'kosu_hafif', kkBozAyi: 'kosu_agir', kkKurt: 'kosu_pati', kkVasak: 'kosu_pati', yabanKecisi: 'kosu_hafif', cengelBoynuzlu: 'kosu_hafif', kkKaraca: 'kosu_hafif',
+  kkYabanDomuzu: 'kosu_hafif', kkKizilTilki: 'kosu_pati', kkPorsuk: 'kosu_pati', kayaSansari: 'kosu_pati', kkSuSamuru: 'kosu_pati',
   devekusu: 'kosu_hafif', eland: 'kosu_toynak', topi: 'kosu_toynak', kongoni: 'kosu_toynak', suAntilopu: 'kosu_toynak', grantCeylani: 'kosu_hafif', karakulak: 'kosu_pati', beisaOriks: 'kosu_toynak',
   zebra: 'kosu_toynak', gnu: 'kosu_toynak', zurafa: 'kosu_toynak',
   ceylan: 'kosu_hafif', impala: 'kosu_hafif', domuz: 'kosu_hafif',

@@ -36,7 +36,10 @@ export const AMAZON = { x: 6000, y: 6000, r: 230 };
 export const YELLOWSTONE = { x: 6000, y: -6000, r: 230 };
 export const BORNEO = { x: -6000, y: -6000, r: 230 };
 export const MADAGASKAR = { x: 12000, y: 0, r: 230 };
-export const EK_HARITA_IDLERI = ['amazon', 'yellowstone', 'borneo', 'madagaskar'];
+// Sibirya taygası (Ussuri, Primorye) ve Türkiye'den Kaçkar Dağları (15 Kasım 2026)
+export const SIBIRYA = { x: -12000, y: 0, r: 230 };
+export const KACKAR = { x: 12000, y: 6000, r: 230 };
+export const EK_HARITA_IDLERI = ['amazon', 'yellowstone', 'borneo', 'madagaskar', 'sibirya', 'kackar'];
 export const MAGARA = { x: -128, y: 64 };
 
 // ---------- Dış halkanın bölgeleri (15 Kasım 2026, harita genişlemesi) ----------
@@ -179,6 +182,25 @@ export const BOLGE_ADLARI = {
   baobabMd: 'Baobab düzlüğü',
   mdNehir: 'Mevsimlik nehir yatağı',
   mdHavuz: 'Su birikintisi',
+  // Sibirya taygası
+  sbUs: 'Orman koruma kulübesi',
+  karisikOrman: 'Kore çamı ve geniş yapraklı orman',
+  meseYamac: 'Meşe yamacı',
+  ladinOrman: 'Karanlık ladin ve köknar taygası',
+  sbIrmak: 'Irmak vadisi',
+  sbGol: 'Bataklık göl kıyısı',
+  sbKaya: 'Kayalık sırt',
+  sbYalak: 'Tuz yalağı (solonets)',
+  // Kaçkar Dağları
+  kkUs: 'Yayla evi',
+  yayla: 'Alpin yayla',
+  ormanGulu: 'Orman gülü kuşağı',
+  ladinKk: 'Ladin ve kayın ormanı',
+  kkDere: 'Dere kıyısı',
+  buzulGol: 'Buzul gölü',
+  kkKayalik: 'Sarp kayalıklar',
+  zirve: 'Zirve ve kar alanları',
+  arilik: 'Yayla arılığı',
   husOrman: 'Huş ormanı',
   avUs: 'Saha istasyonu',
   billabong: 'Billabong',
@@ -320,6 +342,12 @@ export const DAVRANISLAR = {
   yavruTasiyor: { fiil: 'sürüden bir dişi, parlak turuncu tüylü yavruyu kucağına almış taşıyor', ad: 'Yavruyu paylaşma', nadir: true },
   kokuDovusu: { fiil: 'bileğindeki kokulu bezi kuyruğuna sürüp kuyruğunu rakibine doğru sallıyor: koku dövüşü', ad: 'Koku dövüşü', nadir: true },
   tikirdatiyor: { fiil: 'ince, uzun orta parmağıyla ağaç gövdesine hızlı hızlı tıklıyor, kulaklarını dayayıp içerideki larvayı dinliyor', ad: 'Parmakla tıklama', nadir: true },
+  palamutYiyor: { fiil: 'meşelerin altında yere dökülen palamutları topluyor; sonbaharda palamut kışa girmeden önce en önemli yiyecektir', ad: 'Palamut toplama' },
+  kozalakKiriyor: { fiil: 'Kore çamının iri kozalağını pençeleriyle açıp içindeki yağlı fıstıkları yiyor', ad: 'Çam fıstığı yeme', nadir: true },
+  somonAvliyor: { fiil: 'ırmağın sığ yerinde durmuş, yumurtlamaya gelen keta somonlarını pençesiyle sudan çıkarıyor', ad: 'Somon avı', nadir: true },
+  kovanYokluyor: { fiil: 'yayla arılığındaki kovanların çevresinde dolaşıp bal kokusunu izliyor; kovanlara yaklaşmaya çalışıyor', ad: 'Kovan yoklama', nadir: true },
+  yabanMersiniYiyor: { fiil: 'yaban mersini ve kırmızı yemiş çalılarının arasında oturmuş, dudaklarıyla meyveleri sıyırıp yiyor', ad: 'Yaban mersini yeme' },
+  kemikBirakiyor: { fiil: 'pençesinde bir kemikle yükselip kayaların üstüne bırakıyor; kemik kırılınca inip içindeki iliği yiyor', ad: 'Kemik kırma', nadir: true },
   nehriGeciyor: { fiil: 'nehre atlamış, burnunu sudan çıkarıp yüzerek karşı kıyıya geçiyor', ad: 'Nehri yüzerek geçme', nadir: true },
   // Avustralya
   boksYapiyor: { fiil: 'kuyruğuna yaslanıp rakibiyle ön ayaklarıyla güreşiyor, arka ayaklarıyla tekme savuruyor', ad: 'Kanguru boksu', nadir: true },
@@ -1334,6 +1362,196 @@ Object.assign(TURLER, {
     hiz: 5, aktif: 'gece', kacis: 15, sesSik: 240, sesTuru: 'iletisim',
     habitat: { x: MDX + 60, y: MDY + 90, r: 50 }, grup: [1, 1], erkekOran: 0.5,
     tarif: 'Sincap büyüklüğünde, iri gözlü, uzun gür kuyruklu bir gece lemuru. Gündüzü dallardan ve yapraklardan ördüğü küresel bir yuvada uyur. Kurak mevsimde ağaçların dallarına yapışan küçük böceklerin tatlı salgısını yalayarak hayatta kalır; böcek, örümcek ve küçük kertenkele de yakalar. Akşam karanlığında tiz ıslıklarla birbirine seslenir.',
+  },
+});
+// Sibirya taygası (Ussuri, Sikhote-Alin; Primorye, Rusya Uzak Doğusu)
+const SBX = SIBIRYA.x;
+const SBY = SIBIRYA.y;
+Object.assign(TURLER, {
+  amurKaplani: {
+    ad: 'Amur Kaplanı (Sibirya Kaplanı)', bilimsel: 'Panthera tigris altaica', kisa: 'AMK', sinif: 'Memeli', ses: 'kaplan', sekil: 'kedi', boy: 1.35, renk: '#c8864a', kutup: true, harita: 'sibirya',
+    hiz: 14, aktif: 'karma', kacis: 75, tehlikeli: true, yirtici: true, avlar: ['izubr', 'sbYabanDomuzu', 'sikaGeyigi', 'sbKaraca', 'sbSigin'], sesSik: 320, sesTuru: 'bolge', nadirTur: true,
+    habitat: { x: SBX, y: SBY - 20, r: 175 }, grup: [1, 1], erkekOran: 0.5,
+    tarif: 'Dünyanın en büyük kedisi. Postu güneydeki kaplanlarınkinden açık renkli, kalın ve uzun tüylüdür; kışı −35 derecede geçirir. Bir erkeğin bölgesi binlerce kilometrekareye yayılır; ağaçlara tırmalayarak ve idrarla işaret bırakır. Başlıca avı izubr geyiği ve yaban domuzudur; avını karda iz sürerek bulur. 1940\'larda sayısı 40\'a kadar inmişti; bugün koruma sayesinde 700\'ü aşkın birey Ussuri taygasında yaşıyor.',
+  },
+  amurLeopari: {
+    ad: 'Amur Leoparı', bilimsel: 'Panthera pardus orientalis', kisa: 'AML', sinif: 'Memeli', ses: 'leopar', sekil: 'kedi', boy: 0.85, renk: '#d8b67a', kutup: true, harita: 'sibirya',
+    hiz: 13, aktif: 'gece', kacis: 65, yirtici: true, avlar: ['sikaGeyigi', 'sbKaraca', 'miskGeyigi', 'rakunKopegi'], sesSik: 360, sesTuru: 'bolge', nadirTur: true,
+    habitat: { x: SBX - 90, y: SBY - 150, r: 55 }, grup: [1, 1], erkekOran: 0.5,
+    tarif: 'Dünyanın en nadir büyük kedilerinden biri: yaban hayatta yalnızca yüz kadar kaldı, neredeyse hepsi Primorye\'nin güneybatısındaki "Leopar Diyarı" koruma alanında yaşıyor. Kışın postu uzar ve açılır, rozet benekleri seyrek ve iridir. Meşeli yamaçlarda ve kayalıklarda sika geyiği ve karaca avlar; avını ağaca ya da kayaların arasına saklar.',
+  },
+  ussuriBozAyisi: {
+    ad: 'Ussuri Boz Ayısı', bilimsel: 'Ursus arctos lasiotus', kisa: 'UBA', sinif: 'Memeli', ses: 'bozayi', sekil: 'ayi', boy: 1.2, renk: '#3e2e22', kutup: true, harita: 'sibirya',
+    hiz: 9, aktif: 'karma', kacis: 45, tehlikeli: true, yirtici: true, lesci: true, avlar: ['sbYabanDomuzu', 'izubr'], sesSik: 240, sesTuru: 'tehdit',
+    habitat: { x: SBX + 40, y: SBY + 150, r: 75 }, grup: [1, 2], erkekOran: 0.5,
+    tarif: 'Koyu, neredeyse siyah renkli iri bir boz ayı. Kore çamının fıstığını, meşe palamudunu, kökleri ve sonbaharda ırmaklara yumurtlamaya gelen keta somonlarını yer; kaplanın öldürdüğü avı ondan almaya çalışır. Kışı kendi kazdığı bir inde uyuyarak geçirir. Kaplanla aynı ormanı paylaşır; ikisi zaman zaman karşılaşır.',
+  },
+  himalayaAyisi: {
+    ad: 'Asya Kara Ayısı (Ussuri)', bilimsel: 'Ursus thibetanus ussuricus', kisa: 'AKR', sinif: 'Memeli', ses: 'karaayi', sekil: 'ayi', boy: 0.9, renk: '#141210', kutup: true, harita: 'sibirya',
+    hiz: 8, aktif: 'karma', kacis: 40, tehlikeli: true, sesSik: 240, sesTuru: 'tehdit',
+    habitat: { x: SBX - 40, y: SBY - 70, r: 100 }, grup: [1, 2], erkekOran: 0.5,
+    tarif: 'Göğsünde beyaz bir hilal lekesi olan, iri kulaklı, simsiyah bir ayı. Hayatının büyük bölümünü ağaçlarda geçirir: meşe ve Kore çamının tepesine çıkar, dalları kırıp altına bastırarak "yuva" yapar. Kışı çoğunlukla içi oyuk yaşlı bir ıhlamurun ya da kavağın gövdesinde uyuyarak geçirir. Kaplanlar zaman zaman onu da avlar.',
+  },
+  sbVasak: {
+    ad: 'Avrasya Vaşağı (Ussuri)', bilimsel: 'Lynx lynx', kisa: 'UVS', sinif: 'Memeli', ses: 'vasak', sekil: 'kedi', boy: 0.68, renk: '#a08a70', kutup: true, harita: 'sibirya',
+    hiz: 12, aktif: 'gece', kacis: 60, yirtici: true, avlar: ['miskGeyigi', 'sbKaraca'], sesSik: 320, sesTuru: 'bolge', nadirTur: true,
+    habitat: { x: SBX - 60, y: SBY + 165, r: 55 }, grup: [1, 1], erkekOran: 0.5,
+    tarif: 'Kulaklarının ucunda kara püsküller, yanaklarında favoriler, geniş ve tüylü patileri olan bir kedi; patileri kar ayakkabısı gibi derin karda batmasını önler. Karanlık ladin taygasında yaşar; misk geyiği, karaca ve tavşan avlar. Sessiz ve ürkektir; izi görülür, kendisi pek görülmez.',
+  },
+  samur: {
+    ad: 'Samur', bilimsel: 'Martes zibellina', kisa: 'SMR', sinif: 'Memeli', ses: 'samur', sekil: 'kurt', boy: 0.32, renk: '#3a2a1e', kutup: true, harita: 'sibirya',
+    hiz: 10, aktif: 'karma', kacis: 25, sesSik: 200, sesTuru: 'iletisim', yeme: 'yiyecekAriyor',
+    habitat: { x: SBX + 60, y: SBY + 140, r: 70 }, grup: [1, 1], erkekOran: 0.5,
+    tarif: 'Koyu kahverengi, ipek gibi parlak kürklü, boğazında açık renkli bir lekesi olan küçük bir sansargil. Bu kürk yüzünden yüzyıllarca avlanmış, Sibirya\'nın fethinde "yumuşak altın" diye anılmıştır. Kışın karın altında fare avlar, kozalak fıstığı ve yaban mersini de yer; devrilmiş ağaçların kovuklarında yuva yapar.',
+  },
+  harza: {
+    ad: 'Sarı Boğazlı Sansar (Harza)', bilimsel: 'Martes flavigula', kisa: 'HRZ', sinif: 'Memeli', ses: 'samur', sekil: 'kurt', boy: 0.45, renk: '#c8902e', kutup: true, harita: 'sibirya',
+    hiz: 11, aktif: 'gunduz', kacis: 30, yirtici: true, avlar: ['miskGeyigi'], sesSik: 220, sesTuru: 'iletisim',
+    habitat: { x: SBX + 20, y: SBY - 30, r: 130 }, grup: [2, 3], erkekOran: 0.5,
+    tarif: 'Başı ve kuyruğu siyah, boğazı parlak sarı, iri bir sansar. Sansarlar arasında eşsiz bir şey yapar: iki üç birey birlikte avlanır, misk geyiğini ve yaban domuzu yavrusunu kovalayıp karda yorarak yakalar. Gündüz etkindir; ağaçlarda da yerde de çok hızlıdır.',
+  },
+  rakunKopegi: {
+    ad: 'Rakun Köpeği', bilimsel: 'Nyctereutes procyonoides', kisa: 'RKK', sinif: 'Memeli', ses: 'rakunkopegi', sekil: 'kurt', boy: 0.45, renk: '#6a5a46', kutup: true, harita: 'sibirya',
+    hiz: 7, aktif: 'gece', kacis: 25, sesSik: 260, sesTuru: 'iletisim', yeme: 'yiyecekAriyor',
+    habitat: { x: SBX - 120, y: SBY - 30, r: 60 }, grup: [2, 2], erkekOran: 0.5,
+    tarif: 'Yüzündeki kara maske yüzünden rakuna benzeyen, kısa bacaklı, tıknaz bir köpekgil. Köpekgiller arasında kışı uykuya benzer bir durgunlukla, ininde geçiren tek türdür. Bataklık ve göl kıyılarında kurbağa, balık, kuş yumurtası ve meyve yer; çiftler ömür boyu birlikte kalır.',
+  },
+  sbPorsuk: {
+    ad: 'Amur Porsuğu', bilimsel: 'Meles leucurus amurensis', kisa: 'APK', sinif: 'Memeli', ses: 'porsuk', sekil: 'vombat', boy: 0.72, renk: '#7a7468', kutup: true, harita: 'sibirya',
+    hiz: 6, aktif: 'gece', kacis: 25, sesSik: 200, sesTuru: 'iletisim', yeme: 'yiyecekAriyor',
+    habitat: { x: SBX + 60, y: SBY - 150, r: 50 }, grup: [1, 3], erkekOran: 0.5,
+    tarif: 'Yüzünde siyah-beyaz şeritler olan, kazmaya yapılı, güçlü bir porsuk. Meşe yamaçlarındaki toprağa nesillerdir kullanılan, birçok girişli inler kazar. Solucan, böcek, kök ve palamut yer; kışı ininde uyuyarak geçirir.',
+  },
+  amurKedisi: {
+    ad: 'Amur Kedisi (Leopar Kedisi)', bilimsel: 'Prionailurus bengalensis euptilurus', kisa: 'AKD', sinif: 'Memeli', ses: 'karakulak', sekil: 'kedi', boy: 0.42, renk: '#b89a6a', kutup: true, harita: 'sibirya',
+    hiz: 10, aktif: 'gece', kacis: 30, sesSik: 300, sesTuru: 'tehdit', nadirTur: true, yeme: 'yiyecekAriyor',
+    habitat: { x: SBX - 130, y: SBY - 60, r: 50 }, grup: [1, 1], erkekOran: 0.5,
+    tarif: 'Ev kedisi büyüklüğünde, kahverengi beneklerle kaplı küçük bir yaban kedisi; "leopar kedisi" adı buradan gelir. Leopar kedilerinin en kuzeyde yaşayanıdır, kalın kış postu vardır. Göl ve ırmak kıyılarında fare, kuş ve kurbağa avlar; yüzmekten çekinmez.',
+  },
+  sbSuSamuru: {
+    ad: 'Avrasya Su Samuru (Ussuri)', bilimsel: 'Lutra lutra', kisa: 'USS', sinif: 'Memeli', ses: 'susamuru', sekil: 'fok', boy: 0.42, renk: '#4a3626', kutup: true, harita: 'sibirya',
+    hiz: 7, aktif: 'karma', kacis: 35, suCanlisi: true, karayaCikar: true, sesSik: 180, sesTuru: 'iletisim',
+    habitat: { x: SBX, y: SBY + 105, r: 70 }, grup: [1, 3], erkekOran: 0.5,
+    tarif: 'Uzun gövdeli, yassı kuyruklu, perde ayaklı bir su samuru. Irmakta balık, kerevit ve kurbağa avlar. Kışın ırmak donunca akıntının buz tutmadığı yerleri bulur; buzun altında yüzüp başka bir delikten çıkar. Kıyıdaki bir kayaya bıraktığı dışkı, başka samurlara bölgenin dolu olduğunu söyler.',
+  },
+  izubr: {
+    ad: 'İzubr (Mançurya Geyiği)', bilimsel: 'Cervus canadensis xanthopygus', kisa: 'IZB', sinif: 'Memeli', ses: 'kizilgeyik', sekil: 'geyik', boy: 1.15, renk: '#946840', kutup: true, harita: 'sibirya',
+    hiz: 11, aktif: 'karma', kacis: 50, sesSik: 180, sesTuru: 'iletisim',
+    habitat: { x: SBX + 40, y: SBY - 20, r: 120 }, grup: [3, 7], erkekOran: 0.3,
+    tarif: 'Uzak Doğu\'nun büyük geyiği; kızıl kahverengi, kalçası sarımtırak. Sonbaharda erkekler boğuk, uzayan bir böğürmeyle dişileri toplar ve boynuz çarpıştırır. Amur kaplanının başlıca avıdır: kaplanların sayısı büyük ölçüde izubr ve yaban domuzunun sayısına bağlıdır. Kışın tuz yalaklarına gelir.',
+  },
+  sikaGeyigi: {
+    ad: 'Sika Geyiği', bilimsel: 'Cervus nippon hortulorum', kisa: 'SKG', sinif: 'Memeli', ses: 'sika', sekil: 'geyik', boy: 0.85, renk: '#a8642e', kutup: true, harita: 'sibirya',
+    hiz: 12, aktif: 'karma', kacis: 55, sesSik: 140, sesTuru: 'alarm', alarmSesi: true,
+    habitat: { x: SBX - 40, y: SBY - 140, r: 80 }, grup: [3, 8], erkekOran: 0.3,
+    tarif: 'Yazın kızıl postu beyaz beneklerle kaplı, zarif bir geyik; kışın postu koyulaşır, benekler kaybolur. Tehlikede kalçasındaki beyaz tüyleri açıp tiz bir ıslık çalar. Erkeği sonbaharda incecik bir ıslıkla öter. Meşeli güney yamaçlarını sever; Amur leoparının başlıca avıdır.',
+  },
+  sbKaraca: {
+    ad: 'Sibirya Karacası (Ussuri)', bilimsel: 'Capreolus pygargus', kisa: 'UKR', sinif: 'Memeli', ses: 'karaca', sekil: 'geyik', boy: 0.7, renk: '#9a7050', kutup: true, harita: 'sibirya',
+    hiz: 13, aktif: 'karma', kacis: 50, sesSik: 160, sesTuru: 'alarm', alarmSesi: true,
+    habitat: { x: SBX + 70, y: SBY + 30, r: 110 }, grup: [2, 4], erkekOran: 0.4,
+    tarif: 'Küçük, kısa kuyruklu, kalçasında beyaz bir ayna lekesi olan bir geyik. Ürkünce köpek havlamasına benzer bir alarm verir ve sıçrayarak kaçar. Ormanın açıklıklarında ve ırmak vadisinde otlar; kaplan, leopar, vaşak ve harzanın avıdır.',
+  },
+  miskGeyigi: {
+    ad: 'Sibirya Misk Geyiği', bilimsel: 'Moschus moschiferus', kisa: 'MSG', sinif: 'Memeli', ses: 'miskgeyigi', sekil: 'ceylan', boy: 0.52, renk: '#4e4032', kutup: true, harita: 'sibirya',
+    hiz: 12, aktif: 'karma', kacis: 40, sesSik: 260, sesTuru: 'alarm',
+    habitat: { x: SBX + 130, y: SBY + 90, r: 50 }, grup: [1, 1], erkekOran: 0.5,
+    tarif: 'Boynuzsuz, sırtı kambur, arka bacakları ön bacaklarından uzun, küçük bir geyik. Erkeğin ağzından aşağı sarkan uzun, hançer gibi iki köpek dişi vardır. Erkeğin karnındaki bezden çıkan "misk" parfümcülükte çok değerli olduğu için kaçak avcılık yüzünden azaldı. Tehlikede ladin taygasından dik kayalıklara kaçar; kayaların üstünde ustaca sekerek tutunur.',
+  },
+  sbYabanDomuzu: {
+    ad: 'Yaban Domuzu (Ussuri)', bilimsel: 'Sus scrofa ussuricus', kisa: 'UYD', sinif: 'Memeli', ses: 'yabandomuzu', sekil: 'domuz', boy: 0.95, renk: '#2e2620', kutup: true, harita: 'sibirya',
+    hiz: 10, aktif: 'karma', kacis: 40, tehlikeli: true, sesSik: 140, sesTuru: 'iletisim',
+    habitat: { x: SBX, y: SBY - 110, r: 110 }, grup: [4, 10], erkekOran: 0.3,
+    tarif: 'Dünyanın en iri yaban domuzlarından biri; erkekleri 300 kiloyu bulabilir. Sürüler hâlinde meşe palamudu ve Kore çamı fıstığı ararken toprağı burnuyla sürer. Palamudun bol olduğu yıllarda sayıları artar, kıt yıllarda azalır; bu da kaplanların durumunu belirler.',
+  },
+  sbSigin: {
+    ad: 'Sığın (Ussuri)', bilimsel: 'Alces alces cameloides', kisa: 'USG', sinif: 'Memeli', ses: 'sigin', sekil: 'geyik', boy: 1.4, renk: '#342a22', kutup: true, harita: 'sibirya',
+    hiz: 9, aktif: 'karma', kacis: 30, tehlikeli: true, sesSik: 240, sesTuru: 'iletisim',
+    habitat: { x: SBX + 80, y: SBY + 170, r: 55 }, grup: [1, 2], erkekOran: 0.5,
+    tarif: 'Geyiklerin en büyüğü; Ussuri\'de yaşayanları biraz daha küçüktür. Kuzeyin karanlık ladin taygasında, bataklık ve ırmak kıyılarında yaşar; söğüt ve kavak filizleriyle, yazın su bitkileriyle beslenir. Uzun bacakları derin karda yürümesini sağlar.',
+  },
+  goral: {
+    ad: 'Amur Gorali', bilimsel: 'Naemorhedus caudatus', kisa: 'GRL', sinif: 'Memeli', ses: 'goral', sekil: 'ceylan', boy: 0.62, renk: '#8a847a', kutup: true, harita: 'sibirya',
+    hiz: 11, aktif: 'gunduz', kacis: 45, sesSik: 200, sesTuru: 'alarm', alarmSesi: true,
+    habitat: { x: SBX + 150, y: SBY + 30, r: 42 }, grup: [2, 4], erkekOran: 0.5,
+    tarif: 'Keçiyle antilop arasında, kısa ve hafifçe geriye kıvrık kara boynuzlu, gri tüylü bir dağ hayvanı. Japon Denizi kıyısına bakan sarp kayalıklarda yaşar; ürkünce hapşırığa benzer bir alarm sesi verip kayaların üstüne sıçrar. Rusya\'da yalnızca birkaç yüz kaldı.',
+  },
+});
+// Türkiye: Kaçkar Dağları (Rize-Artvin; Doğu Karadeniz Dağları)
+const KKX = KACKAR.x;
+const KKY = KACKAR.y;
+Object.assign(TURLER, {
+  kkBozAyi: {
+    ad: 'Boz Ayı (Kafkas)', bilimsel: 'Ursus arctos arctos', kisa: 'KBA', sinif: 'Memeli', ses: 'bozayi', sekil: 'ayi', boy: 1.05, renk: '#6a4a2e', kutup: true, harita: 'kackar',
+    hiz: 9, aktif: 'karma', kacis: 45, tehlikeli: true, sesSik: 240, sesTuru: 'tehdit',
+    habitat: { x: KKX - 60, y: KKY - 100, r: 105 }, grup: [1, 2], erkekOran: 0.5,
+    tarif: 'Türkiye\'nin en büyük yırtıcısı ama Kaçkarlar\'da beslenmesinin çoğu bitkiseldir: ot, kök, yaban mersini, ahlat, kayın ve kestane yer, böcek ve karınca yuvalarını eşeler. Bal için yayla arılıklarına gelir; köylüler kovanları direklerin tepesine ya da elektrikli çitlerin içine koyar. Kışı kayalık bir inde uyuyarak geçirir.',
+  },
+  kkKurt: {
+    ad: 'Kurt (Kafkas)', bilimsel: 'Canis lupus', kisa: 'KKR', sinif: 'Memeli', ses: 'kurt', sekil: 'kurt', boy: 0.9, renk: '#8a8072', kutup: true, harita: 'kackar',
+    hiz: 13, aktif: 'karma', kacis: 60, yirtici: true, avlar: ['yabanKecisi', 'kkKaraca', 'kkYabanDomuzu', 'cengelBoynuzlu'], sesSik: 130, sesTuru: 'bolge',
+    habitat: { x: KKX, y: KKY + 30, r: 165 }, grup: [3, 6], erkekOran: 0.5,
+    tarif: 'Doğu Karadeniz dağlarının kurtları küçük sürüler hâlinde yaşar. Yazın yaylalara çıkan sürülerin peşinden yükseğe, kışın karla birlikte vadilere iner. Yaban domuzu, karaca ve dağ keçisi avlar; çobanların yanındaki iri çoban köpekleri onları uzak tutar.',
+  },
+  kkVasak: {
+    ad: 'Vaşak (Kafkas)', bilimsel: 'Lynx lynx dinniki', kisa: 'KVS', sinif: 'Memeli', ses: 'vasak', sekil: 'kedi', boy: 0.66, renk: '#a88a6a', kutup: true, harita: 'kackar',
+    hiz: 12, aktif: 'gece', kacis: 60, yirtici: true, avlar: ['kkKaraca', 'cengelBoynuzlu'], sesSik: 320, sesTuru: 'bolge', nadirTur: true,
+    habitat: { x: KKX + 100, y: KKY - 120, r: 60 }, grup: [1, 1], erkekOran: 0.5,
+    tarif: 'Kulak püskülleri ve benekli postuyla Kafkas vaşağı. Türkiye\'de en çok Doğu Karadeniz ve Doğu Anadolu dağlarında yaşar; fotokapanlarla belgelenmeden önce çok az bilinen bir kediydi. Ormanın kayalık kenarlarında karaca ve dağ keçisi yavrusu, tavşan ve kuş avlar.',
+  },
+  yabanKecisi: {
+    ad: 'Yaban Keçisi', bilimsel: 'Capra aegagrus', kisa: 'YBK', sinif: 'Memeli', ses: 'yabankecisi', sekil: 'ceylan', boy: 0.85, renk: '#a8906c', kutup: true, harita: 'kackar',
+    hiz: 12, aktif: 'gunduz', kacis: 60, sesSik: 180, sesTuru: 'alarm', alarmSesi: true,
+    habitat: { x: KKX + 140, y: KKY + 90, r: 55 }, grup: [4, 9], erkekOran: 0.4,
+    tarif: 'Evcil keçinin atası. Erkeklerin pala gibi geriye kıvrılan, önünde boğumlar olan çok uzun boynuzları ve koyu bir sakalı vardır. Sarp kayalıklarda yaşar; kasım sonunda çiftleşme döneminde tekeler boynuz boynuza çarpışır. Kafkas kurdu ve vaşak başlıca düşmanlarıdır.',
+  },
+  cengelBoynuzlu: {
+    ad: 'Çengel Boynuzlu Dağ Keçisi (Kafkas Dağ Keçisi)', bilimsel: 'Rupicapra rupicapra asiatica', kisa: 'CBK', sinif: 'Memeli', ses: 'cengel', sekil: 'ceylan', boy: 0.72, renk: '#7a5a3a', kutup: true, harita: 'kackar',
+    hiz: 13, aktif: 'gunduz', kacis: 65, sesSik: 160, sesTuru: 'alarm', alarmSesi: true,
+    habitat: { x: KKX + 80, y: KKY + 175, r: 55 }, grup: [3, 8], erkekOran: 0.4,
+    tarif: 'Kısa, ucu arkaya doğru çengel gibi kıvrılan kara boynuzları ve yüzündeki koyu maskesiyle tanınır. Yazın postu kızıl kahverengi, kışın neredeyse siyahtır. Zirvelerin altındaki sarp kayalıklarda ve kar alanlarının kenarında otlar; tehlikede burnundan keskin bir ıslık çalarak sürüyü uyarır.',
+  },
+  kkKaraca: {
+    ad: 'Karaca (Kafkas)', bilimsel: 'Capreolus capreolus', kisa: 'KKC', sinif: 'Memeli', ses: 'karaca', sekil: 'geyik', boy: 0.65, renk: '#9a6a40', kutup: true, harita: 'kackar',
+    hiz: 13, aktif: 'karma', kacis: 50, sesSik: 160, sesTuru: 'alarm', alarmSesi: true,
+    habitat: { x: KKX - 40, y: KKY - 150, r: 70 }, grup: [1, 3], erkekOran: 0.4,
+    tarif: 'Küçük, zarif bir geyik; yazın kızıl, kışın gri kahverengidir. Ladin ve kayın ormanının açıklıklarında, orman gülü kuşağının kenarında otlar. Ürkünce havlamaya benzer bir ses çıkarır, beyaz kalça aynasını göstererek sıçrayıp kaçar.',
+  },
+  kkYabanDomuzu: {
+    ad: 'Yaban Domuzu (Kafkas)', bilimsel: 'Sus scrofa', kisa: 'KYD', sinif: 'Memeli', ses: 'yabandomuzu', sekil: 'domuz', boy: 0.85, renk: '#3a3028', kutup: true, harita: 'kackar',
+    hiz: 10, aktif: 'gece', kacis: 40, tehlikeli: true, sesSik: 140, sesTuru: 'iletisim',
+    habitat: { x: KKX + 40, y: KKY - 160, r: 70 }, grup: [3, 8], erkekOran: 0.3,
+    tarif: 'Kayın ve kestane ormanlarında sürüler hâlinde yaşar; geceleri toprağı burnuyla sürerek kök, solucan ve kayın palamudu arar. Yazın yaylalara kadar çıkar.',
+  },
+  kkKizilTilki: {
+    ad: 'Kızıl Tilki (Kafkas)', bilimsel: 'Vulpes vulpes', kisa: 'KKT', sinif: 'Memeli', ses: 'kiziltilki', sekil: 'kurt', boy: 0.5, renk: '#c86a2a', kutup: true, harita: 'kackar',
+    hiz: 11, aktif: 'karma', kacis: 40, sesSik: 180, sesTuru: 'iletisim', yeme: 'yiyecekAriyor',
+    habitat: { x: KKX + 20, y: KKY + 40, r: 120 }, grup: [1, 1], erkekOran: 0.5,
+    tarif: 'Yaylaların en sık görülen yırtıcısı. Otların arasındaki tarla farelerini sesinden bulur, havaya sıçrayıp ön ayaklarıyla üstüne dalar. Yayla evlerinin çevresinde artık yiyecek arar.',
+  },
+  kkPorsuk: {
+    ad: 'Avrupa Porsuğu', bilimsel: 'Meles meles', kisa: 'KPR', sinif: 'Memeli', ses: 'porsuk', sekil: 'vombat', boy: 0.7, renk: '#7a766e', kutup: true, harita: 'kackar',
+    hiz: 6, aktif: 'gece', kacis: 25, sesSik: 200, sesTuru: 'iletisim', yeme: 'yiyecekAriyor',
+    habitat: { x: KKX - 90, y: KKY - 140, r: 50 }, grup: [1, 3], erkekOran: 0.5,
+    tarif: 'Siyah-beyaz çizgili yüzüyle tanınan güçlü bir kazıcı. Ormanın içinde, nesiller boyu kullanılan dehlizli inlerde ailece yaşar. Solucan, böcek larvası, kök ve meyve yer; kışın uzun süre ininden çıkmaz.',
+  },
+  kayaSansari: {
+    ad: 'Kaya Sansarı', bilimsel: 'Martes foina', kisa: 'KSN', sinif: 'Memeli', ses: 'samur', sekil: 'kurt', boy: 0.36, renk: '#6a5038', kutup: true, harita: 'kackar',
+    hiz: 10, aktif: 'gece', kacis: 25, sesSik: 220, sesTuru: 'iletisim', yeme: 'yiyecekAriyor',
+    habitat: { x: KKX + 110, y: KKY + 30, r: 65 }, grup: [1, 1], erkekOran: 0.5,
+    tarif: 'Boğazında çatallı beyaz bir önlük olan, uzun kuyruklu bir sansar. Kayalıklarda ve taş duvarlarda yaşar; fare, kuş, böcek ve olgun meyve yer. Yayla evlerinin çatı aralarına da girer.',
+  },
+  kkSuSamuru: {
+    ad: 'Avrasya Su Samuru (Kaçkar)', bilimsel: 'Lutra lutra', kisa: 'DSS', sinif: 'Memeli', ses: 'susamuru', sekil: 'fok', boy: 0.4, renk: '#4a3626', kutup: true, harita: 'kackar',
+    hiz: 7, aktif: 'karma', kacis: 35, suCanlisi: true, karayaCikar: true, sesSik: 200, sesTuru: 'iletisim', nadirTur: true,
+    habitat: { x: KKX - 15, y: KKY - 70, r: 70 }, grup: [1, 2], erkekOran: 0.5,
+    tarif: 'Fırtına Deresi gibi soğuk, temiz ve hızlı akan dağ derelerinde yaşar; derenin temizliğinin işaretidir. Alabalık ve kurbağa avlar. Derelere yapılan küçük hidroelektrik santralleri yaşadığı yerleri daralttı.',
+  },
+  sakalliAkbaba: {
+    ad: 'Sakallı Akbaba', bilimsel: 'Gypaetus barbatus', kisa: 'SAK', sinif: 'Kuş', ses: 'akbaba', sekil: 'kus', boy: 1.0, renk: '#3a3430', kutup: true, harita: 'kackar',
+    hiz: 9, aktif: 'gunduz', kacis: 25, kus: true, sesSik: 300, sesTuru: 'bolge', nadirTur: true,
+    habitat: { x: KKX + 130, y: KKY + 120, r: 70 }, grup: [1, 2], erkekOran: 0.5,
+    tarif: 'Kanat açıklığı neredeyse üç metreyi bulan, göğsü pas rengi, gözünün çevresi kırmızı halkalı, çenesinin altında kara bir "sakal" olan dev bir akbaba. Besininin çoğu kemiktir: büyük kemikleri yükseğe taşıyıp kayaların üstüne bırakır, kırılınca içindeki iliği yer. Türkiye\'de çok az çift kaldı.',
   },
 });
 export const TUR_SIRASI = Object.keys(TURLER).filter((t) => !TURLER[t].kutup);

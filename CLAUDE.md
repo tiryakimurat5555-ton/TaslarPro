@@ -689,6 +689,28 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   önekli kutup yerlerini tanıyordu; v_, h_, m_, az_, ys_, bn_, md_ sessizce düşüyordu. Artık oyuncu savan dışındaysa id o haritanın KUTUP_YERLER'inde aranır.
   yolNoktasi savan dışında doğrudan hedef (savan nehrinin guneydeMi/GECITLER'i Avustralya ve Hindistan'da y < -100 noktaları yanlış "karşı kıyı" sayıyordu).
   Taşkın denetimi yalnız savanda. Test /tmp/claude-0/kr/yergit.js (K=<kayıt>): 9 haritanın bütün yerlerine varıldı (k_buz/k_polinya yazın açık su, bilerek ret).
+- SİBİRYA TAYGASI VE KAÇKAR DAĞLARI (15 Kasım 2026, Murat "Yeni haritalar ekleyelim" → seçtiği ikisi, "canlı çeşitliliğini çok tut gerçekliğe bağlı kalarak"; sayılar ÖNERİ).
+  veri SIBIRYA {-12000, 0}, KACKAR {12000, 6000}, r 230; EK_HARITA_IDLERI'ne eklendi. kutup.js SIBIRYA_H (Ussuri/Sikhote-Alin: sbNehirY ırmak yürünebilir
+  (yuzey kara, H.dekorSu ile sahnede su şeridi, kışın gizli), SB_GOL göl (tek su), SB_KAYA kayalık, SB_YALAK tuz yalağı, meseYamac ly < -110, ladinOrman ırmağın
+  kuzeyi; bölgeler sbUs karisikOrman meseYamac ladinOrman sbIrmak sbGol sbKaya sbYalak; YERLER sb_*; gezi itibar 100, 5.000, 420 dk) ve KACKAR_H (kkDereX dere
+  yürünebilir + dekorSu, KK_GOL buzul gölü (tek su), KK_KAYA, KK_ARI arılık, zirve ly > 165, yayla > -55, ormanGulu > -115, ladinKk; YERLER kk_*; ISTASYON_KKR (kuzeydeki
+  ISTASYON_KK adı başka haritada kullanılıyor); gezi itibar 60, 2.600, 240 dk). İkisinde H.kar, H.suOrtam (App su katmanı: ortam_nehir / ortam_dere).
+  TURLER 18 Sibirya (amurKaplani, amurLeopari, ussuriBozAyisi, himalayaAyisi, sbVasak, samur, harza (yırtıcı, 2-3 birlikte misk geyiği avlar), rakunKopegi, sbPorsuk,
+  amurKedisi, sbSuSamuru, izubr, sikaGeyigi, sbKaraca, miskGeyigi, sbYabanDomuzu, sbSigin, goral) + 12 Kaçkar (kkBozAyi, kkKurt, kkVasak, yabanKecisi, cengelBoynuzlu,
+  kkKaraca, kkYabanDomuzu, kkKizilTilki, kkPorsuk, kayaSansari, kkSuSamuru, sakalliAkbaba (kus: true; tunemis/suzuluyor)). Başka haritadaki aynı türler ayrı kimlik ve
+  adda "(Ussuri)", "(Kafkas)". mantik sibiryaPlanSec (kış uykusu ayılar/porsuk/rakun köpeği; kaplan isaret + gece tuz yalağında 'dv:pusuda'; geyikler gece
+  'dv:topragiYaliyor'; sonbaharda ayı 'dv:somonAvliyor', 'dv:kozalakKiriyor', domuz/ayı/sika 'dv:palamutYiyor'; misk geyiği ve goral 'kayada') ve kackarPlanSec (ayı
+  'dv:yabanMersiniYiyor', 'dv:kovanYokluyor' + olay; kurt gece uluma; yaban keçisi sonbahar 'boynuz', kışın alçağa; akbaba 'dv:kemikBirakiyor'); yeni DAVRANISLAR
+  palamutYiyor, kozalakKiriyor, somonAvliyor, kovanYokluyor, yabanMersiniYiyor, kemikBirakiyor. Alarm: izubr/sika/karaca/goral kaplan-leopar-vaşağa, keçiler ve
+  karaca kurt-vaşağa. Tablolar SOZ DUYULAR AV_STRATEJI GEBE_GUN ACLIK_SURESI KOSU_SESI OTLAMAYAN_EK, ekosistem YASAM, gece GOZ, yonetim IUCN. sahne modelleri
+  (kaplan çizgisi + beyaz karın, leopar seyrek rozet, Asya kara ayısının beyaz hilali, harzanın kara başı ve sarı boğazı, rakun köpeğinin maskesi, sika benekleri,
+  karaca/izubr kalça aynası, misk geyiğinin köpek dişleri, goral ve çengel boynuz, akbabanın pas göğsü); EK_GORUNUM sibirya/kackar, AGAC_TURU kore ladin mese kayin
+  (meşe ve kayın sonbaharda renk değiştirir, kışın yapraksız), Kaçkar'da taş temelli yayla evi + kovan direkleri, Sibirya'da hamam ve odun yığını, ufukta dağlar.
+  kucukler EK_CANLILAR + 22 Sibirya + 22 Kaçkar; BITKILER + 6 + 5; merkez her harita 3 araştırma (sibiryaFaunasi/Davranislari/Ekolojisi, kackar...). Sesler (akış
+  R1AN6H1CX2wNrRrpqPLB) sika goral samur rakunkopegi miskgeyigi yabankecisi cengel akbaba (UC_B), k_dagHorozu k_balikBaykusu k_suKaratavugu k_ular k_karaAgackakan,
+  ortam_sibirya_gunduz/gece, ortam_kackar_gunduz/gece (gündüz ham kaydı -47 LUFS'tü, hışırtılı olabilir), ortam_dere. assets/efekt 344. Testler: ek1.js H=sibirya/kackar
+  (2 gün: leopar sika, ayı izubr, kurt yaban keçisi avladı), yergit.js iki haritada bütün yerler, menu-tara iki haritada iki kipte sorun 0 (/tmp/claude-0/ek-sibirya.json,
+  ek-kackar.json), dayanıklılık 100/100, bot. Görüntüler scratchpad sbkk-goruntu.cjs. Telefonda doğrulanmadı.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

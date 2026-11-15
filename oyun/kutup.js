@@ -7,7 +7,7 @@
 // Her harita aynı arayüzü sunar (haritaYap). Konum alan işlevler (yuzey, bolge, sudaMi...) noktanın hangi haritada olduğunu kendisi bulur;
 // yalnız zaman alan işlevlerin (isik, evre, buzKenari, kutupTakvim...) üst düzey sürümleri Kuzey içindir: Antarktika için harita(p).isik(dk).
 // Saf modül: yalnızca veri.js ve ekosistem.js'i kullanır. Sayılar ÖNERİDİR.
-import { KUTUP, ANTARKTIKA, AVUSTRALYA, HINDISTAN, MOGOLISTAN, AMAZON, YELLOWSTONE, BORNEO, MADAGASKAR } from './veri.js';
+import { KUTUP, ANTARKTIKA, AVUSTRALYA, HINDISTAN, MOGOLISTAN, AMAZON, YELLOWSTONE, BORNEO, MADAGASKAR, SIBIRYA, KACKAR } from './veri.js';
 import { YIL_GUN } from './ekosistem.js';
 
 function haritaYap(c) {
@@ -989,7 +989,230 @@ Object.assign(MADAG_H, {
     return l;
   },
 });
-export const EK_HARITALAR = { amazon: AMAZON_H, yellowstone: YELLOW_H, borneo: BORNEO_H, madagaskar: MADAG_H };
+
+// ---- SİBİRYA TAYGASI: Ussuri (Sikhote-Alin, Primorye); kuzeyden sığ bir ırmak geçer, ötesinde karanlık ladin taygası, ortada Kore çamlı karışık orman, güneyde meşe yamaçları ----
+const sbNehirY = (lx) => 105 + 9 * Math.sin(lx / 50) + 3 * Math.sin(lx / 15);
+const SB_GOL = { lx: -140, ly: -50, r: 22 };
+const SB_KAYA = { lx: 150, ly: 30, r: 50 };
+const SB_YALAK = { lx: 80, ly: -120, r: 8 };
+const SB_MESE_Y = -110;
+const ISTASYON_SB = { lx: 0, ly: -40, r: 9 };
+export const SIBIRYA_H = haritaYap({
+  ...ORTAK_EK,
+  ad: 'sibirya',
+  baslik: 'Sibirya taygası, Ussuri',
+  merkez: SIBIRYA,
+  kayma: 0,
+  ISTASYON_K: ISTASYON_SB,
+  POLINYA: SB_GOL,
+  ozel: { sbNehirY, SB_GOL, SB_KAYA, SB_YALAK, SB_MESE_Y },
+  MEVSIM_ADI: { yaz: 'yağışlı Ussuri yazı', sonbahar: 'altın sonbahar', kis: 'sert Sibirya kışı', ilkbahar: 'kar erimesi' },
+  BOLGE_ADLARI_K: { sbUs: 'Orman koruma kulübesi', karisikOrman: 'Kore çamı ve geniş yapraklı orman', meseYamac: 'Meşe yamacı', ladinOrman: 'Karanlık ladin ve köknar taygası', sbIrmak: 'Irmak vadisi', sbGol: 'Bataklık göl kıyısı', sbKaya: 'Kayalık sırt', sbYalak: 'Tuz yalağı (solonets)' },
+  istasyonBolgesi: 'sbUs',
+  bolge(H, lx, ly) {
+    if (daireIci(lx, ly, ISTASYON_SB, 12)) return 'sbUs';
+    if (daireIci(lx, ly, SB_GOL, 8)) return 'sbGol';
+    if (daireIci(lx, ly, SB_YALAK, 6)) return 'sbYalak';
+    if (daireIci(lx, ly, SB_KAYA)) return 'sbKaya';
+    const n = sbNehirY(lx);
+    if (Math.abs(ly - n) < 8) return 'sbIrmak';
+    if (ly > n) return 'ladinOrman';
+    if (ly < SB_MESE_Y) return 'meseYamac';
+    return 'karisikOrman';
+  },
+  yuzey: (H, lx, ly) => (daireIci(lx, ly, SB_GOL) ? 'su' : 'kara'),
+  enYakinSu: (H, x, y) => {
+    const lx = x - H.MERKEZ.x;
+    const n = { x, y: H.MERKEZ.y + sbNehirY(lx) };
+    const g = kenarNoktasi(H, SB_GOL, x, y);
+    return Math.hypot(g.x - x, g.y - y) < Math.hypot(n.x - x, n.y - y) ? g : n;
+  },
+  gunIsigi: (f) => (f < 8 ? 15 : f < 12 ? 11 : f < 20 ? 9 : 12),
+  isikSozu: (H, dk) => {
+    const l = H.isik(dk);
+    const s = (((dk % 1440) + 1440) % 1440) / 60;
+    const kis = H.kutupTakvim(Math.floor(dk / 1440) + 1).mevsim === 'kis';
+    if (l >= 0.5) return kis ? 'Parlak, buz gibi bir kış günü; karın üstünde mavi gölgeler, ağaçların dalları kırağıyla bembeyaz.' : 'Aydınlık bir gündüz; ışık iri Kore çamlarının ve meşelerin arasından yer yer süzülüyor.';
+    if (l >= 0.12) return s < 12 ? 'Şafak: ırmağın üstünde ince bir sis; taygada kuşların ilk sesleri.' : 'Akşam: güneş tepelerin arkasına iniyor, orman hızla kararıyor; kaplanın en etkin olduğu saatler başlıyor.';
+    return kis ? 'Gece: dondurucu soğuk, karın üstünde yıldız ışığı; ağaçların gövdeleri soğukta çatırdıyor.' : 'Gece: zifiri karanlık tayga; arada bir baykuşun ötüşü.';
+  },
+  havaUret: ekHava({ sicaklik: { yaz: [16, 30], sonbahar: [-4, 14], kis: [-32, -10], ilkbahar: [-8, 14] }, yagmur: { yaz: 0.4, sonbahar: 0.1, kis: 0, ilkbahar: 0.1 }, kar: { yaz: 0, sonbahar: 0.1, kis: 0.25, ilkbahar: 0.2 }, sis: { yaz: 0.15, sonbahar: 0.05, kis: 0, ilkbahar: 0.1 }, ruzgar: 1.8 }),
+  havaSozu: ekHavaSozu({ acik: 'Hava açık', bulutlu: 'Gökyüzü bulutlu', yagmurlu: 'Muson yağmuru: ağaçlardan su damlıyor, ırmak yükseliyor', kar: 'Kar yağıyor; tayga sessizliğe gömülmüş', sis: 'Denizden gelen sis ormanı örtmüş', sicak: 'Nemli, sıcak bir yaz günü' }),
+  besin: (H, dk) => ({ yaz: 1, sonbahar: 0.85, kis: 0.35, ilkbahar: 0.55 })[H.kutupTakvim(Math.floor(dk / 1440) + 1).mevsim],
+  YERLER: [
+    { id: 'sb_kordon', ad: 'Orman koruma kulübesi', lx: 0, ly: -26, tarif: 'Korucuların kütükten yapılmış kulübesi ve küçük bir hamam. Duvarda kaplan izlerinin alçı kalıpları ve fotokapan resimleri asılı.' },
+    { id: 'sb_irmak', ad: 'Irmak kıyısı', lx: 40, ly: sbNehirY(40) - 6, tarif: 'Çakıllı, berrak, sığ bir dağ ırmağı; yazın dizine kadar, kışın buz tutar. Sonbaharda keta somonları yumurtlamaya buraya gelir; ayılar ve balık baykuşları onları bekler.' },
+    { id: 'sb_gol', ad: 'Bataklık göl', lx: SB_GOL.lx + SB_GOL.r + 6, ly: SB_GOL.ly, tarif: 'Eski bir ırmak yatağından kalmış sazlıklı bir göl. Mandarin ördekleri, rakun köpekleri ve Amur kedisi burada yaşar; kışın donar.' },
+    { id: 'sb_yalak', ad: 'Tuz yalağı', lx: SB_YALAK.lx - SB_YALAK.r - 4, ly: SB_YALAK.ly, tarif: 'Toprağı tuzlu, çiğnenmiş bir çamur yarı (solonets). Geyikler mineral almak için buraya gece gelir; kaplan da bunu bilir ve yakında bekler.' },
+    { id: 'sb_kore', ad: 'Kore çamı ormanı', lx: -80, ly: 40, tarif: 'Gövdeleri iki kişinin kollarının ancak sarabileceği yaşlı Kore çamları, aralarında ıhlamur, akçaağaç ve Mançurya cevizi. Ussuri taygasının kalbi: kozalakları ayıların, domuzların ve sincapların yiyeceği.' },
+    { id: 'sb_mese', ad: 'Meşe yamacı', lx: -60, ly: -160, tarif: 'Güneye bakan, Moğol meşeleriyle kaplı kuru bir yamaç. Sonbaharda yer palamutla dolar; yaban domuzları, ayılar ve sika geyikleri buraya toplanır. Amur leoparı bu yamaçlarda dolaşır.' },
+    { id: 'sb_kaya', ad: 'Kayalık sırt', lx: SB_KAYA.lx - SB_KAYA.r - 4, ly: SB_KAYA.ly, tarif: 'Taygadan yükselen sarp, gri kayalıklar. Goraller yamaçlarda otlar; misk geyikleri tehlikede buraya sığınır.' },
+    { id: 'sb_ladin', ad: 'Ladin taygası', lx: 40, ly: 175, tarif: 'Irmağın kuzeyinde karanlık, nemli bir ladin ve köknar ormanı; yerde kalın bir yosun örtüsü. Sığın, samur ve vaşak burada yaşar.' },
+  ],
+  SICAKLIK: { yaz: [16, 30], sonbahar: [-4, 14], kis: [-32, -10], ilkbahar: [-8, 14] },
+  TIPI_SANSI: { yaz: 0, sonbahar: 0, kis: 0, ilkbahar: 0 },
+});
+Object.assign(SIBIRYA_H, {
+  zeminTuru(bg, mev, hv, lx, ly) {
+    if (bg === 'sbKaya') return 'kaya';
+    if (mev === 'kis' || (hv && hv.tur === 'kar')) return 'kar';
+    if (bg === 'sbIrmak') return Math.abs(ly - sbNehirY(lx)) < 3 ? 'su' : 'camur';
+    if (bg === 'sbGol' || bg === 'sbYalak') return 'camur';
+    if (bg === 'sbUs') return 'toprak';
+    return 'yaprak';
+  },
+  gezi: { ad: 'Sibirya taygası, Ussuri', itibar: 100, ucret: 5000, yol: 420, donus: 420 },
+  istAd: 'Orman koruma kulübesi',
+  istIcinde: 'Orman koruma kulübesindesin.',
+  istYer: 'sb_kordon',
+  suAdi: 'Irmak ya da göl',
+  raporAdi: 'Tayga raporu',
+  yagisli: ['ilkbahar', 'yaz'],
+  kar: true,
+  suOrtam: 'ortam_nehir',
+  dekorSu: (lx, ly) => Math.abs(ly - sbNehirY(lx)) < 3.5, // sahnede çizilen sığ ırmak (yürünebilir)
+  tanitim: 'Rusya\'nın Uzak Doğusunda, Sikhote-Alin dağlarındaki Ussuri taygasında, korucuların orman kulübesine geldin. Burası kuzeyin ve güneyin buluştuğu eşsiz bir orman: ladin ve köknarın yanında Kore çamı, meşe, ceviz ve sarmaşıklar; Sibirya hayvanlarının yanında kaplan ve leopar. Kuzeyde sığ, çakıllı bir ırmak akıyor, ötesinde karanlık ladin taygası; güneyde meşe yamaçları, batıda bataklık bir göl, doğuda kayalık bir sırt, güneydoğuda geyiklerin geldiği bir tuz yalağı var. Kışı çok sert, −30 dereceyi geçer. Araç yok; yürüyerek araştırırsın. Kaplanlar ve ayılar tehlikelidir.',
+  donus: 'Araçla Vladivostok\'a, oradan uçakla savandaki istasyona dönüyorsun.',
+  yolculuk: 'Uçakla Vladivostok\'a, oradan arazi aracıyla saatlerce kuzeye, tayganın içine gittin.',
+  MEVSIM_MESAJ: {
+    yaz: 'Yağışlı Ussuri yazı: muson yağmurları başladı, orman sık ve yemyeşil, her yer sivrisinek dolu. Geyikler yavrularıyla, kaplanlar ırmak vadisinde.',
+    sonbahar: 'Altın sonbahar: ağaçlar sarıya ve kızıla döndü, Kore çamları kozalak, meşeler palamut döküyor. İzubr erkekleri böğürüyor; keta somonları ırmağa çıkıyor, ayılar ve balık baykuşları onları avlıyor.',
+    kis: 'Sert Sibirya kışı: her yer karla örtülü, ırmak ve göl dondu; sıcaklık −30 derecenin altına iniyor. Ayılar ve porsuklar inlerinde uyuyor. Karda izler en kolay okunduğu için kaplanı izlemenin en iyi mevsimi.',
+    ilkbahar: 'Kar erimesi: ırmağın buzu çözülüyor, ayılar zayıf ve aç uyandı. Gölde ilk kurbağalar ötüyor, mandarin ördekleri ağaç kovuklarına yuva yapıyor.',
+  },
+  zemin(b, mev) {
+    const kar = mev === 'kis' || mev === 'ilkbahar';
+    return {
+      sbUs: `Orman koruma kulübesindesin: kütük duvarlar, bir hamam, odun yığınları${kar ? '; her şey karla örtülü' : ''}.`,
+      karisikOrman: kar ? 'Karışık ormandasın: dizine kadar kar; iri Kore çamlarının yeşil tepeleri ve çıplak ıhlamur ile akçaağaç dalları.' : mev === 'sonbahar' ? 'Karışık ormandasın: akçaağaçlar kıpkırmızı, yerde kozalaklar ve sarı yapraklar.' : 'Karışık ormandasın: yaşlı Kore çamları, ıhlamurlar, akçaağaçlar ve ağaçlara dolanmış yabani üzüm sarmaşıkları.',
+      meseYamac: kar ? 'Meşe yamacındasın: kar ince, rüzgârın süpürdüğü yerlerde kuru meşe yaprakları görünüyor.' : 'Meşe yamacındasın: güneye bakan kuru bir yamaç, eğri büğrü Moğol meşeleri ve fındık çalıları.',
+      ladinOrman: 'Karanlık ladin taygasındasın: sık, koyu yeşil ladin ve köknarlar; yerde yosun, devrilmiş kütükler; içerisi serin ve sessiz.',
+      sbIrmak: kar ? 'Irmak vadisindesin: ırmak buz tutmuş, buzun altından suyun sesi geliyor; kıyıda çıplak söğütler.' : 'Irmak vadisindesin: çakıllı, berrak, sığ bir ırmak; kıyıda söğütler ve kavaklar.',
+      sbGol: kar ? 'Gölün kıyısındasın: göl donmuş, sazlar karın içinden çıkıyor.' : 'Bataklık gölün kıyısındasın: durgun su, sazlıklar, nilüferler; çamurda izler.',
+      sbKaya: 'Kayalık sırttasın: gri, keskin kayalar, çatlaklardan çıkan bodur çamlar; aşağıda tayga uzanıyor.',
+      sbYalak: 'Tuz yalağındasın: çiğnenmiş, tuzlu bir çamur yarı; çevresinde geyik toynak izleri.',
+    }[b];
+  },
+  sesler(ev, mev, suYakin) {
+    const l = [ev === 'gece' ? 'rüzgârın ladinlerdeki uğultusu ve uzaktan bir baykuş' : mev === 'kis' ? 'karın üstünde derin bir sessizlik, arada bir ağaçkakanın vuruşu' : 'tayga kuşlarının sesleri ve rüzgârın ağaçlardaki hışırtısı'];
+    if (suYakin) l.push(mev === 'kis' ? 'buzun altından akan ırmağın sesi' : 'ırmağın çakıllar üstündeki şırıltısı');
+    return l;
+  },
+});
+
+// ---- KAÇKAR DAĞLARI: Doğu Karadeniz (Rize-Artvin); kuzey yüksek (zirve, buzul gölü), güney alçak (ladin-kayın ormanı); yukarıdan aşağıya bir dere akar ----
+const kkDereX = (ly) => -45 + 12 * Math.sin(ly / 45) + 4 * Math.sin(ly / 13);
+const KK_GOL = { lx: -50, ly: 185, r: 18 };
+const KK_KAYA = { lx: 140, ly: 80, r: 60 };
+const KK_ARI = { lx: 60, ly: -45, r: 7 };
+const KK_ZIRVE_Y = 165;
+const ISTASYON_KKR = { lx: 0, ly: -25, r: 9 };
+export const KACKAR_H = haritaYap({
+  ...ORTAK_EK,
+  ad: 'kackar',
+  baslik: 'Kaçkar Dağları',
+  merkez: KACKAR,
+  kayma: 0,
+  ISTASYON_K: ISTASYON_KKR,
+  POLINYA: KK_GOL,
+  ozel: { kkDereX, KK_GOL, KK_KAYA, KK_ARI, KK_ZIRVE_Y },
+  MEVSIM_ADI: { yaz: 'yayla yazı', sonbahar: 'sonbahar ve kuş göçü', kis: 'karlı Kaçkar kışı', ilkbahar: 'kar erimesi' },
+  BOLGE_ADLARI_K: { kkUs: 'Yayla evi', yayla: 'Alpin yayla', ormanGulu: 'Orman gülü kuşağı', ladinKk: 'Ladin ve kayın ormanı', kkDere: 'Dere kıyısı', buzulGol: 'Buzul gölü', kkKayalik: 'Sarp kayalıklar', zirve: 'Zirve ve kar alanları', arilik: 'Yayla arılığı' },
+  istasyonBolgesi: 'kkUs',
+  bolge(H, lx, ly) {
+    if (daireIci(lx, ly, ISTASYON_KKR, 12)) return 'kkUs';
+    if (daireIci(lx, ly, KK_GOL, 8)) return 'buzulGol';
+    if (daireIci(lx, ly, KK_ARI, 6)) return 'arilik';
+    if (daireIci(lx, ly, KK_KAYA)) return 'kkKayalik';
+    if (ly < KK_GOL.ly - KK_GOL.r && Math.abs(lx - kkDereX(ly)) < 6) return 'kkDere';
+    if (ly > KK_ZIRVE_Y) return 'zirve';
+    if (ly > -55) return 'yayla';
+    if (ly > -115) return 'ormanGulu';
+    return 'ladinKk';
+  },
+  yuzey: (H, lx, ly) => (daireIci(lx, ly, KK_GOL) ? 'su' : 'kara'),
+  enYakinSu: (H, x, y) => {
+    const ly = Math.min(y - H.MERKEZ.y, KK_GOL.ly - KK_GOL.r - 1);
+    const d = { x: H.MERKEZ.x + kkDereX(ly), y: H.MERKEZ.y + ly };
+    const g = kenarNoktasi(H, KK_GOL, x, y);
+    return Math.hypot(g.x - x, g.y - y) < Math.hypot(d.x - x, d.y - y) ? g : d;
+  },
+  gunIsigi: (f) => (f < 8 ? 15 : f < 12 ? 11 : f < 20 ? 9 : 13),
+  isikSozu: (H, dk) => {
+    const l = H.isik(dk);
+    const s = (((dk % 1440) + 1440) % 1440) / 60;
+    const kis = H.kutupTakvim(Math.floor(dk / 1440) + 1).mevsim === 'kis';
+    if (l >= 0.5) return kis ? 'Parlak bir kış günü; zirveler bembeyaz, karın üstünde göz kamaştırıcı bir ışık.' : s > 11 && s < 16 ? 'Öğle: Karadeniz\'den yükselen bulutlar aşağıdaki vadileri dolduruyor.' : 'Aydınlık bir gündüz; kuzeyde Kaçkar zirvesinin keskin kayaları.';
+    if (l >= 0.12) return s < 12 ? 'Şafak: vadiler sis denizi gibi, zirveler pembeye boyanıyor; dağ horozlarının kur saati.' : 'Akşam: güneş batı sırtlarının arkasına iniyor, sis yayladan yukarı tırmanıyor.';
+    return 'Gece: soğuk ve yıldızlı; derenin sesi, uzaktan bir çoban köpeğinin havlaması.';
+  },
+  havaUret: ekHava({ sicaklik: { yaz: [6, 22], sonbahar: [-2, 14], kis: [-20, -2], ilkbahar: [-6, 10] }, yagmur: { yaz: 0.25, sonbahar: 0.25, kis: 0, ilkbahar: 0.15 }, kar: { yaz: 0, sonbahar: 0.1, kis: 0.45, ilkbahar: 0.25 }, sis: { yaz: 0.3, sonbahar: 0.2, kis: 0.05, ilkbahar: 0.2 }, ruzgar: 2 }),
+  havaSozu: ekHavaSozu({ acik: 'Hava açık', bulutlu: 'Bulutlar dağın yamaçlarına yığılmış', yagmurlu: 'Karadeniz yağmuru; her yer ıslak, dere coşmuş', kar: 'Kar yağıyor; yayla beyaza bürünmüş', sis: 'Yoğun yayla sisi: birkaç adım ötesi görünmüyor', sicak: 'Güneşli, ılık bir yayla günü' }),
+  besin: (H, dk) => ({ yaz: 1, sonbahar: 0.7, kis: 0.3, ilkbahar: 0.55 })[H.kutupTakvim(Math.floor(dk / 1440) + 1).mevsim],
+  YERLER: [
+    { id: 'kk_yaylaevi', ad: 'Yayla evi', lx: 0, ly: -11, tarif: 'Taş temel üstüne ahşap bir yayla evi; çatısı taşlarla bastırılmış saç. Yaz aylarında yayla göçüyle gelen ailelerin evleri; biri araştırma için ayrılmış.' },
+    { id: 'kk_dere', ad: 'Dere kıyısı', lx: kkDereX(20) + 8, ly: 20, tarif: 'Buzul gölünden doğan, kayaların arasından köpürerek inen soğuk, berrak bir dere. Su karatavukları suya dalıp çıkar; su samurunun izleri kıyıdaki taşlarda.' },
+    { id: 'kk_gol', ad: 'Buzul gölü', lx: KK_GOL.lx + KK_GOL.r + 6, ly: KK_GOL.ly, tarif: 'Buzulların oyduğu çanakta, zirvelerin dibinde koyu mavi bir göl; yazın bile kıyısında kar kalır.' },
+    { id: 'kk_kayalik', ad: 'Sarp kayalıkların eteği', lx: KK_KAYA.lx - KK_KAYA.r - 4, ly: KK_KAYA.ly, tarif: 'Granit kayalıkların dibi. Yaban keçileri yamaçlarda, sakallı akbaba tepede süzülür.' },
+    { id: 'kk_zirve', ad: 'Zirve yolu', lx: 40, ly: 200, tarif: 'Kaçkar zirvesine (3.937 m) giden kayalık patika; yazın bile kar alanlarından geçer. Çengel boynuzlu dağ keçileri ve ular kuşları burada yaşar.' },
+    { id: 'kk_arilik', ad: 'Yayla arılığı', lx: KK_ARI.lx - KK_ARI.r - 4, ly: KK_ARI.ly, tarif: 'Kafkas arısının kovanları; ayılara karşı direklerin tepesine ve elektrikli çitin içine konmuş. Yaylanın çiçeklerinden ve orman güllerinden bal yapılır.' },
+    { id: 'kk_ormangulu', ad: 'Orman gülü kuşağı', lx: 60, ly: -85, tarif: 'Ormanın bittiği yerde, insan boyunda sık orman gülü çalıları; ilkbaharda mor ve sarı çiçeklerle örtülür. Karacalar ve ayılar bu sıklıkta saklanır.' },
+    { id: 'kk_orman', ad: 'Ladin ve kayın ormanı', lx: -20, ly: -170, tarif: 'Doğu ladini ve kayından oluşan sık, nemli bir orman; ağaçların gövdeleri yosunlu. Yaban domuzu, porsuk ve vaşak burada yaşar.' },
+  ],
+  SICAKLIK: { yaz: [6, 22], sonbahar: [-2, 14], kis: [-20, -2], ilkbahar: [-6, 10] },
+  TIPI_SANSI: { yaz: 0, sonbahar: 0, kis: 0, ilkbahar: 0 },
+});
+Object.assign(KACKAR_H, {
+  zeminTuru(bg, mev, hv, lx, ly) {
+    if (bg === 'kkKayalik') return 'kaya';
+    if (bg === 'zirve') return mev === 'yaz' ? 'kaya' : 'kar';
+    if (mev === 'kis' || (hv && hv.tur === 'kar')) return 'kar';
+    if (bg === 'kkDere') return Math.abs(lx - kkDereX(ly)) < 2.5 ? 'su' : 'kaya';
+    if (bg === 'buzulGol') return 'kaya';
+    if (bg === 'ormanGulu' || bg === 'ladinKk') return 'yaprak';
+    if (bg === 'kkUs') return 'toprak';
+    return 'ot';
+  },
+  gezi: { ad: 'Kaçkar Dağları, Türkiye', itibar: 60, ucret: 2600, yol: 240, donus: 240 },
+  istAd: 'Yayla evi',
+  istIcinde: 'Yayla evindesin.',
+  istYer: 'kk_yaylaevi',
+  suAdi: 'Dere ya da göl',
+  raporAdi: 'Yayla raporu',
+  yagisli: ['ilkbahar', 'yaz'],
+  kar: true,
+  suOrtam: 'ortam_dere',
+  dekorSu: (lx, ly) => ly < KK_GOL.ly - KK_GOL.r && Math.abs(lx - kkDereX(ly)) < 2.2, // sahnede çizilen dere (yürünebilir)
+  tanitim: 'Türkiye\'nin kuzeydoğusunda, Doğu Karadeniz\'deki Kaçkar Dağları\'nda bir yayla evine geldin. Kuzeyde Kaçkar zirvesinin kayalıkları ve kar alanları, onların dibinde bir buzul gölü var; gölden doğan dere yaylanın içinden güneye iner. Ortada çiçekli alpin yayla, güneyinde insan boyunda orman gülü kuşağı, en güneyde ladin ve kayın ormanı başlıyor. Doğuda sarp kayalıklar, evin yakınında bir arılık var. Burada hava çabuk değişir: Karadeniz\'den gelen sis bir anda yaylayı örter. Kışın her yer derin karla kaplanır. Araç yok; yürüyerek araştırırsın. Ayılara dikkat.',
+  donus: 'Araçla Rize\'ye, oradan uçakla savandaki istasyona dönüyorsun.',
+  yolculuk: 'Uçakla Rize-Artvin Havalimanı\'na, oradan araçla Fırtına Vadisi boyunca yaylaya çıktın.',
+  MEVSIM_MESAJ: {
+    yaz: 'Yayla yazı: yayla çiçeklerle dolu, aileler sürüleriyle yaylaya çıktı. Ayılar yaban mersini yiyor, yaban keçisi ve çengel boynuzlu dağ keçisi yavruları kayalıklarda. Öğleden sonraları sis vadilerden yukarı tırmanıyor.',
+    sonbahar: 'Sonbahar: kayınlar sarardı, yayla boşaldı. Binlerce yırtıcı kuş göç ederken Karadeniz kıyısındaki dağların üstünden güneye geçiyor. Yaban keçisi tekeleri çiftleşme için çarpışıyor; ayılar kış uykusundan önce durmadan yiyor.',
+    kis: 'Karlı Kaçkar kışı: yayla birkaç metre karın altında, yollar kapalı. Ayılar ve porsuklar inlerinde uyuyor; yaban keçileri rüzgârın karı süpürdüğü güney yamaçlara indi, kurtlar onları izliyor.',
+    ilkbahar: 'Kar erimesi: dere coştu, karın çekildiği yerlerde çiğdemler ve kardelenler açıyor. Kafkas dağ horozları şafakta kur gösterisine başladı; ayılar zayıf ve aç uyandı.',
+  },
+  zemin(b, mev) {
+    const kar = mev === 'kis' || mev === 'ilkbahar';
+    return {
+      kkUs: `Yayla evinin önündesin: taş temel üstüne ahşap bir ev, odun yığını ve küçük bir bahçe${kar ? '; hepsi karın altında' : ''}.`,
+      yayla: kar ? 'Alpin yayladasın: her yer bembeyaz kar; karın çekildiği yerlerde çiğdemler.' : mev === 'sonbahar' ? 'Alpin yayladasın: sararmış otlar, boşalmış yayla evleri; uzakta zirvelerde ilk kar.' : 'Alpin yayladasın: diz boyu otlar, rengârenk yayla çiçekleri; rüzgârda kekik kokusu.',
+      ormanGulu: kar ? 'Orman gülü kuşağındasın: karın altından koyu yeşil, kalın orman gülü yaprakları çıkıyor.' : 'Orman gülü kuşağındasın: insan boyunda, iç içe geçmiş orman gülü çalıları; yer yer yaban mersini.',
+      ladinKk: 'Ladin ve kayın ormanındasın: yosunlu gövdeler, sık ladinler, yerde kayın yaprakları; hava serin ve nemli.',
+      kkDere: kar ? 'Dere kıyısındasın: dere karın altında yer yer görünüyor; kenarlarında buz sarkıtları.' : 'Dere kıyısındasın: köpürerek akan soğuk, berrak su; yosunlu taşlar, sıçrayan damlalar.',
+      buzulGol: kar ? 'Buzul gölünün kıyısındasın: göl donmuş, üstü kar.' : 'Buzul gölünün kıyısındasın: koyu mavi, buz gibi su; kıyıda kar lekeleri ve iri kaya blokları.',
+      kkKayalik: 'Sarp kayalıklardasın: gri granit, dar çıkıntılar, kayaların arasında küçük çiçek yastıkları.',
+      zirve: 'Zirve bölgesindesin: kaya döküntüleri, kar alanları, ince ve soğuk bir hava; aşağıda bulutlar.',
+      arilik: 'Yayla arılığındasın: direklerin tepesine konmuş arı kovanları, bir elektrikli çit; arıların vızıltısı.',
+    }[b];
+  },
+  sesler(ev, mev, suYakin) {
+    const l = [ev === 'gece' ? 'rüzgârın yayladaki uğultusu ve uzaktan bir çoban köpeği' : mev === 'kis' ? 'karın üstünde esen rüzgâr ve derin bir sessizlik' : 'tarla kuşlarının şarkısı, arıların vızıltısı ve yayla rüzgârı'];
+    if (suYakin) l.push('derenin taşlar arasındaki gürültüsü');
+    return l;
+  },
+});
+export const EK_HARITALAR = { amazon: AMAZON_H, yellowstone: YELLOW_H, borneo: BORNEO_H, madagaskar: MADAG_H, sibirya: SIBIRYA_H, kackar: KACKAR_H };
 export const EK_LISTE = Object.values(EK_HARITALAR);
 
 export const HARITALAR = { kuzey: KUZEY, guney: GUNEY, avustralya: AVUS, hindistan: HIND, mogol: MOGOL, ...EK_HARITALAR };
