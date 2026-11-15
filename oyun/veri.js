@@ -253,6 +253,8 @@ export const DAVRANISLAR = {
   boynuzCarpisiyor: { fiil: 'rakibiyle karşılıklı şaha kalkıp kıvrık boynuzlarını gürültüyle çarpıştırıyor; ses vadide yankılanıyor', ad: 'Boynuz çarpışması', nadir: true },
   kokEseliyor: { fiil: 'burnuyla toprağı sürüp kök ve yumru arıyor; arkasında sürülmüş gibi bir toprak şeridi kalıyor', ad: 'Toprağı eşeleme' },
   bogurme: { fiil: 'başını kaldırıp derin, yankılanan bir böğürmeyle dişileri çağırıyor, rakiplerine meydan okuyor', ad: 'Kur böğürmesi', nadir: true },
+  karincaYiyor: { fiil: 'burnunu bir karınca yuvasına sokmuş, yapışkan diliyle karıncaları topluyor', ad: 'Karınca yeme', nadir: true },
+  guneslenmis: { fiil: 'güneşli bir kayanın üstüne yayılmış, vücudunu ısıtıyor; arada dilini çıkarıp havayı kokluyor', ad: 'Güneşlenme' },
   termitEmiyor: { fiil: 'pençeleriyle bir termit yuvasını yarıp dudaklarını boru gibi uzatarak termitleri gürültüyle emiyor; sesi uzaktan duyuluyor', ad: 'Termit emme', nadir: true },
   sirtindaYavru: { fiil: 'yavrusu sırtındaki uzun tüylere tutunmuş, onu taşıyarak ilerliyor', ad: 'Yavruyu sırtında taşıma', nadir: true },
   fareAvliyor: { fiil: 'kulaklarını dikip otların arasını dinliyor, sonra kavis çizerek havaya sıçrayıp ön ayaklarıyla bir fareyi bastırıyor', ad: 'Fare avlama', nadir: true },
@@ -526,7 +528,7 @@ Object.assign(TURLER, {
   },
   dingo: {
     ad: 'Dingo', bilimsel: 'Canis dingo', kisa: 'DNG', sinif: 'Memeli', ses: 'dingo', sekil: 'kurt', boy: 0.72, renk: '#c88c48', kutup: true, avustralya: true,
-    hiz: 12, aktif: 'karma', kacis: 40, yirtici: true, avlar: ['kirmiziKanguru', 'vombat', 'emu'], sesSik: 90, sesTuru: 'bolge',
+    hiz: 12, aktif: 'karma', kacis: 40, yirtici: true, avlar: ['kirmiziKanguru', 'vombat', 'emu', 'bozKanguru', 'euro', 'avrupaTavsani'], sesSik: 90, sesTuru: 'bolge',
     habitat: { x: AX - 60, y: 20, r: 120 }, grup: [3, 5], erkekOran: 0.5,
     tarif: 'Avustralya\'nın en büyük kara yırtıcısı; binlerce yıl önce insanlarla kıtaya gelmiş vahşi bir köpek. Havlamaz; uluyarak iletişim kurar. Sürüyle kangurulara bayırlarda pusu kurar, yorulana kadar kovalar.',
   },
@@ -569,6 +571,63 @@ Object.assign(TURLER, {
     hiz: 8, aktif: 'gunduz', kacis: 20, sesSik: 90, sesTuru: 'alarm',
     habitat: { x: HX + 10, y: -20, r: 90 }, grup: [8, 14], erkekOran: 0.25,
     tarif: 'Gri tüylü, siyah yüzlü, uzun kuyruklu bir maymun. Gününün çoğunu ağaçlarda yaprak, çiçek ve meyve yiyerek geçirir. Ağaçtan çevreyi iyi görür; kaplanı ya da leoparı fark edince yüksek sesle alarm verir, bunu duyan geyikler de kaçar.',
+  },
+});
+// Avustralya çalılığında gerçekten yaşayan öbür büyük ve orta boy hayvanlar; yerlilerin yanında insanların getirdiği istilacılar da var (15 Kasım 2026)
+Object.assign(TURLER, {
+  bozKanguru: {
+    ad: 'Batı Boz Kangurusu', bilimsel: 'Macropus fuliginosus', kisa: 'BKN', sinif: 'Memeli', ses: 'kanguru', sekil: 'kanguru', boy: 1.15, renk: '#7a6a5e', kutup: true, avustralya: true,
+    hiz: 12, aktif: 'karma', kacis: 30, sesSik: 200, sesTuru: 'alarm',
+    habitat: { x: AX + 40, y: 70, r: 80 }, grup: [4, 10], erkekOran: 0.3,
+    tarif: 'Kırmızı kangurudan biraz küçük, kahverengi-gri tüylü bir kanguru. Ağaçlık çalılıkları ve okaliptüslerin kenarlarını sever; sabah ve akşam otlar. Yaşlı erkeklerinin kuvvetli bir kokusu olduğu için yerliler ona "kokarca" der.',
+  },
+  euro: {
+    ad: 'Avustralya Ovalarosu (Euro)', bilimsel: 'Osphranter robustus erubescens', kisa: 'EUR', sinif: 'Memeli', ses: 'kanguru', sekil: 'kanguru', boy: 1.0, renk: '#5e4a3e', kutup: true, avustralya: true,
+    hiz: 11, aktif: 'karma', kacis: 28, sesSik: 260, sesTuru: 'alarm',
+    habitat: { x: AX - 110, y: -80, r: 55 }, grup: [1, 3], erkekOran: 0.4,
+    tarif: 'Tıknaz, kaba tüylü, kayalık tepelerin kangurusu. Gündüzü kaya oyuklarının gölgesinde geçirir; çok az su içer, gerekirse suyunu yediği bitkilerden alır. Tehlikede tıslar.',
+  },
+  kayaValabisi: {
+    ad: 'Sarı Ayaklı Kaya Valabisi', bilimsel: 'Petrogale xanthopus', kisa: 'KVL', sinif: 'Memeli', ses: 'kanguru', sekil: 'kanguru', boy: 0.6, renk: '#a8a098', kutup: true, avustralya: true,
+    hiz: 10, aktif: 'karma', kacis: 25, sesSik: 300, sesTuru: 'alarm',
+    habitat: { x: AX - 125, y: -70, r: 35 }, grup: [3, 7], erkekOran: 0.35,
+    tarif: 'Gri sırtlı, beyaz yanak şeritli, ayakları ve uzun halkalı kuyruğu sarı-turuncu küçük bir valabi. Kaya yüzeylerinde inanılmaz sıçramalar yapar; yumuşak tabanlı ayakları kayayı kavrar. Tilkiler yüzünden bir zaman çok azaldı.',
+  },
+  bilbi: {
+    ad: 'Bilbi', bilimsel: 'Macrotis lagotis', kisa: 'BLB', sinif: 'Memeli', ses: 'bilbi', sekil: 'tavsan', boy: 0.45, renk: '#a8a4a0', kutup: true, avustralya: true,
+    hiz: 9, aktif: 'gece', kacis: 15, sesSik: 300, sesTuru: 'iletisim',
+    habitat: { x: AX + 110, y: -130, r: 60 }, grup: [1, 2], erkekOran: 0.5,
+    tarif: 'Tavşan kulaklı, sivri burunlu, ipeksi gri tüylü küçük bir keseli. Gündüzü kumda kazdığı iki metre derinliğe inen sarmal bir inde geçirir; gece toprağı eşeleyip tohum, böcek ve mantar arar. İstilacı tilki ve kediler yüzünden tehlikededir.',
+  },
+  kuol: {
+    ad: 'Batı Kuolu', bilimsel: 'Dasyurus geoffroii', kisa: 'KUL', sinif: 'Memeli', ses: 'kuol', sekil: 'kurt', boy: 0.35, renk: '#6a4a32', kutup: true, avustralya: true,
+    hiz: 10, aktif: 'gece', kacis: 18, yirtici: true, avlar: ['bilbi', 'avrupaTavsani'], sesSik: 300, sesTuru: 'bolge',
+    habitat: { x: AX - 40, y: -40, r: 90 }, grup: [1, 1], erkekOran: 0.5,
+    tarif: 'Kahverengi sırtında beyaz benekler olan kedi boyunda keseli bir yırtıcı. Gece böcek, kertenkele, kuş ve küçük memeli avlar, ağaca da tırmanır. Bir zaman bu bölgelerden silinmişti; koruma programlarıyla yeniden salındı.',
+  },
+  perentie: {
+    ad: 'Perentie (Dev Varan)', bilimsel: 'Varanus giganteus', kisa: 'PRN', sinif: 'Sürüngen', ses: 'perentie', sekil: 'timsah', boy: 0.7, renk: '#6a5a3a', kutup: true, avustralya: true,
+    hiz: 9, aktif: 'gunduz', kacis: 15, sesSik: 400, sesTuru: 'alarm',
+    habitat: { x: AX - 120, y: -60, r: 50 }, grup: [1, 1], erkekOran: 0.5,
+    tarif: 'Avustralya\'nın en büyük kertenkelesi; iki buçuk metreyi bulur. Kayalık tepelerde yaşar, sabah güneşlenip ısındıktan sonra geniş alanlarda ava çıkar: kertenkele, kuş, yumurta, leş. Tehlikede boğazını şişirip yüksek sesle tıslar, kuyruğunu kamçı gibi savurur.',
+  },
+  avTilkisi: {
+    ad: 'Kızıl Tilki (İstilacı)', bilimsel: 'Vulpes vulpes', kisa: 'IST', sinif: 'Memeli', ses: 'kiziltilki', sekil: 'kurt', boy: 0.5, renk: '#c86a2a', kutup: true, avustralya: true, istilaci: true,
+    hiz: 11, aktif: 'gece', kacis: 40, yirtici: true, avlar: ['bilbi', 'kayaValabisi', 'avrupaTavsani'], sesSik: 200, sesTuru: 'bolge',
+    habitat: { x: AX + 60, y: -60, r: 120 }, grup: [1, 2], erkekOran: 0.5,
+    tarif: 'İngiliz yerleşimciler 1800\'lerde av eğlencesi için getirdi. Bugün kıtanın büyük bölümüne yayılmış, bilbi ve kaya valabisi gibi küçük yerli hayvanların yok olmasının başlıca nedenlerinden biri. Dingonun olduğu yerlerde daha az görülür.',
+  },
+  yabaniDeve: {
+    ad: 'Yabani Deve (İstilacı)', bilimsel: 'Camelus dromedarius', kisa: 'DVE', sinif: 'Memeli', ses: 'deve', sekil: 'deve', boy: 1.3, renk: '#b89464', kutup: true, avustralya: true, istilaci: true,
+    hiz: 9, aktif: 'gunduz', kacis: 45, sesSik: 220, sesTuru: 'iletisim',
+    habitat: { x: AX + 130, y: -120, r: 80 }, grup: [4, 9], erkekOran: 0.3,
+    tarif: '1800\'lerde çölde yük taşımak için getirilen tek hörgüçlü develerin serbest kalan torunları. Bugün iç bölgelerde yüz binlercesi yaşıyor, dünyanın en büyük yabani deve sürüleri burada. Kurak dönemlerde su başlarını kurutup yerli bitkileri yiyerek zarar verirler.',
+  },
+  avrupaTavsani: {
+    ad: 'Yaban Tavşanı (İstilacı)', bilimsel: 'Oryctolagus cuniculus', kisa: 'YTV', sinif: 'Memeli', ses: 'kutuptavsani', sekil: 'tavsan', boy: 0.35, renk: '#8a7a68', kutup: true, avustralya: true, istilaci: true,
+    hiz: 10, aktif: 'karma', kacis: 15, sesSik: 400, sesTuru: 'alarm',
+    habitat: { x: AX + 30, y: -20, r: 110 }, grup: [4, 9], erkekOran: 0.45,
+    tarif: '1859\'da yirmi dört tavşanla başlayan istila, birkaç on yılda yüz milyonlara ulaştı. Toprakta derin yuva ağları kazar, otları ve fideleri kökünden yer; çölleşmeyi hızlandırır. Tilkilerin, dingoların ve kuolların kolay avıdır.',
   },
 });
 // Orta Hindistan ormanlarında (Kanha, Bandhavgarh) gerçekten yaşayan öbür büyük ve orta boy memeliler (15 Kasım 2026, Murat "orada gerçekten yaşayan tüm hayvanlar")

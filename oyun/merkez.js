@@ -363,6 +363,14 @@ export const ARASTIRMALAR = [
     sonuc: 'Çalılık hayvanlarının su ve enerji tasarrufunun belgelendi: kangurular öğle sıcağını gölgede ön kollarını yalayarak geçiriyor, koalalar az besleyici yaprakla yaşamak için günün çoğunu uyuyor, vombatlar gündüzü serin inlerde geçiriyor.',
   },
   {
+    id: 'istilacilarVeYerliler',
+    ad: 'İstilacılar ve kurtarılan yerliler',
+    kosulMetni: 'İstilacı tilki, yabani deve ve yaban tavşanını; yerli bilbi, kuol, kaya valabisi ve perentiyi kaydet; bilbinin in kazmasını ve perentinin güneşlenmesini gözle',
+    ilerleme: (k) => [['avTilkisi', 'yabaniDeve', 'avrupaTavsani', 'bilbi', 'kuol', 'kayaValabisi', 'perentie'].filter((t) => k.arsiv.turler[t]).length + [['bilbi', 'yuvaKaziyor'], ['perentie', 'guneslenmis']].filter(([t, dv]) => davranisVar(k, t, dv)).length, 9],
+    odul: { itibar: 18, fon: 7000 },
+    sonuc: 'İnsanların getirdiği tilki, kedi, tavşan ve develerin çalılığı nasıl değiştirdiği belgelendi: tilkiler bilbi ve kaya valabisi gibi küçük keselileri azaltıyor, tavşanlar fideleri yiyor, develer su başlarını tüketiyor. Dingonun tilkileri bastırdığı yerlerde küçük yerli hayvanların daha çok yaşadığı görüldü; yeniden salınan kuollar da bu dengeye katılıyor.',
+  },
+  {
     id: 'billabongYasami',
     ad: 'Billabong ve çalılığın küçük canlıları',
     kosulMetni: '4 Avustralya bitkisini incele ve 6 Avustralya küçük canlısını bul',
@@ -1008,7 +1016,7 @@ function teshisKaydet(d, hastalik, tur, kaynak) {
 }
 function numuneSonucu(d, n) {
   const k = d.k;
-  const v = n.veri;
+  const v = n.veri && typeof n.veri === 'object' ? n.veri : {}; // bozuk kayıtta numune verisi eksik olabilir
   if (n.tip === 'su' && v.kutup) {
     return `Kutup deniz suyu: tuzluluk binde 31, sıcaklık eksi 1,8 derece, yani donma noktasında. Oksijen çok yüksek; soğuk su oksijeni iyi çözer. Kalanus kopepodları ve buz algleri bol. ${n.kaynak === 'polinya' ? 'Polinyada derinden yükselen su besin tuzlarınca zengin; bu yüzden kışın deniz kuşları ve foklar burada toplanıyor.' : 'Örnekte mikroplastik parçacıkları da bulundu; okyanus akıntıları onları buraya kadar taşıyor.'}`;
   }

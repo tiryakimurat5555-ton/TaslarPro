@@ -57,6 +57,15 @@ export const GOZ = {
   dzeren: { renk: 'parlak beyaz-yeşil', boy: 'diz hizasında, kalabalık bir sürü', ipucu: 'sürü hâlinde ceylan' },
   argali: { renk: 'turuncu-sarı', boy: 'kayalıkta, bel hizasında', ipucu: 'iri yaban koyunu' },
   kaplan: { renk: 'parlak yeşil', boy: 'diz-bel hizasında, tek bir iri çift', ipucu: 'çok iri bir kedi' },
+  bozKanguru: { renk: 'soluk turuncu', boy: 'bel hizasında, birçok çift', ipucu: 'bir kanguru grubu' },
+  euro: { renk: 'soluk turuncu', boy: 'diz-bel hizasında, kayalıkta bir iki çift', ipucu: 'kayalıkta bir kanguru' },
+  kayaValabisi: { renk: 'turuncu', boy: 'diz hizasında, kayaların arasında birkaç çift', ipucu: 'küçük kangurular' },
+  bilbi: { renk: 'kırmızımsı', boy: 'yere çok yakın, tek bir çift', ipucu: 'küçük bir keseli' },
+  kuol: { renk: 'yeşilimsi', boy: 'yere yakın, tek bir çift', ipucu: 'küçük bir yırtıcı' },
+  perentie: { renk: null, boy: 'yerde', ipucu: 'iri sürüngen', yerde: true },
+  avTilkisi: { renk: 'parlak sarı-yeşil', boy: 'diz altında, tek bir çift', ipucu: 'bir tilki' },
+  yabaniDeve: { renk: 'parlak yeşil', boy: 'çok yüksekte, birkaç çift', ipucu: 'çok uzun boylu hayvanlar' },
+  avrupaTavsani: { renk: 'kırmızımsı', boy: 'yere çok yakın, birçok çift', ipucu: 'tavşanlar' },
   hintLeopari: { renk: 'parlak sarı-yeşil', boy: 'diz hizasında ya da bir ağaç dalında, tek bir çift', ipucu: 'iri bir kedi' },
   tembelAyi: { renk: 'soluk turuncu', boy: 'diz hizasında, alçakta bir çift', ipucu: 'iri, yere yakın bir hayvan' },
   hintYabanKopegi: { renk: 'parlak yeşil', boy: 'diz hizasında, birçok çift', ipucu: 'bir köpek sürüsü' },
@@ -105,7 +114,7 @@ export function gozTara(d) {
     const yer = M.yerTarifi(o, yakin);
     const tanidik = !!k.arsiv.turler[yakin.tur];
     if (!g.renk) {
-      parcalar.push(`${yer}: ağaçlarda kıpırdanan karaltılar var ama göz parlaması yok; gözünde yansıtıcı katman olmayan bir ${g.ipucu}${tanidik ? `, büyük olasılıkla ${M.kucukHarf(M.SOZ[yakin.tur])}` : ''}`);
+      parcalar.push(`${yer}: ${g.yerde ? 'yerde sürünen bir karaltı' : 'ağaçlarda kıpırdanan karaltılar'} var ama göz parlaması yok; gözünde yansıtıcı katman olmayan bir ${g.ipucu}${tanidik ? `, büyük olasılıkla ${M.kucukHarf(M.SOZ[yakin.tur])}` : ''}`);
       continue;
     }
     let tahmin = tanidik ? `büyük olasılıkla ${M.kucukHarf(M.SOZ[yakin.tur])}` : `tanımadığın ${g.ipucu}`;

@@ -614,7 +614,14 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   hintYabanDomuzu, nilgay. Alarm: cital/langur/muntjak/rhesus kaplana ya da leopara 45 m'de. HINDISTAN_CANLILARI + 24 (34; tepeliYilanKartali:
   yilanKartali savanda var). KUCUK_SESLI asyaKoeli, hintAgustosBocegi. Merkez araştırması kanhaYirticilari. assets/efekt 678.
   Robustluk: merkez numuneAdi bozuk bitki numunesinde çökmüyor. Test /tmp/claude-0/kr/hn1.js (5 günde nüfus dengede; leopar, yaban köpeği avladı).
-  SIRADAKİ: Avustralya, Antarktika, Kuzey Kutbu, Savan.
+  AVUSTRALYA YAPILDI (15 Kasım 2026): TURLER + 9 (veri.js ayrı blok; istilaci: true bayrağı yalnız bilgi): bozKanguru (kirmiziKanguru dalını paylaşır),
+  euro ve kayaValabisi (kanguru biçimi, ses kanguru; gündüz kumtaşında 'kayada'; valabide beyaz yanak, sarı ayak, halkalı kuyruk), bilbi (tavsan biçimi
+  + sivri burun + kara-beyaz kuyruk; gündüz 'in', gece 'kaz'/'esele'), kuol (kurt + beyaz benek; yırtıcı, 'fare'), perentie (timsah biçimi + sarı
+  kuşak; sabah 'guneslen' → guneslenmis, sıcakta 'in'; GOZ renk null + yerde), avTilkisi (istilacı, kurt, tilki görünüşü, ses kiziltilki), yabaniDeve
+  (yeni 'deve' biçimi; istilacı), avrupaTavsani (istilacı, tavsan, ses kutuptavsani; dingo/kuol/tilki avlar). 'fare' davranışı Avustralya'da
+  da fareAvliyor. AVUSTRALYA_CANLILARI + 21 (33); KUCUK_SESLI muhabbetKusu, avSaksagani. Merkez araştırması istilacilarVeYerliler.
+  kayitOnar veri nesnesi bozuk numuneleri atar (dayanıklılık testinde numuneSonucu çöküyordu). assets/efekt 702. Test /tmp/claude-0/kr/av1.js.
+  SIRADAKİ: Antarktika, Kuzey Kutbu, Savan.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)
