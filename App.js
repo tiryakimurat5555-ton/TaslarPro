@@ -6,7 +6,7 @@
 // Yapı: oyun/veri.js, oyun/mantik.js (saf mantık), oyun/merkez.js (araştırma merkezi), oyun/ses.js (konuşma),
 // oyun/efekt.js (3B konumlu sesler), oyun/sahne.js (3B çizim), oyun/jestler.js (dokunma hareketleri).
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { View, Text, Pressable, StyleSheet, AccessibilityInfo, AppState } from 'react-native';
+import { View, Text, Pressable, StyleSheet, AccessibilityInfo, AppState, Platform, BackHandler } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GLView } from 'expo-gl';
@@ -46,6 +46,11 @@ import * as B from './oyun/betimleme.js';
 import * as Eg from './oyun/egitim.js';
 
 const OYUN_ADI = 'Vahşi Yaşam';
+// Ekran okuyucunun adı: Android'de TalkBack, iPhone'da VoiceOver (yazılarda ve duyurularda)
+const EO = Platform.OS === 'android' ? 'TalkBack' : 'VoiceOver';
+const EO_I = Platform.OS === 'android' ? "TalkBack'i" : "VoiceOver'ı";
+// Bir önceki menüye dönme hareketi: iPhone'da VoiceOver'ın Z hareketi, Android'de TalkBack'in geri hareketi (ya da geri tuşu)
+const GERI_HAREKETI = Platform.OS === 'android' ? 'geri hareketi (aşağı sonra sola kaydırma ya da geri tuşu)' : 'Z hareketi';
 const AYAR_ANAHTAR = 'vahsi-yasam-ayar-v1';
 const KAYIT_ANAHTAR = 'vahsi-yasam-kayit-v1';
 const YEDEK_ANAHTAR = 'vahsi-yasam-yedek-v1'; // 5 dakikada bir alınan yedek (bozuk kayda karşı)
@@ -490,6 +495,7 @@ const EK_GEZI_TARIF = {
   madagaskar: 'Madagaskar\'ın güneybatısında serbestçe dolaşılan ayrı bir harita: halka kuyruklu lemur, sifaka, kızıl alınlı lemur, Coquerel dev fare lemuru, ay-ay, fossa, dar çizgili mongoz, dev sıçrayan sıçan, Dumeril boası, ışınsal ve örümcek kaplumbağaları ve çalı domuzu. Galeri ormanı, dikenli orman ve baobab düzlüğü; hayvanların neredeyse hepsi dünyada yalnız burada yaşar.',
 };
 const YENILIKLER = [
+  { baslik: 'Android ve TalkBack', metin: 'Android telefonlarda oyun TalkBack ile de oynanır: TalkBack açıkken menüler ve saha TalkBack düğmeleridir, sağa ve sola kaydırarak gezinir, iki kez dokunarak seçersin; geri hareketi ya da geri tuşu bir önceki menüye döndürür, sahadayken ana menüyü açar. TalkBack kapanınca oyun kendiliğinden kendi sesiyle hareketli düzene geçer (önceden ekran okuyucu ile oyna seçiliyken TalkBack kapanınca oyun sessiz kalıyordu). Android\'de dokunma hareketlerinin hiç algılanmaması da düzeltilmeye çalışıldı. Yazılar ve duyurular Android\'de VoiceOver yerine TalkBack der.', nerede: 'Android telefonda, TalkBack açık ya da kapalı.' },
   { baslik: 'Dört yeni haritaya 26 yeni hayvan', metin: 'Amazon, Yellowstone, Borneo ve Madagaskar\'a o bölgelerde gerçekten yaşayan yeni büyük hayvanlar eklendi; her birinin kendi davranışları var. Amazon: tohum gömen aguti, benekli paka, oselo, kızıl mazama geyiği, kırmızı yüzlü ak uakari, gri nehir yunusu tukuxi, Amazon manatisi ve gözlüklü kayman. Yellowstone: ağaca tırmanan kara ayı, katır geyiği, kayalıkta kafa kafaya çarpışan dağ koyunları, kayalık dağ keçisi, karda kayan su samuru ve kızıl vaşak. Borneo: turuncu yavrulu gümüş langur, domuz kuyruklu makak, su varanı, sambar, dünyanın en küçük toynaklısı fare geyiği, patlamış mısır kokan binturong ve ortak avlanan düz tüylü su samuru. Madagaskar: dev sıçrayan sıçan, dar çizgili mongoz, yaprak altında pusuya yatan Dumeril boası, kurakta kuma gömülen örümcek kaplumbağası ve Coquerel dev fare lemuru. Yırtıcılar yeni hayvanları da avlar (jaguar mazamayı, fossa sıçrayan sıçanı). 12 hayvanın sesi yeni üretildi.', nerede: 'Merkez > Saha gezileri > dört haritadan biri' },
   { baslik: 'Gerçek 3B ses (APK ve oyunun kendi derlemesinde)', metin: 'Hayvan, kuş ve koşu sesleri artık tek kayıttan çalarken gerçek zamanlı yönlendiriliyor: ses yandan gelince uzak kulağa biraz geç ve tizleri kısılmış ulaşır, arkadan gelen ses boğuk duyulur, uzaktaki seste yankı artar, ağaç ve kayanın ardındaki ses boğulur, mağarada yankılanır, yaklaşan hayvanın sesi tizleşir, uzaklaşanınki pesleşir (Doppler). Kulaklıkla en iyi duyulur. Bu yalnız oyunun kendi derlemesinde (APK) çalışır; Expo Go\'da konumlu sesler yönsüz, yalnız uzaklığa göre kısılarak çalar. Sesin dört kopyası kaldırıldı; oyun 560 dosya hafifledi.', nerede: 'sahada; Kulak ver ile dene.' },
   { baslik: 'Yeni harita: Madagaskar', metin: 'Madagaskar\'ın güneybatısında, savandan ayrı, serbestçe dolaşılan yeni bir harita. Halka kuyruklu lemur, beyaz sifaka, kızıl alınlı lemur, gece ağaçlara tıklayan ay-ay, adanın tek büyük yırtıcısı fossa, sarı ışınlı radyal kaplumbağa ve çalı domuzu yaşıyor. Galeri ormanı, dünyada yalnız burada yetişen dikenli Didierea ormanı ve dev baobablar. Lemurlar sabah güneşlenir, erkekler kuyruklarıyla koku düellosu yapar, sifakalar yerde yan yan sekerek dans eder; fossa yaklaşınca lemurlar alarm verir. 10 küçük canlı (bukalemun, fare lemuru, tenrek, zürafa boyunlu böcek), 3 bitki ve üç araştırma var. İtibarın 95 olunca açılır.', nerede: 'Araştırma merkezi, Saha gezileri: Madagaskar, yola çık. Yardım, Yeni haritalar.' },
@@ -507,7 +513,7 @@ const YENILIKLER = [
   { baslik: 'Yeni harita: Avustralya çalılığı', metin: 'Queensland iç kesiminde, savandan ayrı, serbestçe dolaşılan yeni bir harita. Kırmızı kanguru, koala, emu, vombat ve dingo yaşıyor; her birinin kendi sesi var. Kızıl topraklı otlak, billabong denen su gölü, kuru dere yatağı, okaliptüs ormanı, kızıl kumtaşı kayalar, spinifex çalılığı ve termit kuleleri. Yazı yağışlı, kışı kurak; toz fırtınaları çıkar. Kangurular öğle sıcağında gölgede yatar, koalalar ağaçta uyur, dingolar uluyarak avlanır. 12 küçük canlı (kookaburra, ornitorenk, ekidna, dikenli iblis), 5 bitki, üç araştırma ve bir gizem eklendi. Çalılığın gündüz, gece ve billabong sesleri var. İtibarın 60 olunca açılır.', nerede: 'Araştırma merkezi, Saha gezileri: Avustralya çalılığı, yola çık. Yardım, Avustralya çalılığı.' },
   { baslik: 'Yeni harita: Antarktika', metin: 'Adélie Kıyısı\'nda, savandan ve Kuzey Kutbu\'ndan ayrı, serbestçe dolaşılan yeni bir harita. İmparator pengueni, Adélie pengueni, Weddell foku, leopar foku, fil foku ve orka yaşıyor; her birinin kendi sesi var. Mevsimler kuzeyin tersi: imparator penguenler kışın karanlıkta deniz buzunda ürer ve fırtınada birbirine sokulur, Adélie penguenleri yazın kayalık burunda taş yuvalar kurar. Leopar fokları buz kenarında penguen bekler, orkalar dalga yaparak fokları buzdan düşürür. Buz sahanlığı, kıta buz örtüsü, kızıl üs binaları ve güney ışıkları görünür. 12 küçük canlı, 5 bitki ve alg, üç araştırma ve bir gizem eklendi. İtibarın 70 olunca açılır.', nerede: 'Araştırma merkezi, Saha gezileri: Antarktika, yola çık. Yardım, Antarktika.' },
   { baslik: 'Harita büyüdü: altı yeni bölge', metin: 'Araştırma alanı her yöne yaklaşık 300 metreye genişledi; eskisinin iki buçuk katı. Dış halkada altı yeni bölge var. Granit tepeler: dev kaya yığınları, babun sürüsü ve bir leopar; tepedeki Gözcü Kayası\'ndan dürbün çok daha uzağı görür. Sık çalılık: dikenli çalılar görüşü kısaltır, iki gergedan saklanır. Kum dere: yağışlı mevsimde akar, kurakta bekâr erkek filler kumu kazıp su kuyusu açar, başka hayvanlar da bu kuyulardan içer. Baobab düzlüğü: dev baobablar, zürafalar, kabuk soyan filler. Güney ovası: zebralar, ceylanlar ve iki çita kardeş; göçmen sürüler buradan geçer. Kuzey otlakları. On yeni küçük canlı (klipspringer, kara kartal, gerenuk, akbaba beç tavuğu, meyve yarasası, bufalo dokumacısı, karınca aslanı, kum boası, kori toyu, yer sincabı) ve iki yeni bitki (baobab, mür ağacı). Üç yeni nadir davranış: kum kuyusu kazma, kuyudan içme, baobab kabuğu soyma.', nerede: 'Menüde Yerler: Granit tepeler, Gözcü Kayası, Sık çalılık, Kum dere yatağı, Baobab düzlüğü, Güney ovası, Kuzey otlakları. Yardım, Savan, zaman ve yerler.' },
-  { baslik: 'Kulak ver ve sese dön', metin: 'Yeni alet: Kulak ver. Çift dokununca durup dinlersin; çevrendeki en yakın altı sürünün ya da hayvanın sesi, önünden başlayıp saat yönünde, her biri bulunduğu yönden ve uzaklıktan sırayla duyulur. Ardından ne duyduğun aynı sırayla söylenir. Böylece çevreni görmeden, yalnız kulağınla tanırsın. Bir ses duyduktan sonra menüdeki Son duyduğun sese dön satırı seni o sesin geldiği yöne çevirir; kulak verdikten sonra Dinlediğin seslerden birine dön ile istediğin hayvana yönelirsin.', nerede: 'İki parmakla sağa ya da sola kaydırıp Kulak ver aletini seç; ana menü; VoiceOver kipinde üstteki düğmeler.' },
+  { baslik: 'Kulak ver ve sese dön', metin: 'Yeni alet: Kulak ver. Çift dokununca durup dinlersin; çevrendeki en yakın altı sürünün ya da hayvanın sesi, önünden başlayıp saat yönünde, her biri bulunduğu yönden ve uzaklıktan sırayla duyulur. Ardından ne duyduğun aynı sırayla söylenir. Böylece çevreni görmeden, yalnız kulağınla tanırsın. Bir ses duyduktan sonra menüdeki Son duyduğun sese dön satırı seni o sesin geldiği yöne çevirir; kulak verdikten sonra Dinlediğin seslerden birine dön ile istediğin hayvana yönelirsin.', nerede: `İki parmakla sağa ya da sola kaydırıp Kulak ver aletini seç; ana menü; ${EO} kipinde üstteki düğmeler.` },
   { baslik: 'Yeni 3 boyutlu ses motoru', metin: 'Hayvan ve canlı sesleri artık tek bir kayıttan, çalarken gerçek zamanlı yönlendiriliyor. Önceden her ses beş sabit yönden birine yerleşiyordu; şimdi sesin yönü kesintisiz. Ses çalarken hayvan yürürse ya da sen dönersen ses de başının çevresinde kayıyor. Arkandan gelen ses boğuk duyulur. Arada kaya, ağaç ya da bina varsa ses boğuklaşır ve kısılır; mağaradayken dışarıdaki sesler boğuk gelir. Uzaklaştıkça ses kısılır. Bu değişiklik oyunun dosya sayısını da yarıya indirdi.', nerede: 'Sahada her yerde; kulaklıkla dinle.' },
   { baslik: 'Kutup araştırmaları, deniz buzu ölçümü ve kutup sesleri', metin: 'Merkezde dört kutup araştırması var. Deniz buzunun üstündeyken buzun kalınlığını ölçebilirsin. Kutup kuşlarının, lemmingin ve sakallı fokun sesleri artık çevrede duyuluyor. Kışın ya da ilkbaharda kutuptayken yeni bir gizem başlayabilir: Buzun altındaki şarkı. Kuzey ışıkları gökyüzünde daha belirgin.', nerede: 'Kutupta Doğa menüsü: Deniz buzunu ölç ve Kutup raporu. Merkez, Araştırmalar. Merkez, Gizemler.' },
   { baslik: 'Yeni bölge: Kuzey Kutbu', metin: 'Kuzeydoğu Grönland kıyısında, savandan ayrı, serbestçe dolaşılan büyük bir harita. Kutup ayısı, halkalı fok, mors, beluga, ren geyiği, misk öküzü, kutup kurdu, kutup tilkisi ve kutup tavşanı yaşıyor; her birinin kendi sesi var. Yazın güneş batmaz, kışın hiç doğmaz; deniz mevsime göre donup çözülür, tipi çıkar, kış gecelerinde kuzey ışıkları görünür. 21 kutup küçük canlısı ve 6 kutup bitkisi, karda ve buzda adım sesleri, rüzgâr, buz, deniz ve kuş yarı ortam sesleri eklendi. İtibarın 50 olunca açılır.', nerede: 'Araştırma merkezi, Saha gezileri: Kuzey Kutbu, yola çık. Yardım, Kuzey Kutbu.' },
@@ -567,7 +573,7 @@ const YARDIM = [
       'Tek parmakla sürükle: yukarı ileri yürür, aşağı geri gider, sağa ve sola döndürür. Araçtayken sürersin.',
       'Dokun: izlediğin hayvanı ya da çevredeki hayvanları anlatır. Uzun bas: çevreni ayrıntılı betimler: ışık, hava, zemin, önündeki engel, yakındaki yerler, duyulan sesler ve hayvanlar.',
       'Çift dokun: elindeki aleti kullanır. İki parmakla sağa ya da sola kaydır: alet değiştirir. Aletler dürbün, fotoğraf makinesi, video kamera, ses kayıt cihazı, yaklaşma, kulak ver ve büyüteçtir; dron alınınca o da eklenir.',
-      'Kulak ver: çift dokununca çevrendeki en yakın altı sürünün ya da hayvanın sesi, önünden başlayıp saat yönünde, her biri gerçekten bulunduğu yönden ve uzaklıktan sırayla duyulur; uzaktaki kısık, arkadaki boğuk gelir. Sonra ne duyduğun aynı sırayla söylenir. Menüde Son duyduğun sese dön satırı seni son duyulan sesin yönüne çevirir; Dinlediğin seslerden birine dön ile kulak verdiğin hayvanlardan birini seçersin. VoiceOver kipinde üstteki Kulak ver ve Sese dön düğmeleri aynısını yapar.',
+      `Kulak ver: çift dokununca çevrendeki en yakın altı sürünün ya da hayvanın sesi, önünden başlayıp saat yönünde, her biri gerçekten bulunduğu yönden ve uzaklıktan sırayla duyulur; uzaktaki kısık, arkadaki boğuk gelir. Sonra ne duyduğun aynı sırayla söylenir. Menüde Son duyduğun sese dön satırı seni son duyulan sesin yönüne çevirir; Dinlediğin seslerden birine dön ile kulak verdiğin hayvanlardan birini seçersin. ${EO} kipinde üstteki Kulak ver ve Sese dön düğmeleri aynısını yapar.`,
       'İki parmakla yukarı kaydır: araca biner ya da inersin; araç uzaktaysa yanına yürürsün. İki parmakla aşağı kaydır: durur ve gözlemi bitirirsin.',
       'İki parmakla dokun: konuşmayı susturur. İki parmakla iki kez dokun: menüyü açar.',
       'Ayak seslerin zemine göre değişir: kuru ot, çıplak toprak, çamur, sığ su, kaya, yaprak ve mağara taşı. Dönerken her 30 derecede bir tık duyulur; kuzey, doğu, güney ve batıda tık daha güçlüdür. İzlediğin hayvan ya da gittiğin yer tam önüne gelince ayrı bir ses çalar ve telefon hafifçe titrer. Tıkırtıyı Ayarlar, Ses ve konuşma bölümünden kapatabilirsin.',
@@ -581,7 +587,7 @@ const YARDIM = [
       'Ekranın herhangi bir yerine çift dokun: okunan satırı seçer. Uzun bas: satırı açıklamasıyla yeniden okur.',
       'İki parmakla çift dokun: bir önceki menüye döner; ana menüdeysen sahaya döndürür. Menü açıkken zaman durur.',
       'Yukarı kaydır: listenin ilk satırına atlar. Aşağı kaydır: son satıra, yani Geri satırına atlar. Ana menü kısadır: sık kullanılanlar üstte; ekosistem, bitkiler, numune ve küçük canlılar Doğa bölümünde; durum, ayarlar, yardım ve kayıt en alttaki bölümde.',
-      'VoiceOver ile oynarken menüler VoiceOver düğmeleridir; Z hareketi bir önceki menüye döndürür.',
+      `${EO} ile oynarken menüler ${EO} düğmeleridir; ${GERI_HAREKETI} bir önceki menüye döndürür. Sahadayken ${Platform.OS === 'android' ? 'geri hareketi ana menüyü açar' : 'Menü düğmesi ana menüyü açar'}.`,
     ],
   },
   {
@@ -793,7 +799,7 @@ const YARDIM = [
     baslik: 'Erişilebilirlik ve ayarlar',
     satirlar: [
       'Çevreyi betimle: sahada uzun bas ya da menüdeki Çevreyi betimle satırını seç. Ayarlar, Görünüm bölümündeki Otomatik betimleme açıkken yeni bir bölgeye girince çevre kısaca anlatılır.',
-      'Ayarlar, Kontroller: sürükleme hassasiyeti, sürekli yürüme (bir kez ileri sürükleyip bırakınca yürümeye devam edersin, iki parmakla aşağı kaydırınca durursun), yön rehberi, titreşim; VoiceOver ile oynarken büyük düğmeler ve sol el düzeni.',
+      `Ayarlar, Kontroller: sürükleme hassasiyeti, sürekli yürüme (bir kez ileri sürükleyip bırakınca yürümeye devam edersin, iki parmakla aşağı kaydırınca durursun), yön rehberi, titreşim; ${EO} ile oynarken büyük düğmeler ve sol el düzeni.`,
       'Ayarlar, Görünüm ve grafik: grafik yüksek, düşük ya da kapalı. Kapalıyken görüntü hiç çizilmez, pil çok az harcanır, oyun tamamen sesle oynanır. Yüksek kontrast, büyük yazı ve hayvan seslerinin yazıyla gösterilmesi de burada.',
       'Ayarlar, Zorluk: keşif, hayvan davranışı ve tehlike, ekonomi, araştırma ve afetler ayrı ayrı kolay, normal ya da zor yapılabilir.',
       'Eğitimi Ayarlar bölümünden yeniden başlatabilirsin. Oyun 20 saniyede bir ve önemli olaylarda kendiliğinden kaydeder; 5 dakikada bir ayrıca yedek alır. Kayıt bozulursa yedekten açılır.',
@@ -839,10 +845,10 @@ function KipSecim({ sec }) {
         <Text style={st.oyunAdi} accessibilityRole="header">
           {OYUN_ADI}
         </Text>
-        <Text style={st.metin}>VoiceOver açık. İstersen VoiceOver ile oynayabilirsin. Oyunun kendi sesini tercih edersen önce VoiceOver'ı kapat, sonra ekranın alt yarısına dokun.</Text>
+        <Text style={st.metin}>{EO} açık. İstersen {EO} ile oynayabilirsin. Oyunun kendi sesini tercih edersen önce {EO_I} kapat, sonra ekranın alt yarısına dokun.</Text>
         <View style={st.kipSatir}>
-          <Pressable accessibilityRole="button" accessibilityLabel="VoiceOver ile oyna" onPress={() => sec('voiceover')} style={[st.kipYari, { backgroundColor: '#24342a' }]}>
-            <Text style={st.kipYazi}>VoiceOver ile oyna</Text>
+          <Pressable accessibilityRole="button" accessibilityLabel={`${EO} ile oyna`} onPress={() => sec('voiceover')} style={[st.kipYari, { backgroundColor: '#24342a' }]}>
+            <Text style={st.kipYazi}>{EO} ile oyna</Text>
           </Pressable>
           <Pressable accessibilityRole="button" accessibilityLabel="Oyunun kendi sesiyle oyna" onPress={() => sec('kendi')} style={[st.kipYari, { backgroundColor: '#3a2e1c' }]}>
             <Text style={st.kipYazi}>Oyunun kendi sesiyle oyna</Text>
@@ -918,10 +924,10 @@ function ayarSayfasi(menu, ayar, degistir, k, yenile) {
         { id: 'hassas', etiket: `Sürükleme hassasiyeti: ${hAdi[ayar.hassasiyet]}. Değiştir`, ipucu: 'Tam hızla yürümek için parmağını ne kadar kaydırman gerektiği.', sec: () => dongu('hassasiyet', 'Sürükleme hassasiyeti', ['dusuk', 'orta', 'yuksek'], hAdi) },
         { id: 'seyir', etiket: `Sürekli yürüme: ${durum('surekliYuru')}. Değiştir`, ipucu: 'Açıkken bir kez ileri sürükleyip bırakınca yürümeye devam edersin; iki parmakla aşağı kaydırınca durursun. Parmağını uzun süre basılı tutmak zor geliyorsa kullan.', sec: () => ac('surekliYuru', 'Sürekli yürüme') },
         { id: 'rehber', etiket: `Yön rehberi: ${durum('rehber')}. Değiştir`, ipucu: 'Bir yere ya da hayvana giderken yönünü ve uzaklığını aralıklarla söyler.', sec: () => ac('rehber', 'Yön rehberi') },
-        { id: 'buyuk', etiket: `Büyük düğmeler: ${durum('buyukDugme')}. Değiştir`, ipucu: 'VoiceOver ile oynarken sahadaki düğmeleri büyütür.', sec: () => ac('buyukDugme', 'Büyük düğmeler') },
-        { id: 'solel', etiket: `Hareket düğmeleri sol el için: ${durum('solEl')}. Değiştir`, ipucu: 'VoiceOver ile oynarken alttaki hareket düğmelerinin sırasını çevirir.', sec: () => ac('solEl', 'Sol el düzeni') },
+        { id: 'buyuk', etiket: `Büyük düğmeler: ${durum('buyukDugme')}. Değiştir`, ipucu: `${EO} ile oynarken sahadaki düğmeleri büyütür.`, sec: () => ac('buyukDugme', 'Büyük düğmeler') },
+        { id: 'solel', etiket: `Hareket düğmeleri sol el için: ${durum('solEl')}. Değiştir`, ipucu: `${EO} ile oynarken alttaki hareket düğmelerinin sırasını çevirir.`, sec: () => ac('solEl', 'Sol el düzeni') },
         { id: 'titresim', etiket: `Titreşim: ${durum('titresim')}. Değiştir`, sec: () => ac('titresim', 'Titreşim') },
-        { id: 'sesli', etiket: 'Sesli komutlar hakkında', ipucu: 'Bilgi.', sec: () => (Ses.hemen('Sesli komutla oynamak için telefonun konuşma tanıması gerekir. Expo Go bu özelliği desteklemiyor; oyun ileride ayrı bir uygulama olarak yayımlanırsa eklenebilir. Şimdilik VoiceOver kipinde iOS\'un Sesle Denetim özelliğiyle düğmelere sesle basabilirsin.'), 'sessiz') },
+        { id: 'sesli', etiket: 'Sesli komutlar hakkında', ipucu: 'Bilgi.', sec: () => (Ses.hemen(`Sesli komutla oynamak için telefonun konuşma tanıması gerekir. Expo Go bu özelliği desteklemiyor; oyun ileride ayrı bir uygulama olarak yayımlanırsa eklenebilir. Şimdilik ${EO} kipinde ${Platform.OS === 'android' ? "Android'in Sesli Erişim (Voice Access)" : "iOS'un Sesle Denetim"} özelliğiyle düğmelere sesle basabilirsin.`), 'sessiz') },
       ],
     };
   }
@@ -979,7 +985,7 @@ function ayarSayfasi(menu, ayar, degistir, k, yenile) {
 }
 
 function ayarOgeleri(ayar, degistir) {
-  const kipAdi = { kendi: 'oyunun kendi sesi', voiceover: 'VoiceOver', gorerek: 'görerek' };
+  const kipAdi = { kendi: 'oyunun kendi sesi', voiceover: `${EO}`, gorerek: 'görerek' };
   const ac = (anahtar, ad, sonra) => {
     const yeni = ayar[anahtar] === false;
     degistir({ [anahtar]: yeni });
@@ -993,7 +999,7 @@ function ayarOgeleri(ayar, degistir) {
     {
       id: 'kip',
       etiket: `Oynama biçimi: ${kipAdi[ayar.kip]}. Değiştir`,
-      ipucu: "Oyunun kendi sesi, görerek ve VoiceOver arasında geçer. VoiceOver açıkken hangisi seçili olursa olsun düğmeli VoiceOver düzeni kullanılır; VoiceOver'ı kapatınca seçtiğin biçime dönülür.",
+      ipucu: `Oyunun kendi sesi, görerek ve ${EO} arasında geçer. ${EO} açıkken hangisi seçili olursa olsun düğmeli ${EO} düzeni kullanılır; ${EO_I} kapatınca seçtiğin biçime dönülür.`,
       sec: () => {
         const y = kipler[(kipler.indexOf(ayar.kip) + 1) % kipler.length];
         degistir({ kip: y });
@@ -1808,6 +1814,17 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     kaydet();
     if (soz) Ses.soyle(soz, 3);
   };
+  // Android: sahadayken geri tuşu (TalkBack'te geri hareketi) ana menüyü açar; menüdeyken Liste bir önceki menüye döndürür
+  const sahaGeriRef = useRef(null);
+  sahaGeriRef.current = () => {
+    if (menuRef.current) return false;
+    menuAc('ana');
+    return true;
+  };
+  useEffect(() => {
+    const abone = BackHandler.addEventListener('hardwareBackPress', () => (sahaGeriRef.current ? sahaGeriRef.current() : false));
+    return () => abone.remove();
+  }, []);
   const aracIslemi = () => {
     if (k.teknede) return void G.tekneden(d);
     if (G.tekneYakin(d) && !M.aracYakinMi(d)) {
@@ -3153,6 +3170,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       {jestli && (
         <View
           style={[StyleSheet.absoluteFill, { zIndex: 20 }]}
+          collapsable={false}
           {...sahaJest}
           accessible={!menu.ust}
           accessibilityLabel={menu.ust ? undefined : 'Saha. Tek parmakla sürükleyerek yürü, dokununca çevre anlatılır, iki parmakla iki kez dokununca menü açılır.'}
@@ -3198,7 +3216,7 @@ class HataSiniri extends React.Component {
 
 // ---------------- Uygulama ----------------
 export default function App() {
-  const [voAcik, setVoAcik] = useState(false);
+  const [voAcik, setVoAcik] = useState(null); // null: ekran okuyucunun durumu henüz bilinmiyor
   useEffect(() => {
     AccessibilityInfo.isScreenReaderEnabled()
       .then((a) => setVoAcik(!!a))
@@ -3281,7 +3299,7 @@ export default function App() {
       kip === 'gorerek'
         ? 'Görerek oyna seçildi.'
         : kip === 'voiceover'
-          ? 'VoiceOver ile oyna seçildi.'
+          ? `${EO} ile oyna seçildi.`
           : 'Sesle oyna seçildi. Menülerde sağa ve sola kaydırarak satırlar arasında gezinirsin; ekranın herhangi bir yerine iki kez dokununca okunan satır seçilir. İki parmakla iki kez dokunmak geri götürür.'
     );
     setEkran('menu');
@@ -3297,17 +3315,20 @@ export default function App() {
   // Bu yüzden VoiceOver açık olduğu sürece seçilen biçim ne olursa olsun düğmeli VoiceOver düzeni kullanılır;
   // VoiceOver kapanınca seçilen biçime dönülür.
   const secilenKip = ayar.kip || 'kendi';
-  const kip = voAcik && secilenKip !== 'voiceover' ? 'voiceover' : secilenKip;
+  // Ekran okuyucu kapalıyken düğmeli düzen sessiz kalırdı (duyurular VoiceOver/TalkBack'e gider, o kapalıysa hiçbir şey söylenmez):
+  // bu yüzden ekran okuyucu ile oyna seçili olsa da ekran okuyucu kapanınca oyunun kendi sesiyle hareketli düzene geçilir.
+  const kip = voAcik === null ? secilenKip : voAcik ? 'voiceover' : secilenKip === 'voiceover' ? 'kendi' : secilenKip;
   const oncekiKip = useRef(null);
   useEffect(() => {
     if (!ayar.kip) return;
     Ses.ayarla({ kip });
     const once = oncekiKip.current;
     oncekiKip.current = kip;
-    if (secilenKip === 'voiceover' || once === kip) return;
-    if (kip === 'voiceover')
-      setTimeout(() => Ses.soyle("VoiceOver açık olduğu için düğmeli düzene geçildi. Menüler ve oyun ekranı VoiceOver ile kullanılır. Oyunun kendi sesiyle hareketlerle oynamak istersen VoiceOver'ı kapat; oyun kendiliğinden hareketli düzene döner.", 4), 600);
-    else if (once) setTimeout(() => Ses.hemen('VoiceOver kapandı; hareketli düzene dönüldü.'), 400);
+    if (once === kip) return;
+    if (kip === 'voiceover') {
+      if (secilenKip !== 'voiceover') setTimeout(() => Ses.soyle(`${EO} açık olduğu için düğmeli düzene geçildi. Menüler ve oyun ekranı ${EO} ile kullanılır. Oyunun kendi sesiyle hareketlerle oynamak istersen ${EO_I} kapat; oyun kendiliğinden hareketli düzene döner.`, 4), 600);
+    } else if (once === 'voiceover' || (once === null && secilenKip === 'voiceover'))
+      setTimeout(() => Ses.hemen(`${EO} kapalı; oyunun kendi sesiyle hareketli düzene geçildi. Menülerde sağa ve sola kaydırarak satırlar arasında gezinirsin, ekranın herhangi bir yerine iki kez dokununca okunan satır seçilir, iki parmakla iki kez dokunmak geri götürür. Sahada tek parmakla sürükleyerek yürürsün.`), 400);
   }, [kip, ayar.kip]);
   let icerik = null;
   if (ekran === 'yukleniyor') icerik = <View style={{ flex: 1 }} />;

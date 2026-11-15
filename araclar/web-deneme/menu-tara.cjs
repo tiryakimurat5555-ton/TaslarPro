@@ -16,6 +16,7 @@ const [, , WEB = '/tmp/claude-0/web', KAYIT = '/tmp/claude-0/zengin-kayit.json',
   await s.addInitScript(
     ([kayit, kip]) => {
       localStorage.setItem('vahsi-yasam-kayit-v1', kayit);
+      if (kip === 'voiceover') window.__voiceover = true; // ekran okuyucu açıkmış gibi (kapalıyken oyun kendi sesine geçer)
       localStorage.setItem('vahsi-yasam-ayar-v1', JSON.stringify({ kip, grafik: 'kapali' }));
     },
     [kayit, KIP]

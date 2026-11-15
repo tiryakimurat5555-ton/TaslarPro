@@ -11,7 +11,7 @@
 //
 // Öğe: { id, etiket (yazı ya da işlev), ipucu, sec () => 'sessiz' | undefined, ikincil }
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Animated, Easing, Pressable, AccessibilityInfo, findNodeHandle } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Animated, Easing, Pressable, AccessibilityInfo, findNodeHandle, BackHandler } from 'react-native';
 import { useJestler } from './jestler.js';
 import * as Ses from './ses.js';
 import * as Efekt from './efekt.js';
@@ -232,13 +232,14 @@ function SesliListeIc({ baslik, giris, ogeler, onGeri, rehberAcik = true, ilkOda
           ))}
         </ScrollView>
       </View>
-      {disaridanJest ? null : <View style={StyleSheet.absoluteFill} {...jest} accessible={false} />}
+      {/* collapsable={false}: Android'de (Fabric) yalnız dokunma işleyicisi olan görünüm düzleştirilip yerel görünümü silinir; o zaman dokunuşlar bu katmana hiç gelmez */}
+      {disaridanJest ? null : <View style={StyleSheet.absoluteFill} collapsable={false} {...jest} accessible={false} />}
     </Animated.View>
   );
 }
 const SesliListeRef = forwardRef(SesliListeIc);
 
-// VoiceOver ile oynarken: aynı öğeler VoiceOver'ın kendi düğmeleri; Z hareketi (geri kaçış) geri götürür
+// VoiceOver ya da TalkBack ile oynarken: aynı öğeler ekran okuyucunun kendi düğmeleri; Z hareketi (iOS) ya da geri hareketi (Android) geri götürür
 // Liste açılınca VoiceOver odağı listeye taşınır (yoksa odak kapanan ekranda kalır, listeye gidilemez):
 // alt menüden dönülünce onu açan satıra, yoksa başlığa.
 function VoiceListe({ baslik, giris, ogeler, onGeri, ilkOdak = 0, onOdak }) {
@@ -298,6 +299,17 @@ function VoiceListe({ baslik, giris, ogeler, onGeri, ilkOdak = 0, onOdak }) {
 
 // kip: 'kendi' | 'gorerek' | 'voiceover'
 export const Liste = forwardRef(function Liste(p, ref) {
+  // Android geri tuşu ve TalkBack'in geri hareketi bir önceki menüye döndürür (iOS'taki Z hareketi gibi)
+  const geriRef = useRef(p.onGeri);
+  geriRef.current = p.onGeri;
+  useEffect(() => {
+    const abone = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (!geriRef.current) return false;
+      geriRef.current();
+      return true;
+    });
+    return () => abone.remove();
+  }, []);
   // Denemeler için: son çizilen liste (menü taraması, araclar/web-deneme/menu-tara.cjs)
   globalThis.__sonListe = { baslik: p.baslik, giris: p.giris, ogeler: p.ogeler };
   if (p.kip === 'voiceover') return <VoiceListe {...p} />;

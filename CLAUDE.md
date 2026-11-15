@@ -679,6 +679,12 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   OTLAMAYAN_EK (kutupDavranis 'otla' → yiyecekAriyor). IUCN'a DD (yetersiz veri) eklendi. Sesler (akış R1AN6H1CX2wNrRrpqPLB, 3 sn) oselo aguti paka uakari tukuxi
   manati karaayi faregeyigi binturong devsican mongoz mirza; öbürleri mevcut sesleri kullanır. assets/efekt 326. Testler: ek1.js 4 harita 2 gün, dayanıklılık
   100/100, bot, menu-tara 4 harita sorun 0 (/tmp/claude-0/kr/ekkayit2.js → ek-<id>.json). Var olan çift kısa kodlar KNG (kongoni/kanguru), ORK (oriks/orka).
+- ANDROID VE TALKBACK (15 Kasım 2026, Murat: Bahtiyar APK'da TalkBack'i kapatınca hiç hareket edememiş; "TalkBack hareketleriyle de oynansın"):
+  (1) Dokunma katmanlarına collapsable={false} (SesliListe kendi katmanı, sahaJest): Android Fabric yalnız JS dokunma işleyicisi olan görünümü
+  düzleştirip yerel görünümünü siler, dokunuşlar katmana gelmez (en olası sebep; telefonda doğrulanmadı). (2) App kip: voAcik null (bilinmiyor) /
+  true → 'voiceover' / false iken seçili kip 'voiceover' ise 'kendi' (eskiden ekran okuyucu kapalıyken düğmeli düzen sessiz kalıyordu: duyurular
+  announceForAccessibility'ye gidiyordu). (3) BackHandler: Liste onGeri (TalkBack geri hareketi/geri tuşu = iOS Z), Oyun sahada menuAc('ana').
+  (4) EO / EO_I / GERI_HAREKETI sabitleri: Android'de yazı ve duyurularda TalkBack. menu-tara.cjs voiceover kipinde window.__voiceover = true.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)
