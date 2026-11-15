@@ -711,6 +711,9 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   ortam_sibirya_gunduz/gece, ortam_kackar_gunduz/gece (gündüz ham kaydı -47 LUFS'tü, hışırtılı olabilir), ortam_dere. assets/efekt 344. Testler: ek1.js H=sibirya/kackar
   (2 gün: leopar sika, ayı izubr, kurt yaban keçisi avladı), yergit.js iki haritada bütün yerler, menu-tara iki haritada iki kipte sorun 0 (/tmp/claude-0/ek-sibirya.json,
   ek-kackar.json), dayanıklılık 100/100, bot. Görüntüler scratchpad sbkk-goruntu.cjs. Telefonda doğrulanmadı.
+- TEL TUZAĞI BULMA (15 Kasım 2026, Murat "tuzağı nasıl sökeceğim bulamadım"): bulunmuş tuzaklar Yerler'de (M.yerGit 'tuzak:<id>'), ana menüde
+  uzaktayken "Bulduğun tel tuzağına yürü" (App bulunanTuzaklar), 6 m'de "Tel tuzağı sök ve bildir"; VoiceOver bağlam satırında "Tel tuzağı sök";
+  bulunma olayı ve Yardım nereden sökülür söyler. Test /tmp/claude-0/kr/tuzakgit.js (K=kayıt). Telefonda doğrulanmadı.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

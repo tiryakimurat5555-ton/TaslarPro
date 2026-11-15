@@ -5350,6 +5350,15 @@ export function yerGit(d, id) {
     if (!z || d.k.dk >= z.bitis) return;
     hedef = { x: z.x, y: z.y, ad: 'Ziyaretçi', yakin: 3 };
   }
+  else if (typeof id === 'string' && id.startsWith('tuzak:')) {
+    // Bulunmuş tel tuzağının yanına (sökmek için 6 m'den yakın olmalı)
+    const t = ((d.k.kacak && d.k.kacak.tuzaklar) || []).find((x) => String(x.id) === id.slice(6) && x.bulundu);
+    if (!t) {
+      olay(d, 'hata', 'Bu tel tuzak artık yok.', 3);
+      return;
+    }
+    hedef = { x: t.x, y: t.y, ad: 'Tel tuzak', yakin: 3 };
+  }
   else if (id === 'tekne') {
     const t = d.k.tekne;
     const yan = t.y >= nehirY(t.x) ? 1 : -1;

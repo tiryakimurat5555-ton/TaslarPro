@@ -420,6 +420,9 @@ function kulakVerCal(d) {
     if (no === kulakNo) Ses.hemen(r.ozet);
   }, 250 + r.liste.length * 1600 + 1000);
 }
+// Bulunmuş (henüz sökülmemiş) tel tuzakları, en yakını önce
+const bulunanTuzaklar = (d) =>
+  ((d.k.kacak && d.k.kacak.tuzaklar) || []).filter((t) => t.bulundu).sort((a, b) => M.mesafe(d.oyuncu, a) - M.mesafe(d.oyuncu, b));
 // Son duyulan sesin adı (Sese dön satırı için)
 function sesKaynagiAdi(s) {
   if (!s) return '';
@@ -497,6 +500,7 @@ const EK_GEZI_TARIF = {
   kackar: 'Türkiye\'nin kuzeydoğusunda, Kaçkar Dağları\'nda serbestçe dolaşılan ayrı bir harita: boz ayı, kurt, vaşak, yaban keçisi, çengel boynuzlu dağ keçisi, karaca, yaban domuzu, kızıl tilki, porsuk, kaya sansarı, su samuru ve sakallı akbaba. Ladin ve kayın ormanından orman gülü kuşağına, çiçekli yayladan zirvelere ve buzul gölüne katman katman bir dağ; yayladan bir dere iner, evin yanında bir arılık var. Sonbaharda binlerce yırtıcı kuş göç ederken buradan geçer.',
 };
 const YENILIKLER = [
+  { baslik: 'Tel tuzağını bulmak ve sökmek kolaylaştı', metin: 'Bulduğun kaçak avcı tel tuzakları artık Yerler menüsünde listelenir; seçince tuzağın yanına kendiliğinden yürürsün. Uzaktayken ana menüde Sahaya dön satırının altında Bulduğun tel tuzağına yürü satırı çıkar; yanına varınca (6 metreden yakın) aynı yerde Tel tuzağı sök ve bildir satırı çıkar. Ekran okuyucu kipinde yanındayken üstte Tel tuzağı sök düğmesi de var. Tuzakta hayvan takılıysa önce Doğa > Numune ve veteriner menüsünden hayvanı kurtarman gerekir. Tuzaklar yalnız savanda kurulur ve otların arasına gizlidir: ancak 7 metre yakınından geçince fark edersin (dron da bulur).', nerede: 'ana menü ve Yerler, savanda.' },
   { baslik: 'İki yeni harita: Sibirya taygası ve Kaçkar Dağları', metin: 'Sibirya taygası (Ussuri, Rusya Uzak Doğusu): 18 büyük hayvan; Amur kaplanı tuz yalağında pusuya yatar ve ağaçları tırmalayıp bölgesini işaretler, Amur leoparı meşe yamacında, ayılar sonbaharda ırmakta somon avlar ve kışın uyur, Asya kara ayısı ağaca tırmanır, harzalar birlikte avlanır, rakun köpeği kışı ininde geçirir, misk geyiği ve goral kayalığa sığınır. Kaçkar Dağları (Türkiye): 12 büyük hayvan; boz ayı yaban mersini yer ve arılığı yoklar, yaban keçisi tekeleri sonbaharda çarpışır, çengel boynuzlu dağ keçisi zirvelerde, sakallı akbaba kemikleri kayaya bırakıp kırar, kurtlar geceleri uluyor. Her haritada 20\'den çok küçük canlı (Blakiston balık baykuşu, mandarin ördeği, keta somonu, Kafkas semenderi, Kafkas dağ horozu, ular, su karatavuğu, sonbaharda göçmen şahinler ve başkaları), 6 bitki, üç araştırma, kendi ortam sesleri ve ırmak ile dere sesi. Kışın ikisi de karla örtülür.', nerede: 'Merkez > Saha gezileri: Sibirya taygası (itibar 100, 5.000 lira) ve Kaçkar Dağları (itibar 60, 2.600 lira)' },
   { baslik: 'Otomatik yürüyüş bütün haritalarda', metin: 'Yerler menüsünden seçilen bir yere kendiliğinden yürüme Avustralya, Hindistan, Moğolistan, Amazon, Yellowstone, Borneo ve Madagaskar\'da çalışmıyordu (yalnızca savanda ve iki kutupta çalışıyordu). Düzeltildi; Savana dön satırındaki istasyona yürüme de bu haritalarda artık çalışır.', nerede: 'ana menü > Yerler, herhangi bir haritada.' },
   { baslik: 'Android ve TalkBack', metin: 'Android telefonlarda oyun TalkBack ile de oynanır: TalkBack açıkken menüler ve saha TalkBack düğmeleridir, sağa ve sola kaydırarak gezinir, iki kez dokunarak seçersin; geri hareketi ya da geri tuşu bir önceki menüye döndürür, sahadayken ana menüyü açar. TalkBack kapanınca oyun kendiliğinden kendi sesiyle hareketli düzene geçer (önceden ekran okuyucu ile oyna seçiliyken TalkBack kapanınca oyun sessiz kalıyordu). Android\'de dokunma hareketlerinin hiç algılanmaması da düzeltilmeye çalışıldı. Yazılar ve duyurular Android\'de VoiceOver yerine TalkBack der.', nerede: 'Android telefonda, TalkBack açık ya da kapalı.' },
@@ -820,7 +824,7 @@ const YARDIM = [
       'Hangi canlıyı bulacağın bölgeye, saate, mevsime ve havaya bağlı: kurbağalar yağmurdan sonra, baykuşlar gece, kelebekler yağışlı mevsimde çıkar. Galeri ormanı ve termit tepeleri yeni bölgelerdir.',
       'Mağara takımıyla kayalığın kuzeyindeki mağaraya girersin. Mağarada tek parmakla yukarı kaydırınca bir sonraki odaya ilerler, aşağı kaydırınca geri dönersin; dokununca oda anlatılır. Akşam mağaranın ağzında yarasaların çıkışını izleyebilirsin.',
       'Afetler: kurak mevsimin sonunda yangın çıkabilir, rüzgârla yayılır, hayvanlar kaçar; ilk yağmurlarla yanan alanda taze sürgünler çıkar. Büyük sağanakta nehir taşar ve geçitler birkaç saat geçilmez.',
-      'Kaçak avcılar otçulların yollarına tel tuzak kurar. Yakından geçince fark edersin; menüden söküp yaban hayatı servisine bildirirsin. Tuzağa takılmış hayvanı veterinerin kurtarır.',
+      'Kaçak avcılar otçulların yollarına tel tuzak kurar. Tuzaklar otlara gizlidir, 7 metre yakınından geçince fark edersin. Bulduklarını Yerler menüsünde görür, yanlarına yürürsün; 6 metreden yakınken ana menüde Sahaya dön satırının altında Tel tuzağı sök ve bildir çıkar. Tuzağa takılmış hayvanı veterinerin kurtarır.',
       'Araştırma merkezindeki Koruma projeleri: gergedan koruma programı, yaban köpeklerinin aşılanması, kaçak avcılıkla mücadele ve akbabaları koruma. Her projenin adımları vardır; tamamlanınca fon ve itibar gelir.',
     ],
   },
@@ -2004,6 +2008,11 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       const kutupta = M.oyuncuKutupta(k);
       const tz = K.yakinTuzak(d, 6);
       if (tz && tz.bulundu) ogeler.push({ id: 'sok', etiket: 'Tel tuzağı sök ve bildir', sec: yap(() => K.tuzakSok(d)) });
+      else if (!kutupta && !k.magara) {
+        // Bulunmuş ama uzakta kalan tel tuzağı: en yakınına yürü
+        const bt = bulunanTuzaklar(d)[0];
+        if (bt) ogeler.push({ id: 'tuzagaGit', etiket: `Bulduğun tel tuzağına yürü, ${yerTarifi(bt)}`, ipucu: 'Yanına varınca bu satırın yerinde Tel tuzağı sök ve bildir çıkar.', sec: kapatVe(() => M.yerGit(d, 'tuzak:' + bt.id)) });
+      }
       if (k.magara) ogeler.push(altMenu('magara', k.magara.alan ? `Saha gezisi: ${bolumAdi(k)}, ${aktifOda(k).ad}` : `Mağaradasın: ${aktifOda(k).ad}`, menu.ac));
       else if (K.magaraYakin(d))
         ogeler.push({
@@ -2399,6 +2408,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       if (!k.aracta) ogeler.push({ id: 'arac', etiket: `${M.aracAdi(k)}, ${yerTarifi(k.arac)}`, sec: kapatVe(() => M.yerGit(d, 'arac')) });
       if (k.kamp) ogeler.push({ id: 'kamp', etiket: `Saha kampı, ${k.kamp.bolge}, ${yerTarifi(k.kamp)}`, sec: kapatVe(() => M.yerGit(d, 'kamp')) });
       if (H.ziyaretci(d) && !k.teknede) ogeler.push({ id: 'ziyaretci', etiket: `Ziyaretçi: ${H.ziyaretciTarifi(d)}`, ipucu: H.KISILER[H.ziyaretci(d).kim].unvan, sec: kapatVe(() => M.yerGit(d, 'ziyaretci')) });
+      bulunanTuzaklar(d).forEach((t) => ogeler.push({ id: 'tuzak:' + t.id, etiket: `Tel tuzak${t.hayvanId ? ', hayvan takılı' : ''}, ${yerTarifi(t)}`, ipucu: 'Bulduğun kaçak avcı tuzağına yürürsün; yanındayken ana menüden sökersin.', sec: kapatVe(() => M.yerGit(d, 'tuzak:' + t.id)) }));
       if (G.tekneVar(k) && !k.teknede) ogeler.push({ id: 'tekne', etiket: `Tekne, ${yerTarifi(k.tekne)}`, ipucu: 'Teknenin bağlı olduğu kıyıya yürürsün; yanına varınca iki parmakla yukarı kaydırıp binersin.', sec: kapatVe(() => M.yerGit(d, 'tekne')) });
       YERLER.forEach((y) => ogeler.push({ id: y.id, etiket: `${y.ad}, ${yerTarifi(y)}`, ipucu: y.tarif, sec: kapatVe(() => M.yerGit(d, y.id)) }));
       Mz.gpsListesi(d)
@@ -3107,6 +3117,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
               {!k.magara && <Dugme etiket="Kulak ver" ipucu="Çevredeki hayvanların sesleri yönlerinden sırayla duyulur, sonra özetlenir" onEtkin={() => kulakVerCal(d)} stil={st.baglamDugme} />}
               {!k.magara && <Dugme etiket="Sese dön" ipucu="Son duyduğun sesin geldiği yöne döndürür" onEtkin={() => seseDon(d)} stil={st.baglamDugme} />}
               <Dugme etiket={k.teknede ? 'Tekneden in' : G.tekneYakin(d) && !aracYakin ? 'Tekneye bin' : k.aracta ? 'Araçtan in' : aracYakin ? 'Araca bin' : 'Araca git'} onEtkin={aracIslemi} stil={st.baglamDugme} />
+              {(() => { const tz = K.yakinTuzak(d, 6); return tz && tz.bulundu ? <Dugme etiket="Tel tuzağı sök" onEtkin={() => Ses.hemen(K.tuzakSok(d))} stil={st.baglamDugme} /> : null; })()}
               {(d.rota || d.yaklasId || gb) && <Dugme etiket="Dur ve gözlemi bitir" onEtkin={durVeBitir} stil={st.baglamDugme} />}
             </View>
           )}

@@ -539,7 +539,7 @@ export function kacakGuncelle(d) {
       const durum = b && !b.olu ? ` ${M.BuyukHarf(M.bireyAdi(b))} tuzağa takılmış!` : '';
       const iz = d.rng() < 0.5 ? ' Çevrede insan ayak izleri ve söndürülmüş bir kamp ateşi var.' : '';
       if (iz) k.kacak.izler += 1;
-      M.olay(d, 'kacakTuzak', `Dikkat! Yerde, otların arasına gizlenmiş bir kaçak avcı tel tuzağı var, ${yerTarifi(o, t)}.${durum}${iz} Menüden tuzağı söküp yaban hayatı servisine bildirebilirsin.`, 4, { id: t.id });
+      M.olay(d, 'kacakTuzak', `Dikkat! Yerde, otların arasına gizlenmiş bir kaçak avcı tel tuzağı var, ${yerTarifi(o, t)}.${durum}${iz} Yanına git; 6 metreden yakınken ana menüde, Sahaya dön satırının hemen altında Tel tuzağı sök ve bildir satırı çıkar.`, 4, { id: t.id });
       M.arsivOlay(d, `Kaçak avcı tel tuzağı bulundu, ${M.bolgeAdi(t.x, t.y)}.`);
     }
     // Kamera tuzağı yakınındaki kaçak avcı izlerini fotoğraflar
