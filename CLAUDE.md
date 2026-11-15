@@ -637,6 +637,27 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   gece, avlar ceylan/grant/impala; sık çalılık), beisaOriks (kara maske, uzun düz boynuz, EN; batı kurak düzlük). NOBET_TUTAN, MINERAL_TURLERI, OTCULLAR,
   TUKETIM, YIRTICI_GUC eklendi. Merkez araştırması savanAntiloplari. Sesler eland, topi, kongoni, suantilopu, karakulak, oriks (konumlu); assets/efekt 778.
   Yardım "Savan, zaman ve yerler" 5. satır tür listesi. Hiçbir harita kalmadı.
+- YENİ HARİTALAR: AMAZON, YELLOWSTONE, BORNEO, MADAGASKAR (15 Kasım 2026, Murat "Yeni haritalar ekleyelim" → dördünü seçti; sayılar ÖNERİ).
+  Merkezler veri AMAZON {6000,6000}, YELLOWSTONE {6000,-6000}, BORNEO {-6000,-6000}, MADAGASKAR {12000,0}, r 230; EK_HARITA_IDLERI.
+  "Ek harita" altyapısı (eski haritalardaki if zincirleri yerine): kutup.js haritaYap + ORTAK_EK (ek: true; H.ek, H.kar haritaYap'ta kopyalanır),
+  sonra Object.assign ile gezi {ad, itibar, ucret, yol, donus}, istAd, istIcinde, istYer, suAdi, raporAdi, yagisli, tanitim, donus, yolculuk,
+  MEVSIM_MESAJ, zemin(b, mev), sesler(ev, mev, suYakin, h), zeminTuru; EK_HARITALAR, EK_LISTE (export), ekHarita(p), ekMi(p).
+  Hava k.kutup['hava_'+id], mevsim 'mevsim_'+id, ziyaret 'ziyaret_'+id (turListesi). Türler harita: '<id>' + kutup: true
+  (veri ekHaritaSirasi, EK_HARITA_SIRALARI, turHaritasi; KUTUP_SIRASI dışlar), agacta: true ağaç türleri (sahnede 6,5 m, orangutan 9 m yukarıda).
+  30 tür: Amazon jaguar tapir kapibara pekari uluyanMaymun pembeYunus karaKaiman devSuSamuru; Yellowstone bozAyi griKurt bizon wapiti sigin
+  catalBoynuz puma coyote; Borneo orangutan hortumluMaymun borneoFili bulutluLeopar gunesAyisi sakalliDomuz tuzluSuTimsahi; Madagaskar halkaKuyruk
+  sifaka kizilAlinliLemur fossa ayAy radyalKaplumbaga (sahnede yeni 'kaplumbaga' biçimi) caliDomuzu. mantik EK_PLAN (amazon/yellowstone/borneo/
+  madagaskarPlanSec), ekGrupAdim (alarm, nehriGeciyor), g.plan 'dv:<davranış>' kutupDavranis'te o davranışa dönüşür; 'agac' planı koala dışında
+  dalindaUyuyor/dallardaBesleniyor (agactaUyuyor/yaprakYiyor metni okaliptüs der, yalnız koala). alarmVeriyor ve dallardaBesleniyor metinleri genel.
+  kesif EK_KAPI(id), ekHaritaHazirla(d, id), ekHaritayaVar(d, id); geziBul/kutupDurumu/kutupSatiri/donusKapisi/kutuptanHazirla ek haritaları tanır.
+  betimleme ekHarita varsa H.zemin/H.sesler/H.suAdi. merkez her haritaya 3 araştırma (…Faunasi, …Davranislari, …Ekolojisi). ekosistem BITKILER
+  9 (harita alanı), kucukler EK_CANLILAR ~40 (ekHaritaKucukleri(h)). App: Saha gezileri satırları (EK_GEZI_TARIF), Savana dön, rapor (MEVSIM_MESAJ),
+  ortam katmanları ortam_<id>_gunduz/gece + ortam_billabong (su) + ortam_gayzer (Yellowstone) + yağmur + kışın ortam_kutup. sahne ekSahneler:
+  EK_GORUNUM (bölge renkleri, ağaç/çalı/kaya yoğunlukları), AGAC_TURU (yagmur, dev, cam, kavak, palmiye, demirhindi, didierea, baobab);
+  zemin 8 m karoları ve su 4 m karoları her oyun günü yeniden (taşkın, kar); Yellowstone sıcak kaynak havuzları ve buhar. Sesler (akış
+  R1AN6H1CX2wNrRrpqPLB) 20 tür konumlu + k_ara, k_gergedanBoynuzgaga + 9 ortam döngüsü (Yellowstone gündüz ilk kayıt -53 LUFS'tü, yeniden
+  üretildi). assets 881. Testler: /tmp/claude-0/kr/ek1.js (H=<id> GUN=1), dayanıklılık 100/100, bot, menu-tara Amazon ve Yellowstone
+  (/tmp/claude-0/ek-<id>.json) iki kipte sorun 0, görüntüler scratchpad ek-goruntu.cjs (/tmp/claude-0/ek-kayit.json). Telefonda doğrulanmadı.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

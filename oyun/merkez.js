@@ -9,7 +9,7 @@ import * as E from './ekosistem.js';
 import * as K from './kesif.js';
 import * as G from './genisleme.js';
 import * as S from './su.js';
-import { KUCUKLER, KUTUP_KUCUKLERI, ANTARKTIKA_KUCUKLERI, AVUSTRALYA_KUCUKLERI, HINDISTAN_KUCUKLERI, MOGOL_KUCUKLERI } from './kucukler.js';
+import { KUCUKLER, ekHaritaKucukleri, KUTUP_KUCUKLERI, ANTARKTIKA_KUCUKLERI, AVUSTRALYA_KUCUKLERI, HINDISTAN_KUCUKLERI, MOGOL_KUCUKLERI } from './kucukler.js';
 
 const lira = (n) => `${Math.round(n).toLocaleString('tr-TR')} lira`;
 export const liraSozu = lira;
@@ -251,7 +251,7 @@ export const ARASTIRMALAR = [
     id: 'kutupFaunasi',
     ad: 'Grönland kıyısının memelileri',
     kosulMetni: 'Kuzey Kutbu\'nda 9 büyük türü kaydet ve kutup türlerinden 6 bireyi tanımla',
-    ilerleme: (k) => [Math.min(9, KUTUP_SIRASI.filter((t) => k.arsiv.turler[t]).length) + Math.min(6, k.hayvanlar.filter((b) => b.no > 0 && TURLER[b.tur] && TURLER[b.tur].kutup && !TURLER[b.tur].guney && !TURLER[b.tur].avustralya && !TURLER[b.tur].hindistan && !TURLER[b.tur].mogol).length), 15],
+    ilerleme: (k) => [Math.min(9, KUTUP_SIRASI.filter((t) => k.arsiv.turler[t]).length) + Math.min(6, k.hayvanlar.filter((b) => b.no > 0 && TURLER[b.tur] && TURLER[b.tur].kutup && !TURLER[b.tur].guney && !TURLER[b.tur].avustralya && !TURLER[b.tur].hindistan && !TURLER[b.tur].mogol && !TURLER[b.tur].harita).length), 15],
     odul: { itibar: 15, fon: 6000 },
     sonuc: 'Kıyının memeli topluluğu belgelendi: deniz buzuna bağlı türler (kutup ayısı, halkalı fok, mors) ile tundra türleri (ren geyiği, misk öküzü, kurt, tilki, tavşan) birbirine besin zinciriyle bağlı. Fok azalırsa ayılar karaya, kuş yuvalarına yöneliyor.',
   },
@@ -283,7 +283,7 @@ export const ARASTIRMALAR = [
     id: 'tundraYazi',
     ad: 'Kısa tundra yazı',
     kosulMetni: '6 kutup bitkisini incele ve 10 kutup küçük canlısını bul',
-    ilerleme: (k) => [Math.min(6, E.BITKI_SIRASI.filter((id) => E.BITKILER[id].kutup && !E.BITKILER[id].guney && !E.BITKILER[id].avustralya && !E.BITKILER[id].hindistan && !E.BITKILER[id].mogol && (k.arsiv.bitkiler || {})[id]).length) + Math.min(10, KUTUP_KUCUKLERI.filter((id) => (k.arsiv.kucukler || {})[id]).length), 16],
+    ilerleme: (k) => [Math.min(6, E.BITKI_SIRASI.filter((id) => E.BITKILER[id].kutup && !E.BITKILER[id].guney && !E.BITKILER[id].avustralya && !E.BITKILER[id].hindistan && !E.BITKILER[id].mogol && !E.BITKILER[id].harita && (k.arsiv.bitkiler || {})[id]).length) + Math.min(10, KUTUP_KUCUKLERI.filter((id) => (k.arsiv.kucukler || {})[id]).length), 16],
     odul: { itibar: 14, fon: 5000 },
     sonuc: 'Tundranın bütün yaşamının birkaç haftalık yaza sıkıştığı gösterildi: bitkiler kar kalkar kalkmaz çiçek açıyor, kuşlar gece yarısı güneşinde yavrularını büyütüyor, lemmingler kar altında kışı geçiriyor.',
   },
@@ -365,6 +365,65 @@ export const ARASTIRMALAR = [
     odul: { itibar: 14, fon: 5000 },
     sonuc: 'Ormanın yaşamının musona göre atıldığı belgelendi: sal tohumları muson başında düşüp hemen çimleniyor, ateş böcekleri muson öncesi gecelerde parlıyor, kavurucu yazda bütün hayvanlar mahua çiçeklerine ve göle toplanıyor.',
   },
+  // Yeni haritaların araştırmaları (15 Kasım 2026): her haritada fauna, davranış ve ekoloji
+  ...[
+    ['amazon', 'amazonFaunasi', 'Amazon\'un büyük hayvanları', 'Amazon\'da', 'Várzea ormanının büyük hayvan topluluğu belgelendi: jaguar en üst yırtıcı, kaymanlar ve dev su samurları suyun avcıları; tapir ve pekariler tohum yayıyor. Sel mevsiminde balıkların ormana girip meyve yediği, ağaçların tohumlarını balıkların taşıdığı görüldü.'],
+    ['yellowstone', 'yellowstoneFaunasi', 'Kurtlar ve Yellowstone\'un büyük hayvanları', 'Yellowstone\'da', 'Kurtların 1995\'te geri getirilmesinden sonraki zincirleme etki belgelendi: kurtlar wapiti sayısını azalttı ve onları nehir kıyılarından uzak tuttu; kıyıda söğüt ve kavak yeniden büyüdü, kunduzlar ve kuşlar geri geldi. Ayılar, kuzgunlar ve kartallar kurtların bıraktığı leşlerle besleniyor.'],
+    ['borneo', 'borneoFaunasi', 'Borneo ormanının büyük hayvanları', 'Borneo\'da', 'Kinabatangan kıyısındaki orman şeridinin ne kadar çok türü taşıdığı belgelendi: orangutanlar, hortumlu maymunlar, cüce filler ve bulutlu leoparlar aynı dar ormanda yaşıyor. Yağ palmiyesi tarlaları ormanı böldükçe filler ve orangutanlar nehir boyunca kalan şeride sıkışıyor.'],
+    ['madagaskar', 'madagaskarFaunasi', 'Madagaskar\'ın eşsiz hayvanları', 'Madagaskar\'da', 'Adanın hayvanlarının dünyanın başka hiçbir yerinde olmadığı belgelendi: lemurlar, fossa ve tenrekler milyonlarca yıl önce adaya gelen birkaç atadan çeşitlenmiş. Ormanlar kesildikçe bu türlerin çoğu tehlikede; radyal kaplumbağa ve ay-ay en kırılganları.'],
+  ].map(([h, id, ad, yer, sonuc]) => ({
+    id,
+    ad,
+    kosulMetni: `${yer} 5 büyük türü kaydet ve oradaki türlerden 4 bireyi tanımla`,
+    ilerleme: (k) => [Math.min(5, Object.keys(TURLER).filter((t) => TURLER[t].harita === h && k.arsiv.turler[t]).length) + Math.min(4, k.hayvanlar.filter((b) => b.no > 0 && TURLER[b.tur] && TURLER[b.tur].harita === h).length), 9],
+    odul: { itibar: 18, fon: 8000 },
+    sonuc,
+  })),
+  {
+    id: 'amazonDavranislari',
+    ad: 'Sel ormanında yaşam',
+    kosulMetni: 'Dört davranışı gözle: uluyan maymunların sabah korosu, pembe yunusun avı, ara papağanlarının kil yalağı yerine tapirin ya da pekarinin kil yemesi, dev su samurunun balık avı',
+    ilerleme: (k) => [[['uluyanMaymun', 'sabahKorosu'], ['pembeYunus', 'balikAvliyor'], ['tapir', 'kilYalagiYiyor'], ['devSuSamuru', 'balikAvliyor']].filter(([t, dv]) => davranisVar(k, t, dv)).length + (davranisVar(k, 'pekari', 'kilYalagiYiyor') && !davranisVar(k, 'tapir', 'kilYalagiYiyor') ? 1 : 0), 4],
+    odul: { itibar: 16, fon: 5000 },
+    sonuc: 'Ormanın sesleri ve tuzu belgelendi: uluyan maymunlar şafakta kilometrelerce duyulan korolarla bölgelerini duyuruyor; tapirler ve pekariler kil yalağında yediklerinin zehrini nötrleştiren ve eksik tuzu tamamlayan kili yiyor.',
+  },
+  {
+    id: 'yellowstoneDavranislari',
+    ad: 'Kurt sürüsü ve kış',
+    kosulMetni: 'Dört davranışı gözle: kurtların ulumalı korosu, bozayının kazıp beslenmesi, bizonun kar süpürmesi ve wapitinin böğürmesi',
+    ilerleme: (k) => [[['griKurt', 'ulumaKorosu'], ['bozAyi', 'kokEseliyor'], ['bizon', 'karSupuruyor'], ['wapiti', 'bogurme']].filter(([t, dv]) => davranisVar(k, t, dv)).length, 4],
+    odul: { itibar: 16, fon: 5000 },
+    sonuc: 'Yellowstone hayvanlarının kışa ve birbirine uyumu belgelendi: bizonlar başlarıyla karı süpürüp altındaki otu buluyor, wapiti erkekleri sonbaharda böğürerek harem topluyor, kurtlar uluyarak sürüyü bir araya çağırıyor.',
+  },
+  {
+    id: 'borneoDavranislari',
+    ad: 'Nehir şeridinin hayvanları',
+    kosulMetni: 'Dört davranışı gözle: orangutanın yuva yapması, hortumlu maymunların nehri geçmesi, güneş ayısının bal araması ve sakallı domuzun toprağı eşeleyerek kök araması',
+    ilerleme: (k) => [[['orangutan', 'yuvaYapiyor'], ['hortumluMaymun', 'nehriGeciyor'], ['gunesAyisi', 'balAriyor'], ['sakalliDomuz', 'kokEseliyor']].filter(([t, dv]) => davranisVar(k, t, dv)).length, 4],
+    odul: { itibar: 16, fon: 5000 },
+    sonuc: 'Borneo hayvanlarının ustalıkları belgelendi: orangutanlar her akşam dallardan yeni bir yuva örüyor, hortumlu maymunlar nehrin en dar yerinden suya atlayıp yüzüyor, güneş ayıları uzun dilleriyle ağaç kovuğundaki balı ve arı larvalarını çıkarıyor.',
+  },
+  {
+    id: 'madagaskarDavranislari',
+    ad: 'Lemurların günlük yaşamı',
+    kosulMetni: 'Dört davranışı gözle: halka kuyruklu lemurların güneşlenmesi ve koku düelloları, sifakanın dans ederek sekmesi, ay-ayın ağaca tıklaması',
+    ilerleme: (k) => [[['halkaKuyruk', 'guneseTapiyor'], ['halkaKuyruk', 'kokuDovusu'], ['sifaka', 'danslaSekiyor'], ['ayAy', 'tikirdatiyor']].filter(([t, dv]) => davranisVar(k, t, dv)).length, 4],
+    odul: { itibar: 16, fon: 5000 },
+    sonuc: 'Lemurların davranışları belgelendi: halka kuyruklu lemurlar sabah karınlarını güneşe açıp ısınıyor, erkekler kuyruklarını bileklerindeki koku bezlerine sürüp sallayarak düello ediyor; sifakalar yerde yan yan sekiyor; ay-ay ağacı parmağıyla tıklayıp yankıyla kurtları buluyor.',
+  },
+  ...[
+    ['amazon', 'amazonEkolojisi', 'Sel ormanının bitkileri ve küçük canlıları', 'Amazon'],
+    ['yellowstone', 'yellowstoneEkolojisi', 'Vadinin bitkileri ve küçük canlıları', 'Yellowstone'],
+    ['borneo', 'borneoEkolojisi', 'Borneo ormanının bitkileri ve küçük canlıları', 'Borneo'],
+    ['madagaskar', 'madagaskarEkolojisi', 'Madagaskar ormanlarının bitkileri ve küçük canlıları', 'Madagaskar'],
+  ].map(([h, id, ad, yer]) => ({
+    id,
+    ad,
+    kosulMetni: `2 ${yer} bitkisini incele ve 6 ${yer} küçük canlısını bul`,
+    ilerleme: (k) => [Math.min(2, E.BITKI_SIRASI.filter((b) => E.BITKILER[b].harita === h && (k.arsiv.bitkiler || {})[b]).length) + Math.min(6, ekHaritaKucukleri(h).filter((c) => (k.arsiv.kucukler || {})[c]).length), 8],
+    odul: { itibar: 15, fon: 5000 },
+    sonuc: `${yer} ekosisteminin daha küçük canlıları ve bitkileri kayda geçti; büyük hayvanların hepsinin bu bitkilere ve küçük canlılara bağlı yaşadığı görüldü.`,
+  })),
   // Avustralya çalılığı araştırmaları
   {
     id: 'avustralyaFaunasi',

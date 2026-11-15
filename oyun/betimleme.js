@@ -164,6 +164,8 @@ function kutupZemin(d) {
   const karli = mev === 'kis' || mev === 'ilkbahar' || (mev === 'sonbahar' && Kt.kutupTakvim(M.gunNo(k.dk)).mevsimGunu > 2);
   const tundra = karli ? 'karla örtülü, rüzgârın sertleştirdiği bir kar yüzeyi; yer yer taşlar çıkıyor' : 'yosun, liken ve cüce söğütlerle kaplı taşlık bir tundra; aralarda kutup çiçekleri';
   const mgKar = mev === 'kis';
+  const EH = Kt.ekHarita(o);
+  if (EH) return EH.zemin(b, mev, M.kutupHavasi(k));
   switch (b) {
     case 'mgUs':
       return `Ger kampındasın: keçe kaplı, yuvarlak beyaz çadırlar; ortadakinin bacasından duman tütüyor. Yanında güneş paneli ve bir rüzgâr türbini${mgKar ? ', her şey karla örtülü' : ''}.`;
@@ -251,6 +253,7 @@ function kutupOn(d) {
     const x = o.x + Math.sin(o.yon) * m;
     const y = o.y + Math.cos(o.yon) * m;
     const yz = Kt.yuzey(x, y, k.dk);
+    if (yz === 'su' && simdi !== 'su' && Kt.ekHarita(o)) return `Önünde, ${M.metreSozu(m)} ileride su var (${Kt.ekHarita(o).suAdi.toLocaleLowerCase('tr')}).`;
     if (yz === 'su' && simdi !== 'su') return Kt.mogolMu(o) ? `Önünde, ${M.metreSozu(m)} ileride pınarın suyu var.` : Kt.hindistanMi(o) ? `Önünde, ${M.metreSozu(m)} ileride gölün suyu var.` : Kt.avustralyaMi(o) ? `Önünde, ${M.metreSozu(m)} ileride billabongun suyu var.` : `Önünde, ${M.metreSozu(m)} ileride açık su var; buzun kenarı.`;
     if (yz === 'buz' && simdi === 'kara') return `Önünde, ${M.metreSozu(m)} ileride kıyı bitiyor, deniz buzu başlıyor.`;
     const MK = Kt.harita(o).MERKEZ;
@@ -281,6 +284,11 @@ function kutupSes(d) {
   const ortam = [];
   const h = M.kutupHavasi(k);
   const su = Kt.enYakinSu(o.x, o.y, k.dk);
+  const EH = Kt.ekHarita(o);
+  if (EH) {
+    ortam.push(...EH.sesler(M.evreSimdi(k), M.kutupMevsimi(k), M.mesafe(o, su) < 60, h));
+    return `Duyduğun sesler: ${[...parca, ...ortam].join(', ')}.`;
+  }
   if (Kt.mogolMu(o)) {
     ortam.push(Kt.tipideMi(h, k.dk) ? 'buranın uğultusu' : M.evreSimdi(k) === 'gece' ? 'rüzgârın otlardaki hışırtısı ve derin bir sessizlik' : M.kutupMevsimi(k) === 'kis' ? 'rüzgârın karın üstündeki ıslığı' : 'tarlakuşlarının şarkısı ve rüzgârın otlardaki hışırtısı');
     if (M.mesafe(o, su) < 60 && M.kutupMevsimi(k) !== 'kis') ortam.push('pınarın şırıltısı ve sazlıktaki kuşlar');

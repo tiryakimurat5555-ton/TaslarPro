@@ -250,6 +250,29 @@ function kutupOrtami(d) {
     if (guc > 1) for (const a of Object.keys(h)) h[a] /= Math.sqrt(guc);
     return h;
   }
+  const EH = Kt.ekHarita(o);
+  if (EH) {
+    // Yeni haritalar: gündüz/gece ortamı; su yaklaştıkça su kıyısı katmanı; Yellowstone'da sıcak kaynaklar ve karlı kış; yağmurda yağmur
+    const su = EH.enYakinSu(o.x, o.y, k.dk);
+    const ws = 0.8 * (EH.yuzey(o.x, o.y, k.dk) === 'su' ? 1 : yakin(Math.hypot(su.x - o.x, su.y - o.y), 70));
+    if (ws > 0.01) h.ortam_billabong = ws;
+    let baskin = ws;
+    if (EH.YS_GAYZER) {
+      const l = Kt.yerel(o);
+      const wg = 0.9 * yakin(Math.hypot(l.x - EH.YS_GAYZER.lx, l.y - EH.YS_GAYZER.ly) - EH.YS_GAYZER.r * 0.5, 70);
+      if (wg > 0.01) h.ortam_gayzer = wg;
+      baskin = Math.max(baskin, wg);
+    }
+    const hv = M.kutupHavasi(k);
+    if (hv && (hv.tur === 'yagmurlu' || hv.tur === 'saganak')) h.ortam_yagmur = 0.8;
+    const kis = EH.kar && M.kutupMevsimi(k) === 'kis';
+    if (kis) h.ortam_kutup = 0.45;
+    const ev = M.evreSimdi(k);
+    h[`ortam_${EH.ad}_${ev === 'gece' || ev === 'aksam' ? 'gece' : 'gunduz'}`] = Math.max(0.25, 1 - 0.7 * baskin) * (h.ortam_yagmur ? 0.55 : 1) * (kis ? 0.7 : 1);
+    const guc = Object.values(h).reduce((t, v) => t + v * v, 0);
+    if (guc > 1) for (const a of Object.keys(h)) h[a] /= Math.sqrt(guc);
+    return h;
+  }
   if (Kt.hindistanMi(o)) {
     // Hindistan ormanı: gündüz kuşlar ve böcekler, gece cırcırlar; göl yaklaştıkça göl katmanı, yağmurda yağmur
     const su = Kt.enYakinSu(o.x, o.y, k.dk);
@@ -459,7 +482,18 @@ const zamanKisa = (dk) => `${M.gunNo(dk)}. gün ${M.saatMetni(dk)}`;
 const kucuk = (s) => s.toLocaleLowerCase('tr-TR');
 
 // ---------------- Yenilikler (en yeniler üstte): Murat denerken neyin nerede olduğunu bulsun diye ----------------
+// Saha gezileri menüsünde yeni haritaların kısa tarifleri (uzun basınca okunur)
+const EK_GEZI_TARIF = {
+  amazon: 'Brezilya\'da, Amazon havzasında serbestçe dolaşılan ayrı bir harita: jaguar, tapir, kapibara, pekari, uluyan maymun, pembe nehir yunusu, kara kayman ve dev su samuru. Kuzeyde kara su nehri, güneyde her yıl su basan várzea ormanı ve selin ulaşmadığı terra firme; mevsimleri suyun yüksekliği belirler.',
+  yellowstone: 'ABD\'de, Yellowstone\'un Lamar Vadisi\'nde serbestçe dolaşılan ayrı bir harita: boz ayı, gri kurt, bizon, wapiti, sığın, çatal boynuzlu antilop, puma ve çakal kurdu. Ortadan sığ bir nehir geçer, kuzeyde çam ormanı ve kayalık sırt, güneydoğuda buharı tüten sıcak kaynaklar; kışı çok sert ve karlıdır.',
+  borneo: 'Malezya\'da, Borneo adasının Kinabatangan Nehri kıyısında serbestçe dolaşılan ayrı bir harita: orangutan, hortumlu maymun, Borneo cüce fili, bulutlu leopar, güneş ayısı, sakallı domuz ve tuzlu su timsahı. Nehir kıyısı ormanı, dev ağaçlı yağmur ormanı, oksbov gölü ve kireçtaşı tepesi.',
+  madagaskar: 'Madagaskar\'ın güneybatısında serbestçe dolaşılan ayrı bir harita: halka kuyruklu lemur, sifaka, kızıl alınlı lemur, ay-ay, fossa, radyal kaplumbağa ve çalı domuzu. Galeri ormanı, dikenli orman ve baobab düzlüğü; hayvanların neredeyse hepsi dünyada yalnız burada yaşar.',
+};
 const YENILIKLER = [
+  { baslik: 'Yeni harita: Madagaskar', metin: 'Madagaskar\'ın güneybatısında, savandan ayrı, serbestçe dolaşılan yeni bir harita. Halka kuyruklu lemur, beyaz sifaka, kızıl alınlı lemur, gece ağaçlara tıklayan ay-ay, adanın tek büyük yırtıcısı fossa, sarı ışınlı radyal kaplumbağa ve çalı domuzu yaşıyor. Galeri ormanı, dünyada yalnız burada yetişen dikenli Didierea ormanı ve dev baobablar. Lemurlar sabah güneşlenir, erkekler kuyruklarıyla koku düellosu yapar, sifakalar yerde yan yan sekerek dans eder; fossa yaklaşınca lemurlar alarm verir. 10 küçük canlı (bukalemun, fare lemuru, tenrek, zürafa boyunlu böcek), 3 bitki ve üç araştırma var. İtibarın 95 olunca açılır.', nerede: 'Araştırma merkezi, Saha gezileri: Madagaskar, yola çık. Yardım, Yeni haritalar.' },
+  { baslik: 'Yeni harita: Borneo yağmur ormanı', metin: 'Malezya\'da, Borneo adasının Kinabatangan Nehri kıyısında yeni bir harita. Orangutan, büyük burunlu hortumlu maymun, Borneo cüce fili, bulutlu leopar, dünyanın en küçük ayısı güneş ayısı, sakallı domuz ve tuzlu su timsahı yaşıyor. Orangutanlar her akşam dallardan yuva yapar, hortumlu maymunlar nehri yüzerek geçer, güneş ayıları ağaç kovuğunda bal arar. Kuzeydoğu musonunda nehir taşar. 10 küçük canlı (gibon, gergedan boynuzgagası, uçan ejder kertenkelesi, senkron ateş böcekleri), 2 bitki ve üç araştırma var. İtibarın 90 olunca açılır.', nerede: 'Araştırma merkezi, Saha gezileri: Borneo yağmur ormanı, yola çık. Yardım, Yeni haritalar.' },
+  { baslik: 'Yeni harita: Yellowstone', metin: 'ABD\'de, Yellowstone\'un Lamar Vadisi\'nde yeni bir harita. Boz ayı, gri kurt, bizon, wapiti, sığın, çatal boynuzlu antilop, puma ve çakal kurdu yaşıyor. Ortadan yürüyerek geçilebilen sığ bir nehir akar; kuzeyde çam ormanı ve kayalık sırt, güneydoğuda buharı tüten, renkli sıcak su kaynakları var. Kışı çok sert: vadi karla örtülür, ayılar inlerinde uyur, bizonlar başlarıyla karı süpürür ve sıcak kaynaklarda ısınır, kurt ulumaları vadide yankılanır. Sıcak kaynakların kendi sesi var. 10 küçük canlı (kunduz, ak başlı kartal, kuzgun, pika), 2 bitki ve üç araştırma var. İtibarın 85 olunca açılır.', nerede: 'Araştırma merkezi, Saha gezileri: Yellowstone, yola çık. Yardım, Yeni haritalar.' },
+  { baslik: 'Yeni harita: Amazon yağmur ormanı', metin: 'Brezilya\'da, Amazon havzasında yeni bir harita. Jaguar, tapir, kapibara, pekari, uluyan maymun, pembe nehir yunusu, kara kayman ve dev su samuru yaşıyor; her birinin kendi sesi var. Mevsimleri suyun yüksekliği belirler: sel mevsiminde nehir várzea ormanının içine kadar yükselir, kurak dönemde çekilir. Uluyan maymunlar şafakta kilometrelerce duyulan bir koroyla bağırır, tapirler gece kil yalağına gelir, pembe yunuslar nehirde balık avlar. 11 küçük canlı (ara papağanı, tukan, hoatzin, tembel hayvan, anakonda, piranha), 2 bitki ve üç araştırma var. İtibarın 80 olunca açılır.', nerede: 'Araştırma merkezi, Saha gezileri: Amazon yağmur ormanı, yola çık. Yardım, Yeni haritalar.' },
   { baslik: 'Savana yeni hayvanlar', metin: 'Doğu Afrika savanında gerçekten yaşayan sekiz büyük hayvan daha eklendi; her birinin kendi sesi var: devekuşu (artık küçük canlı değil, sürüsüyle dolaşan bir tür), dünyanın en büyük antilobu eland, kızıl postlu topi, uzun yüzlü kongoni, nehir kıyısından ayrılmayan su antilobu, Grant ceylanı, kara püsküllü kulaklarıyla karakulak (gece avlanan bir yaban kedisi) ve uzun düz boynuzlu, nesli tehlikedeki beisa oriksi. Devekuşları ve kongoniler güney ovasında, eland kuzeybatı otlaklarında, topi kuzey otlaklarında, Grant ceylanları akasyalığın doğusunda, karakulak sık çalılıkta, oriksler batıdaki kurak düzlükte yaşar.', nerede: 'sahada; Arşiv, Türler. Dürbünle gözle, tür sayfasında Kırmızı Liste durumu.' },
   { baslik: 'Kuzey Kutbu\'na yeni hayvanlar', metin: 'Kuzey Kutbu\'nda gerçekten yaşayan dört büyük hayvan daha eklendi: iki yüz yılı aşkın yaşayabilen Grönland balinası, sürü hâlinde gezen Grönland foku, erkeği burnundan kırmızı bir balon şişiren kapüşonlu fok ve derin karda bile avlanan, leş arayan kutup porsuğu (vulverin). 11 yeni küçük canlı (puffin, fildişi martı, ak yanaklı kaz, kırmızı boğazlı dalgıç, Grönland köpekbalığı, deniz meleği, Arktik yer sincabı ve başkaları). Dalgıcın ve kazların sesi de var.', nerede: 'Kuzey Kutbu haritası. Yardım > Kuzey Kutbu.' },
   { baslik: 'Antarktika\'ya yeni hayvanlar', metin: 'Adélie Kıyısı\'nda ve çevresindeki denizde gerçekten yaşayan altı büyük hayvan daha eklendi: dünyanın en kalabalık foku olan yengeçyiyen fok, iri gözlü ve nadir Ross foku, kayalık kıyıya çıkan kürklü fok ve yazın buz kenarına gelen minke, kambur ve mavi balinalar. Balinalar kışın kuzeydeki açık denize çekilir; kambur balinalar kabarcık ağı örerek avlanır. 11 yeni küçük canlı (petreller, sumrular, göçmen kutup sumrusu, albatros, buz krili, deniz örümceği, dişbalığı ve başkaları). Kar petrelinin sesi de var.', nerede: 'Antarktika haritası. Yardım > Antarktika.' },
@@ -713,6 +747,18 @@ const YARDIM = [
       'Hayvanlar: Bengal kaplanı, Hint leoparı, tembel ayı, Hint yaban köpeği, çizgili sırtlan, altın çakal, Hint fili, gaur, benekli geyik, sambar, barasingha, nilgay, muntjak, dört boynuzlu antilop, yaban domuzu, gri langur ve rhesus makağı. Leopar gündüzü kayalık yaylada geçirir, kaplandan uzak durur. Tembel ayı gece termit yuvalarını yarıp termitleri gürültüyle emer; ürkünce saldırabilir. Yaban köpekleri gündüz kalabalık sürüyle avlanır, ıslıkla haberleşir. Barasingha erkekleri kış başında çayırda böğürür. Kaplan tek başına dolaşır, sıcakta göle girer, ağaçlara pençe atıp bölgesini işaretler. Langurlar ağaçlarda beslenir, düşürdükleri yaprakları altlarındaki geyikler toplar. Sambar geceleri göle girip su bitkisi yer. Kaplan, leopar, tembel ayı, fil, gaur ve yaban domuzu tehlikelidir.',
       'Kaplanı bulmanın en iyi yolu alarm sesleri: kaplan ya da leopar 45 metreye yaklaşınca benekli geyikler tiz havlar, muntjak köpek gibi havlar, langurlar ve rhesuslar yüksek sesle bağırır. Sesin geldiği yön kaplanın yönüdür; Kulak ver aleti de yardım eder.',
       'Küçük canlılar (tavus kuşu, yaban tavuğu, koel, boynuzgaga, yılan kartalı, drongo, cennet sinekkapanı, arıkuşu, akbaba, bataklık timsahı, piton, kobra, varan, dev sincap, mangust, pangolin, uçan tilki, boğa kurbağası, ağustos böceği, Atlas güvesi ve başkaları; 34 tür), 3 bitki, merkezde üç Hindistan araştırması ve bir gizem var. Dönüş: ana menüde ve Yerler listesinde Savana dön satırı.',
+    ],
+  },
+  {
+    id: 'ekHaritalar',
+    baslik: 'Yeni haritalar: Amazon, Yellowstone, Borneo, Madagaskar',
+    satirlar: [
+      'Dört yeni harita Araştırma merkezi, Saha gezileri bölümünde: Amazon yağmur ormanı (itibar 80, 4.000 lira), Yellowstone (85, 4.200), Borneo yağmur ormanı (90, 4.400) ve Madagaskar (95, 4.600). Yola savandaki istasyondan çıkılır; yolculuk 6-6,5 oyun saati sürer. Hepsi savandan ayrı, serbestçe dolaşılan haritalardır; araç yoktur, yürüyerek araştırırsın.',
+      'Amazon: kuzeyde kara su nehri, güneyinde her yıl su basan várzea ormanı, daha güneyde selin ulaşmadığı terra firme. Batıda cocha gölü, doğuda kil yalağı. Mevsimler suyun yüksekliğine göre: yüksek su (sel), çekilen su, alçak su, yükselen su. Sel mevsiminde nehir ormana yayılır; nehir ve göl girilmez, kaymanlara dikkat.',
+      'Yellowstone: ortadan sığ, çakıllı Lamar Nehri geçer, yürüyerek geçilebilir. Kuzeyde çam ormanı ve kayalık sırt (puma burada), güneybatıda göl, güneydoğuda sıcak su kaynakları. Kışın vadi karla örtülür, göl donar, boz ayılar kış uykusundadır. Kurtlara ve boz ayıya yaklaşma.',
+      'Borneo: kuzeyde geniş, bulanık Kinabatangan Nehri, kıyısında nehir ormanı, güneyde dev ağaçlı ova yağmur ormanı, batıda oksbov gölü, güneydoğuda kireçtaşı tepesi, güney ucunda yağ palmiyesi tarlası kenarı. Kuzeydoğu musonunda nehir taşar. Orangutanı ve maymunları ağaçların tepesinde ara.',
+      'Madagaskar: ortadan mevsimlik bir nehir yatağı geçer (yağışlı mevsimde kısa süre akar). Kuzeyde galeri ormanı ve tek kalıcı su birikintisi, güneyde dikenli orman, güneybatıda baobab düzlüğü. Lemurlar sabahları güneşlenir; fossa yaklaşınca alarm verirler.',
+      'Her haritanın Doğa menüsünde kendi raporu, bitkileri ve küçük canlıları var; merkezde her harita için üç araştırma (büyük hayvanlar, davranışlar, bitkiler ve küçük canlılar) açılır. Dönüş: ana menüde ve Yerler listesinde Savana dön satırı; yolculuk istasyonun önünden başlar.',
     ],
   },
   {
@@ -1897,12 +1943,12 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     const kutupDonSatiri = () => ({
       id: 'kutupDon',
       etiket: K.kulubedeMi(d)
-        ? `Savana dön: yolculuk ${String((M.oyuncuMogolda(k) ? K.MOGOL_GEZI : M.oyuncuHindistanda(k) ? K.HINDISTAN_GEZI : M.oyuncuAvustralyada(k) ? K.AVUSTRALYA_GEZI : M.oyuncuGuneyde(k) ? K.ANTARKTIKA_GEZI : K.KUTUP_GEZI).donus / 60).replace('.', ',')} saat`
-        : M.oyuncuMogolda(k) ? `Ger kampına git, oradan savana dönülür: ${yerTarifi(K.MG_KAPI)}` : M.oyuncuHindistanda(k) ? `Dinlenme evine git, oradan savana dönülür: ${yerTarifi(K.HN_KAPI)}` : M.oyuncuAvustralyada(k) ? `İstasyona git, oradan savana dönülür: ${yerTarifi(K.AV_KAPI)}` : M.oyuncuGuneyde(k) ? `Üsse git, oradan savana dönülür: ${yerTarifi(K.US_KAPI)}` : `Kulübeye git, oradan savana dönülür: ${yerTarifi(K.KULUBE_KAPI)}`,
+        ? `Savana dön: yolculuk ${String((M.oyuncuEkHaritada(k) ? M.oyuncuEkHaritasi(k).gezi : M.oyuncuMogolda(k) ? K.MOGOL_GEZI : M.oyuncuHindistanda(k) ? K.HINDISTAN_GEZI : M.oyuncuAvustralyada(k) ? K.AVUSTRALYA_GEZI : M.oyuncuGuneyde(k) ? K.ANTARKTIKA_GEZI : K.KUTUP_GEZI).donus / 60).replace('.', ',')} saat`
+        : M.oyuncuEkHaritada(k) ? `${M.oyuncuEkHaritasi(k).istAd} yönüne git, oradan savana dönülür: ${yerTarifi(K.donusKapisi(d))}` : M.oyuncuMogolda(k) ? `Ger kampına git, oradan savana dönülür: ${yerTarifi(K.MG_KAPI)}` : M.oyuncuHindistanda(k) ? `Dinlenme evine git, oradan savana dönülür: ${yerTarifi(K.HN_KAPI)}` : M.oyuncuAvustralyada(k) ? `İstasyona git, oradan savana dönülür: ${yerTarifi(K.AV_KAPI)}` : M.oyuncuGuneyde(k) ? `Üsse git, oradan savana dönülür: ${yerTarifi(K.US_KAPI)}` : `Kulübeye git, oradan savana dönülür: ${yerTarifi(K.KULUBE_KAPI)}`,
       sec: () => {
         if (!K.kulubedeMi(d)) {
           menu.kapat();
-          M.yerGit(d, M.oyuncuMogolda(k) ? 'm_ger' : M.oyuncuHindistanda(k) ? 'h_ev' : M.oyuncuAvustralyada(k) ? 'v_istasyon' : M.oyuncuGuneyde(k) ? 'a_us' : 'k_kulube');
+          M.yerGit(d, M.oyuncuEkHaritada(k) ? M.oyuncuEkHaritasi(k).istYer : M.oyuncuMogolda(k) ? 'm_ger' : M.oyuncuHindistanda(k) ? 'h_ev' : M.oyuncuAvustralyada(k) ? 'v_istasyon' : M.oyuncuGuneyde(k) ? 'a_us' : 'k_kulube');
           return 'sessiz';
         }
         const h = K.kutuptanHazirla(d);
@@ -1915,6 +1961,11 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         const avus = M.oyuncuAvustralyada(k);
         const hind = M.oyuncuHindistanda(k);
         const mog = M.oyuncuMogolda(k);
+        const EH = M.oyuncuEkHaritasi(k);
+        if (EH) {
+          dinlenBaslat(k.dk + EH.gezi.donus, { metin: EH.donus, bitince: () => K.kutuptanDon(d) });
+          return 'sessiz';
+        }
         dinlenBaslat(k.dk + (mog ? K.MOGOL_GEZI : hind ? K.HINDISTAN_GEZI : avus ? K.AVUSTRALYA_GEZI : guney ? K.ANTARKTIKA_GEZI : K.KUTUP_GEZI).donus, { metin: mog ? 'Arazi aracı bozkırda saatlerce yol aldı; havaalanından savandaki istasyona dönüyorsun.' : hind ? 'Cip ormandan çıktı; havaalanından savandaki istasyona dönüyorsun.' : avus ? 'Küçük uçak istasyonun yanındaki toprak pistten kalktı; savandaki istasyona dönüyorsun.' : guney ? 'Uçak üssün yanındaki buz pistinden kalktı; savandaki istasyona dönüyorsun.' : 'Uçak kulübenin yanındaki pistten kalktı; savandaki istasyona dönüyorsun.', bitince: () => K.kutuptanDon(d) });
         return 'sessiz';
       },
@@ -2117,7 +2168,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     }
     if (u === 'doga' && M.oyuncuKutupta(k)) {
       const ogeler = [
-        altMenu('kutupEko', `${M.oyuncuMogolda(k) ? 'Bozkır raporu' : M.oyuncuHindistanda(k) ? 'Orman raporu' : M.oyuncuAvustralyada(k) ? 'Çalılık raporu' : 'Kutup raporu'}: ${Kt.MEVSIM_ADI[M.kutupMevsimi(k)]}, ${Kt.havaSozu(M.kutupHavasi(k), k.dk).split(',')[0].toLocaleLowerCase('tr-TR')}`, menu.ac),
+        altMenu('kutupEko', `${M.oyuncuEkHaritada(k) ? M.oyuncuEkHaritasi(k).raporAdi : M.oyuncuMogolda(k) ? 'Bozkır raporu' : M.oyuncuHindistanda(k) ? 'Orman raporu' : M.oyuncuAvustralyada(k) ? 'Çalılık raporu' : 'Kutup raporu'}: ${Kt.MEVSIM_ADI[M.kutupMevsimi(k)]}, ${Kt.havaSozu(M.kutupHavasi(k), k.dk).split(',')[0].toLocaleLowerCase('tr-TR')}`, menu.ac),
         ...(Kt.yuzey(d.oyuncu.x, d.oyuncu.y, k.dk) === 'buz' ? [{ id: 'buzOlc', etiket: 'Deniz buzunu ölç', ipucu: 'Buz matkabıyla delik açıp buzun kalınlığını ölçersin. Farklı günlerde ve mevsimlerde ölçmek merkezdeki deniz buzu araştırmasını ilerletir.', sec: yap(() => K.buzOlc(d)) }] : []),
         { id: 'ara', etiket: 'Küçük canlı ara', ipucu: 'Kuş, böcek, balık ve küçük memelileri arar.', sec: kapatVe(() => K.kucukAra(d)) },
         { id: 'izAra', etiket: 'İzleri incele', ipucu: 'Karda ve çamurda yakındaki ayak izlerini okur.', sec: yap(() => Iz.izAra(d)) },
@@ -2129,6 +2180,19 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       return liste(u, `Doğa: ${Kt.ETKIN.baslik}`, ogeler);
     }
     if (u === 'kutupEko') {
+      const EH = M.oyuncuEkHaritasi(k);
+      if (EH) {
+        const tk = Kt.kutupTakvim(M.gunNo(k.dk));
+        const sayilar = Object.keys(TURLER).filter((t) => TURLER[t].harita === EH.ad && k.arsiv.turler[t]).map((t) => `${kucuk(M.SOZ[t])} ${k.hayvanlar.filter((b) => !b.olu && b.tur === t).length}`);
+        const ogeler = [
+          bilgi('mev', `${M.BuyukHarf(Kt.MEVSIM_ADI[tk.mevsim])}, ${tk.mevsimGunu}. gün (${tk.uzunluk} günlük mevsim). ${Kt.isikSozu(k.dk)}`),
+          bilgi('hava', Kt.havaSozu(M.kutupHavasi(k), k.dk)),
+          bilgi('su', EH.MEVSIM_MESAJ[tk.mevsim]),
+          bilgi('takvim', `Bu haritanın yılı: 8 gün ${EH.MEVSIM_ADI.yaz}, 4 gün ${EH.MEVSIM_ADI.sonbahar}, 8 gün ${EH.MEVSIM_ADI.kis}, 4 gün ${EH.MEVSIM_ADI.ilkbahar}.`),
+        ];
+        if (sayilar.length) ogeler.push(bilgi('nufus', `Kaydedilen türlerin bölgedeki sayıları: ${sayilar.join(', ')}.`));
+        return liste(u, EH.raporAdi, ogeler);
+      }
       if (M.oyuncuMogolda(k)) {
         const tk = Kt.kutupTakvim(M.gunNo(k.dk));
         const sayilar = MOGOL_SIRASI.filter((t) => k.arsiv.turler[t]).map((t) => `${kucuk(M.SOZ[t])} ${k.hayvanlar.filter((b) => !b.olu && b.tur === t).length}`);
@@ -2840,6 +2904,28 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
               return 'sessiz';
             },
           });
+        // Yeni haritalar (15 Kasım 2026): Amazon, Yellowstone, Borneo, Madagaskar
+        [...Kt.EK_LISTE].reverse().forEach((EH) => {
+          const id = EH.ad;
+          const dur = K.kutupDurumu(k, id);
+          if (dur.acik && !M.oyuncuKutupta(k))
+            ogeler.splice(1, 0, {
+              id: 'git' + id,
+              etiket: `${EH.gezi.ad.split(',')[0]}: yola çık`,
+              ipucu: 'İstasyondan yola çıkılır. Yolda zaman akar; savandaki hayvanlar yaşamaya devam eder.',
+              sec: () => {
+                const h = K.ekHaritaHazirla(d, id);
+                if (h) {
+                  Ses.hemen(h);
+                  return 'sessiz';
+                }
+                menu.kapat();
+                dinlenBaslat(k.dk + EH.gezi.yol, { metin: `${EH.yolculuk} Yol, izin ve konaklama için ${Mz.liraSozu(EH.gezi.ucret)} ödendi.`, bitince: () => K.ekHaritayaVar(d, id) });
+                return 'sessiz';
+              },
+            });
+          ogeler.splice(1, 0, bilgi('b' + id, K.kutupSatiri(k, id), EK_GEZI_TARIF[id]));
+        });
         const durH = K.kutupDurumu(k, 'hindistan');
         ogeler.splice(1, 0, bilgi('bhind', K.kutupSatiri(k, 'hindistan'), 'Orta Hindistan\'da, Kanha ormanında serbestçe dolaşılan ayrı bir harita: Bengal kaplanı, leopar, tembel ayı, yaban köpeği, sırtlan, çakal, Hint fili, gaur, benekli geyik, sambar, barasingha, nilgay, muntjak, dört boynuzlu antilop, yaban domuzu, langur ve rhesus. Ortada geniş bir çayır, doğuda göl, kuzeyde sal ormanı, batıda bambu; mevsimler muson, muson sonrası, serin kış ve kavurucu yaz.'));
         if (durH.acik && !M.oyuncuKutupta(k))

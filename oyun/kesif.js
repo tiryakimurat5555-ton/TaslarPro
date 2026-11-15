@@ -244,9 +244,12 @@ export const HN_KAPI = Kt.HIND.dunya(Kt.HIND.ISTASYON_K.lx, Kt.HIND.ISTASYON_K.l
 export const MOGOL_GEZI = { ad: 'Moğol bozkırı, Hustai', itibar: 75, ucret: 3600, yol: 330, donus: 330 };
 export const MG_KAPI = Kt.MOGOL.dunya(Kt.MOGOL.ISTASYON_K.lx, Kt.MOGOL.ISTASYON_K.ly + 15);
 // guney: false (Kuzey Kutbu), true (Antarktika), 'avustralya', 'hindistan' ya da 'mogol'
-const geziBul = (guney) => (guney === 'mogol' ? MOGOL_GEZI : guney === 'hindistan' ? HINDISTAN_GEZI : guney === 'avustralya' ? AVUSTRALYA_GEZI : guney ? ANTARKTIKA_GEZI : KUTUP_GEZI);
+// Ek haritalar (Amazon, Yellowstone, Borneo, Madagaskar): ayarlar kutup.js'teki harita nesnesinde (H.gezi, H.tanitim, H.istAd...)
+export const EK_KAPI = (id) => { const H = Kt.EK_HARITALAR[id]; return H.dunya(H.ISTASYON_K.lx, H.ISTASYON_K.ly + 15); };
+const geziBul = (guney) => (Kt.EK_HARITALAR[guney] ? Kt.EK_HARITALAR[guney].gezi : guney === 'mogol' ? MOGOL_GEZI : guney === 'hindistan' ? HINDISTAN_GEZI : guney === 'avustralya' ? AVUSTRALYA_GEZI : guney ? ANTARKTIKA_GEZI : KUTUP_GEZI);
 export function kutupDurumu(k, guney = false) {
   const g = geziBul(guney);
+  if (k.itibar < g.itibar && Kt.EK_HARITALAR[guney]) return { acik: false, neden: `${g.ad.split(',')[0]} araştırma iznine bilimsel itibarın henüz yetmiyor.` };
   if (k.itibar < g.itibar) return { acik: false, neden: guney === 'mogol' ? 'Moğolistan araştırma iznine bilimsel itibarın henüz yetmiyor.' : guney === 'hindistan' ? 'Hindistan araştırma iznine bilimsel itibarın henüz yetmiyor.' : guney === 'avustralya' ? 'Avustralya araştırma iznine bilimsel itibarın henüz yetmiyor.' : guney ? 'Antarktika araştırma iznine bilimsel itibarın henüz yetmiyor.' : 'Kutup araştırma iznine bilimsel itibarın henüz yetmiyor.' };
   return { acik: true, neden: '' };
 }
@@ -305,6 +308,27 @@ export function antarktikayaVar(d) {
     ? 'Antarktika\'da, Adélie Kıyısı\'ndaki araştırma üssüne indin. Kuzeyin Güney Okyanusu: yazın açık deniz ve buz parçaları, kışın kıyıya kadar donmuş deniz buzu. Güneyin kıtanın sonsuz buz örtüsü; batıda denize uzanan bir buz sahanlığı, doğuda Adélie penguenlerinin yuva yaptığı kayalık bir burun. İmparator penguenler kışın deniz buzunun üstünde ürer. Burada mevsimler kuzeyin tersidir. Araç yok; yürüyerek araştırırsın. Leopar foklarına ve fil foku boğalarına yaklaşma. '
     : 'Antarktika\'daki araştırma üssüne döndün. ';
   const m = `${tanitim}Şimdi ${mev}. ${Kt.GUNEY.isikSozu(k.dk)} ${Kt.havaSozu(M.kutupHavasi(k), k.dk)}`;
+  M.olay(d, 'kutup', m, 3, { gelis: true });
+  return m;
+}
+export const ekHaritaHazirla = (d, id) => kutupHazirla(d, id);
+export function ekHaritayaVar(d, id) {
+  const k = d.k;
+  const H = Kt.EK_HARITALAR[id];
+  if (!k.kutup || typeof k.kutup !== 'object') k.kutup = {};
+  const ilk = !k.kutup['ziyaret_' + id];
+  k.kutup['ziyaret_' + id] = true;
+  k.kutup.gelis = k.dk;
+  k.kutup['gezi_' + id] = (k.kutup['gezi_' + id] || 0) + 1;
+  k.teknede = false;
+  const kapi = EK_KAPI(id);
+  Object.assign(d.oyuncu, { x: kapi.x, y: kapi.y, yon: 0 });
+  Kt.etkinAyarla(d.oyuncu);
+  const mev = H.MEVSIM_ADI[M.kutupMevsimi(k)];
+  M.arsivOlay(d, `Saha gezisi: ${H.gezi.ad}.`);
+  const sesli = (H.istAd.match(/[aeıioöuü]/gi) || ['a']).pop();
+  const tanitim = ilk ? `${H.tanitim} ` : `${H.istAd}${'aıou'.includes(sesli) ? 'na' : 'ne'} döndün. `;
+  const m = `${tanitim}Şimdi ${mev}. ${H.isikSozu(k.dk)} ${H.havaSozu(M.kutupHavasi(k), k.dk)}`;
   M.olay(d, 'kutup', m, 3, { gelis: true });
   return m;
 }
@@ -369,10 +393,11 @@ export function avustralyayaVar(d) {
   return m;
 }
 // Dönüş kapısı oyuncunun bulunduğu haritaya göre: kuzeyde kulübe, güneyde üs, Avustralya'da saha istasyonu
-export const donusKapisi = (d) => (M.oyuncuMogolda(d.k) ? MG_KAPI : M.oyuncuHindistanda(d.k) ? HN_KAPI : M.oyuncuAvustralyada(d.k) ? AV_KAPI : M.oyuncuGuneyde(d.k) ? US_KAPI : KULUBE_KAPI);
+export const donusKapisi = (d) => (M.oyuncuEkHaritada(d.k) ? EK_KAPI(M.oyuncuEkHaritasi(d.k).ad) : M.oyuncuMogolda(d.k) ? MG_KAPI : M.oyuncuHindistanda(d.k) ? HN_KAPI : M.oyuncuAvustralyada(d.k) ? AV_KAPI : M.oyuncuGuneyde(d.k) ? US_KAPI : KULUBE_KAPI);
 export const kulubedeMi = (d) => M.oyuncuKutupta(d.k) && Math.hypot(d.oyuncu.x - donusKapisi(d).x, d.oyuncu.y - donusKapisi(d).y) < 30;
 export function kutuptanHazirla(d) {
   if (!M.oyuncuKutupta(d.k)) return 'Saha gezisinde değilsin.';
+  if (!kulubedeMi(d) && M.oyuncuEkHaritada(d.k)) return `Dönüş yolculuğu ${M.oyuncuEkHaritasi(d.k).istAd.toLocaleLowerCase('tr')} önünden başlar. Önce oraya dön.`;
   if (!kulubedeMi(d) && M.oyuncuMogolda(d.k)) return 'Dönüş aracı ger kampının önünden kalkar. Önce ger kampına dön.';
   if (!kulubedeMi(d) && M.oyuncuHindistanda(d.k)) return 'Dönüş aracı dinlenme evinin önünden kalkar. Önce dinlenme evine dön.';
   if (!kulubedeMi(d) && M.oyuncuAvustralyada(d.k)) return 'Dönüş uçağı istasyonun yanındaki toprak pistten kalkar. Önce istasyona dön.';
@@ -432,6 +457,13 @@ export function buzSatirlari(k) {
 export function kutupSatiri(k, guney = false) {
   const dur = kutupDurumu(k);
   const kayitli = KUTUP_SIRASI.filter((t) => k.arsiv.turler[t]).length;
+  if (Kt.EK_HARITALAR[guney]) {
+    const H = Kt.EK_HARITALAR[guney];
+    const dur6 = kutupDurumu(k, guney);
+    const sira = Object.keys(TURLER).filter((t) => TURLER[t].harita === guney);
+    const kay6 = sira.filter((t) => k.arsiv.turler[t]).length;
+    return `${H.gezi.ad.split(',')[0]}: ${dur6.acik ? `yaklaşık ${Math.round(H.gezi.yol / 60)} saatlik yolculuk, yol, izin ve konaklama ${H.gezi.ucret.toLocaleString('tr-TR')} lira` : `kilitli (itibar ${H.gezi.itibar} gerekir)`}. Kaydedilen tür ${kay6} / ${sira.length}.`;
+  }
   if (guney === 'mogol') {
     const dur5 = kutupDurumu(k, 'mogol');
     const kay5 = MOGOL_SIRASI.filter((t) => k.arsiv.turler[t]).length;
