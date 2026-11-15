@@ -396,6 +396,14 @@ export const ARASTIRMALAR = [
     sonuc: 'İmparator penguenlerin kışın, karanlıkta ve fırtınada ürediği, sırayla ısınmak için binlercesinin bir yığında döndüğü; Adélie penguenlerinin ise yazın buzdan kurtulan kayalarda taş yuvalar kurduğu gösterildi. Leopar fokları ve orkalar her iki türün de deniz buzunun kenarındaki en tehlikeli anını bekliyor.',
   },
   {
+    id: 'guneyOkyanusuDevleri',
+    ad: 'Güney Okyanusu\'nun fokları ve balinaları',
+    kosulMetni: 'Yengeçyiyen fok, Ross foku, kürklü fok, minke, kambur ve mavi balinayı kaydet; kambur balinanın kabarcık ağıyla avlanmasını gözle',
+    ilerleme: (k) => [['yengecYiyenFok', 'rossFoku', 'kurkluFok', 'minkeBalina', 'kamburBalina', 'maviBalina'].filter((t) => k.arsiv.turler[t]).length + (davranisVar(k, 'kamburBalina', 'kabarcikAgi') ? 1 : 0), 7],
+    odul: { itibar: 20, fon: 8000 },
+    sonuc: 'Güney Okyanusu\'nun büyük hayvanlarının neredeyse hepsinin aynı küçük kabukluya, krile bağlı olduğu gösterildi: yengeçyiyen foklar, minke, kambur ve mavi balinalar doğrudan kril yiyor; penguenler, Weddell ve Ross fokları krille beslenen balık ve kalamarları avlıyor. Balina avcılığından sonra balinaların yavaş yavaş geri döndüğü de belgelendi.',
+  },
+  {
     id: 'buzKitasiYazi',
     ad: 'Buz kıtasının kısa yazı',
     kosulMetni: '4 Antarktika bitkisini (alg ve liken dahil) incele ve 6 Antarktika küçük canlısını bul',

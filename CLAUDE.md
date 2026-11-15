@@ -621,7 +621,12 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   (yeni 'deve' biçimi; istilacı), avrupaTavsani (istilacı, tavsan, ses kutuptavsani; dingo/kuol/tilki avlar). 'fare' davranışı Avustralya'da
   da fareAvliyor. AVUSTRALYA_CANLILARI + 21 (33); KUCUK_SESLI muhabbetKusu, avSaksagani. Merkez araştırması istilacilarVeYerliler.
   kayitOnar veri nesnesi bozuk numuneleri atar (dayanıklılık testinde numuneSonucu çöküyordu). assets/efekt 702. Test /tmp/claude-0/kr/av1.js.
-  SIRADAKİ: Antarktika, Kuzey Kutbu, Savan.
+  ANTARKTİKA YAPILDI (15 Kasım 2026): TURLER + 6: yengecYiyenFok (fok: true, halkalı fok dalı; orka avlar; küçük canlı krabeaterFoku silindi),
+  rossFoku (fok, tek, iri göz), kurkluFok (karayaCikar → mors dalı; fok biçimi dik boyun + dış kulak), minkeBalina, kamburBalina (beyaz uzun
+  göğüs yüzgeçleri; 'kabarcik' → kabarcikAgi nadir), maviBalina (gocmenBalina: true → kışın ve sonbaharın yarısında haritanın kuzey ucundaki
+  açık denize çekilir). gece.js GOZ 'karalti' metni (renk null türlerde ağaçlar yerine; orka, beluga, penguen, emu da düzeltildi).
+  ANTARKTIKA_CANLILARI + 11; KUCUK_SESLI karPetreli. Merkez araştırması guneyOkyanusuDevleri. assets/efekt 730. Test /tmp/claude-0/kr/ant2.js (BAS=12 yaz).
+  SIRADAKİ: Kuzey Kutbu, Savan.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

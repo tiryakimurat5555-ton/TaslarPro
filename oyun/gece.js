@@ -25,21 +25,27 @@ export const GOZ = {
   kutupAyisi: { renk: 'soluk yeşil', boy: 'bel hizasında, iri bir gövdenin önünde', ipucu: 'çok iri bir yırtıcı' },
   halkaliFok: { renk: 'kırmızımsı', boy: 'buzun hemen üstünde', ipucu: 'buzda yatan bir deniz memelisi' },
   mors: { renk: 'kırmızımsı', boy: 'yere çok yakın, birbirine sokulmuş birçok çift', ipucu: 'iri, sürü hâlinde deniz memelisi' },
-  beluga: { renk: null, boy: 'suda', ipucu: 'balina' },
+  beluga: { renk: null, boy: 'suda', ipucu: 'balina', karalti: 'suyun yüzünde kayan beyaz sırtlar ve nefes sesleri' },
   renGeyigi: { renk: 'mavimsi yeşil', boy: 'omuz hizasında, birçok çift', ipucu: 'boynuzlu, sürü hâlinde otçul' },
   miskOkuzu: { renk: 'turuncumsu', boy: 'omuz hizasında, kalabalık bir öbek', ipucu: 'iri, sürü hâlinde otçul' },
   kutupKurdu: { renk: 'sarımsı yeşil', boy: 'diz hizasında, birkaç çift', ipucu: 'sürü hâlindeki köpekgiller' },
   kutupTilkisi: { renk: 'sarımsı yeşil', boy: 'yere yakın, tek ya da iki çift', ipucu: 'küçük bir köpekgil' },
   kutupTavsani: { renk: 'kırmızımsı', boy: 'yere çok yakın', ipucu: 'küçük bir otçul' },
-  imparatorPengueni: { renk: null, boy: 'bel hizasında, sıkı bir kalabalık', ipucu: 'kuş; gözleri ışığı yansıtmaz' },
-  adeliPengueni: { renk: null, boy: 'diz hizasında, kalabalık', ipucu: 'kuş; gözleri ışığı yansıtmaz' },
+  imparatorPengueni: { renk: null, boy: 'bel hizasında, sıkı bir kalabalık', ipucu: 'kuş; gözleri ışığı yansıtmaz', karalti: 'buzun üstünde dik duran, kıpırdayan karaltılar' },
+  adeliPengueni: { renk: null, boy: 'diz hizasında, kalabalık', ipucu: 'kuş; gözleri ışığı yansıtmaz', karalti: 'kayaların arasında dik duran, kıpırdayan küçük karaltılar' },
   weddellFoku: { renk: 'kırmızımsı', boy: 'buzun hemen üstünde', ipucu: 'buzda yatan bir fok' },
+  yengecYiyenFok: { renk: 'kırmızımsı', boy: 'buz parçalarının üstünde, birkaç çift', ipucu: 'buzda yatan foklar' },
+  rossFoku: { renk: 'parlak kırmızımsı', boy: 'buzun hemen üstünde, tek bir iri çift', ipucu: 'iri gözlü bir fok' },
+  kurkluFok: { renk: 'yeşilimsi', boy: 'kayaların üstünde, birkaç çift', ipucu: 'kıyıda foklar' },
+  minkeBalina: { renk: null, boy: 'denizde', ipucu: 'balina', karalti: 'suyun yüzünde kayan karanlık bir sırt ve bir nefes sesi' },
+  kamburBalina: { renk: null, boy: 'denizde', ipucu: 'balina', karalti: 'suyun yüzünde kayan karanlık bir sırt ve bir nefes sesi' },
+  maviBalina: { renk: null, boy: 'denizde', ipucu: 'balina', karalti: 'suyun yüzünde kayan karanlık bir sırt ve bir nefes sesi' },
   leoparFoku: { renk: 'kırmızımsı', boy: 'buz kenarında, tek bir çift', ipucu: 'iri, tek başına bir fok' },
-  orka: { renk: null, boy: 'suda', ipucu: 'balina' },
+  orka: { renk: null, boy: 'suda', ipucu: 'balina', karalti: 'suyun yüzünde kayan karanlık sırtlar ve nefes sesleri' },
   filFoku: { renk: 'kırmızımsı', boy: 'yere çok yakın, iri gövdeler', ipucu: 'dev, sürü hâlinde fok' },
   kirmiziKanguru: { renk: 'kırmızımsı turuncu', boy: 'insan boyunda, birçok çift', ipucu: 'zıplayan, sürü hâlinde otçul' },
   koala: { renk: 'kırmızı', boy: 'ağacın dallarında, yerden yüksekte', ipucu: 'ağaçta yaşayan bir keseli' },
-  emu: { renk: null, boy: 'insan boyunda', ipucu: 'iri, uçamayan bir kuş' },
+  emu: { renk: null, boy: 'insan boyunda', ipucu: 'iri, uçamayan bir kuş', karalti: 'insan boyunda, ağır ağır yürüyen karaltılar' },
   vombat: { renk: 'kırmızımsı', boy: 'yere çok yakın', ipucu: 'tıknaz, kazıcı bir keseli' },
   dingo: { renk: 'sarımsı yeşil', boy: 'diz hizasında, birkaç çift', ipucu: 'sürü hâlindeki köpekgiller' },
   kizilGeyik: { renk: 'parlak yeşil', boy: 'insan boyunda, birkaç çift', ipucu: 'iri bir geyik' },
@@ -114,7 +120,7 @@ export function gozTara(d) {
     const yer = M.yerTarifi(o, yakin);
     const tanidik = !!k.arsiv.turler[yakin.tur];
     if (!g.renk) {
-      parcalar.push(`${yer}: ${g.yerde ? 'yerde sürünen bir karaltı' : 'ağaçlarda kıpırdanan karaltılar'} var ama göz parlaması yok; gözünde yansıtıcı katman olmayan bir ${g.ipucu}${tanidik ? `, büyük olasılıkla ${M.kucukHarf(M.SOZ[yakin.tur])}` : ''}`);
+      parcalar.push(`${yer}: ${g.karalti || (g.yerde ? 'yerde sürünen bir karaltı' : 'ağaçlarda kıpırdanan karaltılar')} var ama göz parlaması yok; gözünde yansıtıcı katman olmayan bir ${g.ipucu}${tanidik ? `, büyük olasılıkla ${M.kucukHarf(M.SOZ[yakin.tur])}` : ''}`);
       continue;
     }
     let tahmin = tanidik ? `büyük olasılıkla ${M.kucukHarf(M.SOZ[yakin.tur])}` : `tanımadığın ${g.ipucu}`;

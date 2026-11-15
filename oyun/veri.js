@@ -253,6 +253,7 @@ export const DAVRANISLAR = {
   boynuzCarpisiyor: { fiil: 'rakibiyle karşılıklı şaha kalkıp kıvrık boynuzlarını gürültüyle çarpıştırıyor; ses vadide yankılanıyor', ad: 'Boynuz çarpışması', nadir: true },
   kokEseliyor: { fiil: 'burnuyla toprağı sürüp kök ve yumru arıyor; arkasında sürülmüş gibi bir toprak şeridi kalıyor', ad: 'Toprağı eşeleme' },
   bogurme: { fiil: 'başını kaldırıp derin, yankılanan bir böğürmeyle dişileri çağırıyor, rakiplerine meydan okuyor', ad: 'Kur böğürmesi', nadir: true },
+  kabarcikAgi: { fiil: 'balık ve kril sürüsünün altında daireler çizip hava kabarcıklarından bir ağ örüyor, sonra ağzı açık yukarı fırlıyor', ad: 'Kabarcık ağıyla avlanma', nadir: true },
   karincaYiyor: { fiil: 'burnunu bir karınca yuvasına sokmuş, yapışkan diliyle karıncaları topluyor', ad: 'Karınca yeme', nadir: true },
   guneslenmis: { fiil: 'güneşli bir kayanın üstüne yayılmış, vücudunu ısıtıyor; arada dilini çıkarıp havayı kokluyor', ad: 'Güneşlenme' },
   termitEmiyor: { fiil: 'pençeleriyle bir termit yuvasını yarıp dudaklarını boru gibi uzatarak termitleri gürültüyle emiyor; sesi uzaktan duyuluyor', ad: 'Termit emme', nadir: true },
@@ -488,7 +489,7 @@ Object.assign(TURLER, {
   },
   orka: {
     ad: 'Orka (Katil Balina)', bilimsel: 'Orcinus orca', kisa: 'ORK', sinif: 'Memeli', ses: 'orka', sekil: 'balina', boy: 2.0, renk: '#16181c', kutup: true, guney: true,
-    hiz: 7, aktif: 'karma', kacis: 20, suCanlisi: true, deniz: true, yirtici: true, avlar: ['weddellFoku', 'adeliPengueni'], sesSik: 50, sesTuru: 'iletisim',
+    hiz: 7, aktif: 'karma', kacis: 20, suCanlisi: true, deniz: true, yirtici: true, avlar: ['weddellFoku', 'adeliPengueni', 'yengecYiyenFok'], sesSik: 50, sesTuru: 'iletisim',
     habitat: { x: 0, y: AY + 175, r: 55 }, grup: [4, 6], erkekOran: 0.4,
     tarif: 'Yunusların en büyüğü. Aileler hâlinde yaşar, her ailenin kendine özgü bir "lehçesi" vardır. Antarktika\'daki bazı orkalar buz parçası üstünde dinlenen fokları, hep birlikte yüzerek yaptıkları bir dalgayla buzdan suya düşürür.',
   },
@@ -571,6 +572,45 @@ Object.assign(TURLER, {
     hiz: 8, aktif: 'gunduz', kacis: 20, sesSik: 90, sesTuru: 'alarm',
     habitat: { x: HX + 10, y: -20, r: 90 }, grup: [8, 14], erkekOran: 0.25,
     tarif: 'Gri tüylü, siyah yüzlü, uzun kuyruklu bir maymun. Gününün çoğunu ağaçlarda yaprak, çiçek ve meyve yiyerek geçirir. Ağaçtan çevreyi iyi görür; kaplanı ya da leoparı fark edince yüksek sesle alarm verir, bunu duyan geyikler de kaçar.',
+  },
+});
+// Adélie Kıyısı'nda ve çevresindeki denizde gerçekten yaşayan öbür büyük hayvanlar: yengeçyiyen fok, Ross foku, kürklü fok ve yazın gelen balinalar (15 Kasım 2026)
+Object.assign(TURLER, {
+  yengecYiyenFok: {
+    ad: 'Yengeçyiyen Fok', bilimsel: 'Lobodon carcinophaga', kisa: 'YYF', sinif: 'Memeli', ses: 'yengecyiyenfok', sekil: 'fok', boy: 1.0, renk: '#b8b0a4', kutup: true, guney: true,
+    hiz: 5, aktif: 'karma', kacis: 10, suCanlisi: true, sesSik: 160, sesTuru: 'iletisim', fok: true,
+    habitat: { x: 60, y: AY + 115, r: 70 }, grup: [4, 8], erkekOran: 0.45,
+    tarif: 'Dünyanın en kalabalık foku; sayılarının on milyonları bulduğu düşünülür. Adına karşın yengeç değil kril yer: dişlerinin ince çıkıntıları süzgeç gibi çalışır. Açık denizdeki kayan buz parçalarının üstünde dinlenir; yetişkinlerin çoğunun sırtında leopar foklarından kalma yara izleri vardır.',
+  },
+  rossFoku: {
+    ad: 'Ross Foku', bilimsel: 'Ommatophoca rossii', kisa: 'RSF', sinif: 'Memeli', ses: 'rossfoku', sekil: 'fok', boy: 0.95, renk: '#5a5e64', kutup: true, guney: true,
+    hiz: 4, aktif: 'karma', kacis: 6, suCanlisi: true, sesSik: 220, sesTuru: 'iletisim', fok: true,
+    habitat: { x: -40, y: AY + 160, r: 50 }, grup: [1, 1], erkekOran: 0.5,
+    tarif: 'Antarktika foklarının en az görüleni; sık kayan buzun derinliklerinde tek başına yaşar. Başı kısa, gözleri çok iridir; derin ve karanlık suda kalamar avlamaya uyum sağlamıştır. Tehlikede başını kaldırıp boğazını şişirir, kuşa benzeyen tuhaf trilli sesler çıkarır.',
+  },
+  kurkluFok: {
+    ad: 'Antarktika Kürklü Foku', bilimsel: 'Arctocephalus gazella', kisa: 'KRF', sinif: 'Memeli', ses: 'kurklufok', sekil: 'fok', boy: 0.85, renk: '#5a4e44', kutup: true, guney: true,
+    hiz: 6, aktif: 'karma', kacis: 10, tehlikeli: true, suCanlisi: true, karayaCikar: true, sesSik: 120, sesTuru: 'bolge',
+    habitat: { x: 90, y: AY + 20, r: 30 }, grup: [3, 6], erkekOran: 0.4,
+    tarif: 'Dış kulağı olan, arka yüzgeçlerini öne çevirip karada dört ayak üstünde koşabilen bir fok. Kalın kürkü yüzünden 1800\'lerde neredeyse tükenecek kadar avlandı, bugün yeniden çoğaldı. Yazın kayalık kıyılara gelen genç erkekler saldırgan olabilir; onlara yaklaşma.',
+  },
+  minkeBalina: {
+    ad: 'Antarktika Minke Balinası', bilimsel: 'Balaenoptera bonaerensis', kisa: 'MNK', sinif: 'Memeli', ses: 'minke', sekil: 'balina', boy: 2.6, renk: '#3e444c', kutup: true, guney: true, gocmenBalina: true,
+    hiz: 7, aktif: 'karma', kacis: 20, suCanlisi: true, deniz: true, sesSik: 160, sesTuru: 'iletisim',
+    habitat: { x: -20, y: AY + 165, r: 60 }, grup: [1, 3], erkekOran: 0.5,
+    tarif: 'Büyük balinaların en küçüğü; buzun en yakınında kalanı da odur. Kayan buz parçalarının arasındaki dar açıklıklarda kril yer, nefes almak için buzdaki çatlakları kullanır. Yazın buz kenarında, kışın kuzeye çekilir.',
+  },
+  kamburBalina: {
+    ad: 'Kambur Balina', bilimsel: 'Megaptera novaeangliae', kisa: 'KMB', sinif: 'Memeli', ses: 'kamburbalina', sekil: 'balina', boy: 3.4, renk: '#2a2e34', kutup: true, guney: true, gocmenBalina: true,
+    hiz: 6, aktif: 'karma', kacis: 25, suCanlisi: true, deniz: true, sesSik: 140, sesTuru: 'iletisim',
+    habitat: { x: 50, y: AY + 195, r: 50 }, grup: [1, 3], erkekOran: 0.5,
+    tarif: 'Uzun, beyaz göğüs yüzgeçleri ve sularda çok uzaklara ulaşan şarkılarıyla tanınır. Yazı Antarktika sularında krille beslenerek geçirir; kışın binlerce kilometre kuzeydeki ılık sulara gidip orada doğurur. Birlikte avlanırken av sürüsünün çevresinde hava kabarcıklarından bir ağ örer.',
+  },
+  maviBalina: {
+    ad: 'Antarktika Mavi Balinası', bilimsel: 'Balaenoptera musculus intermedia', kisa: 'MVB', sinif: 'Memeli', ses: 'mavibalina', sekil: 'balina', boy: 5.0, renk: '#4a5868', kutup: true, guney: true, gocmenBalina: true,
+    hiz: 6, aktif: 'karma', kacis: 30, suCanlisi: true, deniz: true, sesSik: 260, sesTuru: 'iletisim',
+    habitat: { x: -60, y: AY + 205, r: 35 }, grup: [1, 1], erkekOran: 0.5,
+    tarif: 'Yeryüzünde yaşamış en büyük hayvan: otuz metreyi, iki yüz tonu bulabilir. Günde tonlarca kril yer. Balina avcılığı yüzünden sayıları yüz binlerden birkaç yüze indi; bugün yavaş yavaş artıyor ama hâlâ çok nadirdir. Burnundan çıkan su sütunu dokuz metreye yükselir.',
   },
 });
 // Avustralya çalılığında gerçekten yaşayan öbür büyük ve orta boy hayvanlar; yerlilerin yanında insanların getirdiği istilacılar da var (15 Kasım 2026)

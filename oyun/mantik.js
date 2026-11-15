@@ -43,7 +43,7 @@ export const SOZ = {
   kaplan: 'Kaplan', hintFili: 'Hint fili', cital: 'Benekli geyik', sambar: 'Sambar geyiği', gaur: 'Gaur', langur: 'Langur',
   hintLeopari: 'Hint leoparı', tembelAyi: 'Tembel ayı', hintYabanKopegi: 'Yaban köpeği', cizgiliSirtlan: 'Çizgili sırtlan', altinCakal: 'Altın çakal', barasingha: 'Barasingha', nilgay: 'Nilgay', muntjak: 'Muntjak', hintYabanDomuzu: 'Yaban domuzu', dortBoynuzlu: 'Dört boynuzlu antilop', rhesus: 'Rhesus makağı',
   kirmiziKanguru: 'Kırmızı kanguru', koala: 'Koala', emu: 'Emu', vombat: 'Vombat', dingo: 'Dingo',
-  bozKanguru: 'Boz kanguru', euro: 'Euro', kayaValabisi: 'Kaya valabisi', bilbi: 'Bilbi', kuol: 'Kuol', perentie: 'Perentie', avTilkisi: 'Tilki', yabaniDeve: 'Deve', avrupaTavsani: 'Yaban tavşanı',
+  yengecYiyenFok: 'Yengeçyiyen fok', rossFoku: 'Ross foku', kurkluFok: 'Kürklü fok', minkeBalina: 'Minke balinası', kamburBalina: 'Kambur balina', maviBalina: 'Mavi balina', bozKanguru: 'Boz kanguru', euro: 'Euro', kayaValabisi: 'Kaya valabisi', bilbi: 'Bilbi', kuol: 'Kuol', perentie: 'Perentie', avTilkisi: 'Tilki', yabaniDeve: 'Deve', avrupaTavsani: 'Yaban tavşanı',
   imparatorPengueni: 'İmparator pengueni', adeliPengueni: 'Adélie pengueni', weddellFoku: 'Weddell foku', leoparFoku: 'Leopar foku', orka: 'Orka', filFoku: 'Fil foku',
 };
 // ---------- Kuzey Kutbu (kutup.js): oyuncunun ya da bir noktanın hangi haritada olduğu ----------
@@ -1704,6 +1704,25 @@ function antarktikaPlanSec(d, g, H, mevsim, tipi, r, sure) {
     g.planBitis = sure(40, 100);
     return true;
   }
+  if (t.gocmenBalina) {
+    // Büyük balinalar yazı buz kenarında krille beslenerek geçirir; kışın kuzeydeki açık denize çekilir (haritanın kuzey ucunda kalırlar)
+    if (mevsim === 'kis' || (mevsim === 'sonbahar' && r < 0.5)) {
+      g.plan = 'yuz';
+      g.hedef = kutupSuNoktasi(d, g, H.MERKEZ.x + arasi(d.rng, -120, 120), H.MERKEZ.y + H.MERKEZ.r - 18, 15);
+      g.planBitis = sure(60, 140);
+      return true;
+    }
+    if (g.tur === 'kamburBalina' && r < 0.18) {
+      g.plan = 'kabarcik'; // kabarcık ağıyla kril sürüsünü toplayıp avlar
+      g.hedef = kutupSuNoktasi(d, g, h.x + arasi(d.rng, -30, 30), h.y + arasi(d.rng, -20, 20), 20);
+      g.planBitis = sure(15, 30);
+      return true;
+    }
+    g.plan = 'yuz';
+    g.hedef = kutupSuNoktasi(d, g, h.x + arasi(d.rng, -50, 50), h.y + arasi(d.rng, -25, 25), h.r);
+    g.planBitis = sure(40, 100);
+    return true;
+  }
   if (g.tur === 'orka') {
     const av = (g.aclik || 0) > 0.4
       ? k.gruplar.filter((x) => t.avlar.includes(x.tur) && H.noktaMi(x) && antSayisi(k, x.tur) > 5 && mesafe(x, g) < 160 && ['buzda', 'dalis', 'yigil'].includes(x.plan)).sort((a, b) => mesafe(a, g) - mesafe(b, g))[0]
@@ -1828,7 +1847,7 @@ function kutupPlanSec(d, g) {
     g.planBitis = sure(40, 90);
     return;
   }
-  if (g.tur === 'mors' || g.tur === 'filFoku') {
+  if (g.tur === 'mors' || g.tur === 'filFoku' || g.tur === 'kurkluFok') {
     const kiyi = H.dunya(H.FOK_KIYISI.lx, H.FOK_KIYISI.ly);
     const denizAcik = H.yuzey(kiyi.x, kiyi.y + 12, dk) === 'su';
     if (mevsim === 'kis' || !denizAcik) {
@@ -2028,6 +2047,8 @@ function kutupDavranis(d, b, g, hareketli) {
       return hareketli ? 'yuruyor' : 'otluyor';
     case 'sudaOtla':
       return hareketli ? 'yuruyor' : 'sudaOtluyor';
+    case 'kabarcik':
+      return hareketli ? 'yuzuyor' : 'kabarcikAgi';
     case 'guneslen':
       return hareketli ? 'yuruyor' : 'guneslenmis';
     case 'karinca':
@@ -2323,6 +2344,8 @@ export const DUYULAR = {
   dortBoynuzlu: { koku: 1.1, gorme: 1.1, isitme: 1.5 }, rhesus: { koku: 0.6, gorme: 1.5, isitme: 1.2 },
   kirmiziKanguru: { koku: 0.8, gorme: 1.2, isitme: 1.4 }, koala: { koku: 0.8, gorme: 0.6, isitme: 1 }, emu: { koku: 0.4, gorme: 1.5, isitme: 1 },
   vombat: { koku: 1.3, gorme: 0.6, isitme: 1.1 }, dingo: { koku: 1.5, gorme: 1.1, isitme: 1.4 },
+  yengecYiyenFok: { koku: 0.9, gorme: 1.1, isitme: 1.1 }, rossFoku: { koku: 0.8, gorme: 1.2, isitme: 1.1 }, kurkluFok: { koku: 1.2, gorme: 1.1, isitme: 1.3 },
+  minkeBalina: { koku: 0.3, gorme: 0.8, isitme: 1.6 }, kamburBalina: { koku: 0.3, gorme: 0.8, isitme: 1.7 }, maviBalina: { koku: 0.3, gorme: 0.7, isitme: 1.7 },
   bozKanguru: { koku: 0.8, gorme: 1.2, isitme: 1.4 }, euro: { koku: 0.8, gorme: 1.1, isitme: 1.4 }, kayaValabisi: { koku: 0.8, gorme: 1.3, isitme: 1.4 },
   bilbi: { koku: 1.6, gorme: 0.5, isitme: 1.6 }, kuol: { koku: 1.3, gorme: 1.1, isitme: 1.4 }, perentie: { koku: 1.4, gorme: 1.3, isitme: 0.7 },
   avTilkisi: { koku: 1.4, gorme: 1.1, isitme: 1.6 }, yabaniDeve: { koku: 1.1, gorme: 1.2, isitme: 1 }, avrupaTavsani: { koku: 1, gorme: 1.3, isitme: 1.6 },
@@ -2711,7 +2734,7 @@ function kalitim(d, y, anne, baba) {
 }
 
 // Doğum: gebeliğin sonunda (Aşama 21)
-export const GEBE_GUN = { aslan: 3, leopar: 3, sirtlan: 3, cita: 3, yabanKopegi: 2, fil: 7, zurafa: 5, zebra: 4, gnu: 3, impala: 3, ceylan: 2, domuz: 2, suAygiri: 4, gergedan: 6, manda: 4, babun: 3, kutupAyisi: 6, halkaliFok: 5, mors: 7, beluga: 7, renGeyigi: 4, miskOkuzu: 4, kutupKurdu: 2, kutupTilkisi: 2, kutupTavsani: 2, imparatorPengueni: 3, adeliPengueni: 2, weddellFoku: 5, leoparFoku: 5, orka: 7, filFoku: 6, takhi: 5, karLeopari: 3, kizilGeyik: 4, karaca: 3, yabanDomuzu: 2, vasak: 2, kizilTilki: 2, porsuk: 2, dagKecisi: 3, kulan: 5, saiga: 3, mogolKurdu: 2, dzeren: 3, argali: 4, kaplan: 3, hintFili: 7, cital: 3, sambar: 3, gaur: 4, langur: 2, kirmiziKanguru: 3, koala: 3, emu: 3, vombat: 3, dingo: 2, hintLeopari: 3, tembelAyi: 4, hintYabanKopegi: 2, cizgiliSirtlan: 3, altinCakal: 2, barasingha: 4, nilgay: 4, muntjak: 3, hintYabanDomuzu: 2, dortBoynuzlu: 3, rhesus: 3, bozKanguru: 3, euro: 3, kayaValabisi: 3, bilbi: 2, kuol: 2, perentie: 3, avTilkisi: 2, yabaniDeve: 6, avrupaTavsani: 1 };
+export const GEBE_GUN = { aslan: 3, leopar: 3, sirtlan: 3, cita: 3, yabanKopegi: 2, fil: 7, zurafa: 5, zebra: 4, gnu: 3, impala: 3, ceylan: 2, domuz: 2, suAygiri: 4, gergedan: 6, manda: 4, babun: 3, kutupAyisi: 6, halkaliFok: 5, mors: 7, beluga: 7, renGeyigi: 4, miskOkuzu: 4, kutupKurdu: 2, kutupTilkisi: 2, kutupTavsani: 2, imparatorPengueni: 3, adeliPengueni: 2, weddellFoku: 5, leoparFoku: 5, orka: 7, filFoku: 6, takhi: 5, karLeopari: 3, kizilGeyik: 4, karaca: 3, yabanDomuzu: 2, vasak: 2, kizilTilki: 2, porsuk: 2, dagKecisi: 3, kulan: 5, saiga: 3, mogolKurdu: 2, dzeren: 3, argali: 4, kaplan: 3, hintFili: 7, cital: 3, sambar: 3, gaur: 4, langur: 2, kirmiziKanguru: 3, koala: 3, emu: 3, vombat: 3, dingo: 2, hintLeopari: 3, tembelAyi: 4, hintYabanKopegi: 2, cizgiliSirtlan: 3, altinCakal: 2, barasingha: 4, nilgay: 4, muntjak: 3, hintYabanDomuzu: 2, dortBoynuzlu: 3, rhesus: 3, bozKanguru: 3, euro: 3, kayaValabisi: 3, bilbi: 2, kuol: 2, perentie: 3, avTilkisi: 2, yabaniDeve: 6, avrupaTavsani: 1, yengecYiyenFok: 5, rossFoku: 5, kurkluFok: 5, minkeBalina: 7, kamburBalina: 7, maviBalina: 7 };
 function dogumYap(d, g, anne, baba) {
   const k = d.k;
   const y = bireyOlustur(k, d.rng, g.tur, g, 'yavru', d.rng() < 0.5 ? 'erkek' : 'disi', anne.x + 0.8, anne.y + 0.8, anne.id);
@@ -2780,7 +2803,7 @@ function gunlukDogumlar(d) {
     // Otçullar çoğunlukla yağışlı mevsimde, otlar gürken gebe kalır ve doğurur (karar 43)
     // Kutup türleri ilkbaharda ve yazın doğurur (karar 20)
     const yagisli = t.kutup ? (t.mogol ? ['ilkbahar', 'yaz'] : t.hindistan ? ['sonbahar', 'kis'] : t.avustralya ? ['yaz', 'sonbahar'] : g.tur === 'imparatorPengueni' ? ['kis', 'ilkbahar'] : ['ilkbahar', 'yaz']).includes(Kt.harita(g).kutupTakvim(gunNo(k.dk)).mevsim) : E.takvim(gunNo(k.dk)).mevsim === 'yagisli';
-    let sans = t.yirtici ? 0.1 : ['fil', 'gergedan', 'zurafa', 'mors', 'beluga', 'orka', 'filFoku'].includes(g.tur) ? 0.06 : ['piton', 'timsah', 'kartal'].includes(g.tur) ? 0 : kucukGrup ? 0.5 : 0.3;
+    let sans = t.yirtici ? 0.1 : ['fil', 'gergedan', 'zurafa', 'mors', 'beluga', 'orka', 'filFoku', 'minkeBalina', 'kamburBalina', 'maviBalina', 'yabaniDeve'].includes(g.tur) ? 0.06 : ['piton', 'timsah', 'kartal'].includes(g.tur) ? 0 : kucukGrup ? 0.5 : 0.3;
     if (!t.yirtici && !yagisli) sans *= 0.15;
     // Büyük otçul sürülerinde yağmurlarla birden çok dişi aynı günlerde gebe kalır (gnu, zebra, impala...)
     const kalabalik = !t.yirtici && t.grup[1] >= 8 && yagisli;
