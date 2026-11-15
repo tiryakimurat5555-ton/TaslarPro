@@ -475,6 +475,7 @@ const PINAR = { lx: 60, ly: 40, r: 12 };
 const mgDereY = (lx) => 34 + 9 * Math.sin(lx / 40) + 3 * Math.sin(lx / 11 + 2);
 const DAG = { lx: -120, ly: 110, r: 75 };
 const KUMUL = { lx: 130, ly: -120, r: 58 };
+const HUS = { lx: 40, ly: 150, r: 50 }; // kuzey yamacında huş ormanı (geyik, karaca, domuz)
 const ISTASYON_M = { lx: 0, ly: -40, r: 9 };
 export const MOGOL = haritaYap({
   ad: 'mogol',
@@ -489,9 +490,9 @@ export const MOGOL = haritaYap({
   ISTASYON_K: ISTASYON_M,
   BUZUL: { lx0: -9999, lx1: -9998 },
   POLINYA: PINAR,
-  ozel: { PINAR, DAG, KUMUL, mgDereY },
+  ozel: { PINAR, DAG, KUMUL, HUS, mgDereY },
   MEVSIM_ADI: { yaz: 'bozkır yazı', sonbahar: 'sonbahar', kis: 'sert Moğol kışı', ilkbahar: 'rüzgârlı ilkbahar' },
-  BOLGE_ADLARI_K: { mgUs: 'Ger kampı', bozkir: 'Açık bozkır', mgDag: 'Kayalık dağ', pinar: 'Pınar ve sazlık', kumul: 'Kum tepeleri', mgDere: 'Kuru dere yatağı' },
+  BOLGE_ADLARI_K: { mgUs: 'Ger kampı', bozkir: 'Açık bozkır', mgDag: 'Kayalık dağ', pinar: 'Pınar ve sazlık', kumul: 'Kum tepeleri', mgDere: 'Kuru dere yatağı', husOrman: 'Huş ormanı' },
   istasyonBolgesi: 'mgUs',
   bolge(H, lx, ly) {
     if (Math.hypot(lx - ISTASYON_M.lx, ly - ISTASYON_M.ly) < ISTASYON_M.r + 12) return 'mgUs';
@@ -499,6 +500,7 @@ export const MOGOL = haritaYap({
     if (Math.hypot(lx - DAG.lx, ly - DAG.ly) < DAG.r) return 'mgDag';
     if (lx < PINAR.lx - 12 && Math.abs(ly - mgDereY(lx)) < 6) return 'mgDere';
     if (Math.hypot(lx - KUMUL.lx, ly - KUMUL.ly) < KUMUL.r) return 'kumul';
+    if (Math.hypot(lx - HUS.lx, ly - HUS.ly) < HUS.r) return 'husOrman';
     return 'bozkir';
   },
   yuzey: (H, lx, ly) => (Math.hypot(lx - PINAR.lx, ly - PINAR.ly) < PINAR.r ? 'su' : 'kara'),
@@ -550,6 +552,7 @@ export const MOGOL = haritaYap({
     { id: 'm_pinar', ad: 'Pınar ve sazlık', lx: PINAR.lx - PINAR.r - 6, ly: PINAR.ly - 6, tarif: 'Bozkırın ortasında yıl boyu akan küçük bir pınar ve çevresinde sazlık. Bütün hayvanlar su içmeye buraya gelir; kışın donar, yalnızca kaynağın ağzı açık kalır.' },
     { id: 'm_dere', ad: 'Kuru dere yatağı', lx: -40, ly: mgDereY(-40) - 8, tarif: 'Yazın birkaç gün akan, sonra kuruyan çakıllı bir dere yatağı. İzleri okumak için iyi bir yer.' },
     { id: 'm_dag', ad: 'Kayalık dağın eteği', lx: DAG.lx + DAG.r * 0.7, ly: DAG.ly - DAG.r * 0.7, tarif: 'Granit kayalıkların başladığı yer. Yukarıda argali yaban koyunları ve onları izleyen kar leoparı yaşar; leopar kayalarla aynı renkte, görmek çok zordur.' },
+    { id: 'm_hus', ad: 'Huş ormanı', lx: HUS.lx, ly: HUS.ly - HUS.r + 6, tarif: 'Kuzey yamacındaki beyaz gövdeli huş ağaçlarının ormanı; bozkırın ortasında serin bir ada. Kızıl geyikler, karacalar ve yaban domuzları burada saklanır.' },
     { id: 'm_kumul', ad: 'Kum tepeleri', lx: KUMUL.lx - KUMUL.r - 4, ly: KUMUL.ly + 10, tarif: 'Gobi Çölü\'nün kuzey kenarındaki kum tepeleri. Rüzgâr kumu sürekli yeniden şekillendirir; saiga antilopları çevresinde dolaşır.' },
   ],
   SICAKLIK: { yaz: [14, 28], sonbahar: [-4, 12], kis: [-32, -12], ilkbahar: [-6, 12] },

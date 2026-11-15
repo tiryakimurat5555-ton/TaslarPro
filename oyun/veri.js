@@ -142,6 +142,7 @@ export const BOLGE_ADLARI = {
   pinar: 'Pınar ve sazlık',
   kumul: 'Kum tepeleri',
   mgDere: 'Kuru dere yatağı',
+  husOrman: 'Huş ormanı',
   avUs: 'Saha istasyonu',
   billabong: 'Billabong',
   kuruDere: 'Kuru dere yatağı',
@@ -250,6 +251,9 @@ export const DAVRANISLAR = {
   karKaziyor: { fiil: 'ön toynağıyla karı kazıp altındaki kuru otlara ulaşıyor', ad: 'Kar kazıp otlama', nadir: true },
   haremKoruyor: { fiil: 'kulaklarını geri yatırıp başını yere eğmiş; kısraklarını bir araya topluyor, yaklaşan genç aygırı uzaklaştırıyor', ad: 'Harem koruma', nadir: true },
   boynuzCarpisiyor: { fiil: 'rakibiyle karşılıklı şaha kalkıp kıvrık boynuzlarını gürültüyle çarpıştırıyor; ses vadide yankılanıyor', ad: 'Boynuz çarpışması', nadir: true },
+  kokEseliyor: { fiil: 'burnuyla toprağı sürüp kök ve yumru arıyor; arkasında sürülmüş gibi bir toprak şeridi kalıyor', ad: 'Toprağı eşeleme' },
+  bogurme: { fiil: 'başını kaldırıp derin, yankılanan bir böğürmeyle dişileri çağırıyor, rakiplerine meydan okuyor', ad: 'Kur böğürmesi', nadir: true },
+  fareAvliyor: { fiil: 'kulaklarını dikip otların arasını dinliyor, sonra kavis çizerek havaya sıçrayıp ön ayaklarıyla bir fareyi bastırıyor', ad: 'Fare avlama', nadir: true },
   kayadaBekliyor: { fiil: 'kayalığın kenarında, rengi taşlarla neredeyse aynı, kımıldamadan aşağıyı izliyor', ad: 'Kayalıkta gözetleme' },
   // Avustralya
   boksYapiyor: { fiil: 'kuyruğuna yaslanıp rakibiyle ön ayaklarıyla güreşiyor, arka ayaklarıyla tekme savuruyor', ad: 'Kanguru boksu', nadir: true },
@@ -577,7 +581,7 @@ Object.assign(TURLER, {
   },
   karLeopari: {
     ad: 'Kar Leoparı', bilimsel: 'Panthera uncia', kisa: 'KLP', sinif: 'Memeli', ses: 'karleopari', sekil: 'kedi', boy: 0.95, renk: '#c8c4b8', kutup: true, mogol: true,
-    hiz: 13, aktif: 'karma', kacis: 60, yirtici: true, avlar: ['argali', 'dzeren'], sesSik: 220, sesTuru: 'bolge',
+    hiz: 13, aktif: 'karma', kacis: 60, yirtici: true, avlar: ['argali', 'dzeren', 'dagKecisi'], sesSik: 220, sesTuru: 'bolge',
     habitat: { x: MX - 125, y: MY + 115, r: 55 }, grup: [1, 1], erkekOran: 0.5,
     tarif: '"Dağların hayaleti": dumanlı gri, koyu halka benekli tüyleri kayalarla neredeyse aynı renkte. Kalın, gövdesi kadar uzun kuyruğunu denge için kullanır, uyurken burnuna sarar. Kükreyemez; çok ürkek ve yalnızdır, dağ keçilerini ve yaban koyunlarını yamaçtan atlayarak yakalar.',
   },
@@ -589,7 +593,7 @@ Object.assign(TURLER, {
   },
   mogolKurdu: {
     ad: 'Moğol Kurdu', bilimsel: 'Canis lupus chanco', kisa: 'MKR', sinif: 'Memeli', ses: 'mogolkurdu', sekil: 'kurt', boy: 0.85, renk: '#a8987a', kutup: true, mogol: true,
-    hiz: 13, aktif: 'karma', kacis: 55, yirtici: true, avlar: ['dzeren', 'saiga', 'takhi', 'argali'], sesSik: 100, sesTuru: 'bolge',
+    hiz: 13, aktif: 'karma', kacis: 55, yirtici: true, avlar: ['dzeren', 'saiga', 'takhi', 'argali', 'kizilGeyik', 'karaca', 'kulan', 'yabanDomuzu'], sesSik: 100, sesTuru: 'bolge',
     habitat: { x: MX - 40, y: MY - 40, r: 140 }, grup: [3, 5], erkekOran: 0.5,
     tarif: 'Bozkırın kurdu: açık kahverengi-gri, kışın kalın tüylü. Sürüyle ceylanları ve antilopları kilometrelerce kovalar, zayıf ve yaşlı olanı ayırır. Göçebe çobanların hikâyelerinde hem korkulan hem saygı duyulan hayvandır.',
   },
@@ -604,6 +608,55 @@ Object.assign(TURLER, {
     hiz: 11, aktif: 'gunduz', kacis: 55, sesSik: 200, sesTuru: 'iletisim',
     habitat: { x: MX - 110, y: MY + 95, r: 60 }, grup: [4, 8], erkekOran: 0.4,
     tarif: 'Dünyanın en iri yaban koyunu. Erkeklerin kocaman, sarmal kıvrık boynuzları tek başına 20 kilogramı bulur. Kayalık yamaçlarda yaşar; sonbaharda erkekler şaha kalkıp boynuzlarını çarpıştırarak dövüşür, sesi vadide yankılanır.',
+  },
+  // Hustai'de ve Moğol bozkırında yaşayan öbür büyük ve orta boy memeliler (15 Kasım 2026, Murat "orada gerçekten yaşayan tüm hayvanlar")
+  kizilGeyik: {
+    ad: 'Kızıl Geyik (Maral)', bilimsel: 'Cervus canadensis sibiricus', kisa: 'KGY', sinif: 'Memeli', ses: 'kizilgeyik', sekil: 'geyik', boy: 1.2, renk: '#8a5a38', kutup: true, mogol: true,
+    hiz: 11, aktif: 'karma', kacis: 55, sesSik: 200, sesTuru: 'iletisim',
+    habitat: { x: MX + 40, y: MY + 150, r: 50 }, grup: [4, 8], erkekOran: 0.35,
+    tarif: 'Kuzey vadilerindeki huş ormanlarında yaşayan iri bir geyik. Erkeklerin dallı, iri boynuzları her yıl düşüp yeniden çıkar. Sonbaharda erkekler derin böğürmelerle dişileri toplar; ses vadilerde kilometrelerce duyulur.',
+  },
+  karaca: {
+    ad: 'Sibirya Karacası', bilimsel: 'Capreolus pygargus', kisa: 'KRC', sinif: 'Memeli', ses: 'karaca', sekil: 'geyik', boy: 0.7, renk: '#a8784a', kutup: true, mogol: true,
+    hiz: 13, aktif: 'karma', kacis: 45, sesSik: 180, sesTuru: 'alarm',
+    habitat: { x: MX + 20, y: MY + 140, r: 60 }, grup: [2, 4], erkekOran: 0.4,
+    tarif: 'Küçük, zarif, kuyruksuz görünen bir geyik; arkasında beyaz bir leke var. Ormanla bozkırın birleştiği yerlerde yaşar. Ürkünce köpek gibi kısa, boğuk havlamalar çıkarır.',
+  },
+  yabanDomuzu: {
+    ad: 'Yaban Domuzu', bilimsel: 'Sus scrofa', kisa: 'YDM', sinif: 'Memeli', ses: 'yabandomuzu', sekil: 'domuz', boy: 1.05, renk: '#4a3e34', kutup: true, mogol: true,
+    hiz: 10, aktif: 'gece', kacis: 40, tehlikeli: true, sesSik: 120, sesTuru: 'iletisim',
+    habitat: { x: MX + 60, y: MY + 120, r: 70 }, grup: [3, 6], erkekOran: 0.3,
+    tarif: 'Kalın kıllı, güçlü bir yaban domuzu. Dişiler yavrularıyla gruplar hâlinde gezer, erkekler yalnızdır. Geceleri burnuyla toprağı sürerek kök, yumru ve böcek arar. Yavrulu dişi ya da sıkışan erkek tehlikeli olabilir.',
+  },
+  vasak: {
+    ad: 'Vaşak', bilimsel: 'Lynx lynx', kisa: 'VSK', sinif: 'Memeli', ses: 'vasak', sekil: 'kedi', boy: 0.75, renk: '#b89a72', kutup: true, mogol: true,
+    hiz: 12, aktif: 'gece', kacis: 60, yirtici: true, avlar: ['karaca', 'dagKecisi'], sesSik: 240, sesTuru: 'bolge',
+    habitat: { x: MX - 70, y: MY + 140, r: 60 }, grup: [1, 1], erkekOran: 0.5,
+    tarif: 'Kulaklarının ucunda siyah püsküller, kısa kesik bir kuyruk ve uzun bacaklarıyla tanınan orta boy bir kedi. Kayalıklarla ormanın arasında yalnız yaşar; karacaları ve tavşanları pusudan yakalar. Çok gizlidir, çoğu zaman yalnızca izi görülür.',
+  },
+  kizilTilki: {
+    ad: 'Kızıl Tilki', bilimsel: 'Vulpes vulpes', kisa: 'KTK', sinif: 'Memeli', ses: 'kiziltilki', sekil: 'kurt', boy: 0.5, renk: '#c86a2a', kutup: true, mogol: true,
+    hiz: 11, aktif: 'karma', kacis: 35, sesSik: 140, sesTuru: 'iletisim',
+    habitat: { x: MX + 10, y: MY - 20, r: 130 }, grup: [1, 2], erkekOran: 0.5,
+    tarif: 'Kızıl kürklü, kuyruğunun ucu beyaz bir tilki. Bozkırda en çok fare ve tarbagan yavrusu avlar; otların altındaki fareyi sesinden bulup havaya sıçrayarak üstüne atlar.',
+  },
+  porsuk: {
+    ad: 'Asya Porsuğu', bilimsel: 'Meles leucurus', kisa: 'PRS', sinif: 'Memeli', ses: 'porsuk', sekil: 'vombat', boy: 0.75, renk: '#8a8478', kutup: true, mogol: true,
+    hiz: 6, aktif: 'gece', kacis: 25, sesSik: 160, sesTuru: 'iletisim',
+    habitat: { x: MX - 30, y: MY + 30, r: 80 }, grup: [2, 3], erkekOran: 0.5,
+    tarif: 'Yüzünde siyah-beyaz şeritler olan, tıknaz, güçlü pençeli bir hayvan. Aile hâlinde, derin ve çok girişli inlerde yaşar. Geceleri böcek, solucan, kök ve fare arar; kışın uzun süre ininde uyur.',
+  },
+  dagKecisi: {
+    ad: 'Sibirya Dağ Keçisi', bilimsel: 'Capra sibirica', kisa: 'DKC', sinif: 'Memeli', ses: 'dagkecisi', sekil: 'ceylan', boy: 1.0, renk: '#9a8468', kutup: true, mogol: true,
+    hiz: 10, aktif: 'gunduz', kacis: 55, sesSik: 200, sesTuru: 'alarm',
+    habitat: { x: MX - 130, y: MY + 120, r: 50 }, grup: [4, 8], erkekOran: 0.4,
+    tarif: 'Dik kayalıklarda şaşırtıcı ustalıkla tırmanan bir yaban keçisi. Erkeklerin geriye kıvrılan, boğumlu, bir metreyi aşan boynuzları ve sakalı vardır. Kar leoparının başlıca avıdır; tehlikede ıslığa benzer bir alarm verir.',
+  },
+  kulan: {
+    ad: 'Kulan (Moğol Yaban Eşeği)', bilimsel: 'Equus hemionus hemionus', kisa: 'KLN', sinif: 'Memeli', ses: 'kulan', sekil: 'zebra', boy: 0.9, renk: '#c8a472', kutup: true, mogol: true,
+    hiz: 14, aktif: 'gunduz', kacis: 60, sesSik: 160, sesTuru: 'iletisim',
+    habitat: { x: MX + 140, y: MY - 110, r: 80 }, grup: [5, 9], erkekOran: 0.35,
+    tarif: 'Gobi\'nin kumlu, kurak bozkırlarında yaşayan bir yaban eşeği; sırtı kum renginde, karnı beyaz. Çok dayanıklıdır, suyu kilometrelerce uzaktan bulur; kurak yazlarda kuru dere yataklarında su kuyusu kazar.',
   },
 });
 export const TUR_SIRASI = Object.keys(TURLER).filter((t) => !TURLER[t].kutup);

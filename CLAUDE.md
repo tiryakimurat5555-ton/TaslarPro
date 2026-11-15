@@ -596,6 +596,15 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   yükseltildi; hışırtılı olabilir). Bozuk numune analizinde çökme düzeltildi (merkez numuneSonucu tanımsız bitki). Testler: bot, dayanıklılık, menu-tara Moğolistan
   iki kipte 259 sayfa sorun 0 (/tmp/claude-0/mg-kayit.json), /tmp/claude-0/kr/mg1.js (4 gün: kurt 2 tay, leopar 1 ceylan) ve mg2.js (kış: karKaziyor),
   görüntüler scratchpad mg-goruntu.cjs. Telefonda doğrulanmadı.
+- GERÇEK TÜRLER GENİŞLEMESİ (15 Kasım 2026, Murat "orada gerçekten yaşayan tüm hayvanları istiyorum" → "Bütün haritalara"; sırayla Moğolistan,
+  Hindistan, Avustralya, Antarktika, Kuzey Kutbu, Savan; harita harita yayın). MOĞOLİSTAN YAPILDI: TURLER + 8 (kulan zebra biçimi çizgisiz, uzun kulak;
+  dagKecisi ceylan biçimi + geriye kıvrık boynuz + sakal, dağda; vasak kedi + kulak püskülü + kısa kuyruk, yırtıcı (dagKecisi, karaca), AV_STRATEJI; kizilTilki
+  kurt biçimi + beyaz kuyruk ucu, fareAvliyor; porsuk vombat biçimi + yüz şeritleri, gece kokEseliyor; ormanda kizilGeyik (sonbaharda 'bogur' → bogurme,
+  erkek genç/yetişkin), karaca, yabanDomuzu (tehlikeli, gece 'esele')). Kuzeyde huş ormanı HUS (40,150) r50 (bölge husOrman, YER m_hus, zemin yaprak,
+  sahnede beyaz gövdeli huşlar; yaprak sonbaharda sarı, kışın yok; ortam_galeri katmanı). MOGOL_CANLILARI + 22 (32), KUCUK_SESLI ibibik, bozkirCekirgesi.
+  merkez araştırması bozkirOrmanDag. Sesler (akış R1AN6H1CX2wNrRrpqPLB) 8 tür konumlu (UC_B) + 2 küçük canlı; assets/efekt 630.
+  Yeni türde doldurulacak tablolar: veri TURLER (+avlar), mantik SOZ/DUYULAR/GEBE_GUN/ACLIK_SURESI/AV_STRATEJI/KOSU_SESI + xPlanSec, ekosistem YASAM,
+  gece GOZ, yonetim IUCN, sahne modeli, sesleri-isle.sh UC_B. Test /tmp/claude-0/kr/mg1.js, mg4.js (plan sayımı). Telefonda doğrulanmadı.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

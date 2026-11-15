@@ -175,6 +175,8 @@ function kutupZemin(d) {
       return mgKar ? 'Pınarın başındasın: sazlık donmuş; yalnızca kaynağın ağzında buharı tüten küçük bir su açıklığı kalmış.' : 'Pınarın başındasın: soğuk, berrak bir kaynak ve çevresinde sazlık; yer yumuşak ve çamurlu, toynak izleriyle dolu.';
     case 'kumul':
       return 'Kum tepelerindesin: rüzgârın şekillendirdiği sarı kumullar ve aralarda seyrek, sert çalılar. Gobi Çölü buradan güneye uzanıyor.';
+    case 'husOrman':
+      return mgKar ? 'Huş ormanındasın: yapraksız, beyaz gövdeli ağaçlar karın içinde dimdik duruyor; kabuklarında kara benekler. Rüzgâr burada daha az.' : mev === 'sonbahar' ? 'Huş ormanındasın: beyaz gövdeler ve altın sarısı yapraklar; yer dökülen yapraklarla kaplı, ayak sesin hışırdıyor.' : 'Huş ormanındasın: beyaz gövdeli, ince huş ağaçları ve yeşil, titreşen yapraklar; gölgeli ve serin, yerde eğreltiotları ve mantarlar.';
     case 'mgDere':
       return 'Kuru dere yatağındasın: çakıllar ve kum; kenarlarında birkaç cılız söğüt. Yağmurdan sonra kısa bir süre akar.';
     case 'hnUs':

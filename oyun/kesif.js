@@ -322,7 +322,7 @@ export function mogolaVar(d) {
   const mev = Kt.MOGOL.MEVSIM_ADI[M.kutupMevsimi(k)];
   M.arsivOlay(d, 'Saha gezisi: Moğol bozkırı.');
   const tanitim = ilk
-    ? 'Orta Moğolistan\'da, Hustai bozkırındaki ger kampına geldin. Çevrende ufka kadar ağaçsız bir bozkır uzanıyor. Kuzeydoğuda tek su kaynağı olan pınar ve sazlığı, batıya uzanan kuru dere yatağı, kuzeybatıda kayalık bir dağ, güneydoğuda Gobi\'nin kenarındaki kum tepeleri var. Mevsimler: kısa yeşil yaz, sonbahar, −30 dereceye inen sert kış ve rüzgârlı ilkbahar. Araç yok; yürüyerek araştırırsın. Sürüler çok ürkektir, uzaktan dürbünle izle; kar leoparını dağda, kayaların arasında ara. '
+    ? 'Orta Moğolistan\'da, Hustai bozkırındaki ger kampına geldin. Çevrende ufka kadar bir bozkır uzanıyor; kuzeyde küçük bir huş ormanı var. Kuzeydoğuda tek su kaynağı olan pınar ve sazlığı, batıya uzanan kuru dere yatağı, kuzeybatıda kayalık bir dağ, güneydoğuda Gobi\'nin kenarındaki kum tepeleri var. Mevsimler: kısa yeşil yaz, sonbahar, −30 dereceye inen sert kış ve rüzgârlı ilkbahar. Araç yok; yürüyerek araştırırsın. Sürüler çok ürkektir, uzaktan dürbünle izle; kar leoparını dağda, kayaların arasında ara. '
     : 'Hustai\'deki ger kampına döndün. ';
   const m = `${tanitim}Şimdi ${mev}. ${Kt.MOGOL.isikSozu(k.dk)} ${Kt.MOGOL.havaSozu(M.kutupHavasi(k), k.dk)}`;
   M.olay(d, 'kutup', m, 3, { gelis: true });

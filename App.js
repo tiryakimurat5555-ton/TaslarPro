@@ -239,6 +239,9 @@ function kutupOrtami(d) {
     const ly = o.y - Kt.MOGOL.MERKEZ.y;
     const dg = 0.7 * yakin(Math.hypot(lx - Kt.MOGOL.DAG.lx, ly - Kt.MOGOL.DAG.ly) - Kt.MOGOL.DAG.r * 0.6, 70);
     if (dg > 0.01) h.ortam_kayalik = dg;
+    const evH = M.evreSimdi(k);
+    const hs = 0.75 * yakin(Math.hypot(lx - Kt.MOGOL.HUS.lx, ly - Kt.MOGOL.HUS.ly) - Kt.MOGOL.HUS.r * 0.6, 60);
+    if (!kis && hs > 0.01 && (evH === 'gunduz' || evH === 'safak')) h.ortam_galeri = hs; // huş ormanında kuşlar
     if (hv && (hv.tur === 'yagmurlu')) h.ortam_yagmur = 0.75;
     if (hv && hv.tur === 'toz') h.ortam_tipi = 0.55;
     const ev = M.evreSimdi(k);
@@ -457,6 +460,7 @@ const kucuk = (s) => s.toLocaleLowerCase('tr-TR');
 
 // ---------------- Yenilikler (en yeniler üstte): Murat denerken neyin nerede olduğunu bulsun diye ----------------
 const YENILIKLER = [
+  { baslik: 'Moğol bozkırına yeni hayvanlar ve huş ormanı', metin: 'Moğolistan\'da gerçekten yaşayan sekiz büyük hayvan daha eklendi: kulan (Moğol yaban eşeği), Sibirya dağ keçisi, vaşak, kızıl geyik, karaca, yaban domuzu, kızıl tilki ve porsuk; her birinin kendi sesi ve davranışı var. Kuzeyde yeni bir huş ormanı var: geyikler, karacalar ve domuzlar orada saklanır, sonbaharda geyikler böğürür. Vaşak dağda dağ keçisi ve karaca avlar, tilkiler fare avlar. 22 yeni küçük canlı (akbabalar, ibibik, gerbil, çekirge, Apollo kelebeği ve başkaları).', nerede: 'Moğol bozkırı haritası. Yerler > Huş ormanı. Yardım > Moğol bozkırı.' },
   { baslik: 'Yeni harita: Moğol bozkırı', metin: 'Orta Moğolistan\'da, Hustai bozkırında serbestçe dolaşılan yeni bir harita. Przewalski atı (takhi), kar leoparı, saiga antilobu, Moğol kurdu, Moğol ceylanı ve argali yaban koyunu yaşıyor; her birinin kendi sesi var. Kışı −30 dereceye inen sert bir kış, kar fırtınası (buran) ve ilkbaharda toz fırtınaları var.', nerede: 'Merkez > Saha gezileri > Moğol bozkırı: yola çık (itibar 75). Yardım > Moğol bozkırı.' },
   { baslik: 'Yeni harita: Hindistan ormanı', metin: 'Orta Hindistan\'da, Kanha ormanında serbestçe dolaşılan yeni bir harita. Bengal kaplanı, Hint fili, benekli geyik, sambar geyiği, gaur ve gri langur yaşıyor; her birinin kendi sesi var. Geniş bir çayır, nilüferli göl, sal ve bambu ormanları, kayalık yayla. Mevsimler muson, muson sonrası, serin kış ve kavurucu yaz. Kaplan yaklaşınca benekli geyikler ve langurlar alarm verir; sesin geldiği yön kaplanın yönüdür. Kaplan sıcakta göle girer, langurların düşürdüğü yaprakları geyikler toplar. 10 küçük canlı (tavus kuşu, ateş böceği, dev sincap), 3 bitki, üç araştırma ve bir gizem eklendi. İtibarın 65 olunca açılır.', nerede: 'Araştırma merkezi, Saha gezileri: Hindistan ormanı, yola çık. Yardım, Hindistan ormanı.' },
   { baslik: 'Yeni harita: Avustralya çalılığı', metin: 'Queensland iç kesiminde, savandan ayrı, serbestçe dolaşılan yeni bir harita. Kırmızı kanguru, koala, emu, vombat ve dingo yaşıyor; her birinin kendi sesi var. Kızıl topraklı otlak, billabong denen su gölü, kuru dere yatağı, okaliptüs ormanı, kızıl kumtaşı kayalar, spinifex çalılığı ve termit kuleleri. Yazı yağışlı, kışı kurak; toz fırtınaları çıkar. Kangurular öğle sıcağında gölgede yatar, koalalar ağaçta uyur, dingolar uluyarak avlanır. 12 küçük canlı (kookaburra, ornitorenk, ekidna, dikenli iblis), 5 bitki, üç araştırma ve bir gizem eklendi. Çalılığın gündüz, gece ve billabong sesleri var. İtibarın 60 olunca açılır.', nerede: 'Araştırma merkezi, Saha gezileri: Avustralya çalılığı, yola çık. Yardım, Avustralya çalılığı.' },
@@ -686,11 +690,11 @@ const YARDIM = [
     baslik: 'Moğol bozkırı',
     satirlar: [
       'Moğolistan gezisi: Araştırma merkezi, Saha gezileri bölümünde. Bilimsel itibarın 75 olunca açılır. İstasyondayken Moğol bozkırı, yola çık satırını seç; yol, izin ve konaklama 3.600 lira tutar, yolculuk 5,5 oyun saati sürer.',
-      'Ayrı, serbestçe dolaşılan bir harita. Ger kampının çevresinde ufka kadar ağaçsız bir bozkır var. Kuzeydoğuda tek su kaynağı olan pınar ve sazlık, batıya uzanan kuru dere yatağı, kuzeybatıda kayalık dağ, güneydoğuda Gobi\'nin kenarındaki kum tepeleri.',
+      'Ayrı, serbestçe dolaşılan bir harita. Ger kampının çevresinde ufka kadar bozkır var; kuzeyde beyaz gövdeli huş ağaçlarından küçük bir orman. Kuzeydoğuda tek su kaynağı olan pınar ve sazlık, batıya uzanan kuru dere yatağı, kuzeybatıda kayalık dağ, güneydoğuda Gobi\'nin kenarındaki kum tepeleri.',
       'Mevsimler: 8 gün kısa yeşil yaz, 4 gün sonbahar (argali erkeklerinin boynuz dövüşleri), 8 gün sert kış (−30 derece, kar, bazen birkaç saat süren buran fırtınası; hayvanlar karı kazıp kuru otu yer), 4 gün rüzgârlı ilkbahar (toz fırtınaları, doğumlar).',
-      'Hayvanlar: Przewalski atı (takhi), kar leoparı, saiga antilobu, Moğol kurdu, Moğol ceylanı ve argali. Yaban atları haremler hâlinde yaşar, toz banyosu yapar; kurt yaklaşınca aygır kısraklarını toplar. Kar leoparı ve argali kayalık dağdadır; leopar kayalarla aynı renktedir, sabırla ara. Kurtlar geceleri birlikte uluyabilir.',
+      'Hayvanlar: Przewalski atı (takhi), kulan (yaban eşeği), kar leoparı, Sibirya dağ keçisi, saiga antilobu, Moğol ceylanı, argali, Moğol kurdu, vaşak, kızıl tilki, porsuk; huş ormanında kızıl geyik, karaca ve yaban domuzu. Vaşak dağda ve ormanda dağ keçisi ve karaca avlar; tilkiler fare avlar, porsuk gece yuvasından çıkar; sonbaharda kızıl geyik erkekleri böğürür. Yaban atları haremler hâlinde yaşar, toz banyosu yapar; kurt yaklaşınca aygır kısraklarını toplar. Kar leoparı ve argali kayalık dağdadır; leopar kayalarla aynı renktedir, sabırla ara. Kurtlar geceleri birlikte uluyabilir.',
       'Bozkırda saklanacak yer yok; sürüler çok ürkektir ve uzaktan kaçar. Dürbünle uzaktan izle, rüzgârı arkana alma.',
-      'Küçük canlılar (tarbagan, telli turna, bozkır kartalı, bağırtlak, tarlakuşu, pika, jerboa, manul, korsak tilkisi, engerek), 3 bitki, merkezde üç Moğolistan araştırması ve bir gizem var. Dönüş: ana menüde ve Yerler listesinde Savana dön satırı.',
+      'Küçük canlılar (tarbagan, telli turna, bozkır kartalı, akbabalar, doğanlar, ibibik, keklik, ağaçkakan, pika, gerbil, jerboa, yer sincapları, manul, korsak tilkisi, engerek, kum kertenkelesi, karakurbağası, çekirge, Apollo kelebeği ve başkaları; 32 tür), 3 bitki, merkezde üç Moğolistan araştırması ve bir gizem var. Dönüş: ana menüde ve Yerler listesinde Savana dön satırı.',
     ],
   },
   {
@@ -2813,7 +2817,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
           });
         if (M.oyuncuKutupta(k)) ogeler.splice(1, 0, kutupDonSatiri());
         const durM = K.kutupDurumu(k, 'mogol');
-        ogeler.splice(1, 0, bilgi('bmogol', K.kutupSatiri(k, 'mogol'), 'Orta Moğolistan\'da, Hustai bozkırında serbestçe dolaşılan ayrı bir harita: Przewalski atı, kar leoparı, saiga, Moğol kurdu, Moğol ceylanı ve argali. Ufka kadar bozkır, bir pınar, kayalık dağ ve kum tepeleri; kışı çok sert.'));
+        ogeler.splice(1, 0, bilgi('bmogol', K.kutupSatiri(k, 'mogol'), 'Orta Moğolistan\'da, Hustai bozkırında serbestçe dolaşılan ayrı bir harita: Przewalski atı, kulan, kar leoparı, dağ keçisi, saiga, Moğol ceylanı, argali, kurt, vaşak, tilki, porsuk, kızıl geyik, karaca ve yaban domuzu. Ufka kadar bozkır, bir pınar, kayalık dağ ve kum tepeleri; kışı çok sert.'));
         if (durM.acik && !M.oyuncuKutupta(k))
           ogeler.splice(2, 0, {
             id: 'gitmogol',

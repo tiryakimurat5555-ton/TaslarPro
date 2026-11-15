@@ -297,6 +297,14 @@ export const ARASTIRMALAR = [
     sonuc: 'Bozkırın sert koşullarına uyum belgelendi: otçullar karı kazıp kuru otu buluyor, atlar toz banyosuyla parazitlerden kurtuluyor, aygır haremini kurtlara karşı koruyor. Argali erkeklerinin sonbahar dövüşleri haftalarca sürüyor.',
   },
   {
+    id: 'bozkirOrmanDag',
+    ad: 'Huş ormanı ve dağın hayvanları',
+    kosulMetni: 'Kızıl geyik, karaca, yaban domuzu, vaşak, dağ keçisi ve kulanı kaydet; geyiğin böğürmesini, domuzun toprağı eşelemesini ve tilkinin fare avını gözle',
+    ilerleme: (k) => [['kizilGeyik', 'karaca', 'yabanDomuzu', 'vasak', 'dagKecisi', 'kulan'].filter((t) => k.arsiv.turler[t]).length + [['kizilGeyik', 'bogurme'], ['yabanDomuzu', 'kokEseliyor'], ['kizilTilki', 'fareAvliyor']].filter(([t, dv]) => davranisVar(k, t, dv)).length, 9],
+    odul: { itibar: 16, fon: 6000 },
+    sonuc: 'Bozkırın içindeki ormanın ve dağın kendi topluluğu olduğu gösterildi: geyikler, karacalar ve domuzlar huş ormanına sığınıyor, vaşak dağ keçisi ve karaca avlıyor, tilkiler bozkırın bol farelerini yakalıyor. Kulanlar suya uzak, kurak kenarlarda dolaşıyor.',
+  },
+  {
     id: 'bozkirOtlari',
     ad: 'Otların ve tarbaganların bozkırı',
     kosulMetni: '3 Moğolistan bitkisini incele ve 5 Moğolistan küçük canlısını bul',
