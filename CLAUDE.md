@@ -668,6 +668,17 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   R1AN6H1CX2wNrRrpqPLB) 20 tür konumlu + k_ara, k_gergedanBoynuzgaga + 9 ortam döngüsü (Yellowstone gündüz ilk kayıt -53 LUFS'tü, yeniden
   üretildi). assets 881. Testler: /tmp/claude-0/kr/ek1.js (H=<id> GUN=1), dayanıklılık 100/100, bot, menu-tara Amazon ve Yellowstone
   (/tmp/claude-0/ek-<id>.json) iki kipte sorun 0, görüntüler scratchpad ek-goruntu.cjs (/tmp/claude-0/ek-kayit.json). Telefonda doğrulanmadı.
+- EK HARİTALARA YENİ TÜRLER (15 Kasım 2026, Murat "yeni eklediğin haritaların hayvan çeşitliliğini arttır gerçeklikten kopmadan"; sayılar ÖNERİ):
+  veri.js ayrı blok, 26 tür. Amazon oselo (yırtıcı: aguti, paka), aguti (tohumGomuyor), paka, kirmiziMazama, beyazUakari (agacta, kırmızı yüz),
+  tukuxi, amazonManati (suBitkisiYiyor, cocha), gozlukluKayman (karaKaiman dalı). Yellowstone karaAyi (kış ini, agacaTirmaniyor), katirGeyigi, dagKoyunu
+  (sonbahar 'boynuz'), karKecisi (yerli değil, metinde), kuzeySuSamuru (gölde; kışın kardaKayiyor), kizilVasak (yırtıcı, 'fare'). Borneo domuzKuyrukluMakak
+  (rhesus modeli), gumusLangur (turuncu yavru, yavruTasiyor), suVarani (perentie modeli), borneoSambari, fareGeyigi (boynuzsuz, köpek dişi), binturong (agacta,
+  ayrı model), duzTuyluSamur (sirayaDiziliyor, oksbov). Madagaskar devSican (in), darCizgiliMongoz (bocekAriyor), dumerilBoasi (yaprakAltindaPusu),
+  orumcekKaplumbagasi (kışın kumaGomulmus), mirza (agacta, bocekSalgisiYaliyor). Avlar genişledi (jaguar mazama/paka, kurt/puma/koyot katır geyiği, puma dağ
+  koyunu, bulutlu leopar fare geyiği/makak/langur, fossa dev sıçan/mirza). alarmVeren yeni türler; ekGrupAdim tekil hayvanda "sürüsü" demez.
+  OTLAMAYAN_EK (kutupDavranis 'otla' → yiyecekAriyor). IUCN'a DD (yetersiz veri) eklendi. Sesler (akış R1AN6H1CX2wNrRrpqPLB, 3 sn) oselo aguti paka uakari tukuxi
+  manati karaayi faregeyigi binturong devsican mongoz mirza; öbürleri mevcut sesleri kullanır. assets/efekt 326. Testler: ek1.js 4 harita 2 gün, dayanıklılık
+  100/100, bot, menu-tara 4 harita sorun 0 (/tmp/claude-0/kr/ekkayit2.js → ek-<id>.json). Var olan çift kısa kodlar KNG (kongoni/kanguru), ORK (oriks/orka).
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

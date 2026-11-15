@@ -308,6 +308,16 @@ export const DAVRANISLAR = {
   sicakSudaIsiniyor: { fiil: 'sıcak su kaynaklarının buharı içinde duruyor; kışın burada toprak karsız ve ılık', ad: 'Sıcak kaynakta ısınma' },
   guneseTapiyor: { fiil: 'yüzünü güneşe dönüp kollarını iki yana açmış, karnını ısıtıyor', ad: 'Güneşe tapma', nadir: true },
   danslaSekiyor: { fiil: 'kollarını havaya kaldırıp iki ayağı üstünde yan yan sekerek açıklığı geçiyor', ad: 'Sifaka dansı', nadir: true },
+  tohumGomuyor: { fiil: 'ön ayaklarıyla küçük bir çukur kazıp bir tohumu gömüyor, üstünü yapraklarla örtüyor; unuttuğu tohumlardan yeni ağaçlar büyüyecek', ad: 'Tohum gömme', nadir: true },
+  suBitkisiYiyor: { fiil: 'yüzeyin hemen altında, dudaklarıyla yüzen otları ve su bitkilerini koparıp yiyor', ad: 'Su bitkisi yeme', nadir: true },
+  agacaTirmaniyor: { fiil: 'kısa pençelerini kabuğa geçirip bir ağaç gövdesine tırmanıyor', ad: 'Ağaca tırmanma', nadir: true },
+  kardaKayiyor: { fiil: 'karlı kıyıdan karnının üstünde kayarak suya iniyor, sonra yamaca çıkıp yeniden kayıyor', ad: 'Karda kayma', nadir: true },
+  sirayaDiziliyor: { fiil: 'ailesiyle yarım daire oluşturmuş; balık sürüsünü birlikte kıyıya doğru sürüyor', ad: 'Ortak balık avı', nadir: true },
+  bocekAriyor: { fiil: 'burnunu yaprak döküntüsünün ve çürük kütüklerin arasına sokup böcek larvası ve yumurta arıyor', ad: 'Böcek arama' },
+  yaprakAltindaPusu: { fiil: 'kuru yaprakların arasında halka olmuş, kımıldamadan bekliyor; deseni onu neredeyse görünmez yapıyor', ad: 'Yaprak altında pusu', nadir: true },
+  kumaGomulmus: { fiil: 'kumun içine gömülmüş, kurak mevsimi uykuda geçiriyor; yalnızca kabuğunun tepesi görünüyor', ad: 'Kuraklık uykusu', nadir: true },
+  bocekSalgisiYaliyor: { fiil: 'bir dalın üstünde, küçük böceklerin bıraktığı tatlı salgıyı yalıyor', ad: 'Böcek salgısı yalama', nadir: true },
+  yavruTasiyor: { fiil: 'sürüden bir dişi, parlak turuncu tüylü yavruyu kucağına almış taşıyor', ad: 'Yavruyu paylaşma', nadir: true },
   kokuDovusu: { fiil: 'bileğindeki kokulu bezi kuyruğuna sürüp kuyruğunu rakibine doğru sallıyor: koku dövüşü', ad: 'Koku dövüşü', nadir: true },
   tikirdatiyor: { fiil: 'ince, uzun orta parmağıyla ağaç gövdesine hızlı hızlı tıklıyor, kulaklarını dayayıp içerideki larvayı dinliyor', ad: 'Parmakla tıklama', nadir: true },
   nehriGeciyor: { fiil: 'nehre atlamış, burnunu sudan çıkarıp yüzerek karşı kıyıya geçiyor', ad: 'Nehri yüzerek geçme', nadir: true },
@@ -963,7 +973,7 @@ const AZY = AMAZON.y;
 Object.assign(TURLER, {
   jaguar: {
     ad: 'Jaguar', bilimsel: 'Panthera onca', kisa: 'JAG', sinif: 'Memeli', ses: 'jaguar', sekil: 'kedi', boy: 1.05, renk: '#c8963a', kutup: true, harita: 'amazon',
-    hiz: 12, aktif: 'karma', kacis: 55, tehlikeli: true, yirtici: true, avlar: ['kapibara', 'pekari', 'tapir'], sesSik: 240, sesTuru: 'bolge',
+    hiz: 12, aktif: 'karma', kacis: 55, tehlikeli: true, yirtici: true, avlar: ['kapibara', 'pekari', 'tapir', 'kirmiziMazama', 'paka'], sesSik: 240, sesTuru: 'bolge',
     habitat: { x: AZX, y: AZY - 20, r: 140 }, grup: [1, 1], erkekOran: 0.5,
     tarif: 'Amerika kıtasının en büyük kedisi. Tüylerindeki rozet benekler leopardan iri ve ortalarında küçük kara noktalar vardır. Isırığı o kadar güçlüdür ki kaplumbağa kabuğunu ve kaymanın kafatasını kırabilir. Yüzmeyi sever; várzea ormanında sel aylarında ağaçtan ağaca, sudan suya avlanır.',
   },
@@ -1022,7 +1032,7 @@ Object.assign(TURLER, {
   },
   griKurt: {
     ad: 'Gri Kurt', bilimsel: 'Canis lupus', kisa: 'GKR', sinif: 'Memeli', ses: 'mogolkurdu', sekil: 'kurt', boy: 0.95, renk: '#7a7a76', kutup: true, harita: 'yellowstone',
-    hiz: 13, aktif: 'karma', kacis: 60, yirtici: true, avlar: ['wapiti', 'bizon', 'catalBoynuz'], sesSik: 110, sesTuru: 'bolge',
+    hiz: 13, aktif: 'karma', kacis: 60, yirtici: true, avlar: ['wapiti', 'bizon', 'catalBoynuz', 'katirGeyigi'], sesSik: 110, sesTuru: 'bolge',
     habitat: { x: YSX, y: YSY, r: 150 }, grup: [4, 7], erkekOran: 0.5,
     tarif: '1995\'te, yetmiş yıllık yokluğun ardından Yellowstone\'a geri getirilen kurtlar bütün ekosistemi değiştirdi: geyikler nehir kıyılarında rahat otlayamaz oldu, söğütler ve kavaklar yeniden büyüdü, kunduzlar geri döndü. Sürüyü bir alfa çift yönetir; kışın karda geyik avlarlar.',
   },
@@ -1052,13 +1062,13 @@ Object.assign(TURLER, {
   },
   puma: {
     ad: 'Puma (Dağ Aslanı)', bilimsel: 'Puma concolor', kisa: 'PMA', sinif: 'Memeli', ses: 'puma', sekil: 'kedi', boy: 0.9, renk: '#b8946a', kutup: true, harita: 'yellowstone',
-    hiz: 13, aktif: 'gece', kacis: 60, yirtici: true, avlar: ['wapiti', 'catalBoynuz'], sesSik: 280, sesTuru: 'bolge',
+    hiz: 13, aktif: 'gece', kacis: 60, yirtici: true, avlar: ['wapiti', 'catalBoynuz', 'katirGeyigi', 'dagKoyunu'], sesSik: 280, sesTuru: 'bolge',
     habitat: { x: YSX - 130, y: YSY + 100, r: 60 }, grup: [1, 1], erkekOran: 0.5,
     tarif: 'Beneksiz, kum renginde, uzun kuyruklu büyük bir kedi. Kükreyemez; ama çiftleşme döneminde insan çığlığına benzeyen bir ses çıkarır. Kayalık yamaçlarda yalnız yaşar, geyiği pusudan atlayarak yakalar ve artanını yaprakla örtüp saklar. Neredeyse hiç görülmez.',
   },
   coyote: {
     ad: 'Çakal Kurt (Koyot)', bilimsel: 'Canis latrans', kisa: 'KYT', sinif: 'Memeli', ses: 'coyote', sekil: 'kurt', boy: 0.6, renk: '#a8906a', kutup: true, harita: 'yellowstone',
-    hiz: 13, aktif: 'karma', kacis: 45, yirtici: true, lesci: true, avlar: ['catalBoynuz'], sesSik: 110, sesTuru: 'bolge',
+    hiz: 13, aktif: 'karma', kacis: 45, yirtici: true, lesci: true, avlar: ['catalBoynuz', 'katirGeyigi'], sesSik: 110, sesTuru: 'bolge',
     habitat: { x: YSX + 60, y: YSY - 80, r: 120 }, grup: [2, 3], erkekOran: 0.5,
     tarif: 'Kurttan küçük, ince yüzlü, büyük kulaklı bir köpekgil. Karın altındaki fareleri sesinden bulup havaya sıçrayarak üstlerine dalar. Akşamları kesik havlamalar ve uzun ulumalarla birbirine seslenir. Kurtlar geri gelince sayıları azaldı.',
   },
@@ -1087,7 +1097,7 @@ Object.assign(TURLER, {
   },
   bulutluLeopar: {
     ad: 'Borneo Bulutlu Leoparı', bilimsel: 'Neofelis diardi', kisa: 'BLP', sinif: 'Memeli', ses: 'bulutluleopar', sekil: 'kedi', boy: 0.75, renk: '#8a7a5a', kutup: true, harita: 'borneo',
-    hiz: 11, aktif: 'gece', kacis: 60, yirtici: true, avlar: ['sakalliDomuz', 'hortumluMaymun'], sesSik: 300, sesTuru: 'bolge',
+    hiz: 11, aktif: 'gece', kacis: 60, yirtici: true, avlar: ['sakalliDomuz', 'hortumluMaymun', 'fareGeyigi', 'domuzKuyrukluMakak', 'gumusLangur'], sesSik: 300, sesTuru: 'bolge',
     habitat: { x: BNX - 60, y: BNY - 80, r: 100 }, grup: [1, 1], erkekOran: 0.5,
     tarif: 'Postundaki iri, bulut biçimli koyu lekelerden adını alır. Vücuduna göre bütün kedilerin en uzun köpek dişleri ondadır. Ayak bilekleri öyle esnektir ki ağaçtan baş aşağı inebilir, daldan sarkabilir. O kadar gizli yaşar ki bilim insanları bile onu çoğunlukla kamera tuzaklarından tanır.',
   },
@@ -1134,7 +1144,7 @@ Object.assign(TURLER, {
   },
   fossa: {
     ad: 'Fossa', bilimsel: 'Cryptoprocta ferox', kisa: 'FOS', sinif: 'Memeli', ses: 'fossa', sekil: 'kedi', boy: 0.7, renk: '#7a5a3a', kutup: true, harita: 'madagaskar',
-    hiz: 12, aktif: 'karma', kacis: 50, yirtici: true, avlar: ['halkaKuyruk', 'sifaka', 'kizilAlinliLemur'], sesSik: 260, sesTuru: 'bolge',
+    hiz: 12, aktif: 'karma', kacis: 50, yirtici: true, avlar: ['halkaKuyruk', 'sifaka', 'kizilAlinliLemur', 'devSican', 'mirza'], sesSik: 260, sesTuru: 'bolge',
     habitat: { x: MDX, y: MDY + 20, r: 140 }, grup: [1, 1], erkekOran: 0.5,
     tarif: 'Madagaskar\'ın en büyük yırtıcısı. Kediye benzer ama mongozların akrabasıdır. Gövdesi kadar uzun kuyruğu ve döndürülebilen ayak bilekleriyle ağaçlarda lemurları kovalar; lemurların başlıca düşmanıdır. Adada hiç büyük kedi olmadığından onların yerini o almıştır.',
   },
@@ -1155,6 +1165,175 @@ Object.assign(TURLER, {
     hiz: 7, aktif: 'gece', kacis: 25, sesSik: 160, sesTuru: 'iletisim',
     habitat: { x: MDX - 60, y: MDY - 40, r: 100 }, grup: [3, 6], erkekOran: 0.4,
     tarif: 'Madagaskar\'daki tek yaban domuzu; büyük olasılıkla insanlarla birlikte Afrika\'dan gelmiştir. Gece galeri ormanında toprağı eşeleyerek kök ve böcek arar. Gündüzü sık çalıların içinde uyuyarak geçirir.',
+  },
+});
+// ---------- Yeni haritaların ek türleri (15 Kasım 2026, Murat "hayvan çeşitliliğini arttır, gerçeklikten kopmadan") ----------
+// Amazon: oselo, aguti, paka, kızıl mazama, ak uakari, tukuxi, Amazon manatisi, gözlüklü kayman
+Object.assign(TURLER, {
+  oselo: {
+    ad: 'Oselo', bilimsel: 'Leopardus pardalis', kisa: 'OSL', sinif: 'Memeli', ses: 'oselo', sekil: 'kedi', boy: 0.55, renk: '#c89a5a', kutup: true, harita: 'amazon',
+    hiz: 11, aktif: 'gece', kacis: 50, yirtici: true, avlar: ['aguti', 'paka'], sesSik: 280, sesTuru: 'bolge',
+    habitat: { x: AZX + 80, y: AZY - 110, r: 90 }, grup: [1, 1], erkekOran: 0.5,
+    tarif: 'Ev kedisinin iki katı büyüklüğünde, zincir gibi uzun koyu lekeli, yanakları çizgili bir orman kedisi. Gece yere yakın avlanır: aguti, paka, kuş, kertenkele. Gündüzü bir ağaç kovuğunda ya da sık sarmaşıkların arasında uyuyarak geçirir. Bir zamanlar kürkü için çok avlandı; korunduktan sonra sayıları toparlandı.',
+  },
+  aguti: {
+    ad: 'Kara Aguti', bilimsel: 'Dasyprocta fuliginosa', kisa: 'AGT', sinif: 'Memeli', ses: 'aguti', sekil: 'tavsan', boy: 0.55, renk: '#4a3a2a', kutup: true, harita: 'amazon',
+    hiz: 10, aktif: 'gunduz', kacis: 25, sesSik: 160, sesTuru: 'alarm', alarmSesi: true,
+    habitat: { x: AZX - 30, y: AZY - 110, r: 90 }, grup: [1, 2], erkekOran: 0.5,
+    tarif: 'Uzun ince bacaklı, kuyruksuz, tavşan büyüklüğünde bir kemirgen. Dev Brezilya cevizinin taş gibi sert kabuğunu kırabilen az sayıdaki hayvandan biridir. Yiyemediği tohumları toprağa gömer, birçoğunu unutur; o tohumlardan yeni ağaçlar büyür. Bu yüzden ormanın bahçıvanı sayılır. Tehlikede arka ayağını yere vurup tiz bir sesle kaçar.',
+  },
+  paka: {
+    ad: 'Benekli Paka', bilimsel: 'Cuniculus paca', kisa: 'PKA', sinif: 'Memeli', ses: 'paka', sekil: 'tavsan', boy: 0.6, renk: '#6a4a30', kutup: true, harita: 'amazon',
+    hiz: 8, aktif: 'gece', kacis: 20, sesSik: 240, sesTuru: 'tehdit',
+    habitat: { x: AZX + 40, y: AZY + 30, r: 70 }, grup: [1, 1], erkekOran: 0.5,
+    tarif: 'Yanlarında dört-beş sıra beyaz benek bulunan iri, tıknaz bir kemirgen. Yanaklarındaki boş kemik odacıklar sesini yükseltir: tehdit edilince dişlerini takırdatıp derin bir hırıltı çıkarır. Gece suya yakın yerlerde düşen meyveleri yer; tehlikede suya atlayıp dalar. Gündüzü kıyıdaki bir oyukta geçirir.',
+  },
+  kirmiziMazama: {
+    ad: 'Kızıl Mazama Geyiği', bilimsel: 'Mazama americana', kisa: 'MZM', sinif: 'Memeli', ses: 'muntjak', sekil: 'geyik', boy: 0.62, renk: '#a0502a', kutup: true, harita: 'amazon',
+    hiz: 10, aktif: 'karma', kacis: 35, sesSik: 260, sesTuru: 'alarm',
+    habitat: { x: AZX + 20, y: AZY - 140, r: 90 }, grup: [1, 1], erkekOran: 0.5,
+    tarif: 'Kırmızımsı kahverengi, sırtı hafif kambur, küçük bir orman geyiği. Erkeklerinin yalnızca kısa, dalsız iki boynuzu vardır; sık çalıların arasından takılmadan geçmek için. Yalnız yaşar, düşen meyveleri ve yaprakları yer. Tehlikede donup kalır, sonra zikzak çizerek kaçar. Jaguarın sık yakaladığı avlardandır.',
+  },
+  beyazUakari: {
+    ad: 'Ak Uakari', bilimsel: 'Cacajao calvus calvus', kisa: 'UAK', sinif: 'Memeli', ses: 'uakari', sekil: 'dortayak', boy: 0.5, renk: '#e8dcc8', kutup: true, harita: 'amazon', agacta: true,
+    hiz: 6, aktif: 'gunduz', kacis: 30, sesSik: 100, sesTuru: 'iletisim',
+    habitat: { x: AZX - 30, y: AZY + 60, r: 70 }, grup: [10, 18], erkekOran: 0.4,
+    tarif: 'Uzun, dağınık beyaz tüyleri ve tüysüz, parlak kırmızı yüzüyle tanınan bir maymun. Yüzün kırmızılığı sağlığının göstergesidir: sıtma gibi hastalıklara yakalanan uakarinin yüzü solar. Kuyruğu çok kısadır. Yalnız sel ormanlarında yaşar ve dünyada en çok Mamirauá\'da görülür; ham meyvelerin sert tohumlarını güçlü dişleriyle kırar. Sel aylarında hiç yere inmez.',
+  },
+  tukuxi: {
+    ad: 'Tukuxi (Gri Nehir Yunusu)', bilimsel: 'Sotalia fluviatilis', kisa: 'TKX', sinif: 'Memeli', ses: 'tukuxi', sekil: 'balina', boy: 0.42, renk: '#8a929a', kutup: true, harita: 'amazon',
+    hiz: 9, aktif: 'gunduz', kacis: 30, suCanlisi: true, deniz: true, sesSik: 80, sesTuru: 'iletisim',
+    habitat: { x: AZX + 60, y: AZY + 170, r: 70 }, grup: [3, 6], erkekOran: 0.5,
+    tarif: 'Pembe yunustan küçük, gri, okyanus yunuslarına benzeyen bir nehir yunusu; sırtında üçgen bir yüzgeç vardır. Pembe yunusun aksine su basmış ormana girmez, açık nehirde kalır. Küçük gruplar hâlinde hızlı yüzer, sık sık sudan sıçrar ve balık sürülerini birlikte kıstırır.',
+  },
+  amazonManati: {
+    ad: 'Amazon Manatisi', bilimsel: 'Trichechus inunguis', kisa: 'AMN', sinif: 'Memeli', ses: 'manati', sekil: 'balina', boy: 0.75, renk: '#55565a', kutup: true, harita: 'amazon',
+    hiz: 3, aktif: 'karma', kacis: 25, suCanlisi: true, deniz: true, sesSik: 300, sesTuru: 'iletisim', nadirTur: true,
+    habitat: { x: AZX - 110, y: AZY - 60, r: 28 }, grup: [1, 2], erkekOran: 0.5,
+    tarif: 'Yalnız tatlı suda yaşayan tek deniz ineği; kalın, kırışık gri derisi, göğsünde beyaz ya da pembe bir leke ve kürek gibi yuvarlak bir kuyruğu vardır. Günde kendi ağırlığının onda biri kadar su bitkisi yer. Her birkaç dakikada bir yalnızca burun deliklerini çıkararak nefes alır; o yüzden çok zor görülür. Alçak su mevsiminde derin göllere sığınır. Avlanma yüzünden nesli tehlikede.',
+  },
+  gozlukluKayman: {
+    ad: 'Gözlüklü Kayman', bilimsel: 'Caiman crocodilus', kisa: 'GKY', sinif: 'Sürüngen', ses: 'timsah', sekil: 'timsah', boy: 0.72, renk: '#5a5a3e', kutup: true, harita: 'amazon',
+    hiz: 4, aktif: 'gece', kacis: 10, suCanlisi: true, sesSik: 300, sesTuru: 'tehdit',
+    habitat: { x: AZX + 110, y: AZY + 90, r: 40 }, grup: [2, 4], erkekOran: 0.5,
+    tarif: 'Gözlerinin arasındaki kemik çıkıntı bir gözlük köprüsüne benzediği için bu adı alır. Kara kaymandan çok daha küçüktür, iki metreyi pek geçmez. Gece fenerle bakılınca gözleri kırmızı parlar. Balık, kurbağa ve salyangoz yer; büyük kaymanların ve jaguarın avı olabilir.',
+  },
+});
+// Yellowstone: kara ayı, katır geyiği, kalın boynuzlu dağ koyunu, kayalık dağ keçisi, Kuzey Amerika su samuru, kızıl vaşak
+Object.assign(TURLER, {
+  karaAyi: {
+    ad: 'Amerikan Kara Ayısı', bilimsel: 'Ursus americanus', kisa: 'AKA', sinif: 'Memeli', ses: 'karaayi', sekil: 'ayi', boy: 0.82, renk: '#1e1a18', kutup: true, harita: 'yellowstone',
+    hiz: 9, aktif: 'karma', kacis: 40, tehlikeli: true, lesci: true, sesSik: 260, sesTuru: 'tehdit',
+    habitat: { x: YSX + 40, y: YSY + 130, r: 70 }, grup: [1, 2], erkekOran: 0.5,
+    tarif: 'Boz ayıdan küçük, omuz tümseği olmayan, düz yüz çizgili bir ayı. Adına rağmen her zaman kara değildir: Yellowstone\'dakilerin aşağı yukarı yarısı tarçın kahverengisi ya da sarımsıdır. Kısa, kıvrık pençeleriyle çok iyi ağaca tırmanır; tehlikede ağaca çıkar. Ormanı açıklığa yeğler; ot, böcek, meyve ve çam fıstığı yer, kışı inde uyuyarak geçirir.',
+  },
+  katirGeyigi: {
+    ad: 'Katır Geyiği', bilimsel: 'Odocoileus hemionus', kisa: 'KTR', sinif: 'Memeli', ses: 'karaca', sekil: 'geyik', boy: 0.85, renk: '#8a7a66', kutup: true, harita: 'yellowstone',
+    hiz: 12, aktif: 'karma', kacis: 45, sesSik: 260, sesTuru: 'alarm',
+    habitat: { x: YSX - 60, y: YSY - 120, r: 70 }, grup: [3, 6], erkekOran: 0.35,
+    tarif: 'Katırınkini andıran kocaman kulaklarından adını alır. Kalçası beyaz, kuyruğunun ucu kapkaradır. Tehlikede dört ayağıyla birden yaylanarak sıçrar: bu zıplayışla kayalık, engebeli yamaçlarda yönünü her adımda değiştirebilir. Yazı yüksek yamaçlarda, kışı alçak, rüzgârın karı süpürdüğü pelin çalılıklarında geçirir.',
+  },
+  dagKoyunu: {
+    ad: 'Kalın Boynuzlu Dağ Koyunu', bilimsel: 'Ovis canadensis', kisa: 'BGH', sinif: 'Memeli', ses: 'argali', sekil: 'ceylan', boy: 0.92, renk: '#8a7058', kutup: true, harita: 'yellowstone',
+    hiz: 10, aktif: 'gunduz', kacis: 40, sesSik: 200, sesTuru: 'iletisim',
+    habitat: { x: YSX - 125, y: YSY + 105, r: 50 }, grup: [5, 10], erkekOran: 0.35,
+    tarif: 'Erkeklerinin kafasında, bütün kemiklerinden ağır gelebilen kalın, kıvrık boynuzlar taşıyan bir yaban koyunu; kalçası beyazdır. Sarp kayalıklarda kendini güvende hisseder; kurt ve puma onu yalnız düzlükte yakalayabilir. Sonbaharda erkekler arka ayakları üstünde kalkıp saatte 30 kilometreyle kafa kafaya çarpışır; ses dağlarda yankılanır.',
+  },
+  karKecisi: {
+    ad: 'Kayalık Dağ Keçisi', bilimsel: 'Oreamnos americanus', kisa: 'KDK', sinif: 'Memeli', ses: 'dagkecisi', sekil: 'ceylan', boy: 0.8, renk: '#f2f0ea', kutup: true, harita: 'yellowstone',
+    hiz: 7, aktif: 'gunduz', kacis: 35, sesSik: 240, sesTuru: 'iletisim',
+    habitat: { x: YSX - 150, y: YSY + 140, r: 38 }, grup: [2, 5], erkekOran: 0.4,
+    tarif: 'Kar beyazı, kalın yünlü, sakallı, kısa kara boynuzlu bir dağ hayvanı; gerçek bir keçi değil, dağ keçisi ile antilop arasında bir akrabadır. Tabanlarındaki yumuşak yastıklar ve sert tırnak kenarları sayesinde neredeyse dik kayalarda yürür. Yellowstone\'a aslında ait değildir: komşu Montana\'ya avcılık için getirilen keçilerin torunları parkın kuzeydoğu dağlarına yayıldı; parkın yerli dağ koyunlarıyla rekabeti izleniyor.',
+  },
+  kuzeySuSamuru: {
+    ad: 'Kuzey Amerika Su Samuru', bilimsel: 'Lontra canadensis', kisa: 'KSS', sinif: 'Memeli', ses: 'susamuru', sekil: 'fok', boy: 0.42, renk: '#4a3828', kutup: true, harita: 'yellowstone',
+    hiz: 7, aktif: 'karma', kacis: 35, suCanlisi: true, karayaCikar: true, sesSik: 160, sesTuru: 'iletisim',
+    habitat: { x: YSX - 140, y: YSY - 130, r: 34 }, grup: [2, 4], erkekOran: 0.5,
+    tarif: 'Uzun, ince gövdeli, perde ayaklı, kalın kuyruklu bir su samuru. Balık, kurbağa ve kerevit avlar; kışın buzdaki deliklerden dalıp çıkar. Oyunbazdır: karlı yamaçlardan karnının üstünde kayarak iner, aynı yerden tekrar tekrar kayar. Yoğun kürkü onu donmuş göllerin soğuğundan korur.',
+  },
+  kizilVasak: {
+    ad: 'Kızıl Vaşak (Bobcat)', bilimsel: 'Lynx rufus', kisa: 'BBC', sinif: 'Memeli', ses: 'vasak', sekil: 'kedi', boy: 0.55, renk: '#a08060', kutup: true, harita: 'yellowstone',
+    hiz: 11, aktif: 'gece', kacis: 55, yirtici: true, avlar: ['katirGeyigi'], sesSik: 320, sesTuru: 'bolge', nadirTur: true,
+    habitat: { x: YSX + 90, y: YSY - 90, r: 80 }, grup: [1, 1], erkekOran: 0.5,
+    tarif: 'Kısa, kesik kuyruklu, kulak uçlarında küçük püsküller olan, benekli kahverengi bir vaşak; ev kedisinin iki katı kadardır. Çoğunlukla tavşan ve kemirgen avlar, kışın zaman zaman geyik yavrusu yakalar. Kayalıklarda ve çalılıklarda yalnız yaşar; o kadar gizlidir ki Yellowstone\'da yıllarca hiç görülmeden yaşayabilir.',
+  },
+});
+// Borneo: domuz kuyruklu makak, gümüş langur, su varanı, Borneo sambarı, fare geyiği, binturong, düz tüylü su samuru
+Object.assign(TURLER, {
+  domuzKuyrukluMakak: {
+    ad: 'Domuz Kuyruklu Makak', bilimsel: 'Macaca nemestrina', kisa: 'DKM', sinif: 'Memeli', ses: 'rhesus', sekil: 'dortayak', boy: 0.62, renk: '#7a6a50', kutup: true, harita: 'borneo',
+    hiz: 7, aktif: 'gunduz', kacis: 30, sesSik: 140, sesTuru: 'iletisim',
+    habitat: { x: BNX - 40, y: BNY - 120, r: 90 }, grup: [8, 15], erkekOran: 0.3,
+    tarif: 'Kısa, domuzunkini andıran kıvrık kuyruklu, iri, tıknaz bir makak. Başının tepesinde koyu bir tüy başlığı vardır. Ormanın tabanında uzun yollar yürür, düşen meyveleri, böcekleri ve tohumları toplar. Sürüyü baskın bir erkek yönetir. Palmiye tarlalarına girip genç palmiyelere zarar veren fareleri de yer; bu yüzden tarlalara yararı da vardır.',
+  },
+  gumusLangur: {
+    ad: 'Gümüş Langur', bilimsel: 'Trachypithecus cristatus', kisa: 'GML', sinif: 'Memeli', ses: 'langur', sekil: 'dortayak', boy: 0.52, renk: '#6a6c70', kutup: true, harita: 'borneo', agacta: true,
+    hiz: 5, aktif: 'gunduz', kacis: 25, sesSik: 160, sesTuru: 'iletisim',
+    habitat: { x: BNX + 70, y: BNY + 60, r: 60 }, grup: [8, 14], erkekOran: 0.2,
+    tarif: 'Gri tüylerinin uçları gümüş gibi parlayan, başında sivri bir tüy tepesi olan bir yaprak maymunu. En şaşırtıcı yanı yavrularıdır: parlak turuncu doğarlar, birkaç ay içinde griye döner. Sürünün bütün dişileri yavruyu sırayla kucağına alır. Hep nehir kıyısındaki ağaçlarda yaşar; yaprak ve tohum yer.',
+  },
+  suVarani: {
+    ad: 'Su Varanı', bilimsel: 'Varanus salvator', kisa: 'SVR', sinif: 'Sürüngen', ses: 'perentie', sekil: 'timsah', boy: 0.72, renk: '#3a3a2a', kutup: true, harita: 'borneo',
+    hiz: 5, aktif: 'gunduz', kacis: 14, suCanlisi: true, karayaCikar: true, lesci: true, sesSik: 320, sesTuru: 'tehdit',
+    habitat: { x: BNX - 60, y: BNY + 80, r: 60 }, grup: [1, 1], erkekOran: 0.5,
+    tarif: 'Dünyanın ikinci büyük kertenkelesi; iki metreyi geçebilir. Koyu gövdesinde sarı benek kuşakları vardır. Çok iyi yüzer, yarım saat su altında kalabilir; yassı kuyruğunu kürek gibi kullanır. Balık, kurbağa, kuş yumurtası ve leş yer; nehir kıyısının temizlikçisidir. Kıyıda güneşlenip ısınır.',
+  },
+  borneoSambari: {
+    ad: 'Borneo Sambarı', bilimsel: 'Rusa unicolor brookei', kisa: 'BSM', sinif: 'Memeli', ses: 'sambar', sekil: 'geyik', boy: 1.1, renk: '#5a4636', kutup: true, harita: 'borneo',
+    hiz: 10, aktif: 'gece', kacis: 40, sesSik: 300, sesTuru: 'alarm',
+    habitat: { x: BNX + 20, y: BNY - 70, r: 100 }, grup: [1, 3], erkekOran: 0.4,
+    tarif: 'Borneo\'nun en büyük geyiği: koyu kahverengi, kaba tüylü, kulakları geniş. Erkeklerinin üçer çatallı kalın boynuzları vardır. Geceleri ormanın açıklıklarında ve nehir kıyısında otlar, gündüzü sık çalılıkta saklanarak geçirir. Tehlikede ayağını yere vurur ve metal gibi çınlayan bir alarm sesi çıkarır.',
+  },
+  fareGeyigi: {
+    ad: 'Küçük Fare Geyiği (Kancil)', bilimsel: 'Tragulus kanchil', kisa: 'KNC', sinif: 'Memeli', ses: 'faregeyigi', sekil: 'ceylan', boy: 0.32, renk: '#9a6a3e', kutup: true, harita: 'borneo',
+    hiz: 9, aktif: 'gece', kacis: 18, sesSik: 300, sesTuru: 'alarm',
+    habitat: { x: BNX - 80, y: BNY - 40, r: 80 }, grup: [1, 1], erkekOran: 0.5,
+    tarif: 'Dünyanın en küçük toynaklısı: bir tavşan büyüklüğünde, kalem gibi ince bacaklı. Boynuzu yoktur; erkeklerin ağzının kenarından küçük sivri köpek dişleri çıkar. Tehlikede arka ayaklarıyla yere hızla vurarak davul çalar. Malay masallarında kurnaz kahramandır: timsahları sıraya dizip sırtlarından nehri geçtiği anlatılır.',
+  },
+  binturong: {
+    ad: 'Binturong (Ayı Kedisi)', bilimsel: 'Arctictis binturong', kisa: 'BNT', sinif: 'Memeli', ses: 'binturong', sekil: 'dortayak', boy: 0.6, renk: '#1e1c1a', kutup: true, harita: 'borneo', agacta: true,
+    hiz: 4, aktif: 'gece', kacis: 20, sesSik: 300, sesTuru: 'iletisim', nadirTur: true,
+    habitat: { x: BNX + 40, y: BNY - 10, r: 80 }, grup: [1, 1], erkekOran: 0.5,
+    tarif: 'Uzun, dağınık kara tüylü, beyaz bıyıklı, kulak uçları püsküllü bir misk kedisi akrabası. Gövdesi kadar uzun kuyruğuyla dala sarılır; bunu yapabilen tek Eski Dünya etoburudur. Çoğunlukla incir yer ve tohumlarını ormana yayar. Kokusu tuhaftır: bıraktığı koku işaretleri tıpkı patlamış mısır gibi kokar.',
+  },
+  duzTuyluSamur: {
+    ad: 'Düz Tüylü Su Samuru', bilimsel: 'Lutrogale perspicillata', kisa: 'DTS', sinif: 'Memeli', ses: 'susamuru', sekil: 'fok', boy: 0.5, renk: '#6a5038', kutup: true, harita: 'borneo',
+    hiz: 7, aktif: 'gunduz', kacis: 35, suCanlisi: true, karayaCikar: true, sesSik: 140, sesTuru: 'iletisim',
+    habitat: { x: BNX - 120, y: BNY - 30, r: 26 }, grup: [3, 6], erkekOran: 0.5,
+    tarif: 'Kısa, parlak tüylü, Asya\'nın en büyük su samuru. Aileler hâlinde, yarım daire oluşturup balık sürülerini kıyıya doğru sürerek birlikte avlanır. Islık ve cıvıltılarla haberleşir; kıyıda kumda yuvarlanıp tüylerini kurutur.',
+  },
+});
+// Madagaskar: dev sıçrayan sıçan, dar çizgili mongoz, Dumeril boası, örümcek kaplumbağası, Coquerel dev fare lemuru
+Object.assign(TURLER, {
+  devSican: {
+    ad: 'Dev Sıçrayan Sıçan (Votsotsa)', bilimsel: 'Hypogeomys antimena', kisa: 'VTS', sinif: 'Memeli', ses: 'devsican', sekil: 'tavsan', boy: 0.5, renk: '#8a6a4a', kutup: true, harita: 'madagaskar',
+    hiz: 8, aktif: 'gece', kacis: 18, sesSik: 300, sesTuru: 'alarm', nadirTur: true,
+    habitat: { x: MDX - 100, y: MDY - 100, r: 60 }, grup: [2, 3], erkekOran: 0.5,
+    tarif: 'Tavşan büyüklüğünde, uzun kulaklı, uzun arka bacaklı bir kemirgen; tehlikede kanguru gibi bir metre sıçrar. Yalnızca Menabe\'nin kuru ormanında, Kirindy çevresinde yaşar. Ömür boyu tek eşlidir; çift, birden çok girişi olan derin bir yuvayı birlikte kazar ve yavrular bir yıl yuvada kalır. Gece düşen tohum ve meyve toplar. Nesli kritik tehlikede; en büyük düşmanı fossadır.',
+  },
+  darCizgiliMongoz: {
+    ad: 'Dar Çizgili Mongoz', bilimsel: 'Mungotictis decemlineata', kisa: 'DCM', sinif: 'Memeli', ses: 'mongoz', sekil: 'kurt', boy: 0.32, renk: '#a8a090', kutup: true, harita: 'madagaskar',
+    hiz: 9, aktif: 'gunduz', kacis: 25, sesSik: 120, sesTuru: 'iletisim',
+    habitat: { x: MDX + 40, y: MDY - 80, r: 80 }, grup: [3, 6], erkekOran: 0.5,
+    tarif: 'Gri bej gövdesinde boylu boyunca sekiz-on ince koyu çizgi bulunan küçük bir etobur; yalnızca güneybatı Madagaskar\'ın kuru ormanlarında yaşar. Küçük gruplar hâlinde gündüz dolaşır, burnunu yaprakların ve çürük kütüklerin arasına sokup böcek larvası, yumurta ve küçük omurgalılar arar. Yaz aylarında ağaç kovuklarında, kurak mevsimde yer altında uyur.',
+  },
+  dumerilBoasi: {
+    ad: 'Dumeril Boası', bilimsel: 'Acrantophis dumerili', kisa: 'DMB', sinif: 'Sürüngen', ses: 'yilan', sekil: 'yilan', boy: 0.9, renk: '#8a7a5e', kutup: true, harita: 'madagaskar',
+    hiz: 1.5, aktif: 'karma', kacis: 3, sesSik: 600, sesTuru: 'tehdit',
+    habitat: { x: MDX - 40, y: MDY - 60, r: 90 }, grup: [1, 1], erkekOran: 0.5,
+    tarif: 'İki metreyi geçebilen, kahverengi ve gri elmas desenli, kalın gövdeli bir boa; zehirsizdir, avını sararak öldürür. Yaprak döküntüsünün içinde günlerce kımıldamadan pusuda bekler; deseni onu kuru yaprakların arasında görünmez yapar. Boalar Madagaskar\'da Güney Amerika\'dakilerin uzak akrabasıdır; adanın kıtalardan ayrıldığı çok eski zamanlardan kalmışlardır.',
+  },
+  orumcekKaplumbagasi: {
+    ad: 'Örümcek Kaplumbağası', bilimsel: 'Pyxis arachnoides', kisa: 'ORP', sinif: 'Sürüngen', ses: 'yilan', sekil: 'kaplumbaga', boy: 0.28, renk: '#3a2e1c', kutup: true, harita: 'madagaskar',
+    hiz: 0.8, aktif: 'gunduz', kacis: 3, sesSik: 900, sesTuru: 'tehdit', nadirTur: true,
+    habitat: { x: MDX + 90, y: MDY - 160, r: 60 }, grup: [1, 3], erkekOran: 0.5,
+    tarif: 'Avuç içine sığan, kabuğundaki sarı çizgiler örümcek ağına benzeyen minik bir kara kaplumbağası; yalnız güney kıyısının dikenli ormanında yaşar. Kurak mevsimde kumun içine gömülüp aylarca uykuya yatar; ilk yağmurla çıkıp taze yaprak ve mantar yer. Kaçakçılık ve ormanların yok olması yüzünden nesli kritik tehlikede.',
+  },
+  mirza: {
+    ad: 'Coquerel Dev Fare Lemuru', bilimsel: 'Mirza coquereli', kisa: 'MRZ', sinif: 'Memeli', ses: 'mirza', sekil: 'dortayak', boy: 0.32, renk: '#7a6a50', kutup: true, harita: 'madagaskar', agacta: true,
+    hiz: 5, aktif: 'gece', kacis: 15, sesSik: 240, sesTuru: 'iletisim',
+    habitat: { x: MDX + 60, y: MDY + 90, r: 50 }, grup: [1, 1], erkekOran: 0.5,
+    tarif: 'Sincap büyüklüğünde, iri gözlü, uzun gür kuyruklu bir gece lemuru. Gündüzü dallardan ve yapraklardan ördüğü küresel bir yuvada uyur. Kurak mevsimde ağaçların dallarına yapışan küçük böceklerin tatlı salgısını yalayarak hayatta kalır; böcek, örümcek ve küçük kertenkele de yakalar. Akşam karanlığında tiz ıslıklarla birbirine seslenir.',
   },
 });
 export const TUR_SIRASI = Object.keys(TURLER).filter((t) => !TURLER[t].kutup);
