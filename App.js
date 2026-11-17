@@ -6,7 +6,7 @@
 // Yapı: oyun/veri.js, oyun/mantik.js (saf mantık), oyun/merkez.js (araştırma merkezi), oyun/ses.js (konuşma),
 // oyun/efekt.js (3B konumlu sesler), oyun/sahne.js (3B çizim), oyun/jestler.js (dokunma hareketleri).
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { View, Text, Pressable, StyleSheet, AccessibilityInfo, AppState, Platform, BackHandler } from 'react-native';
+import { View, Text, Pressable, StyleSheet, AccessibilityInfo, AppState, Platform, BackHandler, Linking } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GLView } from 'expo-gl';
@@ -50,6 +50,25 @@ const OYUN_ADI = 'Vahşi Yaşam';
 const EO = Platform.OS === 'android' ? 'TalkBack' : 'VoiceOver';
 const EO_I = Platform.OS === 'android' ? "TalkBack'i" : "VoiceOver'ı";
 // Bir önceki menüye dönme hareketi: iPhone'da VoiceOver'ın Z hareketi, Android'de TalkBack'in geri hareketi (ya da geri tuşu)
+const ANDROID = Platform.OS === 'android';
+// Ekran kapanmasın (dinlerken ekrana dokunulmadığında telefon kilitlenip oyun durmasın). expo-keep-awake expo'yla gelir.
+let KeepAwake = null;
+try {
+  KeepAwake = require('expo-keep-awake');
+} catch (e) {}
+// Android: oyunda alttaki gezinme çubuğu gizlenir; kenardan kaydırınca yanlışlıkla ana ekrana çıkılmasın.
+// Bu modül eski APK'da yok (yeni APK derlenince gelir); yoksa sessizce atlanır.
+let GezinmeCubugu = null;
+if (Platform.OS === 'android') {
+  try {
+    GezinmeCubugu = require('expo-navigation-bar');
+  } catch (e) {}
+}
+function androidAyarAc(tur) {
+  if (!ANDROID) return;
+  const hedef = tur === 'tts' ? 'com.android.settings.TTS_SETTINGS' : 'android.settings.ACCESSIBILITY_SETTINGS';
+  Linking.sendIntent(hedef).catch(() => Linking.openSettings().catch(() => {}));
+}
 const GERI_HAREKETI = Platform.OS === 'android' ? 'geri hareketi (aşağı sonra sola kaydırma ya da geri tuşu)' : 'Z hareketi';
 const AYAR_ANAHTAR = 'vahsi-yasam-ayar-v1';
 const KAYIT_ANAHTAR = 'vahsi-yasam-kayit-v1';
@@ -500,6 +519,7 @@ const EK_GEZI_TARIF = {
   kackar: 'Türkiye\'nin kuzeydoğusunda, Kaçkar Dağları\'nda serbestçe dolaşılan ayrı bir harita: boz ayı, kurt, vaşak, yaban keçisi, çengel boynuzlu dağ keçisi, karaca, yaban domuzu, kızıl tilki, porsuk, kaya sansarı, su samuru ve sakallı akbaba. Ladin ve kayın ormanından orman gülü kuşağına, çiçekli yayladan zirvelere ve buzul gölüne katman katman bir dağ; yayladan bir dere iner, evin yanında bir arılık var. Sonbaharda binlerce yırtıcı kuş göç ederken buradan geçer.',
 };
 const YENILIKLER = [
+  { baslik: "Android: TalkBack'ten oyunun sesine geçiş", metin: "Android telefonda oyuna TalkBack açıkken girip sonra TalkBack'i kapatarak oyunun kendi sesiyle oynamak kolaylaştı. TalkBack açıkken ana menüde TalkBack'i kapat ve oyunun sesiyle oyna satırı Erişilebilirlik ayarlarını açar; kapatıp geri dönünce oyun kendiliğinden hareketli düzene geçer ve bunu söyler (ayarlardan dönüşte de algılanır). Oyunun sesi Android'de artık telefonun dili ne olursa olsun Türkçe seçilir (önceden telefon başka dildeyse yabancı sesle okuyabiliyordu); telefonda Türkçe konuşma sesi hiç yoksa oyun uyarır ve ana menüdeki Türkçe konuşma sesini kur satırı metin okuma ayarlarını açar. Çok uzun metinler parçalanarak eksiksiz okunur. Oyun açıkken ekran kendiliğinden kapanmaz (iPhone'da da) ve Android'de üstteki durum çubuğu ile alttaki gezinme çubuğu gizlenir (gezinme çubuğu yeni APK ile). Yardım'a Android telefonda oynamak konusu eklendi.", nerede: 'Android telefonda ana menü; Nasıl oynanır > Android telefonda oynamak.' },
   { baslik: 'Tel tuzağını bulmak ve sökmek kolaylaştı', metin: 'Bulduğun kaçak avcı tel tuzakları artık Yerler menüsünde listelenir; seçince tuzağın yanına kendiliğinden yürürsün. Uzaktayken ana menüde Sahaya dön satırının altında Bulduğun tel tuzağına yürü satırı çıkar; yanına varınca (6 metreden yakın) aynı yerde Tel tuzağı sök ve bildir satırı çıkar. Ekran okuyucu kipinde yanındayken üstte Tel tuzağı sök düğmesi de var. Tuzakta hayvan takılıysa önce Doğa > Numune ve veteriner menüsünden hayvanı kurtarman gerekir. Tuzaklar yalnız savanda kurulur ve otların arasına gizlidir: ancak 7 metre yakınından geçince fark edersin (dron da bulur).', nerede: 'ana menü ve Yerler, savanda.' },
   { baslik: 'İki yeni harita: Sibirya taygası ve Kaçkar Dağları', metin: 'Sibirya taygası (Ussuri, Rusya Uzak Doğusu): 18 büyük hayvan; Amur kaplanı tuz yalağında pusuya yatar ve ağaçları tırmalayıp bölgesini işaretler, Amur leoparı meşe yamacında, ayılar sonbaharda ırmakta somon avlar ve kışın uyur, Asya kara ayısı ağaca tırmanır, harzalar birlikte avlanır, rakun köpeği kışı ininde geçirir, misk geyiği ve goral kayalığa sığınır. Kaçkar Dağları (Türkiye): 12 büyük hayvan; boz ayı yaban mersini yer ve arılığı yoklar, yaban keçisi tekeleri sonbaharda çarpışır, çengel boynuzlu dağ keçisi zirvelerde, sakallı akbaba kemikleri kayaya bırakıp kırar, kurtlar geceleri uluyor. Her haritada 20\'den çok küçük canlı (Blakiston balık baykuşu, mandarin ördeği, keta somonu, Kafkas semenderi, Kafkas dağ horozu, ular, su karatavuğu, sonbaharda göçmen şahinler ve başkaları), 6 bitki, üç araştırma, kendi ortam sesleri ve ırmak ile dere sesi. Kışın ikisi de karla örtülür.', nerede: 'Merkez > Saha gezileri: Sibirya taygası (itibar 100, 5.000 lira) ve Kaçkar Dağları (itibar 60, 2.600 lira)' },
   { baslik: 'Otomatik yürüyüş bütün haritalarda', metin: 'Yerler menüsünden seçilen bir yere kendiliğinden yürüme Avustralya, Hindistan, Moğolistan, Amazon, Yellowstone, Borneo ve Madagaskar\'da çalışmıyordu (yalnızca savanda ve iki kutupta çalışıyordu). Düzeltildi; Savana dön satırındaki istasyona yürüme de bu haritalarda artık çalışır.', nerede: 'ana menü > Yerler, herhangi bir haritada.' },
@@ -564,6 +584,21 @@ const YENILIKLER = [
 
 // ---------------- Nasıl oynanır (Kayıp Okyanus Yardım gibi konu konu) ----------------
 const YARDIM = [
+  ...(Platform.OS === 'android'
+    ? [
+        {
+          id: 'android',
+          baslik: 'Android telefonda oynamak',
+          satirlar: [
+            "Oyun TalkBack kapalıyken oyunun kendi sesiyle ve dokunma hareketleriyle oynanır. TalkBack açıkken menüler ve saha TalkBack düğmeleridir; TalkBack'i kapatınca oyun kendiliğinden hareketli düzene geçer ve bunu söyler. Oyuna TalkBack açıkken girebilir, sonra kapatabilirsin.",
+            "TalkBack'i kapatmak: TalkBack kısayolun açıksa iki ses tuşuna birlikte üç saniye basılı tut. Ya da ana menüdeki TalkBack'i kapat satırı Erişilebilirlik ayarlarını açar; TalkBack'e gir, kapat, sonra geri tuşuyla oyuna dön. Oyundan çıkınca TalkBack'i aynı yoldan yeniden açarsın.",
+            'Ekranın sol ya da sağ kenarından başlayan kaydırma Android\'in geri hareketidir: menüde bir önceki menüye döndürür, sahada ana menüyü açar. Sağa ve sola kaydırmaları ekranın ortasından başlat. Geri tuşu da aynı işi yapar.',
+            'Oyun Türkçe konuşmuyorsa telefonun konuşma motorunda Türkçe ses yüklü değildir: Ayarlar > Erişilebilirlik > Metin okuma çıktısı (Text-to-speech) bölümünde Google Konuşma Hizmetleri\'ni seç ve Türkçe sesi indir. Ana menüde bu ayarı açan satır da çıkar.',
+            'Oyun açıkken ekran kendiliğinden kapanmaz ve alttaki gezinme çubuğu gizlenir (gizleme yeni APK ile gelir); oyundan çıkınca ikisi de eski hâline döner.',
+          ],
+        },
+      ]
+    : []),
   {
     id: 'amac',
     baslik: 'Oyunun amacı',
@@ -831,24 +866,14 @@ const YARDIM = [
 ];
 
 // ---------------- Kip seçimi ----------------
-function KipSecim({ sec }) {
-  const [vo, setVo] = useState(false);
+function KipSecim({ sec, voAcik }) {
+  // Ekran okuyucunun durumu App'ten gelir: bu ekrandayken TalkBack/VoiceOver kapatılırsa düzen değişir ve oyun konuşmaya başlar
+  const vo = voAcik === true;
   useEffect(() => {
-    let iptal = false;
-    AccessibilityInfo.isScreenReaderEnabled()
-      .then((acik) => {
-        if (iptal) return;
-        setVo(acik);
-        if (!acik) {
-          Ses.ayarla({ kip: 'kendi' });
-          Ses.hemen(`${OYUN_ADI}'a hoş geldin. Ekranın üst yarısına dokunursan görerek oynarsın. Alt yarısına dokunursan oyun kendi sesiyle konuşur ve sesle oynarsın.`);
-        }
-      })
-      .catch(() => {});
-    return () => {
-      iptal = true;
-    };
-  }, []);
+    if (voAcik !== false) return;
+    Ses.ayarla({ kip: 'kendi' });
+    Ses.hemen(`${OYUN_ADI}'a hoş geldin. Ekranın üst yarısına dokunursan görerek oynarsın. Alt yarısına dokunursan oyun kendi sesiyle konuşur ve sesle oynarsın.`);
+  }, [voAcik]);
   if (vo) {
     return (
       <View style={st.kipKap}>
@@ -1106,6 +1131,20 @@ const yardimKonulari = (menu, onek) => YARDIM.map((y) => altMenu(onek + 'y-' + y
 function AnaMenu({ kip, kayit, devam, yeni, ayar, ayarDegistir }) {
   const menu = useMenuYigini();
   const [, yenile] = useState(0);
+  // Android: konuşma motorunda Türkçe ses yoksa oyun yazıyı başka dilde okur; bir kez uyar
+  const [turkceYok, setTurkceYok] = useState(false);
+  useEffect(() => {
+    if (!ANDROID) return;
+    let iptal = false;
+    Ses.turkceSesDurumu().then((v) => {
+      if (iptal || v !== false) return;
+      setTurkceYok(true);
+      setTimeout(() => Ses.soyle('Telefonunun konuşma motorunda Türkçe ses bulunamadı; oyun Türkçe yazıları başka bir dilin sesiyle okuyabilir. Ana menüdeki Türkçe konuşma sesini kur satırı ilgili ayarı açar.', 3), 2500);
+    });
+    return () => {
+      iptal = true;
+    };
+  }, []);
   const y = yardimListesi(menu, '');
   if (y) return <Liste key={menu.ust} kip={kip} baslik={y.baslik} ogeler={y.ogeler} onGeri={menu.geri} {...menu.odak(menu.ust)} />;
   if (menu.ust === 'yardim') return <Liste key="yardim" kip={kip} baslik="Nasıl oynanır" ogeler={[...yardimKonulari(menu, ''), geriOgesi(menu.geri)]} onGeri={menu.geri} {...menu.odak('yardim')} />;
@@ -1130,6 +1169,28 @@ function AnaMenu({ kip, kayit, devam, yeni, ayar, ayarDegistir }) {
       sec: () => (devam(), 'sessiz'),
     });
   ogeler.push(altMenu('adlar', 'Yeni araştırma', menu.ac, kayit ? 'Kayıtlı araştırman silinir.' : undefined));
+  if (ANDROID && kip === 'voiceover')
+    ogeler.push({
+      id: 'tbKapat',
+      etiket: "TalkBack'i kapat ve oyunun sesiyle oyna",
+      ipucu: 'Erişilebilirlik ayarlarını açar.',
+      sec: () => {
+        Ses.hemen("Erişilebilirlik ayarları açılıyor. TalkBack'e gir, kapat, sonra geri tuşuyla oyuna dön. Oyun kendi sesiyle konuşmaya başlar. Kısayolun açıksa iki ses tuşuna birlikte üç saniye basılı tutmak da TalkBack'i kapatır.");
+        setTimeout(() => androidAyarAc('erisim'), 2500);
+        return 'sessiz';
+      },
+    });
+  if (ANDROID && turkceYok)
+    ogeler.push({
+      id: 'ttsKur',
+      etiket: 'Türkçe konuşma sesini kur',
+      ipucu: 'Metin okuma ayarlarını açar.',
+      sec: () => {
+        Ses.hemen("Metin okuma ayarları açılıyor. Tercih edilen motor olarak Google Konuşma Hizmetleri'ni seç, motorun ayarlarından Türkçe sesi indir, sonra oyuna dön.");
+        setTimeout(() => androidAyarAc('tts'), 2500);
+        return 'sessiz';
+      },
+    });
   ogeler.push(altMenu('yardim', 'Nasıl oynanır', menu.ac));
   ogeler.push(altMenu('ayarlar', 'Ayarlar', menu.ac));
   return (
@@ -1825,6 +1886,29 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     if (soz) Ses.soyle(soz, 3);
   };
   // Android: sahadayken geri tuşu (TalkBack'te geri hareketi) ana menüyü açar; menüdeyken Liste bir önceki menüye döndürür
+  // Oyun açıkken ekran kapanmasın; Android'de alttaki gezinme çubuğu gizlensin (kenar kaydırmalarıyla yanlışlıkla ana ekrana çıkılmasın)
+  useEffect(() => {
+    try {
+      if (KeepAwake) KeepAwake.activateKeepAwakeAsync('vahsi-oyun').catch(() => {});
+    } catch (e) {}
+    const cubukGizle = () => {
+      try {
+        if (GezinmeCubugu) GezinmeCubugu.setVisibilityAsync('hidden').catch(() => {});
+      } catch (e) {}
+    };
+    cubukGizle();
+    // Uygulama öne gelince çubuk yeniden görünmüş olabilir
+    const ab = AppState.addEventListener('change', (s) => s === 'active' && cubukGizle());
+    return () => {
+      ab.remove();
+      try {
+        if (KeepAwake) KeepAwake.deactivateKeepAwake('vahsi-oyun');
+      } catch (e) {}
+      try {
+        if (GezinmeCubugu) GezinmeCubugu.setVisibilityAsync('visible').catch(() => {});
+      } catch (e) {}
+    };
+  }, []);
   const sahaGeriRef = useRef(null);
   sahaGeriRef.current = () => {
     if (menuRef.current) return false;
@@ -3085,6 +3169,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
 
   return (
     <View style={{ flex: 1, backgroundColor: '#0d1626' }}>
+      {ANDROID && <StatusBar hidden />}
       {ayar.grafik !== 'kapali' && <GLView style={StyleSheet.absoluteFill} onContextCreate={glHazir} accessible={false} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden />}
       <View
         style={{ flex: 1, paddingTop: kenar.top, paddingBottom: kenar.bottom, paddingLeft: kenar.left, paddingRight: kenar.right }}
@@ -3239,7 +3324,17 @@ export default function App() {
       .then((a) => setVoAcik(!!a))
       .catch(() => {});
     const abone = AccessibilityInfo.addEventListener('screenReaderChanged', (a) => setVoAcik(!!a));
-    return () => abone && abone.remove && abone.remove();
+    // Ayarlardan TalkBack/VoiceOver kapatılıp oyuna dönülünce olay kaçmış olabilir: öne gelince yeniden sor
+    const durum = AppState.addEventListener('change', (s) => {
+      if (s === 'active')
+        AccessibilityInfo.isScreenReaderEnabled()
+          .then((a) => setVoAcik(!!a))
+          .catch(() => {});
+    });
+    return () => {
+      if (abone && abone.remove) abone.remove();
+      durum.remove();
+    };
   }, []);
   const [ekran, setEkran] = useState('yukleniyor');
   const [ayar, setAyar] = useState(VARSAYILAN_AYAR);
@@ -3349,7 +3444,7 @@ export default function App() {
   }, [kip, ayar.kip]);
   let icerik = null;
   if (ekran === 'yukleniyor') icerik = <View style={{ flex: 1 }} />;
-  else if (ekran === 'kip') icerik = <KipSecim sec={kipSec} />;
+  else if (ekran === 'kip') icerik = <KipSecim sec={kipSec} voAcik={voAcik} />;
   else if (ekran === 'menu')
     icerik = (
       <AnaMenu

@@ -35,18 +35,35 @@ function bekleyeniIptal() {
   }
 }
 
+const ANDROID = Platform.OS === 'android';
+// Android'de expo-speech dili Locale.Builder().setLanguage(...) ile kurar: 'tr-TR' orada geçersizdir ve telefonun
+// varsayılan diline (ör. İngilizce) düşer; bu yüzden Android'de yalnızca 'tr' verilir.
+const DIL = ANDROID ? 'tr' : 'tr-TR';
+// Türkçe ses durumu: null bilinmiyor, true var, false yok (Android'de konuşma motorunda Türkçe yüklü değil)
+let turkceSesVar = null;
 async function turkceSesBul() {
   try {
     const sesler = await Speech.getAvailableVoicesAsync();
     const tr = (sesler || []).filter((s) => (s.language || '').toLowerCase().startsWith('tr'));
+    turkceSesVar = (sesler || []).length ? tr.length > 0 : null;
+    // Android: internet isteyen (network) sesler bağlantı yokken susar ya da gecikir; telefonda yüklü (local) sesi yeğle
+    const yerel = ANDROID ? tr.filter((s) => !/network/i.test(s.identifier || '') && !/notinstalled/i.test(s.identifier || '')) : tr;
+    const havuz = yerel.length ? yerel : tr;
     // Geliştirilmiş (Enhanced) ses varsa onu seç
-    const iyi = tr.find((s) => /enhanced|premium/i.test(s.quality || '') || /enhanced|premium/i.test(s.identifier || ''));
-    motor.ses = (iyi || tr[0] || {}).identifier;
+    const iyi = havuz.find((s) => /enhanced|premium/i.test(s.quality || '') || /enhanced|premium/i.test(s.identifier || ''));
+    motor.ses = (iyi || havuz[0] || {}).identifier;
   } catch (e) {
     motor.ses = undefined;
   }
 }
 turkceSesBul();
+// Android'de konuşma motoru açılışta hazır olmayabilir: birkaç saniye sonra bir kez daha bak
+if (ANDROID) setTimeout(() => turkceSesVar === true || turkceSesBul(), 4000);
+// Telefonda Türkçe konuşma sesi var mı (Android'de yoksa oyun yazıyı başka dilde okur)
+export async function turkceSesDurumu() {
+  if (turkceSesVar === null) await turkceSesBul();
+  return turkceSesVar;
+}
 
 export function ayarla({ kip, hiz, acik } = {}) {
   if (kip) motor.kip = kip;
@@ -102,16 +119,40 @@ function konus(s) {
     } catch (e) {}
   }
   motor.efektBitis = 0;
-  Speech.speak(s.metin, {
-    language: 'tr-TR',
-    voice: motor.ses,
-    rate: motor.hiz,
-    volume: 1.0,
-    pitch: 1.0,
-    onDone: sonraki,
-    onStopped: () => {},
-    onError: sonraki,
+  // Android konuşma motoru tek seferde en çok ~4000 harf okur; uzun metin cümle sınırlarından parçalanır,
+  // parçalar sırayla okunur, sıradaki söz son parça bitince başlar.
+  const parcalar = parcala(s.metin, ANDROID ? 3000 : 100000);
+  parcalar.forEach((p, i) => {
+    const son = i === parcalar.length - 1;
+    Speech.speak(p, {
+      language: DIL,
+      voice: motor.ses,
+      rate: motor.hiz,
+      volume: 1.0,
+      pitch: 1.0,
+      onDone: son ? sonraki : undefined,
+      onStopped: () => {},
+      onError: son ? sonraki : undefined,
+    });
   });
+}
+
+function parcala(metin, sinir) {
+  if (metin.length <= sinir) return [metin];
+  const cumleler = metin.match(/[^.!?]+[.!?]*\s*/g) || [metin];
+  const sonuc = [];
+  let p = '';
+  for (const c of cumleler) {
+    if ((p + c).length > sinir && p) {
+      sonuc.push(p);
+      p = '';
+    }
+    if (c.length > sinir) {
+      for (let i = 0; i < c.length; i += sinir) sonuc.push(c.slice(i, i + sinir));
+    } else p += c;
+  }
+  if (p) sonuc.push(p);
+  return sonuc;
 }
 
 // Söyle: kuyruğa ekler ya da önceliğe göre keser

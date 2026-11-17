@@ -78,13 +78,28 @@ export function GLView(p) {
 
 // expo-speech: söylenenler pencereye yazılır
 window.__konusmalar = [];
+window.__konusmaDil = [];
 export function speak(metin, o) {
   window.__konusmalar.push(metin);
+  window.__konusmaDil.push(o && o.language);
   setTimeout(() => o && o.onDone && o.onDone(), Math.min(1500, 200 + metin.length * 10));
 }
 export function stop() {}
 export async function getAvailableVoicesAsync() {
-  return [{ identifier: 'tr-deneme', language: 'tr-TR', quality: 'Default' }];
+  // window.__konusmaSesleri ile değiştirilebilir (ör. Türkçe sesi olmayan Android telefon)
+  return window.__konusmaSesleri || [{ identifier: 'tr-deneme', language: 'tr-TR', quality: 'Default' }];
+}
+// expo-keep-awake ve expo-navigation-bar: çağrılar pencereye yazılır
+window.__uyanik = [];
+export async function activateKeepAwakeAsync(t) {
+  window.__uyanik.push('ac:' + t);
+}
+export function deactivateKeepAwake(t) {
+  window.__uyanik.push('kapat:' + t);
+}
+window.__gezinme = [];
+export async function setVisibilityAsync(v) {
+  window.__gezinme.push(v);
 }
 
 // expo-screen-orientation

@@ -714,6 +714,15 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
 - TEL TUZAĞI BULMA (15 Kasım 2026, Murat "tuzağı nasıl sökeceğim bulamadım"): bulunmuş tuzaklar Yerler'de (M.yerGit 'tuzak:<id>'), ana menüde
   uzaktayken "Bulduğun tel tuzağına yürü" (App bulunanTuzaklar), 6 m'de "Tel tuzağı sök ve bildir"; VoiceOver bağlam satırında "Tel tuzağı sök";
   bulunma olayı ve Yardım nereden sökülür söyler. Test /tmp/claude-0/kr/tuzakgit.js (K=kayıt). Telefonda doğrulanmadı.
+- ANDROID OYUNUN KENDİ SESİYLE (17 Kasım 2026, Murat "Android kullananlar oyuna girerken TalkBack'i kapatacak, tam uygun hale getir"):
+  ses.js Android'de dil 'tr' (expo-speech Android Locale.Builder().setLanguage('tr-TR') geçersiz → telefonun diline düşüyordu), network/notInstalled
+  olmayan yerel Türkçe ses yeğlenir, 4 sn sonra ses listesi yeniden sorulur, turkceSesDurumu(); uzun metin 3000 harflik parçalara (parcala). App:
+  ekran okuyucu durumu uygulama öne gelince yeniden sorulur (ayarlardan dönüş), KipSecim voAcik prop'u ile canlı; AnaMenu Android'de TalkBack açıkken
+  "TalkBack'i kapat ve oyunun sesiyle oyna" (Linking.sendIntent ACCESSIBILITY_SETTINGS), Türkçe ses yoksa uyarı + "Türkçe konuşma sesini kur"
+  (com.android.settings.TTS_SETTINGS). Oyunda expo-keep-awake (iki platform) ve Android'de StatusBar hidden + expo-navigation-bar gizli (yeni bağımlılık;
+  15 Kasım APK'sında yok, require try/catch; yeni APK'yla gelir). Yardım "Android telefonda oynamak" (yalnız Android; kenar kaydırması = geri). Web taklidi:
+  window.__platform='android' (menu-tara/jest-dene ANDROID=1), window.__ekranOkuyucu(bool), window.__konusmaSesleri, __konusmaDil, __uyanik, __gezinme,
+  __intent; scratchpad an/dene.cjs uçtan uca. Telefonda doğrulanmadı.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

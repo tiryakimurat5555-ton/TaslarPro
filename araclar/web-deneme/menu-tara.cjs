@@ -14,12 +14,13 @@ const [, , WEB = '/tmp/claude-0/web', KAYIT = '/tmp/claude-0/zengin-kayit.json',
   s.on('console', (m) => m.type() === 'error' && hatalar.push('CE ' + m.text().slice(0, 200)));
   const kayit = fs.readFileSync(KAYIT, 'utf8');
   await s.addInitScript(
-    ([kayit, kip]) => {
+    ([kayit, kip, android]) => {
       localStorage.setItem('vahsi-yasam-kayit-v1', kayit);
       if (kip === 'voiceover') window.__voiceover = true; // ekran okuyucu açıkmış gibi (kapalıyken oyun kendi sesine geçer)
+      if (android) window.__platform = 'android'; // ANDROID=1 ile Android denenir
       localStorage.setItem('vahsi-yasam-ayar-v1', JSON.stringify({ kip, grafik: 'kapali' }));
     },
-    [kayit, KIP]
+    [kayit, KIP, !!process.env.ANDROID]
   );
   await s.goto('file://' + require('path').resolve(WEB) + '/index.html');
   await s.waitForTimeout(1500);

@@ -380,7 +380,8 @@ const StyleSheet = {
 
 const PanResponder = { create: (cfg) => ({ panHandlers: { __pan: cfg } }) };
 const AppState = { addEventListener: () => ({ remove() {} }) };
-const Platform = { OS: 'ios', select: (o) => (o.ios !== undefined ? o.ios : o.default) };
+// window.__platform = 'android' ile Android denenir
+const Platform = { OS: (typeof window !== 'undefined' && window.__platform) || 'ios', select: (o) => (o[Platform.OS] !== undefined ? o[Platform.OS] : o.default) };
 function TextInput(p) {
   return <input aria-label={p.accessibilityLabel} placeholder={p.placeholder} value={p.value} onChange={(e) => p.onChangeText && p.onChangeText(e.target.value)} style={css(p.style)} />;
 }
@@ -389,7 +390,16 @@ window.__duyurular = [];
 const AccessibilityInfo = {
   announceForAccessibility: (m) => window.__duyurular.push(m),
   announceForAccessibilityWithOptions: (m) => window.__duyurular.push(m),
-  addEventListener: () => ({ remove() {} }),
+  // window.__ekranOkuyucu(true|false) ekran okuyucuyu açıp kapatır (olay dinleyicilere gider)
+  addEventListener: (ad, f) => {
+    if (ad !== 'screenReaderChanged') return { remove() {} };
+    (window.__eoDinleyiciler = window.__eoDinleyiciler || []).push(f);
+    window.__ekranOkuyucu = (a) => {
+      window.__voiceover = a;
+      window.__eoDinleyiciler.forEach((g) => g(a));
+    };
+    return { remove() {} };
+  },
   setAccessibilityFocus() {},
   isReduceMotionEnabled: async () => false,
   isScreenReaderEnabled: async () => !!window.__voiceover,
@@ -430,7 +440,7 @@ const findNodeHandle = (x) => x;
 const BackHandler = { addEventListener: () => ({ remove() {} }) };
 const Keyboard = { dismiss() {}, addListener: () => ({ remove() {} }) };
 const Vibration = { vibrate() {} };
-const Linking = { openURL: async () => {} };
+const Linking = { openURL: async () => {}, sendIntent: async (a) => { window.__intent = a; }, openSettings: async () => {} };
 const I18nManager = { isRTL: false };
 const PixelRatio = { get: () => 2, roundToNearestPixel: (x) => x };
 function KeyboardAvoidingView(p) { return <View {...p} />; }

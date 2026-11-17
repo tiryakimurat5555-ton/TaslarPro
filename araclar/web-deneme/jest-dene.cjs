@@ -11,6 +11,7 @@ fs.mkdirSync(O, { recursive: true });
   const h = [];
   s.on('pageerror', (e) => h.push('PE ' + e.message + ' ' + (e.stack || '').split('\n').slice(1, 3).join(' ')));
   s.on('console', (m) => m.type() === 'error' && h.push('CE ' + m.text().slice(0, 300)));
+  if (process.env.ANDROID) await s.addInitScript(() => { window.__platform = 'android'; });
   await s.goto('file://' + require('path').resolve(process.argv[2] || '/tmp/claude-0/web') + '/index.html');
   await s.waitForTimeout(1000);
   const bekle = (ms) => s.waitForTimeout(ms);
