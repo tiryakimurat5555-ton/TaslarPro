@@ -723,6 +723,11 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   15 Kasım APK'sında yok, require try/catch; yeni APK'yla gelir). Yardım "Android telefonda oynamak" (yalnız Android; kenar kaydırması = geri). Web taklidi:
   window.__platform='android' (menu-tara/jest-dene ANDROID=1), window.__ekranOkuyucu(bool), window.__konusmaSesleri, __konusmaDil, __uyanik, __gezinme,
   __intent; scratchpad an/dene.cjs uçtan uca. Telefonda doğrulanmadı.
+- ANDROID SESSİZ KALMA (17 Kasım 2026 akşam, Murat: Bahtiyar ad seçme ekranında oyunun sesi kesilmiş): olası nedenler ve önlemler: (1) TalkBack
+  kapanınca screenReaderChanged gelmezse kip 'voiceover' kalır, duyurular kapalı TalkBack'e gider → App Android'de 2,5 sn'de bir isScreenReaderEnabled
+  yoklar. (2) Android'de belirli Türkçe ses (voice) seçilmez (indirilmemiş Google sesi sessiz düşer); yalnız dil 'tr'. (3) ses.js sayac + bekçi:
+  'bitti' haberi gelmezse 6 sn + 110 ms/harf sonra sıraya geçilir, eski konuşmanın geç haberi yenisini kesmez (durdur()). (4) Konuşma hataları
+  Ses.hataDinle → hata kayıtları ('konuşma'). Taklit: window.__konusmaTakil. Test scratchpad an/d3.cjs. Telefonda doğrulanmadı.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

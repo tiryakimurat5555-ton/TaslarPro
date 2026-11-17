@@ -519,6 +519,7 @@ const EK_GEZI_TARIF = {
   kackar: 'Türkiye\'nin kuzeydoğusunda, Kaçkar Dağları\'nda serbestçe dolaşılan ayrı bir harita: boz ayı, kurt, vaşak, yaban keçisi, çengel boynuzlu dağ keçisi, karaca, yaban domuzu, kızıl tilki, porsuk, kaya sansarı, su samuru ve sakallı akbaba. Ladin ve kayın ormanından orman gülü kuşağına, çiçekli yayladan zirvelere ve buzul gölüne katman katman bir dağ; yayladan bir dere iner, evin yanında bir arılık var. Sonbaharda binlerce yırtıcı kuş göç ederken buradan geçer.',
 };
 const YENILIKLER = [
+  { baslik: 'Android: oyunun sesinin kesilmesine karşı önlemler', metin: "TalkBack kapatıldığında telefon bunu oyuna haber vermezse oyun konuşmasını kapalı TalkBack'e gönderip susuyordu; oyun artık TalkBack'in açık olup olmadığını birkaç saniyede bir kendisi denetler. Oyun Türkçe için belirli bir Google sesi seçmez, telefonun yüklü Türkçe sesini kullanır (indirilmemiş bir ses seçilince konuşma sessizce düşebiliyordu). Konuşma motoru bir sözün bittiğini haber vermezse sıra takılmaz. Konuşma hataları Ayarlar > Hata kayıtları'na yazılır.", nerede: 'Android telefonda, bütün ekranlar.' },
   { baslik: "Android: TalkBack'ten oyunun sesine geçiş", metin: "Android telefonda oyuna TalkBack açıkken girip sonra TalkBack'i kapatarak oyunun kendi sesiyle oynamak kolaylaştı. TalkBack açıkken ana menüde TalkBack'i kapat ve oyunun sesiyle oyna satırı Erişilebilirlik ayarlarını açar; kapatıp geri dönünce oyun kendiliğinden hareketli düzene geçer ve bunu söyler (ayarlardan dönüşte de algılanır). Oyunun sesi Android'de artık telefonun dili ne olursa olsun Türkçe seçilir (önceden telefon başka dildeyse yabancı sesle okuyabiliyordu); telefonda Türkçe konuşma sesi hiç yoksa oyun uyarır ve ana menüdeki Türkçe konuşma sesini kur satırı metin okuma ayarlarını açar. Çok uzun metinler parçalanarak eksiksiz okunur. Oyun açıkken ekran kendiliğinden kapanmaz (iPhone'da da) ve Android'de üstteki durum çubuğu ile alttaki gezinme çubuğu gizlenir (gezinme çubuğu yeni APK ile). Yardım'a Android telefonda oynamak konusu eklendi.", nerede: 'Android telefonda ana menü; Nasıl oynanır > Android telefonda oynamak.' },
   { baslik: 'Tel tuzağını bulmak ve sökmek kolaylaştı', metin: 'Bulduğun kaçak avcı tel tuzakları artık Yerler menüsünde listelenir; seçince tuzağın yanına kendiliğinden yürürsün. Uzaktayken ana menüde Sahaya dön satırının altında Bulduğun tel tuzağına yürü satırı çıkar; yanına varınca (6 metreden yakın) aynı yerde Tel tuzağı sök ve bildir satırı çıkar. Ekran okuyucu kipinde yanındayken üstte Tel tuzağı sök düğmesi de var. Tuzakta hayvan takılıysa önce Doğa > Numune ve veteriner menüsünden hayvanı kurtarman gerekir. Tuzaklar yalnız savanda kurulur ve otların arasına gizlidir: ancak 7 metre yakınından geçince fark edersin (dron da bulur).', nerede: 'ana menü ve Yerler, savanda.' },
   { baslik: 'İki yeni harita: Sibirya taygası ve Kaçkar Dağları', metin: 'Sibirya taygası (Ussuri, Rusya Uzak Doğusu): 18 büyük hayvan; Amur kaplanı tuz yalağında pusuya yatar ve ağaçları tırmalayıp bölgesini işaretler, Amur leoparı meşe yamacında, ayılar sonbaharda ırmakta somon avlar ve kışın uyur, Asya kara ayısı ağaca tırmanır, harzalar birlikte avlanır, rakun köpeği kışı ininde geçirir, misk geyiği ve goral kayalığa sığınır. Kaçkar Dağları (Türkiye): 12 büyük hayvan; boz ayı yaban mersini yer ve arılığı yoklar, yaban keçisi tekeleri sonbaharda çarpışır, çengel boynuzlu dağ keçisi zirvelerde, sakallı akbaba kemikleri kayaya bırakıp kırar, kurtlar geceleri uluyor. Her haritada 20\'den çok küçük canlı (Blakiston balık baykuşu, mandarin ördeği, keta somonu, Kafkas semenderi, Kafkas dağ horozu, ular, su karatavuğu, sonbaharda göçmen şahinler ve başkaları), 6 bitki, üç araştırma, kendi ortam sesleri ve ırmak ile dere sesi. Kışın ikisi de karla örtülür.', nerede: 'Merkez > Saha gezileri: Sibirya taygası (itibar 100, 5.000 lira) ve Kaçkar Dağları (itibar 60, 2.600 lira)' },
@@ -3324,6 +3325,16 @@ export default function App() {
       .then((a) => setVoAcik(!!a))
       .catch(() => {});
     const abone = AccessibilityInfo.addEventListener('screenReaderChanged', (a) => setVoAcik(!!a));
+    // Android'de TalkBack kapatılınca olay bazen gelmiyor; o zaman oyun duyuruları kapalı TalkBack'e gönderip susardı.
+    // Bu yüzden Android'de durum birkaç saniyede bir yeniden sorulur.
+    const yokla = ANDROID
+      ? setInterval(() => {
+          AccessibilityInfo.isScreenReaderEnabled()
+            .then((a) => setVoAcik((o) => (o === !!a ? o : !!a)))
+            .catch(() => {});
+        }, 2500)
+      : null;
+    Ses.hataDinle((m) => hataKaydet(m, 'konuşma'));
     // Ayarlardan TalkBack/VoiceOver kapatılıp oyuna dönülünce olay kaçmış olabilir: öne gelince yeniden sor
     const durum = AppState.addEventListener('change', (s) => {
       if (s === 'active')
@@ -3333,6 +3344,7 @@ export default function App() {
     });
     return () => {
       if (abone && abone.remove) abone.remove();
+      if (yokla) clearInterval(yokla);
       durum.remove();
     };
   }, []);

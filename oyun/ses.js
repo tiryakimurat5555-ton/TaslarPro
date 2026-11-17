@@ -18,6 +18,7 @@ const motor = {
   efektBitis: 0, // çalan son efektin biteceği an (ms)
   bekleyen: null, // efekt bitsin diye bekleyen konuşmanın zamanlayıcısı
   basliyor: null, // konuşma başlarken çağrılır (uzun efektleri durdurmak için)
+  sayac: 0, // her konuşmaya verilen sıra numarası (eski konuşmanın geç gelen 'bitti' haberi yenisini kesmesin)
 };
 
 // Efekt motoru çaldığı sesin süresini bildirir; konuşma o bitince başlar.
@@ -122,19 +123,66 @@ function konus(s) {
   // Android konuşma motoru tek seferde en çok ~4000 harf okur; uzun metin cümle sınırlarından parçalanır,
   // parçalar sırayla okunur, sıradaki söz son parça bitince başlar.
   const parcalar = parcala(s.metin, ANDROID ? 3000 : 100000);
+  // Android'de belirli bir ses (voice) seçilmez: Google'ın listelediği seslerin bir kısmı telefona indirilmemiştir,
+  // böyle bir ses seçilirse konuşma sessizce düşer. Yalnız dil verilir; motor yüklü Türkçe sesini kendisi seçer.
+  const ses = ANDROID ? undefined : motor.ses;
+  const kimlik = ++motor.sayac;
+  bekciKur(kimlik, s.metin);
   parcalar.forEach((p, i) => {
     const son = i === parcalar.length - 1;
     Speech.speak(p, {
       language: DIL,
-      voice: motor.ses,
+      voice: ses,
       rate: motor.hiz,
       volume: 1.0,
       pitch: 1.0,
-      onDone: son ? sonraki : undefined,
+      onDone: son ? () => bitti(kimlik) : undefined,
       onStopped: () => {},
-      onError: son ? sonraki : undefined,
+      onError: (e) => {
+        hataBildir(e, ses);
+        // Seçilen ses çalışmadıysa bir daha seçilmez; söz yeniden denenir
+        if (ses && motor.ses === ses) {
+          motor.ses = undefined;
+          if (son && motor.sayac === kimlik) return konus(s);
+        }
+        if (son) bitti(kimlik);
+      },
     });
   });
+}
+
+// Konuşma motoru "bitti" haberini hiç vermezse (bazı Android motorlarında olur) sıra takılıp kalmasın:
+// metnin uzunluğuna göre beklenen süre geçince sıradaki söze geçilir.
+let bekci = null;
+function bekciKur(kimlik, metin) {
+  if (bekci) clearTimeout(bekci);
+  bekci = setTimeout(() => {
+    bekci = null;
+    if (motor.sayac === kimlik && motor.konusuyor) sonraki();
+  }, 6000 + metin.length * 110 / Math.max(0.5, motor.hiz));
+}
+// Konuşmayı keser; eski konuşmanın geç gelen haberleri artık sayılmaz
+function durdur() {
+  motor.sayac++;
+  if (bekci) clearTimeout(bekci);
+  bekci = null;
+  Speech.stop();
+}
+function bitti(kimlik) {
+  if (motor.sayac !== kimlik) return;
+  if (bekci) clearTimeout(bekci);
+  bekci = null;
+  sonraki();
+}
+// Konuşma hatası dinleyicisi (App hata kayıtlarına yazar)
+let hataDinleyici = null;
+export function hataDinle(f) {
+  hataDinleyici = f;
+}
+function hataBildir(e, ses) {
+  try {
+    if (hataDinleyici) hataDinleyici(`Konuşma hatası${ses ? ' (ses ' + ses + ')' : ''}: ${(e && (e.message || e.error)) || e || 'bilinmiyor'}`);
+  } catch (x) {}
 }
 
 function parcala(metin, sinir) {
@@ -168,7 +216,7 @@ export function soyle(metin, oncelik = 2) {
     // Kes ve hemen söyle
     bekleyeniIptal();
     motor.kuyruk = motor.kuyruk.filter((x) => x.oncelik > oncelik);
-    if (motor.kip !== 'voiceover') Speech.stop();
+    if (motor.kip !== 'voiceover') durdur();
     motor.konusuyor = null;
     return baslat(s);
   }
@@ -184,7 +232,7 @@ export function hemen(metin) {
   if (!metin || !motor.acik) return;
   bekleyeniIptal();
   motor.kuyruk = [];
-  if (motor.kip !== 'voiceover') Speech.stop();
+  if (motor.kip !== 'voiceover') durdur();
   motor.konusuyor = null;
   baslat({ metin, oncelik: 4, zaman: Date.now() });
 }
@@ -194,7 +242,7 @@ export function sus() {
   motor.kuyruk = [];
   motor.konusuyor = null;
   try {
-    Speech.stop();
+    durdur();
   } catch (e) {}
 }
 

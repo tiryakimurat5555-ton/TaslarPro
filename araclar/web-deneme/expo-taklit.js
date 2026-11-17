@@ -82,7 +82,8 @@ window.__konusmaDil = [];
 export function speak(metin, o) {
   window.__konusmalar.push(metin);
   window.__konusmaDil.push(o && o.language);
-  setTimeout(() => o && o.onDone && o.onDone(), Math.min(1500, 200 + metin.length * 10));
+  // window.__konusmaTakil: bazı Android motorları gibi 'bitti' haberi hiç gelmez
+  if (!window.__konusmaTakil) setTimeout(() => o && o.onDone && o.onDone(), Math.min(1500, 200 + metin.length * 10));
 }
 export function stop() {}
 export async function getAvailableVoicesAsync() {
