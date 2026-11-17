@@ -728,6 +728,7 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   yoklar. (2) Android'de belirli Türkçe ses (voice) seçilmez (indirilmemiş Google sesi sessiz düşer); yalnız dil 'tr'. (3) ses.js sayac + bekçi:
   'bitti' haberi gelmezse 6 sn + 110 ms/harf sonra sıraya geçilir, eski konuşmanın geç haberi yenisini kesmez (durdur()). (4) Konuşma hataları
   Ses.hataDinle → hata kayıtları ('konuşma'). Taklit: window.__konusmaTakil. Test scratchpad an/d3.cjs. Telefonda doğrulanmadı.
+- Konuşma hızı sınırı 0,6-2,5 (17 Kasım 2026, Murat "250 yap"; iOS expo-speech rate × 0,5, AVSpeech en çok 1,0 → iPhone'da 200 üstü fark etmez).
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)
