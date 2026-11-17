@@ -729,6 +729,10 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   'bitti' haberi gelmezse 6 sn + 110 ms/harf sonra sıraya geçilir, eski konuşmanın geç haberi yenisini kesmez (durdur()). (4) Konuşma hataları
   Ses.hataDinle → hata kayıtları ('konuşma'). Taklit: window.__konusmaTakil. Test scratchpad an/d3.cjs. Telefonda doğrulanmadı.
 - Konuşma hızı sınırı 0,6-2,5 (17 Kasım 2026, Murat "250 yap"; iOS expo-speech rate × 0,5, AVSpeech en çok 1,0 → iPhone'da 200 üstü fark etmez).
+- İNCELEME (18 Kasım 2026, Murat "oyunu incele hata varsa düzelt"): mantik UZAK_HARITA 1500 m / UZAK_HARITA_ARALIK 1,2 sn (başka haritadaki gruplar,
+  dt en çok 1,5): bot ortalama kare 4,37 → 1,81 ms, en çok 102 → 36 ms. kayitMetni(k) kesirli sayıları 7 anlamlı basamağa yuvarlar (App kaydet, kayitHazirla).
+  saatDe(dk) saat bulunma eki (su.js kamera özeti). tsc checkJs ile tanımsız ad/eksik dışa aktarım yok. menu-tara 9 kayıt sorun 0. Kayıt ~600-860 KB
+  (885 hayvan, 15 harita); Android AsyncStorage satır sınırı 2 MB. Nüfus 36 gün benzetimi /tmp/claude-0/kr/nufus36.js (harita başına sayım).
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

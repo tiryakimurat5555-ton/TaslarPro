@@ -311,7 +311,7 @@ function kameraDenetle(d) {
     su.kameraGun = gun;
     const gece = su.kamera.filter((x) => k.dk - x.dk < 14 * 60 && (M.gunDakikasi(x.dk) / 60 >= 19 || M.gunDakikasi(x.dk) / 60 < 7));
     if (gece.length) {
-      const m = `İstasyonun güvenlik kamerası, gece kayıtları: ${gece.slice(0, 5).reverse().map((x) => `${M.saatMetni(x.dk)}'de ${x.sayi > 1 ? `${x.sayi} ${M.kucukHarf(M.SOZ[x.tur])}` : `bir ${M.kucukHarf(M.SOZ[x.tur])}`}`).join(', ')} istasyonun çevresinden geçti.`;
+      const m = `İstasyonun güvenlik kamerası, gece kayıtları: ${gece.slice(0, 5).reverse().map((x) => `${M.saatDe(x.dk)} ${x.sayi > 1 ? `${x.sayi} ${M.kucukHarf(M.SOZ[x.tur])}` : `bir ${M.kucukHarf(M.SOZ[x.tur])}`}`).join(', ')} istasyonun çevresinden geçti.`;
       M.mesajEkle(k, m, 'bilgi');
       M.olay(d, 'kamera', m, 2);
     }

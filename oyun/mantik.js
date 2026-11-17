@@ -13,6 +13,10 @@ import { UZAK_ALANLAR } from './kucukler.js';
 export const KAYIT_SURUMU = 1;
 const LOD_UZAKLIK = 130; // bu uzaklığın ötesindeki gruplar seyrek güncellenir
 const LOD_ARALIK = 0.3; // saniye
+// Oyuncunun bulunmadığı haritalardaki (binlerce metre ötedeki) gruplar daha da seyrek güncellenir: 15 haritada ~880 hayvan var,
+// oyuncunun görmediği haritalar telefonda kare süresinin çoğunu yiyordu. Zaman orada da aynı hızla akar (birikmiş süreyle).
+const UZAK_HARITA = 1500; // metre
+const UZAK_HARITA_ARALIK = 1.2; // saniye
 
 // ---------- Zorluk (karar 33): keşif, ekonomi, hayvan davranışı/tehlike, araştırma ve afetler ayrı ayrı ----------
 export const ZORLUK_ALANLARI = {
@@ -146,6 +150,18 @@ export const gunDakikasi = (dk) => ((dk % 1440) + 1440) % 1440;
 export function saatMetni(dk) {
   const g = Math.floor(gunDakikasi(dk));
   return `${String(Math.floor(g / 60)).padStart(2, '0')}:${String(g % 60).padStart(2, '0')}`;
+}
+// Saate bulunma eki: 06:35'te, 06:30'da, 18:00'de (sesli okunuşun son sözcüğüne göre)
+const BIRLER_EK = ['da', 'de', 'de', 'te', 'te', 'te', 'da', 'de', 'de', 'da'];
+const ONLAR_EK = { 0: 'da', 1: 'da', 2: 'de', 3: 'da', 4: 'ta', 5: 'de' };
+function sayiEki(n) {
+  return n % 10 ? BIRLER_EK[n % 10] : ONLAR_EK[Math.floor(n / 10) % 10];
+}
+export function saatDe(dk) {
+  const g = Math.floor(gunDakikasi(dk));
+  const sa = Math.floor(g / 60);
+  const d = g % 60;
+  return `${saatMetni(dk)}'${d ? sayiEki(d) : sa === 0 ? 'da' : sayiEki(sa)}`;
 }
 export function gunEvresi(dk) {
   const s = gunDakikasi(dk) / 60;
@@ -5658,13 +5674,15 @@ export function guncelle(d, dt, girdi = {}) {
   for (const g of k.gruplar) {
     const uzak = !g.goc && !(g.plan === 'av' && g.av && g.av.evre === 'kovala') && (k.magara || Math.abs(g.x - o.x) > LOD_UZAKLIK || Math.abs(g.y - o.y) > LOD_UZAKLIK);
     if (uzak) {
+      const baskaHarita = Math.abs(g.x - o.x) > UZAK_HARITA || Math.abs(g.y - o.y) > UZAK_HARITA;
+      const aralik = baskaHarita ? UZAK_HARITA_ARALIK : LOD_ARALIK;
       const birikim = (d.lod.get(g.id) || 0) + dt;
-      if (birikim < LOD_ARALIK) {
+      if (birikim < aralik) {
         d.lod.set(g.id, birikim);
         continue;
       }
       d.lod.set(g.id, 0);
-      grupDt.set(g.id, Math.min(0.5, birikim));
+      grupDt.set(g.id, Math.min(baskaHarita ? 1.5 : 0.5, birikim));
     } else grupDt.set(g.id, dt);
     const gdt = grupDt.get(g.id);
     grupGuncelle(d, g, gdt, gdt * OYUN_DK_SN);
@@ -6055,8 +6073,14 @@ export function kayitOnar(k) {
   k.onarim = onarim;
   return onarim;
 }
+// Kayıt metni: kesirli sayılar 7 anlamlı basamağa yuvarlanır (21.561604830918817 → 21.5616). Hayvan sayısı haritalarla
+// çoğalınca kayıt 860 KB'a çıkıyordu; yuvarlama onu belirgin küçültür, 20 saniyede bir kaydederken telefonu daha az yorar.
+const yuvarla = (a, v) => (typeof v === 'number' && !Number.isInteger(v) && Number.isFinite(v) ? Number(v.toPrecision(7)) : v);
+export function kayitMetni(k) {
+  return JSON.stringify(k, yuvarla);
+}
 export function kayitHazirla(k) {
-  return JSON.parse(JSON.stringify(k));
+  return JSON.parse(kayitMetni(k));
 }
 export function kayittanYukle(v) {
   if (!v || typeof v !== 'object' || !v.ad || v.surum !== KAYIT_SURUMU) return null;
