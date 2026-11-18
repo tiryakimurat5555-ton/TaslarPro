@@ -15,7 +15,7 @@ jobs:
             echo "== $p"
             curl -sS -D baslik.txt -o govde.txt \
               -H "expo-channel-name: ${{ inputs.kanal }}" -H "expo-runtime-version: ${{ inputs.surum }}" \
-              -H "expo-platform: $p" -H "expo-protocol-version: 1" -H "accept: application/expo+json,application/json" \
+              -H "expo-platform: $p" -H "expo-protocol-version: 1" -H "accept: multipart/mixed" \
               https://u.expo.dev/e9796050-d2e8-4278-aa86-6a58bcc22c0a || true
             head -1 baslik.txt
             S=$(head -c 400 govde.txt | tr -d '\n')
