@@ -72,6 +72,7 @@ function androidAyarAc(tur) {
 const GERI_HAREKETI = Platform.OS === 'android' ? 'geri hareketi (aşağı sonra sola kaydırma ya da geri tuşu)' : 'Z hareketi';
 const AYAR_ANAHTAR = 'vahsi-yasam-ayar-v1';
 const KAYIT_ANAHTAR = 'vahsi-yasam-kayit-v1';
+const SIFIRLAMA_ANAHTAR = 'vahsi-yasam-android-sifir-1'; // Android'de bir kerelik kayıt sıfırlaması yapıldı mı
 const YEDEK_ANAHTAR = 'vahsi-yasam-yedek-v1'; // 5 dakikada bir alınan yedek (bozuk kayda karşı)
 const HATA_ANAHTAR = 'vahsi-yasam-hata-v1'; // son 20 hata (Ayarlar > Hata kayıtları)
 const VARSAYILAN_AYAR = {
@@ -3391,6 +3392,16 @@ export default function App() {
       ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP).catch(() => {});
     } catch (e) {}
     (async () => {
+      // Android'de bir kerelik temiz başlangıç (18 Kasım 2026, Murat: Bahtiyar'ın oyunu bir yerden sonra ilerlemiyordu).
+      // Kayıt, yedek ve hata kayıtları silinir; ayarlar kalır. Bayrak yazıldıktan sonra bir daha silinmez.
+      if (ANDROID) {
+        try {
+          if (!(await AsyncStorage.getItem(SIFIRLAMA_ANAHTAR))) {
+            await AsyncStorage.multiRemove([KAYIT_ANAHTAR, YEDEK_ANAHTAR, HATA_ANAHTAR]);
+            await AsyncStorage.setItem(SIFIRLAMA_ANAHTAR, new Date().toISOString());
+          }
+        } catch (e) {}
+      }
       let a = VARSAYILAN_AYAR;
       try {
         const ham = await AsyncStorage.getItem(AYAR_ANAHTAR);

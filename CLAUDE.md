@@ -749,6 +749,9 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   (K.durumSozu: WebView/modül var mı, yüklendi mi, ses bağlamı durumu running/suspended/interrupted, yüklenen/yüklenemeyen ses, son hata;
   K.deneme('zebra') önde/sağda/arkada/solda, hazır olmasa da bağlamı uyandırıp dener). Motor ctx.onstatechange ve resume hatasını bildirir.
   Şüphe: iOS WebKit bağlamı 'interrupted'/'suspended' kalıyor (uygulamanın expo-audio oturumu) ya da dosya okunamıyor. Murat'ın raporu bekleniyor.
+- ANDROID KAYIT SIFIRLAMA (18 Kasım 2026 akşam, Murat "Bahtiyar için APK paketle, kayıtları sıfırla; bir yerden sonra ilerlemiyor"): App açılışta
+  Android'de SIFIRLAMA_ANAHTAR 'vahsi-yasam-android-sifir-1' yoksa kayıt, yedek ve hata kayıtları silinir (ayarlar kalır), bayrak yazılır (bir kez).
+  Yeniden sıfırlamak gerekirse anahtarın sonundaki sayıyı artır. iPhone'a dokunmaz. Aynı gün APK (profil apk) yeniden derlendi.
 - Otlakta çamur adımı (18 Kasım 2026 akşam, Murat "açık otlakta çamurda yürüyormuşum gibi"): zeminTuru'nda islaklik > 0,75 ya da yağmur bütün
   otlağı 'camur' yapıyordu (yağışlı mevsimde günlerce). Artık ıslaklık yalnız çıplak toprağı (otDegeri < 0,2) çamurlaştırır; otlu yer hep 'ot'.
   Moğol/Hindistan otlaklarında yağmurdaki çamur kaldırıldı, Avustralya'da yalnız çıplak kış toprağı/termit alanı yağmurda çamur. Dosyalar doğru
