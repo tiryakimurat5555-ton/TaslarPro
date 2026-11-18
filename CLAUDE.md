@@ -744,7 +744,7 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   modül YOK, require hata verir) hazir() false, eski yol. Ayar hrtf (Ses ve konuşma > Kulaklıkta gerçek üç boyutlu ses). Döngüler (jeneratör, kamp
   ateşi, şelale), dron, motor, müzik, adımlar hâlâ expo-audio. Tarayıcı: web-deneme/webview-taklit.js (iframe srcdoc), http'den aç
   (`cd <web> && python3 -m http.server`; file:// sayfada dosya okunamaz → eski yol), scratchpad hrtf-dene.cjs, globalThis.__hrtfTani().
-  Telefonda doğrulanmadı. APK'da HRTF için yeni APK gerekir (Murat isterse).
+  DOĞRULANDI (18 Kasım 2026 akşam, Murat: "iPhone'da çalıştı uzamsal ses"). APK'ya react-native-webview 18 Kasım APK'sıyla girdi (Android denenmedi).
 - HRTF tanısı (18 Kasım 2026 akşam, Murat "uzamsal ses çalışmadı"; neden bilinmiyor): Ayarlar > Ses ve konuşma > "Üç boyutlu sesi dene"
   (K.durumSozu: WebView/modül var mı, yüklendi mi, ses bağlamı durumu running/suspended/interrupted, yüklenen/yüklenemeyen ses, son hata;
   K.deneme('zebra') önde/sağda/arkada/solda, hazır olmasa da bağlamı uyandırıp dener). Motor ctx.onstatechange ve resume hatasını bildirir.
