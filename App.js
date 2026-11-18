@@ -78,7 +78,7 @@ const VARSAYILAN_AYAR = {
   kip: null, hiz: 1.0, titresim: true, rehber: true, efekt: true, efektKis: true, ortam: true,
   // Aşama 7: kontrol özelleştirme ve erişilebilirlik (karar 31, 32)
   grafik: 'yuksek', hassasiyet: 'orta', surekliYuru: false, buyukDugme: false, solEl: false, kontrast: false, buyukYazi: false,
-  sesAltyazi: false, ortamDuzey: 'orta', otoBetimle: true, donusTiki: true, kesifAnlari: true, kameraUzak: 'normal', kameraAci: 'arka', fotoAcisi: true, muzik: 'dusuk',
+  sesAltyazi: false, ortamDuzey: 'orta', otoBetimle: true, donusTiki: true, kesifAnlari: true, kameraUzak: 'normal', kameraAci: 'arka', fotoAcisi: true, muzik: 'dusuk', hrtf: true,
 };
 const ORTAM_DUZEY = { dusuk: 0.2, orta: 0.35, yuksek: 0.5 };
 // Aşama 25 (karar 30): dinamik müzik düzeyleri; gündüz, gece ve gerilim parçaları duruma göre birbirine geçer
@@ -157,6 +157,9 @@ const sinirla01 = (x) => Math.max(0, Math.min(1, x));
 // Eşit güçlü pan: kaynak önde ya da arkadaysa iki yarı eşit, yanda kaldıkça o taraf baskın. guc 0 = yönsüz (içindeyken).
 function yonluKatman(h, ad, w, o, nokta, guc) {
   if (w <= 0.001) return;
+  // 3B (HRTF) ses motoru için kaynağın noktası; sayılmayan alan, düzey toplamlarına girmez
+  if (!h.__konum) Object.defineProperty(h, '__konum', { value: {}, enumerable: false });
+  h.__konum[ad] = { x: nokta.x, y: nokta.y, guc };
   let rel = Math.atan2(nokta.x - o.x, nokta.y - o.y) - (o.yon || 0);
   const p = Math.max(-0.85, Math.min(0.85, Math.sin(rel) * guc));
   const a = ((p + 1) * Math.PI) / 4;
@@ -519,6 +522,7 @@ const EK_GEZI_TARIF = {
   kackar: 'Türkiye\'nin kuzeydoğusunda, Kaçkar Dağları\'nda serbestçe dolaşılan ayrı bir harita: boz ayı, kurt, vaşak, yaban keçisi, çengel boynuzlu dağ keçisi, karaca, yaban domuzu, kızıl tilki, porsuk, kaya sansarı, su samuru ve sakallı akbaba. Ladin ve kayın ormanından orman gülü kuşağına, çiçekli yayladan zirvelere ve buzul gölüne katman katman bir dağ; yayladan bir dere iner, evin yanında bir arılık var. Sonbaharda binlerce yırtıcı kuş göç ederken buradan geçer.',
 };
 const YENILIKLER = [
+  { baslik: 'Kulaklıkta gerçek üç boyutlu ses (HRTF)', metin: "Hayvan sesleri, koşu ve gündelik sesler, küçük canlılar ve ortam sesleri artık Demir 1919'da denediğimiz yolla çalar: görünmez bir tarayıcının ses motoru her sesi insan başının ölçülmüş süzgeçlerinden geçirir. Önden, arkadan, sağdan, soldan gelen ses kulaklıkta gerçekten oradan duyulur; döndükçe ses başının etrafında kayar. Nehir, galeri ormanı ve kayalık sesleri en yakın noktalarından gelir. Ortam döngüleri artık başa dönerken boşluk bırakmamalı. Motor açılamazsa eski ses yolu kendiliğinden çalar. Telefonda henüz denenmedi.", nerede: 'sahada her yerde; kapatmak için Ayarlar > Ses ve konuşma > Kulaklıkta gerçek üç boyutlu ses.' },
   { baslik: 'Daha akıcı oyun ve küçük düzeltmeler', metin: "Oyun 15 haritadaki yaklaşık 880 hayvanı her an hesaplıyordu; bulunmadığın haritalardaki hayvanlar artık daha seyrek hesaplanıyor (zaman orada da akar). Bilgisayarda bir karenin hesabı ortalama 4,4 milisaniyeden 1,8'e, en uzun takılma 102'den 36 milisaniyeye indi; telefonda takılmalar azalmalı. Kayıt dosyası küçültüldü. İstasyon kamerası özetinde saatlerin eki düzeldi (06:35'de yerine 06:35'te).", nerede: 'bütün oyun.' },
   { baslik: 'Konuşma hızı 250\'ye kadar', metin: "Oyunun kendi sesinin hızı artık 60 ile 250 arasında ayarlanır (önceden en çok 180). iPhone'un konuşma motoru 200'ün üstünde daha hızlı okumaz; Android'de 250'ye kadar hızlanır.", nerede: 'Ayarlar > Ses ve konuşma > Konuşma hızı.' },
   { baslik: 'Android: oyunun sesinin kesilmesine karşı önlemler', metin: "TalkBack kapatıldığında telefon bunu oyuna haber vermezse oyun konuşmasını kapalı TalkBack'e gönderip susuyordu; oyun artık TalkBack'in açık olup olmadığını birkaç saniyede bir kendisi denetler. Oyun Türkçe için belirli bir Google sesi seçmez, telefonun yüklü Türkçe sesini kullanır (indirilmemiş bir ses seçilince konuşma sessizce düşebiliyordu). Konuşma motoru bir sözün bittiğini haber vermezse sıra takılmaz. Konuşma hataları Ayarlar > Hata kayıtları'na yazılır.", nerede: 'Android telefonda, bütün ekranlar.' },
@@ -1107,6 +1111,12 @@ function ayarOgeleri(ayar, degistir) {
       sec: () => ac('canliSesleri', 'Küçük canlıların sesleri'),
     },
     {
+      id: 'hrtf',
+      etiket: `Kulaklıkta gerçek üç boyutlu ses: ${durum('hrtf')}. Değiştir`,
+      ipucu: 'Hayvan sesleri ve ortam sesleri insan başının ölçülmüş süzgeçleriyle (HRTF) çalar: önden, arkadan, sağdan, soldan gelen ses kulaklıkta gerçekten oradan duyulur. Kulaklıkla en iyisi. Kapalıyken eski ses yolu çalar.',
+      sec: () => ac('hrtf', 'Kulaklıkta gerçek üç boyutlu ses', (y) => Efekt.efektAyarla({ hrtf: y })),
+    },
+    {
       id: 'donusTiki',
       etiket: `Dönüş tıkırtısı: ${durum('donusTiki')}. Değiştir`,
       ipucu: 'Dönerken her 30 derecede bir tık duyulur; kuzey, doğu, güney ve batıda daha güçlü. İzlediğin hayvan ya da gittiğin yer tam önüne gelince ayrı bir ses çalar.',
@@ -1258,7 +1268,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
   const ortamSec = () => {
     if (ayarRef.current.ortam === false) return Efekt.ortamDurdur();
     // Katmanlı ortam (yukarıda ortamHedefleri): yürürken her 0,25 sn'de yeniden hesaplanır, sesler birbirine karışır
-    Efekt.ortamKatmanlar(ortamHedefleri(d));
+    Efekt.ortamKatmanlar(ortamHedefleri(d), d.oyuncu);
   };
 
   useEffect(() => {
@@ -1711,7 +1721,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         dongulerSayac -= dt;
         if (dongulerSayac <= 0) {
           dongulerSayac = 0.25;
-          if (a.ortam !== false) Efekt.ortamKatmanlar(ortamHedefleri(d));
+          if (a.ortam !== false) Efekt.ortamKatmanlar(ortamHedefleri(d), d.oyuncu);
           Efekt.magaraAyarla(!!(d.k.magara && !d.k.magara.alan)); // 3B ses motorunda mağara yankısı
           Efekt.muzikAyarla(muzikHedefi(d), MUZIK_DUZEY[a.muzik] ?? MUZIK_DUZEY.dusuk);
           const dz = konumluDonguler(d);
@@ -3337,6 +3347,7 @@ export default function App() {
         }, 2500)
       : null;
     Ses.hataDinle((m) => hataKaydet(m, 'konuşma'));
+    Efekt.konumsalHataDinle((m) => hataKaydet(m, 'ses'));
     // Ayarlardan TalkBack/VoiceOver kapatılıp oyuna dönülünce olay kaçmış olabilir: öne gelince yeniden sor
     const durum = AppState.addEventListener('change', (s) => {
       if (s === 'active')
@@ -3405,8 +3416,8 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    Efekt.efektAyarla({ acik: ayar.efekt !== false, kis: ayar.efektKis !== false, ortam: ayar.ortam !== false ? ORTAM_DUZEY[ayar.ortamDuzey] || 0.35 : 0 });
-  }, [ayar.efekt, ayar.efektKis, ayar.ortam, ayar.ortamDuzey]);
+    Efekt.efektAyarla({ acik: ayar.efekt !== false, kis: ayar.efektKis !== false, hrtf: ayar.hrtf !== false, ortam: ayar.ortam !== false ? ORTAM_DUZEY[ayar.ortamDuzey] || 0.35 : 0 });
+  }, [ayar.efekt, ayar.efektKis, ayar.ortam, ayar.ortamDuzey, ayar.hrtf]);
   GORUNUM.kontrast = !!ayar.kontrast;
   GORUNUM.buyukYazi = !!ayar.buyukYazi;
 
@@ -3495,6 +3506,7 @@ export default function App() {
       <KipBaglam.Provider value={kip}>
         <View style={{ flex: 1, backgroundColor: RENK.zemin }}>
           <StatusBar style="light" />
+          <Efekt.KonumsalMotor />
           {icerik}
         </View>
       </KipBaglam.Provider>

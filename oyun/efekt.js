@@ -6,6 +6,7 @@ import { createAudioPlayer } from 'expo-audio';
 import { SESLER } from './sesler.js';
 import { konusuyorMu, efektCalindi, konusmaBaslarken, ayarlar as sesAyarlari } from './ses.js';
 import * as U from './uzamsal.js';
+import * as K from './konumsal.js';
 
 const durum = { acik: true, genel: 0.9, kis: true, ortam: 0.35 };
 const oynaticilar = {};
@@ -40,10 +41,17 @@ konusmaBaslarken(() => {
   });
 });
 
-export function efektAyarla({ acik, genel, kis, ortam } = {}) {
-  if (typeof acik === 'boolean') durum.acik = acik;
+export function efektAyarla({ acik, genel, kis, ortam, hrtf } = {}) {
+  if (typeof acik === 'boolean') {
+    durum.acik = acik;
+    if (!acik) K.hepsiniSustur();
+  }
+  if (typeof hrtf === 'boolean') K.ayarla({ etkin: hrtf });
   if (typeof kis === 'boolean') durum.kis = kis;
-  if (typeof genel === 'number') durum.genel = genel;
+  if (typeof genel === 'number') {
+    durum.genel = genel;
+    K.ayarla({ genel });
+  }
   if (typeof ortam === 'number') durum.ortam = ortam;
   if (Object.keys(katmanlar).length && !katmanSayac) katmanSayac = setInterval(katmanAdim, 100);
 }
@@ -125,8 +133,13 @@ export function engelAyarla(f) {
 }
 export function magaraAyarla(acik) {
   U.ayarla({ magara: !!acik });
+  K.ayarla({ magara: !!acik });
 }
-export const sesMotoru = () => U.motor();
+// 'hrtf' (WebView + Web Audio, kulaklıkta gerçek 3B), 'gercek3B' (APK'daki react-native-audio-api), 'yok' (yönsüz)
+export const sesMotoru = () => (K.hazir() ? 'hrtf' : U.motor());
+export const konumsalMotorDurumu = () => K.motorDurumu();
+export const KonumsalMotor = K.Motor;
+export const konumsalHataDinle = (f) => K.hataDinle(f);
 const calanYonsuz = new Map(); // Expo Go: taban → { kim, hedef, ses, p, bitis }
 let yonsuzSayac = null;
 const uzaklikDuzeyi = (m) => (m < 3 ? 1 : Math.max(0.06, Math.pow(3 / m, 0.85)));
@@ -158,7 +171,10 @@ export function yonlu(taban, kim, hedef, ses = 1, duyma = 45, zorla = false) {
   const kaynak = SESLER[taban];
   if (!kaynak) return false;
   let uzun = 1;
-  if (U.hazir()) {
+  const engelK = engelDenetle ? () => m > 2 && engelDenetle(kim, hedef) : null;
+  if (K.hazir() && K.cal(taban, kaynak, kim, hedef, { ses, engelF: engelK })) {
+    // 3B (HRTF) motorunda çaldı
+  } else if (U.hazir()) {
     U.ayarla({ genel: durum.genel });
     const engelF = engelDenetle ? () => m > 2 && engelDenetle(kim, hedef) : null;
     if (!U.cal(taban, kaynak, kim, hedef, { ses, engelF })) return false;
@@ -181,13 +197,14 @@ export function yonlu(taban, kim, hedef, ses = 1, duyma = 45, zorla = false) {
 }
 // Sık çalınacak konumlu seslerin kayıtlarını önceden çözer (gerçek 3B motorunda ilk çalışta gecikme olmasın)
 export function konumluOnYukle(adlar) {
+  if (K.kullanilabilir()) K.onYukle(adlar.filter((a) => SESLER[a]).map((a) => [a, SESLER[a]]));
   U.onYukle(adlar.map((a) => SESLER[a]).filter(Boolean));
 }
 // Son duyulan konumlu ses (oyuncu "Sese dön" diyebilsin diye): { taban, hedef, x, y, zaman }
 let sonKonumlu = null;
 export const sonDuyulan = () => sonKonumlu;
 // Tarayıcı denemeleri için: çalan konumlu seslerin kulak düzeyleri
-export const konumluDurum = () => (U.hazir() ? U.durum() : Object.fromEntries([...calanYonsuz].map(([a, x]) => [a, { duzey: Math.round(x.p.volume * 100) / 100 }])));
+export const konumluDurum = () => (K.hazir() ? K.durumTani() : U.hazir() ? U.durum() : Object.fromEntries([...calanYonsuz].map(([a, x]) => [a, { duzey: Math.round(x.p.volume * 100) / 100 }])));
 
 // Haritanın ortam sesi: katmanlı döngüler. Savanın (ya da yağmurun) temel sesi her zaman çalar; nehir, galeri ormanı ve
 // kayalık katmanları oraya uzaklığa göre yükselir ve birbirine karışır. Yönlü katmanlar (<ad>_sol / <ad>_sag) birlikte
@@ -245,7 +262,32 @@ function katmanKur(ad) {
   }
 }
 // hedef: { ortam_gunduz: 0.4, ortam_nehir_sol: 0.7, ortam_nehir_sag: 0.3, ... } (0-1; ortam düzeyiyle çarpılır)
-export function ortamKatmanlar(hedef) {
+// hedef.__konum (sayılmayan alan): { <ad>: { x, y, guc } } yönlü katmanların kaynak noktası. 3B motorda (HRTF) yönlü çift
+// (_sol/_sag) yerine tek kayıt o noktaya konur.
+function hrtfOrtam(hedef, kim) {
+  const konum = (hedef && hedef.__konum) || {};
+  const tablo = {};
+  const eski = {}; // 3B motorda yüklenemeyen katmanlar eski oynatıcılarla çalar
+  for (const [ad, v] of Object.entries(hedef || {})) {
+    const e = esi(ad);
+    const taban = e ? ad.slice(0, -4) : ad;
+    if (K.basarisiz(taban) || !SESLER[taban]) {
+      eski[ad] = v;
+      continue;
+    }
+    if (!tablo[taban]) tablo[taban] = { ad: taban, guc2: 0 };
+    tablo[taban].guc2 += v * v;
+  }
+  const liste = [];
+  for (const t of Object.values(tablo)) {
+    const k = konum[t.ad];
+    liste.push({ ad: t.ad, kaynak: SESLER[t.ad], ses: durum.acik ? Math.sqrt(t.guc2) * durum.ortam : 0, ...(k ? { x: k.x, y: k.y, guc: k.guc } : {}) });
+  }
+  K.ortam(liste, kim);
+  return eski;
+}
+export function ortamKatmanlar(hedef, kim) {
+  if (K.hazir()) hedef = hrtfOrtam(hedef, kim);
   katmanHedef = hedef || {};
   // Yeni katmanlar aynı anda başlatılır (yönlü çiftin iki yarısı eşzamanlı çalsın)
   const yeniler = [];
@@ -277,6 +319,7 @@ export function ortamBaslat(ad) {
   ortamKatmanlar({ [ad]: 1 });
 }
 export function ortamDurdur(yavas) {
+  K.ortamDurdur();
   katmanHedef = {};
   if (yavas) {
     if (!katmanSayac) katmanSayac = setInterval(katmanAdim, 100);
@@ -291,7 +334,7 @@ export function ortamDurdur(yavas) {
   }
 }
 // Test ve tanı için: çalan katmanlar ve düzeyleri
-export const ortamDurumu = () => Object.fromEntries(Object.entries(katmanlar).map(([a, x]) => [a, Math.round(x.ses * 100) / 100]));
+export const ortamDurumu = () => ({ ...(K.hazir() ? K.ortamSon() : {}), ...Object.fromEntries(Object.entries(katmanlar).map(([a, x]) => [a, Math.round(x.ses * 100) / 100])) });
 
 // Aracın motor sesi (Kayıp Okyanus'taki itici döngüsü gibi): sürerken sürekli çalar, düzeyi ve perdesi hıza göre.
 let motorOynatici = null;
@@ -521,7 +564,8 @@ export function birak() {
 try {
   globalThis.__ortamDurumu = ortamDurumu;
   globalThis.__konumluDurum = () => konumluDurum();
-  globalThis.__sesMotoru = () => U.motor();
+  globalThis.__sesMotoru = () => sesMotoru();
+  globalThis.__hrtfTani = () => new Promise((r) => (K.hazir() ? K.tani(r) : r(null)));
   globalThis.__muzikDurumu = () => muzikDurumu();
   globalThis.__yonluDurum = () => Object.fromEntries(Object.entries(yonluDonguler).map(([a, x]) => [a, { sol: Math.round(x.sol.volume * 100) / 100, sag: Math.round(x.sag.volume * 100) / 100, hiz: x.hiz }]));
 } catch (e) {}

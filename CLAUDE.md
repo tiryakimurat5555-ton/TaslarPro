@@ -733,6 +733,18 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   dt en çok 1,5): bot ortalama kare 4,37 → 1,81 ms, en çok 102 → 36 ms. kayitMetni(k) kesirli sayıları 7 anlamlı basamağa yuvarlar (App kaydet, kayitHazirla).
   saatDe(dk) saat bulunma eki (su.js kamera özeti). tsc checkJs ile tanımsız ad/eksik dışa aktarım yok. menu-tara 9 kayıt sorun 0. Kayıt ~600-860 KB
   (885 hayvan, 15 harita); Android AsyncStorage satır sınırı 2 MB. Nüfus 36 gün benzetimi /tmp/claude-0/kr/nufus36.js (harita başına sayım).
+- HRTF SES MOTORU (18 Kasım 2026, Murat "Ses olayını bu oyun için de yapalım"; Demir 1919'da iPhone'da doğrulanan yol): `oyun/konumsal.js`
+  görünmez WebView (react-native-webview 14.0.1) + Web Audio PannerNode 'HRTF'. App kökünde `<Efekt.KonumsalMotor />`. Ses dosyası expo-asset +
+  expo-file-system ile base64 okunup WebView'de decodeAudioData (ilk çalışta yüklenir; 2,5 sn içinde çözülmezse o çalış düşer). Uzaklık kısması,
+  hava/engel alçak geçireni, yankı gönderimi (mağarada güçlü), Doppler JS'te hesaplanır (panner rolloff 0), 60 ms'de bir toplu injectJavaScript.
+  efekt.yonlu sırası: K (HRTF) → U (APK react-native-audio-api) → yönsüz expo-audio; yüklenemeyen dosya eski yola düşer (K.basarisiz).
+  Ortam katmanları da K'da: Web Audio döngüsü (kesintisiz); yönlü çiftler (_sol/_sag) yerine tek kayıt App yonluKatman'ın `h.__konum[ad]`
+  (sayılmayan alan: x, y, guc) noktasına konur; doğrudan yol (stereo, yönsüz) cos, konumlu yol (tek kanal HRTF) sin payıyla (guc 0 içinde).
+  Susan katman 15 sn sonra bırakılır ve tamponu bellekten atılır. Motor 6 sn'de açılmazsa (ya da WebView yoksa: 15 ve 17 Kasım APK'larında yerel
+  modül YOK, require hata verir) hazir() false, eski yol. Ayar hrtf (Ses ve konuşma > Kulaklıkta gerçek üç boyutlu ses). Döngüler (jeneratör, kamp
+  ateşi, şelale), dron, motor, müzik, adımlar hâlâ expo-audio. Tarayıcı: web-deneme/webview-taklit.js (iframe srcdoc), http'den aç
+  (`cd <web> && python3 -m http.server`; file:// sayfada dosya okunamaz → eski yol), scratchpad hrtf-dene.cjs, globalThis.__hrtfTani().
+  Telefonda doğrulanmadı. APK'da HRTF için yeni APK gerekir (Murat isterse).
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

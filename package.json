@@ -12,7 +12,9 @@
   "dependencies": {
     "@react-native-async-storage/async-storage": "2.2.0",
     "expo": "~58.0.22",
+    "expo-asset": "~58.0.18",
     "expo-audio": "~58.0.11",
+    "expo-file-system": "~58.0.0",
     "expo-gl": "~58.0.4",
     "expo-haptics": "~58.0.7",
     "expo-keep-awake": "~58.0.4",
@@ -25,6 +27,7 @@
     "react-native": "0.88.1",
     "react-native-audio-api": "~1.0.0",
     "react-native-safe-area-context": "~5.10.1",
+    "react-native-webview": "14.0.1",
     "three": "0.166.1"
   }
 }
