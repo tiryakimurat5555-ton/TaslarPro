@@ -1,0 +1,24 @@
+# Bir APK'nın (kanal + çalışma sürümü) şu anda hangi güncellemeyi alacağını Expo'nun sunucusuna sorar.
+name: Guncelleme denetle
+on:
+  workflow_dispatch:
+    inputs:
+      kanal: { description: 'Kanal', default: 'main' }
+      surum: { description: 'Calisma surumu (runtimeVersion)', default: '1.0.0' }
+jobs:
+  denetle:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sor
+        run: |
+          for p in android ios; do
+            echo "== $p"
+            curl -sS -D baslik.txt -o govde.txt \
+              -H "expo-channel-name: ${{ inputs.kanal }}" -H "expo-runtime-version: ${{ inputs.surum }}" \
+              -H "expo-platform: $p" -H "expo-protocol-version: 1" -H "accept: application/expo+json,application/json" \
+              https://u.expo.dev/e9796050-d2e8-4278-aa86-6a58bcc22c0a || true
+            head -1 baslik.txt
+            S=$(head -c 400 govde.txt | tr -d '\n')
+            echo "$S"
+            echo "::notice title=$p::$(head -1 baslik.txt | tr -d '\r') $(grep -o '"id":"[^"]*"' govde.txt | head -1) $(grep -o '"createdAt":"[^"]*"' govde.txt | head -1) $(grep -o '"error[^}]*' govde.txt | head -c 200)"
+          done
