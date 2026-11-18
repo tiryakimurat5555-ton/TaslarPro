@@ -745,6 +745,10 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   ateşi, şelale), dron, motor, müzik, adımlar hâlâ expo-audio. Tarayıcı: web-deneme/webview-taklit.js (iframe srcdoc), http'den aç
   (`cd <web> && python3 -m http.server`; file:// sayfada dosya okunamaz → eski yol), scratchpad hrtf-dene.cjs, globalThis.__hrtfTani().
   Telefonda doğrulanmadı. APK'da HRTF için yeni APK gerekir (Murat isterse).
+- Otlakta çamur adımı (18 Kasım 2026 akşam, Murat "açık otlakta çamurda yürüyormuşum gibi"): zeminTuru'nda islaklik > 0,75 ya da yağmur bütün
+  otlağı 'camur' yapıyordu (yağışlı mevsimde günlerce). Artık ıslaklık yalnız çıplak toprağı (otDegeri < 0,2) çamurlaştırır; otlu yer hep 'ot'.
+  Moğol/Hindistan otlaklarında yağmurdaki çamur kaldırıldı, Avustralya'da yalnız çıplak kış toprağı/termit alanı yağmurda çamur. Dosyalar doğru
+  (ot merkez frekansı ~5,4 kHz, çamur ~2,5-4 kHz). Telefonda doğrulanmadı.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)

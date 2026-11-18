@@ -6140,21 +6140,22 @@ export function zeminTuru(d, p) {
       if (bg === 'kumul') return 'toprak';
       if (bg === 'husOrman') return 'yaprak';
       if (bg === 'pinar') return 'camur';
-      return hv && hv.tur === 'yagmurlu' ? 'camur' : 'ot';
+      return 'ot'; // yağmurda ıslak ot yine ot (çamur yalnız pınarda)
     }
     if (Kt.hindistanMi(o)) {
       if (bg === 'dadar') return 'kaya';
       if (bg === 'salOrmani' || bg === 'bambuluk') return 'yaprak';
       if (bg === 'talab') return 'camur';
-      const hv = kutupHavasi(k, o);
-      return hv && hv.tur === 'yagmurlu' ? 'camur' : 'ot';
+      return 'ot';
     }
     if (Kt.avustralyaMi(o)) {
       if (bg === 'kumtasi') return 'kaya';
       if (bg === 'okaliptus') return 'yaprak';
       if (bg === 'billabong') return 'camur';
       const hv = kutupHavasi(k, o);
-      return hv && hv.tur === 'yagmurlu' ? 'camur' : kutupMevsimi(k) === 'kis' || bg === 'avTermit' ? 'toprak' : 'ot';
+      // Çıplak kızıl toprak yağmurda çamurlaşır; otlu yer yağmurda da ot
+      if (kutupMevsimi(k) === 'kis' || bg === 'avTermit') return hv && hv.tur === 'yagmurlu' ? 'camur' : 'toprak';
+      return 'ot';
     }
     if (bg === 'kayaBurnu') return 'kaya';
     if (bg === 'sahanlik' || bg === 'buzOrtusu') return 'kar';
@@ -6175,9 +6176,10 @@ export function zeminTuru(d, p) {
   if (b === 'nehir' && Math.abs(kiyiUzak) < 9) return 'camur';
   if (o.x > GALERI.x0 && o.x < GALERI.x1 && kiyiUzak > 0 && kiyiUzak < GALERI.derinlik) return 'yaprak';
   if (b === 'nehir') return 'ot';
-  if (islak) return 'camur';
-  // Kurak mevsimde otun bittiği yerlerde çıplak toprak
-  if (k.eko && E.otDegeri(k.eko, o.x, o.y) < 0.2) return 'toprak';
+  // Kurak mevsimde otun bittiği yerlerde çıplak toprak; ıslakken (yağmur ya da nemli toprak) o toprak çamurlaşır.
+  // Otlu yer ıslakken de ot sesi verir (18 Kasım, Murat: "açık otlakta çamurda yürüyormuşum gibi"; yağışlı mevsimde
+  // toprak nemi günlerce 0,75'in üstünde kaldığı için bütün otlak çamur sayılıyordu).
+  if (k.eko && E.otDegeri(k.eko, o.x, o.y) < 0.2) return islak ? 'camur' : 'toprak';
   if (b === 'agaclik' && k.eko && k.eko.yesil > 0.5) return 'yaprak';
   return 'ot';
 }
