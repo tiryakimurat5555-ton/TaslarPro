@@ -193,13 +193,15 @@ const MOTOR_HTML = `<!DOCTYPE html><html><head><meta charset="utf-8"></head><bod
     for (var id in kaynaklar) k[id] = Math.round(kaynaklar[id].g.gain.value * 100) / 100;
     bildir({ t: 'tani', katmanlar: o, kaynaklar: k, durum: ctx ? ctx.state : 'yok', tampon: Object.keys(tamponlar).length });
   }
+  var parcalar = {};
   window.motor = function(liste){
     for (var i = 0; i < liste.length; i++){
       var c = liste[i];
       try {
         if (c.a === 'b') { uyan(); bildir({ t: 'durum', d: ctx.state }); }
         else if (!ctx) { baglam(); }
-        if (c.a === 'y') yukle(c.ad, c.v);
+        if (c.a === 'yp') parcalar[c.ad] = (parcalar[c.ad] || '') + c.p;
+        else if (c.a === 'y') { var v = c.v == null ? (parcalar[c.ad] || '') : c.v; delete parcalar[c.ad]; yukle(c.ad, v); }
         else if (c.a === 'd') dinleyici(c);
         else if (c.a === 'c') { if (ctx.state !== 'running') uyan(); cal(c); }
         else if (c.a === 'u') guncelle(c);
@@ -258,10 +260,22 @@ function gonder(c) {
   kuyruk.push(c);
   if (!sayac) sayac = setInterval(adim, 60);
 }
+const PARCA = 96000; // bir ses parçasının en çok uzunluğu (harf)
+const ENJEKTE_SINIRI = 200000; // bir seferde WebView'e gönderilen en çok yazı
 function bosalt() {
   if (!kuyruk.length || !web) return;
-  const l = kuyruk;
-  kuyruk = [];
+  // Bir seferde en çok ~200 KB: kalan komutlar sonraki 60 ms'lik adımda gider (ekran ve ses akıcı kalsın)
+  let n = 0;
+  let boy = 0;
+  while (n < kuyruk.length) {
+    const c = kuyruk[n];
+    const b = c.p ? c.p.length : c.v ? c.v.length : 80;
+    if (n > 0 && boy + b > ENJEKTE_SINIRI) break;
+    boy += b;
+    n++;
+  }
+  const l = kuyruk.slice(0, n);
+  kuyruk = kuyruk.slice(n);
   try {
     web.injectJavaScript('window.motor && window.motor(' + JSON.stringify(l) + '); true;');
   } catch (e) {}
@@ -283,7 +297,12 @@ function yukle(ad, kaynak) {
   base64Oku(kaynak)
     .then((v) => {
       // Motor çözünce 'yh' bildirir; o zamana kadar 'yukleniyor' kalır
-      gonder({ a: 'y', ad, v });
+      // Büyük dosya parça parça gönderilir: Android'de tek seferde megabaytlarca yazı enjekte etmek ekranı dondurabilir
+      if (v.length <= PARCA) gonder({ a: 'y', ad, v });
+      else {
+        for (let i = 0; i < v.length; i += PARCA) gonder({ a: 'yp', ad, p: v.slice(i, i + PARCA) });
+        gonder({ a: 'y', ad, v: null });
+      }
     })
     .catch((e) => {
       yuklenen.set(ad, 'hata');

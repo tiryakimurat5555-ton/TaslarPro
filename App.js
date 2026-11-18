@@ -405,6 +405,40 @@ function hataKaydet(e, yer) {
   AsyncStorage.setItem(HATA_ANAHTAR, JSON.stringify(HATALAR)).catch(() => {});
   return true;
 }
+// Açılış günlüğü ("kara kutu", 19 Kasım 2026, Bahtiyar: Android'de ad seçince boş ekranda kalıyordu): yeni ya da kayıtlı
+// araştırma açılırken her adım telefona yazılır. Oyun 12 saniye sorunsuz çalışınca günlük temizlenir. Bir sonraki açılışta günlük
+// hâlâ duruyorsa oyun nerede takıldığını söyler ve hata kayıtlarına yazar.
+const ACILIS_ANAHTAR = 'vahsi-yasam-acilis-v1';
+let ACILIS = null;
+function acilisBaslat(ne) {
+  ACILIS = { bas: Date.now(), zaman: new Date().toISOString().slice(0, 16).replace('T', ' '), adimlar: [] };
+  acilisAdim(ne);
+}
+function acilisAdim(ad) {
+  if (!ACILIS) return;
+  ACILIS.adimlar.push(`${ad} (${((Date.now() - ACILIS.bas) / 1000).toFixed(1)} sn)`);
+  if (ACILIS.adimlar.length > 30) ACILIS.adimlar.splice(1, 1);
+  AsyncStorage.setItem(ACILIS_ANAHTAR, JSON.stringify(ACILIS)).catch(() => {});
+}
+function acilisBitti() {
+  if (!ACILIS) return;
+  ACILIS = null;
+  AsyncStorage.removeItem(ACILIS_ANAHTAR).catch(() => {});
+}
+// Yakalanmayan JavaScript hataları da kayda geçsin (uygulama kapanmadan önce yazılabildiği kadar)
+try {
+  const EU = globalThis.ErrorUtils;
+  if (EU && EU.getGlobalHandler) {
+    const eski = EU.getGlobalHandler();
+    EU.setGlobalHandler((e, olumcul) => {
+      try {
+        hataKaydet(e, olumcul ? 'ölümcül hata' : 'yakalanmayan hata');
+        acilisAdim((olumcul ? 'ölümcül hata: ' : 'hata: ') + String((e && e.message) || e).slice(0, 120));
+      } catch (er) {}
+      if (eski) eski(e, olumcul);
+    });
+  }
+} catch (e) {}
 const ADLAR = ['Defne', 'Kaan', 'Ada', 'Deniz', 'Ilgaz', 'Elif', 'Atlas', 'Zeynep', 'Toprak', 'Yağmur', 'Mert', 'Selin'];
 
 const KipBaglam = createContext('kendi');
@@ -523,6 +557,7 @@ const EK_GEZI_TARIF = {
   kackar: 'Türkiye\'nin kuzeydoğusunda, Kaçkar Dağları\'nda serbestçe dolaşılan ayrı bir harita: boz ayı, kurt, vaşak, yaban keçisi, çengel boynuzlu dağ keçisi, karaca, yaban domuzu, kızıl tilki, porsuk, kaya sansarı, su samuru ve sakallı akbaba. Ladin ve kayın ormanından orman gülü kuşağına, çiçekli yayladan zirvelere ve buzul gölüne katman katman bir dağ; yayladan bir dere iner, evin yanında bir arılık var. Sonbaharda binlerce yırtıcı kuş göç ederken buradan geçer.',
 };
 const YENILIKLER = [
+  { baslik: 'Android: oyun açılışında takılmaya karşı önlemler', metin: "Bazı Android telefonlarda ad seçince ekran boş kalıyordu. Oyun döngüsünde bir hata olursa döngü artık durmaz; Android'de üç boyutlu görüntü karşılama konuşması başladıktan sonra kurulur; ses dosyaları görünmez ses motoruna küçük parçalar hâlinde gönderilir (büyük yazı ekranı dondurabiliyordu). Oyun açılırken her adımı telefona yazar: açılış yarıda kalırsa bir sonraki açılışta ana menü nerede takıldığını söyler.", nerede: 'oyun açılışı; ayrıntılar Ayarlar > Hata kayıtları.' },
   { baslik: 'Üç boyutlu sesi dene', metin: "Ses motorunun durumunu söyler (hazır mı, ses bağlamı çalışıyor mu, kaç ses yüklendi, son hata), sonra bir zebra sesini önünde, sağında, arkanda ve solunda sırayla çalar. Kulaklıkla dene; duyduğunu ve söylediği durumu bana ilet.", nerede: 'Ayarlar > Ses ve konuşma > Üç boyutlu sesi dene.' },
   { baslik: 'Otlakta çamur sesi düzeldi', metin: "Yağışlı mevsimde toprak günlerce nemli kaldığı için bütün açık otlak çamur sayılıyor, adımların çamurda yürür gibi çıkıyordu. Artık otlu yerde yağmurda da ot sesi gelir; çamur yalnızca gölet ve nehir kıyısında, sulak alanda ve ıslak çıplak toprakta. Moğol bozkırı, Hindistan ve Avustralya'daki otlaklarda da aynı düzeltme yapıldı.", nerede: 'sahada yürürken.' },
   { baslik: 'Kulaklıkta gerçek üç boyutlu ses (HRTF)', metin: "Hayvan sesleri, koşu ve gündelik sesler, küçük canlılar ve ortam sesleri artık Demir 1919'da denediğimiz yolla çalar: görünmez bir tarayıcının ses motoru her sesi insan başının ölçülmüş süzgeçlerinden geçirir. Önden, arkadan, sağdan, soldan gelen ses kulaklıkta gerçekten oradan duyulur; döndükçe ses başının etrafında kayar. Nehir, galeri ormanı ve kayalık sesleri en yakın noktalarından gelir. Ortam döngüleri artık başa dönerken boşluk bırakmamalı. Motor açılamazsa eski ses yolu kendiliğinden çalar. Telefonda henüz denenmedi.", nerede: 'sahada her yerde; kapatmak için Ayarlar > Ses ve konuşma > Kulaklıkta gerçek üç boyutlu ses.' },
@@ -1240,7 +1275,11 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
   const kip = useContext(KipBaglam);
   const dRef = useRef(null);
   if (!dRef.current) {
+    acilisAdim('dünya kuruluyor');
+    const t0 = Date.now();
     dRef.current = M.dunyaOlustur(arastirmaci);
+    globalThis.__dunyaSure = Date.now() - t0;
+    acilisAdim(`dünya kuruldu, ${dRef.current.k.hayvanlar.length} hayvan`);
     { const dd = dRef.current; Efekt.engelAyarla((a, b) => M.sesEngeli(dd, a, b)); }
     Mz.baslat(dRef.current);
   }
@@ -1292,8 +1331,14 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     Efekt.onYukle(['adim_ot_0', 'adim_ot_1', 'adim_ot_2', 'adim_ot_3', 'donus_tik', 'hedef_onde', 'odak', 'etkinles', 'altin', 'seviye', 'hata', 'carpma', 'sinir', 'menu_odak', 'menu_sec', 'menu_geri', 'menu_sinir', 'deklansor', 'durbun_odak']);
     ortamSec();
     let silici;
+    let ilkSoz = true;
+    acilisAdim('oyun ekranı açıldı');
     setAltyazi('');
     Ses.altyaziDinle((m) => {
+      if (ilkSoz) {
+        ilkSoz = false;
+        acilisAdim('ilk konuşma başladı');
+      }
       setAltyazi(m);
       clearTimeout(silici);
       silici = setTimeout(() => setAltyazi(''), 6000);
@@ -1568,8 +1613,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     let ortamSayac = 3;
     let calisiyor = true;
     let raf;
-    const dongu = () => {
-      if (!calisiyor) return;
+    const kareIsle = () => {
       const simdi = Date.now();
       const dt = Math.min(0.1, (simdi - son) / 1000);
       son = simdi;
@@ -1616,7 +1660,6 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
           dinlenRef.current.hedef = 0;
         }
         if (d.k.dk >= r.hedef) dinlenBitir(false);
-        raf = requestAnimationFrame(dongu);
         return;
       }
       if (!menuRef.current) {
@@ -1862,6 +1905,29 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         hudSayac = 0;
         if (!menuRef.current) yenile((x) => x + 1);
       }
+    };
+    // Bir karede beklenmedik bir hata olsa da döngü durmaz (eskiden döngü sessizce dururdu, oyun donmuş görünürdü)
+    let donguHatasi = 0;
+    let kareSayisi = 0;
+    let ilkKare = 0;
+    const dongu = () => {
+      if (!calisiyor) return;
+      try {
+        kareIsle();
+        kareSayisi++;
+        if (kareSayisi === 1) {
+          ilkKare = Date.now();
+          acilisAdim('ilk kare çizildi');
+        } else if (ilkKare && Date.now() - ilkKare > 12000 && kareSayisi > 60) {
+          ilkKare = 0;
+          acilisBitti();
+        }
+      } catch (e) {
+        if (donguHatasi++ < 3) {
+          hataKaydet(e, 'oyun döngüsü');
+          acilisAdim('oyun döngüsünde hata: ' + String((e && e.message) || e).slice(0, 120));
+        }
+      }
       raf = requestAnimationFrame(dongu);
     };
     raf = requestAnimationFrame(dongu);
@@ -1872,6 +1938,13 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
     };
   }, []);
 
+  // Android'de üç boyutlu görüntü 1,5 saniye sonra kurulur: önce karşılama konuşması başlasın, ekran boş ve sessiz kalmasın
+  const [glAcik, setGlAcik] = useState(!ANDROID);
+  useEffect(() => {
+    if (glAcik) return undefined;
+    const z = setTimeout(() => setGlAcik(true), 1500);
+    return () => clearTimeout(z);
+  }, []);
   // Tanı için: üç boyutlu görüntü 8 saniyede kurulmadıysa hata kayıtlarına yazılır
   const glCagrildi = useRef(false);
   useEffect(() => {
@@ -1879,14 +1952,19 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
       if (ayarRef.current.grafik === 'kapali') return;
       if (!glCagrildi.current) hataKaydet(new Error('Üç boyutlu görüntünün çizim bağlamı 8 saniyede oluşmadı'), 'üç boyutlu görüntü');
       else if (!sahneRef.current) hataKaydet(new Error('Üç boyutlu sahne kurulmadı'), 'üç boyutlu görüntü');
-    }, 8000);
+    }, ANDROID ? 9500 : 8000);
     return () => clearTimeout(z);
   }, []);
   const glHazir = useCallback((gl) => {
     glCagrildi.current = true;
+    acilisAdim('çizim bağlamı geldi, sahne kuruluyor');
     try {
+      const t0 = Date.now();
       sahneRef.current = sahneKur(gl, d, { dusuk: ayarRef.current.grafik === 'dusuk' });
+      globalThis.__sahneSure = Date.now() - t0;
+      acilisAdim('üç boyutlu sahne kuruldu');
     } catch (e) {
+      acilisAdim('sahne kurulamadı: ' + String((e && e.message) || e).slice(0, 120));
       hataKaydet(e, 'üç boyutlu sahne kurulumu');
       sahneRef.current = null;
     }
@@ -3200,7 +3278,7 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
   return (
     <View style={{ flex: 1, backgroundColor: '#0d1626' }}>
       {ANDROID && <StatusBar hidden />}
-      {ayar.grafik !== 'kapali' && <GLView style={StyleSheet.absoluteFill} onContextCreate={glHazir} accessible={false} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden />}
+      {ayar.grafik !== 'kapali' && glAcik && <GLView style={StyleSheet.absoluteFill} onContextCreate={glHazir} accessible={false} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden />}
       <View
         style={{ flex: 1, paddingTop: kenar.top, paddingBottom: kenar.bottom, paddingLeft: kenar.left, paddingRight: kenar.right }}
         accessibilityElementsHidden={!!menu.ust}
@@ -3323,6 +3401,7 @@ class HataSiniri extends React.Component {
   }
   componentDidCatch(hata) {
     hataKaydet(hata, 'ekran');
+    acilisAdim('oyun ekranında hata: ' + String((hata && hata.message) || hata).slice(0, 120));
     Ses.hemen('Oyun ekranında bir hata oldu. Araştırman en son kaydedildiği hâliyle duruyor. Ana menüye dönmek için ekrandaki tek düğmeye dokun.');
   }
   render() {
@@ -3432,8 +3511,28 @@ export default function App() {
           hataKaydet(e, 'yedek okuma');
         }
       }
+      let takilma = null;
+      try {
+        const ac = await AsyncStorage.getItem(ACILIS_ANAHTAR);
+        if (ac) {
+          const g = JSON.parse(ac);
+          await AsyncStorage.removeItem(ACILIS_ANAHTAR);
+          if (g && Array.isArray(g.adimlar) && g.adimlar.length) {
+            takilma = g;
+            hataKaydet(new Error(`Önceki açılış (${g.zaman}) tamamlanmadı. Adımlar: ${g.adimlar.join(' → ')}`.slice(0, 200)), 'açılış');
+            // Ayrıntının tamamı ayrı satırda kalsın (hata kaydı 200 harfle sınırlı)
+            HATALAR.unshift({ zaman: g.zaman, yer: 'açılış adımları', mesaj: g.adimlar.join(' → ').slice(-600), yigin: '' });
+            AsyncStorage.setItem(HATA_ANAHTAR, JSON.stringify(HATALAR.slice(0, 20))).catch(() => {});
+          }
+        }
+      } catch (e) {}
       setAyar(a);
       setKayit(kk);
+      if (takilma)
+        setTimeout(
+          () => Ses.soyle(`Geçen sefer oyun açılırken takıldı. En son yapılan adım: ${takilma.adimlar[takilma.adimlar.length - 1].replace(/ \([^)]*\)$/, '')}. Bu cümleyi oyunun geliştiricisine iletirsen sorun daha kolay bulunur. Ayrıntılar Ayarlar, Hata kayıtları bölümünde.`, 4),
+          5000
+        );
       GORUNUM.kontrast = !!a.kontrast;
       GORUNUM.buyukYazi = !!a.buyukYazi;
       if (a.kip) Ses.ayarla({ hiz: a.hiz });
@@ -3504,8 +3603,12 @@ export default function App() {
         kayit={kayit}
         ayar={ayar}
         ayarDegistir={ayarDegistir}
-        devam={() => basla(kayit)}
+        devam={() => {
+          acilisBaslat('kayıtlı araştırmaya devam');
+          basla(kayit);
+        }}
         yeni={(ad) => {
+          acilisBaslat(`yeni araştırma: ${ad}`);
           const k = M.arastirmaciOlustur(ad);
           AsyncStorage.setItem(KAYIT_ANAHTAR, JSON.stringify(k)).catch(() => {});
           setKayit(k);

@@ -756,6 +756,13 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   otlağı 'camur' yapıyordu (yağışlı mevsimde günlerce). Artık ıslaklık yalnız çıplak toprağı (otDegeri < 0,2) çamurlaştırır; otlu yer hep 'ot'.
   Moğol/Hindistan otlaklarında yağmurdaki çamur kaldırıldı, Avustralya'da yalnız çıplak kış toprağı/termit alanı yağmurda çamur. Dosyalar doğru
   (ot merkez frekansı ~5,4 kHz, çamur ~2,5-4 kHz). Telefonda doğrulanmadı.
+- ANDROID BOŞ EKRAN (19 Kasım 2026, Bahtiyar: 18 Kasım APK'sında Yeni araştırma > ad seçince boş ekran; tarayıcıda, jitsiz ve 8 kat
+  yavaşlatılmış denemede çıkmadı; Expo bulut benzeticisi bu hesapta yok). Önlemler: App açılış günlüğü (kara kutu) ACILIS_ANAHTAR
+  'vahsi-yasam-acilis-v1': acilisBaslat (yeni/devam) → acilisAdim (dünya kuruldu, oyun ekranı açıldı, ilk konuşma, çizim bağlamı, sahne,
+  ilk kare, hatalar; ErrorUtils genel işleyicisi ve HataSiniri de yazar) → oyun 12 sn çalışınca acilisBitti siler. Sonraki açılışta günlük
+  duruyorsa ana menü son adımı söyler, Hata kayıtlarına 'açılış adımları' satırı. Oyun döngüsü kareIsle + try/catch (eskiden yakalanmayan
+  hata döngüyü sessizce durdururdu). Android'de GLView 1,5 sn sonra kurulur (glAcik). konumsal.js ses dosyalarını 96 bin harflik 'yp'
+  parçalarıyla, bir enjeksiyonda en çok 200 bin harf gönderir. Sebep henüz bilinmiyor; Bahtiyar'ın denemesinden gelen cümle bekleniyor.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)
