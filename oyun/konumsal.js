@@ -55,6 +55,7 @@ const MOTOR_HTML = `<!DOCTYPE html><html><head><meta charset="utf-8"></head><bod
     try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch(e){}
     var C = window.AudioContext || window.webkitAudioContext;
     ctx = new C();
+    try { ctx.onstatechange = function(){ bildir({ t: 'durum', d: ctx.state }); }; } catch(e){}
     ana = ctx.createGain(); ana.gain.value = 1; ana.connect(ctx.destination);
     var y = ctx.createConvolver(); y.buffer = durtu(); y.connect(ana);
     yankiGiris = ctx.createGain(); yankiGiris.gain.value = 1; yankiGiris.connect(y);
@@ -64,7 +65,7 @@ const MOTOR_HTML = `<!DOCTYPE html><html><head><meta charset="utf-8"></head><bod
   }
   function uyan(){
     baglam();
-    if (ctx.state !== 'running' && ctx.resume) ctx.resume().then(function(){ bildir({ t: 'durum', d: ctx.state }); }, function(){});
+    if (ctx.state !== 'running' && ctx.resume) ctx.resume().then(function(){ bildir({ t: 'durum', d: ctx.state }); }, function(e){ bildir({ t: 'durum', d: ctx.state, hata: String(e && e.message || e) }); });
   }
   setInterval(function(){ if (ctx && ctx.state !== 'running') uyan(); }, 2000);
   function hedefle(p, v, sabit){ var t = ctx.currentTime; try { p.cancelScheduledValues(t); p.setTargetAtTime(v, t, sabit || 0.03); } catch(e){ p.value = v; } }
@@ -294,6 +295,7 @@ export function onYukle(liste) {
   for (const [ad, k] of liste) yukle(ad, k);
 }
 function hataBildir(m) {
+  durum.sonHata = m;
   hataDinleyiciler.forEach((f) => {
     try {
       f(m);
@@ -432,6 +434,47 @@ export function ortamDurdur() {
   ortamOnceki = new Map();
   gonder({ a: 'ox' });
 }
+// Ayarlar'daki "Üç boyutlu sesi dene" için: motorun durumu sözle
+const BAGLAM_ADI = { running: 'çalışıyor', suspended: 'askıda', interrupted: 'kesintiye uğramış', closed: 'kapalı' };
+export function durumSozu() {
+  if (!WebViewBilesen) return 'Bu sürümde görünmez tarayıcı yok, üç boyutlu ses motoru çalışamaz. Eski ses yolu kullanılıyor.';
+  if (!Varlik || !Dosya) return 'Ses dosyalarını okuyan modül bulunamadı. Eski ses yolu kullanılıyor.';
+  if (!durum.etkin) return 'Üç boyutlu ses ayardan kapalı.';
+  const b = durum.baglam ? ' Ses bağlamı ' + (BAGLAM_ADI[durum.baglam] || durum.baglam) + '.' : '';
+  const y = [...yuklenen.values()];
+  const dosya = y.length ? ` ${y.filter((v) => v === 'hazir').length} ses yüklendi${y.includes('hata') ? `, ${y.filter((v) => v === 'hata').length} ses yüklenemedi` : ''}.` : '';
+  const h = durum.sonHata ? ' Son hata: ' + durum.sonHata : '';
+  if (hazirMi) return 'Üç boyutlu ses motoru hazır.' + b + dosya + h;
+  if (!durum.yuklendi) return 'Görünmez tarayıcı henüz açılmadı; motor yüklenmedi.' + b + h;
+  return 'Motor yüklendi ama ses bağlamı başlamadı, eski ses yolu kullanılıyor.' + b + dosya + h;
+}
+// Bir sesi dinleyicinin önünde, sağında, arkasında ve solunda sırayla çalar (hazır olmasa da dener; bağlamı uyandırır).
+// adim(i, ad) her konumdan önce çağrılır (konuşma için). Döndürür: false (motor yok)
+export function deneme(ad, kaynak, adim) {
+  if (!WebViewBilesen || !Varlik || !Dosya || !web) return false;
+  const kim = { x: 0, y: 0, yon: 0 };
+  const yerler = [['önünde', 0, 6], ['sağında', 6, 0], ['arkanda', 0, -6], ['solunda', -6, 0]];
+  kuyruk.push({ a: 'b' });
+  yuklenen.delete(ad);
+  durum.motor = durum.motor === 'hata' ? 'aciliyor' : durum.motor;
+  yukle(ad, kaynak);
+  yerler.forEach(([s, x, y], i) => {
+    setTimeout(() => {
+      if (adim) adim(i, s);
+      setTimeout(() => {
+        sonDinleyici = null;
+        dinleyiciGonder(kim);
+        kuyruk.push({ a: 'c', id: 'deneme' + i, ad, x, y, s: 0.9 * durum.genel, z: 18000, r: 0.05, h: 1 });
+        bosalt();
+      }, 900);
+    }, 600 + i * 2800);
+  });
+  if (!sayac) sayac = setInterval(adim2, 60);
+  return true;
+}
+function adim2() {
+  adim();
+}
 // Tarayıcı denemeleri için: motordan çalanların düzeylerini ister; cevap taniDinle'ye gelir
 export function tani(f) {
   taniDinle = f;
@@ -447,10 +490,13 @@ function mesaj(e) {
   }
   if (!o) return;
   if (o.t === 'yuklendi') {
+    durum.yuklendi = true;
     durum.motor = 'aciliyor';
     kuyruk.unshift({ a: 'b' });
     bosalt();
   } else if (o.t === 'durum') {
+    durum.baglam = o.d;
+    if (o.hata) durum.sonHata = 'Ses bağlamı açılamadı: ' + o.hata;
     if (o.d === 'running') {
       if (!hazirMi) {
         // Geç açıldıysa (6 saniyeden sonra) yarım kalan yüklemeler yeniden istenebilsin
@@ -467,6 +513,7 @@ function mesaj(e) {
     yuklenen.delete(o.ad);
   } else if (o.t === 'hata') {
     if (o.ad) yuklenen.set(o.ad, 'hata');
+    durum.sonHata = o.metin;
     hataBildir('3B ses motoru: ' + o.metin);
   } else if (o.t === 'tani') {
     if (taniDinle) taniDinle(o);

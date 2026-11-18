@@ -522,6 +522,7 @@ const EK_GEZI_TARIF = {
   kackar: 'Türkiye\'nin kuzeydoğusunda, Kaçkar Dağları\'nda serbestçe dolaşılan ayrı bir harita: boz ayı, kurt, vaşak, yaban keçisi, çengel boynuzlu dağ keçisi, karaca, yaban domuzu, kızıl tilki, porsuk, kaya sansarı, su samuru ve sakallı akbaba. Ladin ve kayın ormanından orman gülü kuşağına, çiçekli yayladan zirvelere ve buzul gölüne katman katman bir dağ; yayladan bir dere iner, evin yanında bir arılık var. Sonbaharda binlerce yırtıcı kuş göç ederken buradan geçer.',
 };
 const YENILIKLER = [
+  { baslik: 'Üç boyutlu sesi dene', metin: "Ses motorunun durumunu söyler (hazır mı, ses bağlamı çalışıyor mu, kaç ses yüklendi, son hata), sonra bir zebra sesini önünde, sağında, arkanda ve solunda sırayla çalar. Kulaklıkla dene; duyduğunu ve söylediği durumu bana ilet.", nerede: 'Ayarlar > Ses ve konuşma > Üç boyutlu sesi dene.' },
   { baslik: 'Otlakta çamur sesi düzeldi', metin: "Yağışlı mevsimde toprak günlerce nemli kaldığı için bütün açık otlak çamur sayılıyor, adımların çamurda yürür gibi çıkıyordu. Artık otlu yerde yağmurda da ot sesi gelir; çamur yalnızca gölet ve nehir kıyısında, sulak alanda ve ıslak çıplak toprakta. Moğol bozkırı, Hindistan ve Avustralya'daki otlaklarda da aynı düzeltme yapıldı.", nerede: 'sahada yürürken.' },
   { baslik: 'Kulaklıkta gerçek üç boyutlu ses (HRTF)', metin: "Hayvan sesleri, koşu ve gündelik sesler, küçük canlılar ve ortam sesleri artık Demir 1919'da denediğimiz yolla çalar: görünmez bir tarayıcının ses motoru her sesi insan başının ölçülmüş süzgeçlerinden geçirir. Önden, arkadan, sağdan, soldan gelen ses kulaklıkta gerçekten oradan duyulur; döndükçe ses başının etrafında kayar. Nehir, galeri ormanı ve kayalık sesleri en yakın noktalarından gelir. Ortam döngüleri artık başa dönerken boşluk bırakmamalı. Motor açılamazsa eski ses yolu kendiliğinden çalar. Telefonda henüz denenmedi.", nerede: 'sahada her yerde; kapatmak için Ayarlar > Ses ve konuşma > Kulaklıkta gerçek üç boyutlu ses.' },
   { baslik: 'Daha akıcı oyun ve küçük düzeltmeler', metin: "Oyun 15 haritadaki yaklaşık 880 hayvanı her an hesaplıyordu; bulunmadığın haritalardaki hayvanlar artık daha seyrek hesaplanıyor (zaman orada da akar). Bilgisayarda bir karenin hesabı ortalama 4,4 milisaniyeden 1,8'e, en uzun takılma 102'den 36 milisaniyeye indi; telefonda takılmalar azalmalı. Kayıt dosyası küçültüldü. İstasyon kamerası özetinde saatlerin eki düzeldi (06:35'de yerine 06:35'te).", nerede: 'bütün oyun.' },
@@ -1116,6 +1117,20 @@ function ayarOgeleri(ayar, degistir) {
       etiket: `Kulaklıkta gerçek üç boyutlu ses: ${durum('hrtf')}. Değiştir`,
       ipucu: 'Hayvan sesleri ve ortam sesleri insan başının ölçülmüş süzgeçleriyle (HRTF) çalar: önden, arkadan, sağdan, soldan gelen ses kulaklıkta gerçekten oradan duyulur. Kulaklıkla en iyisi. Kapalıyken eski ses yolu çalar.',
       sec: () => ac('hrtf', 'Kulaklıkta gerçek üç boyutlu ses', (y) => Efekt.efektAyarla({ hrtf: y })),
+    },
+    {
+      id: 'hrtfDene',
+      etiket: 'Üç boyutlu sesi dene',
+      ipucu: 'Ses motorunun durumunu söyler, sonra bir zebra sesini önünde, sağında, arkanda ve solunda sırayla çalar. Kulaklık takılıyken dene.',
+      sec: () => {
+        Ses.hemen(Efekt.konumsalDurumSozu());
+        const sure = 1500 + Efekt.konumsalDurumSozu().length * 55;
+        setTimeout(() => {
+          const oldu = Efekt.konumsalDeneme('zebra', (i, yer) => Ses.hemen('Zebra ' + yer));
+          if (!oldu) Ses.soyle('Deneme yapılamadı.');
+        }, sure);
+        return 'sessiz';
+      },
     },
     {
       id: 'donusTiki',

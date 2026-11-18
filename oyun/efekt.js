@@ -140,6 +140,8 @@ export const sesMotoru = () => (K.hazir() ? 'hrtf' : U.motor());
 export const konumsalMotorDurumu = () => K.motorDurumu();
 export const KonumsalMotor = K.Motor;
 export const konumsalHataDinle = (f) => K.hataDinle(f);
+export const konumsalDurumSozu = () => K.durumSozu();
+export const konumsalDeneme = (ad, adim) => K.deneme(ad, SESLER[ad], adim);
 const calanYonsuz = new Map(); // Expo Go: taban → { kim, hedef, ses, p, bitis }
 let yonsuzSayac = null;
 const uzaklikDuzeyi = (m) => (m < 3 ? 1 : Math.max(0.06, Math.pow(3 / m, 0.85)));
@@ -565,6 +567,8 @@ try {
   globalThis.__ortamDurumu = ortamDurumu;
   globalThis.__konumluDurum = () => konumluDurum();
   globalThis.__sesMotoru = () => sesMotoru();
+  globalThis.__hrtfSoz = () => K.durumSozu();
+  globalThis.__hrtfDeneme = () => K.deneme("zebra", SESLER.zebra, (i, y) => (globalThis.__denemeAdim = (globalThis.__denemeAdim || []).concat(y)));
   globalThis.__hrtfTani = () => new Promise((r) => (K.hazir() ? K.tani(r) : r(null)));
   globalThis.__muzikDurumu = () => muzikDurumu();
   globalThis.__yonluDurum = () => Object.fromEntries(Object.entries(yonluDonguler).map(([a, x]) => [a, { sol: Math.round(x.sol.volume * 100) / 100, sag: Math.round(x.sag.volume * 100) / 100, hiz: x.hiz }]));
