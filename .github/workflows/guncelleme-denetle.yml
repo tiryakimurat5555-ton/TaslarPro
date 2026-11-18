@@ -20,5 +20,5 @@ jobs:
             head -1 baslik.txt
             S=$(head -c 400 govde.txt | tr -d '\n')
             echo "$S"
-            echo "::notice title=$p::$(head -1 baslik.txt | tr -d '\r') $(grep -o '"id":"[^"]*"' govde.txt | head -1) $(grep -o '"createdAt":"[^"]*"' govde.txt | head -1) $(grep -o '"error[^}]*' govde.txt | head -c 200)"
+            echo "::notice title=$p::$(head -1 baslik.txt | tr -d '\r') $(grep -o '"id":"[^"]*"' govde.txt | head -1) $(grep -o '"createdAt":"[^"]*"' govde.txt | head -1) $(grep -o '"message":"[^"]*"' govde.txt | head -1) GOVDE: $(head -c 300 govde.txt | tr -d '\n\r')"
           done
