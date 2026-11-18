@@ -763,6 +763,10 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   duruyorsa ana menü son adımı söyler, Hata kayıtlarına 'açılış adımları' satırı. Oyun döngüsü kareIsle + try/catch (eskiden yakalanmayan
   hata döngüyü sessizce durdururdu). Android'de GLView 1,5 sn sonra kurulur (glAcik). konumsal.js ses dosyalarını 96 bin harflik 'yp'
   parçalarıyla, bir enjeksiyonda en çok 200 bin harf gönderir. Sebep henüz bilinmiyor; Bahtiyar'ın denemesinden gelen cümle bekleniyor.
+- APK GÜNCELLEME ALMIYORDU (19 Kasım 2026, Murat "değişiklikler Bahtiyar'a hiç yeni APK olmadan gitmedi"): 'main' kanalı hiçbir güncelleme dalına
+  bağlı değildi (Expo sunucusu "no branches linked to the channel"); 15/17/18 Kasım APK'ları yalnız kendi içlerindeki JS'i çalıştırdı. expo-guncelleme.yml
+  artık her yayında main, preview, production kanallarını main dalına bağlar. `.github/workflows/guncelleme-denetle.yml` (elle; kanal, sürüm) Expo'ya
+  sorar: 200 + güncelleme kimliği = APK bunu alır. Bağlandıktan sonra android 200 döndü. Güncelleme açılışta iner, bir sonraki açılışta çalışır.
 - Tasarım brifinin 7 aşaması bitti. Sıradaki: Murat'ın Expo Go denemelerinden gelen geri bildirim; denge sayılarının onayı.
 
 ## Vahşi Topraklar (arşivde: arsiv/vahsi-topraklar/; yollar artık oraya göre)
