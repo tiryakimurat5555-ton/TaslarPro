@@ -3536,7 +3536,7 @@ export default function App() {
       // kurulurken ya da kurulduktan sonra yarıda kaldıysa bir sonraki denemede üç boyutlu görüntü kapalı açılır (ses ve oyun aynı).
       // Kademeli: önce üç boyutlu görüntü kapatılır; görüntüsüz de kapanırsa görünmez üç boyutlu ses motoru (WebView) kapatılır.
       let guvenli = '';
-      if (takilma && a.grafik !== 'kapali' && !a.guvenliGrafik && takilma.adimlar.some((x) => x.startsWith('çizim bağlamı') || x.startsWith('üç boyutlu görüntü açılıyor'))) {
+      if (takilma && a.grafik !== 'kapali' && !a.guvenliGrafik && takilma.adimlar.some((x) => x.startsWith('oyun ekranı açıldı'))) {
         a = { ...a, grafik: 'kapali', guvenliGrafik: true };
         guvenli = ' Bu yüzden üç boyutlu görüntüyü kapattım; oyun sesle aynen oynanır. Geri açmak için Ayarlar, Görünüm ve grafik.';
       } else if (takilma && a.grafik === 'kapali' && a.guvenliGrafik && a.hrtf !== false && !a.guvenliHrtf && takilma.adimlar.some((x) => x.startsWith('oyun ekranı açıldı'))) {

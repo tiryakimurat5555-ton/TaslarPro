@@ -767,7 +767,9 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   yükleme ayar.grafik = 'kapali' + guvenliGrafik true yazar (bir kez; oyuncu geri açarsa bir daha kapatılmaz) ve ana menüde söyler. Bahtiyar'ın ilk raporu
   (10:35): adımlar 'oyun ekranı açıldı (1,3 sn) → ilk kare çizildi' sonrası kesik (hata satırı 200 harf). Artık Android'de GLView kurulmadan 'üç boyutlu görüntü
   açılıyor' adımı yazılır, güvenli kip buna da bakar; 2. kademe: görüntü kapalıyken yine kapanırsa hrtf false + guvenliHrtf (KonumsalMotor hiç kurulmaz).
-  Ara adımlar '30. kare', '150. kare'; 'açılış' hata satırı son 3 adımı yazar.
+  Ara adımlar '30. kare', '150. kare'; 'açılış' hata satırı son 3 adımı yazar. Bahtiyar'ın 2. raporu (11:15, önceki sürüm): ... ilk kare (1,4 sn) →
+  ilk konuşma başladı (1,5 sn) sonrası kapanıyor; GLView 1,5 sn'de kuruluyordu → en güçlü şüphe expo-gl. 1. kademe artık 'oyun ekranı açıldı' sonrası
+  her yarıda kalan açılışta (grafik açıksa) devreye girer.
 - APK GÜNCELLEME ALMIYORDU (19 Kasım 2026, Murat "değişiklikler Bahtiyar'a hiç yeni APK olmadan gitmedi"): 'main' kanalı hiçbir güncelleme dalına
   bağlı değildi (Expo sunucusu "no branches linked to the channel"); 15/17/18 Kasım APK'ları yalnız kendi içlerindeki JS'i çalıştırdı. expo-guncelleme.yml
   artık her yayında main, preview, production kanallarını main dalına bağlar. `.github/workflows/guncelleme-denetle.yml` (elle; kanal, sürüm) Expo'ya
