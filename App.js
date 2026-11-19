@@ -557,6 +557,7 @@ const EK_GEZI_TARIF = {
   kackar: 'Türkiye\'nin kuzeydoğusunda, Kaçkar Dağları\'nda serbestçe dolaşılan ayrı bir harita: boz ayı, kurt, vaşak, yaban keçisi, çengel boynuzlu dağ keçisi, karaca, yaban domuzu, kızıl tilki, porsuk, kaya sansarı, su samuru ve sakallı akbaba. Ladin ve kayın ormanından orman gülü kuşağına, çiçekli yayladan zirvelere ve buzul gölüne katman katman bir dağ; yayladan bir dere iner, evin yanında bir arılık var. Sonbaharda binlerce yırtıcı kuş göç ederken buradan geçer.',
 };
 const YENILIKLER = [
+  { baslik: 'Android: oyun kapanırsa güvenli açılış', metin: "Oyun açılırken üç boyutlu görüntü kurulurken ya da sonrasında kapanır ya da takılırsa, bir sonraki açılışta ana menü nerede kaldığını söyler ve üç boyutlu görüntüyü kapatır. Oyun sesle aynen oynanır; görüntüyü istersen geri açabilirsin.", nerede: 'Ayarlar > Görünüm ve grafik.' },
   { baslik: 'Android: oyun açılışında takılmaya karşı önlemler', metin: "Bazı Android telefonlarda ad seçince ekran boş kalıyordu. Oyun döngüsünde bir hata olursa döngü artık durmaz; Android'de üç boyutlu görüntü karşılama konuşması başladıktan sonra kurulur; ses dosyaları görünmez ses motoruna küçük parçalar hâlinde gönderilir (büyük yazı ekranı dondurabiliyordu). Oyun açılırken her adımı telefona yazar: açılış yarıda kalırsa bir sonraki açılışta ana menü nerede takıldığını söyler.", nerede: 'oyun açılışı; ayrıntılar Ayarlar > Hata kayıtları.' },
   { baslik: 'Üç boyutlu sesi dene', metin: "Ses motorunun durumunu söyler (hazır mı, ses bağlamı çalışıyor mu, kaç ses yüklendi, son hata), sonra bir zebra sesini önünde, sağında, arkanda ve solunda sırayla çalar. Kulaklıkla dene; duyduğunu ve söylediği durumu bana ilet.", nerede: 'Ayarlar > Ses ve konuşma > Üç boyutlu sesi dene.' },
   { baslik: 'Otlakta çamur sesi düzeldi', metin: "Yağışlı mevsimde toprak günlerce nemli kaldığı için bütün açık otlak çamur sayılıyor, adımların çamurda yürür gibi çıkıyordu. Artık otlu yerde yağmurda da ot sesi gelir; çamur yalnızca gölet ve nehir kıyısında, sulak alanda ve ıslak çıplak toprakta. Moğol bozkırı, Hindistan ve Avustralya'daki otlaklarda da aynı düzeltme yapıldı.", nerede: 'sahada yürürken.' },
@@ -3526,13 +3527,29 @@ export default function App() {
           }
         }
       } catch (e) {}
+      // Güvenli kip (19 Kasım 2026, Bahtiyar: Android'de oyuna girer girmez uygulama kapanıyordu): açılış üç boyutlu görüntü
+      // kurulurken ya da kurulduktan sonra yarıda kaldıysa bir sonraki denemede üç boyutlu görüntü kapalı açılır (ses ve oyun aynı).
+      let guvenli = false;
+      if (takilma && a.grafik !== 'kapali' && !a.guvenliGrafik && takilma.adimlar.some((x) => x.startsWith('çizim bağlamı'))) {
+        a = { ...a, grafik: 'kapali', guvenliGrafik: true };
+        AsyncStorage.setItem(AYAR_ANAHTAR, JSON.stringify(a)).catch(() => {});
+        guvenli = true;
+      }
       setAyar(a);
       setKayit(kk);
-      if (takilma)
+      if (takilma) {
+        const son = takilma.adimlar[takilma.adimlar.length - 1].replace(/ \([^)]*\)$/, '');
         setTimeout(
-          () => Ses.soyle(`Geçen sefer oyun açılırken takıldı. En son yapılan adım: ${takilma.adimlar[takilma.adimlar.length - 1].replace(/ \([^)]*\)$/, '')}. Bu cümleyi oyunun geliştiricisine iletirsen sorun daha kolay bulunur. Ayrıntılar Ayarlar, Hata kayıtları bölümünde.`, 4),
+          () =>
+            Ses.soyle(
+              `Geçen sefer oyun açılırken kapandı ya da takıldı. En son yapılan adım: ${son}. Bu cümleyi oyunun geliştiricisine iletirsen sorun daha kolay bulunur.${
+                guvenli ? ' Bu yüzden üç boyutlu görüntüyü kapattım; oyun sesle aynen oynanır. Geri açmak için Ayarlar, Görünüm ve grafik.' : ''
+              } Ayrıntılar Ayarlar, Hata kayıtları bölümünde.`,
+              4
+            ),
           5000
         );
+      }
       GORUNUM.kontrast = !!a.kontrast;
       GORUNUM.buyukYazi = !!a.buyukYazi;
       if (a.kip) Ses.ayarla({ hiz: a.hiz });
