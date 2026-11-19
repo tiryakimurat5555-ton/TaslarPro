@@ -1919,6 +1919,8 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
         if (kareSayisi === 1) {
           ilkKare = Date.now();
           acilisAdim('ilk kare çizildi');
+        } else if (kareSayisi === 30 || kareSayisi === 150) {
+          acilisAdim(`${kareSayisi}. kare`);
         } else if (ilkKare && Date.now() - ilkKare > 12000 && kareSayisi > 60) {
           ilkKare = 0;
           acilisBitti();
@@ -1943,7 +1945,10 @@ function Oyun({ arastirmaci, ayar, cikis, ayarDegistir }) {
   const [glAcik, setGlAcik] = useState(!ANDROID);
   useEffect(() => {
     if (glAcik) return undefined;
-    const z = setTimeout(() => setGlAcik(true), 1500);
+    const z = setTimeout(() => {
+      acilisAdim('üç boyutlu görüntü açılıyor');
+      setGlAcik(true);
+    }, 1500);
     return () => clearTimeout(z);
   }, []);
   // Tanı için: üç boyutlu görüntü 8 saniyede kurulmadıysa hata kayıtlarına yazılır
@@ -3520,7 +3525,7 @@ export default function App() {
           await AsyncStorage.removeItem(ACILIS_ANAHTAR);
           if (g && Array.isArray(g.adimlar) && g.adimlar.length) {
             takilma = g;
-            hataKaydet(new Error(`Önceki açılış (${g.zaman}) tamamlanmadı. Adımlar: ${g.adimlar.join(' → ')}`.slice(0, 200)), 'açılış');
+            hataKaydet(new Error(`Önceki açılış (${g.zaman}) tamamlanmadı. Son adımlar: ${g.adimlar.slice(-3).join(' → ')}`.slice(0, 200)), 'açılış');
             // Ayrıntının tamamı ayrı satırda kalsın (hata kaydı 200 harfle sınırlı)
             HATALAR.unshift({ zaman: g.zaman, yer: 'açılış adımları', mesaj: g.adimlar.join(' → ').slice(-600), yigin: '' });
             AsyncStorage.setItem(HATA_ANAHTAR, JSON.stringify(HATALAR.slice(0, 20))).catch(() => {});
@@ -3529,12 +3534,16 @@ export default function App() {
       } catch (e) {}
       // Güvenli kip (19 Kasım 2026, Bahtiyar: Android'de oyuna girer girmez uygulama kapanıyordu): açılış üç boyutlu görüntü
       // kurulurken ya da kurulduktan sonra yarıda kaldıysa bir sonraki denemede üç boyutlu görüntü kapalı açılır (ses ve oyun aynı).
-      let guvenli = false;
-      if (takilma && a.grafik !== 'kapali' && !a.guvenliGrafik && takilma.adimlar.some((x) => x.startsWith('çizim bağlamı'))) {
+      // Kademeli: önce üç boyutlu görüntü kapatılır; görüntüsüz de kapanırsa görünmez üç boyutlu ses motoru (WebView) kapatılır.
+      let guvenli = '';
+      if (takilma && a.grafik !== 'kapali' && !a.guvenliGrafik && takilma.adimlar.some((x) => x.startsWith('çizim bağlamı') || x.startsWith('üç boyutlu görüntü açılıyor'))) {
         a = { ...a, grafik: 'kapali', guvenliGrafik: true };
-        AsyncStorage.setItem(AYAR_ANAHTAR, JSON.stringify(a)).catch(() => {});
-        guvenli = true;
+        guvenli = ' Bu yüzden üç boyutlu görüntüyü kapattım; oyun sesle aynen oynanır. Geri açmak için Ayarlar, Görünüm ve grafik.';
+      } else if (takilma && a.grafik === 'kapali' && a.guvenliGrafik && a.hrtf !== false && !a.guvenliHrtf && takilma.adimlar.some((x) => x.startsWith('oyun ekranı açıldı'))) {
+        a = { ...a, hrtf: false, guvenliHrtf: true };
+        guvenli = ' Üç boyutlu görüntü zaten kapalıydı; bu yüzden kulaklıktaki gerçek üç boyutlu ses motorunu da kapattım. Sesler eski yolla çalar. Geri açmak için Ayarlar, Ses ve konuşma.';
       }
+      if (guvenli) AsyncStorage.setItem(AYAR_ANAHTAR, JSON.stringify(a)).catch(() => {});
       setAyar(a);
       setKayit(kk);
       if (takilma) {
@@ -3542,9 +3551,7 @@ export default function App() {
         setTimeout(
           () =>
             Ses.soyle(
-              `Geçen sefer oyun açılırken kapandı ya da takıldı. En son yapılan adım: ${son}. Bu cümleyi oyunun geliştiricisine iletirsen sorun daha kolay bulunur.${
-                guvenli ? ' Bu yüzden üç boyutlu görüntüyü kapattım; oyun sesle aynen oynanır. Geri açmak için Ayarlar, Görünüm ve grafik.' : ''
-              } Ayrıntılar Ayarlar, Hata kayıtları bölümünde.`,
+              `Geçen sefer oyun açılırken kapandı ya da takıldı. En son yapılan adım: ${son}. Bu cümleyi oyunun geliştiricisine iletirsen sorun daha kolay bulunur.${guvenli} Ayrıntılar Ayarlar, Hata kayıtları bölümünde.`,
               4
             ),
           5000
@@ -3653,7 +3660,7 @@ export default function App() {
       <KipBaglam.Provider value={kip}>
         <View style={{ flex: 1, backgroundColor: RENK.zemin }}>
           <StatusBar style="light" />
-          <Efekt.KonumsalMotor />
+          {ayar.hrtf !== false && <Efekt.KonumsalMotor />}
           {icerik}
         </View>
       </KipBaglam.Provider>

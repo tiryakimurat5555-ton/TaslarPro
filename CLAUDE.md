@@ -764,7 +764,10 @@ parmak sayısı; rn-taklit View onResponder* destekler; hızlı kaydırma sayfa 
   hata döngüyü sessizce durdururdu). Android'de GLView 1,5 sn sonra kurulur (glAcik). konumsal.js ses dosyalarını 96 bin harflik 'yp'
   parçalarıyla, bir enjeksiyonda en çok 200 bin harf gönderir. Sebep henüz bilinmiyor; Bahtiyar'ın denemesinden gelen cümle bekleniyor.
 - GÜVENLİ AÇILIŞ (19 Kasım 2026 sabah, Bahtiyar "oyuna girer girmez atıyor"): açılış günlüğü yarıda kalmışsa ve içinde 'çizim bağlamı' adımı varsa
-  yükleme ayar.grafik = 'kapali' + guvenliGrafik true yazar (bir kez; oyuncu geri açarsa bir daha kapatılmaz) ve ana menüde söyler. Bahtiyar'ın cümlesi bekleniyor.
+  yükleme ayar.grafik = 'kapali' + guvenliGrafik true yazar (bir kez; oyuncu geri açarsa bir daha kapatılmaz) ve ana menüde söyler. Bahtiyar'ın ilk raporu
+  (10:35): adımlar 'oyun ekranı açıldı (1,3 sn) → ilk kare çizildi' sonrası kesik (hata satırı 200 harf). Artık Android'de GLView kurulmadan 'üç boyutlu görüntü
+  açılıyor' adımı yazılır, güvenli kip buna da bakar; 2. kademe: görüntü kapalıyken yine kapanırsa hrtf false + guvenliHrtf (KonumsalMotor hiç kurulmaz).
+  Ara adımlar '30. kare', '150. kare'; 'açılış' hata satırı son 3 adımı yazar.
 - APK GÜNCELLEME ALMIYORDU (19 Kasım 2026, Murat "değişiklikler Bahtiyar'a hiç yeni APK olmadan gitmedi"): 'main' kanalı hiçbir güncelleme dalına
   bağlı değildi (Expo sunucusu "no branches linked to the channel"); 15/17/18 Kasım APK'ları yalnız kendi içlerindeki JS'i çalıştırdı. expo-guncelleme.yml
   artık her yayında main, preview, production kanallarını main dalına bağlar. `.github/workflows/guncelleme-denetle.yml` (elle; kanal, sürüm) Expo'ya
